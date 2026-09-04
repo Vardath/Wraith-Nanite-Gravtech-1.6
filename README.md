@@ -1,8 +1,18 @@
 # Wraith & Nanite Gravtech — RimWorld 1.6
 
-Public RimWorld 1.6 release mirror for **Wraith & Nanite Gravtech** by Vardath.
+Public RimWorld 1.6 manual-install mirror for **Wraith & Nanite Gravtech** by Vardath.
 
-> **Release status:** pre-release / release-candidate validation. The current build has passed the project's full automated Def/runtime-contract audit, RimWorld 1.6 C# compilation, payload verification and packaging. Final public release remains gated on live in-game testing and fresh Player.log/RimDoctor review.
+> **Release status:** release-candidate validation. The current build has passed the project's complete automated Def/runtime-contract audit, RimWorld 1.6 C# compilation, compiled-payload verification and playable-folder packaging. Final public release remains gated on live in-game testing and fresh Player.log/RimDoctor review.
+
+## Quick links
+
+- **Manual install:** [`INSTALL.md`](INSTALL.md)
+- **Current release notes:** [`RELEASE_NOTES.md`](RELEASE_NOTES.md)
+- **Full changelog:** [`CHANGELOG.md`](CHANGELOG.md)
+- **Asset provenance:** [`ASSET_PROVENANCE.md`](ASSET_PROVENANCE.md)
+- **Project/fan notice:** [`NOTICE.md`](NOTICE.md)
+
+Steam Workshop will be the recommended installation route once the public Workshop item is live. This repository exists for manual installers, archival use and people who prefer GitHub distribution.
 
 ## Requirements
 
@@ -11,15 +21,29 @@ Public RimWorld 1.6 release mirror for **Wraith & Nanite Gravtech** by Vardath.
 - **Odyssey** DLC
 - **Ideology** is optional and is only required for the Neural Interface **Enslave** operation.
 
-Optional integration is available for CatCraft's **Stargates!** mod; Stargates! is not a hard dependency.
+CatCraft's **Stargates!** is supported as an optional integration and is not a hard dependency.
 
 ## Manual installation
 
-Steam Workshop will be the recommended installation method once the public Workshop item is live.
+Use GitHub's **Code → Download ZIP**, extract it, and rename the resulting folder to:
 
-For manual installation, download this repository or the packaged release build, ensure the resulting mod folder is named `Wraith-Nanite-Gravtech`, and place it in RimWorld's `Mods` directory. The mod folder must directly contain `About`, `Assemblies`, `Defs`, `Languages`, `Patches`, `Sounds` and `Textures`.
+`Wraith-Nanite-Gravtech`
 
-Do not place an extra nested repository folder between `Mods/Wraith-Nanite-Gravtech/` and `About/About.xml`.
+Place that folder directly inside RimWorld's local `Mods` directory. It must directly contain:
+
+- `About/`
+- `Assemblies/`
+- `Defs/`
+- `Languages/`
+- `Patches/`
+- `Sounds/`
+- `Textures/`
+
+The important sanity check is:
+
+`Wraith-Nanite-Gravtech/About/About.xml`
+
+Do not merge a new release over an old WNG folder; replace the old folder so stale XML/assets cannot survive between versions. Full instructions are in [`INSTALL.md`](INSTALL.md).
 
 ## Major systems
 
@@ -54,19 +78,20 @@ The release sequence begins with Wraith and Replicator aftermath, progresses thr
 
 WNG primarily uses RimWorld genes, Hediffs, abilities, comps, custom jobs and Odyssey-native systems. It avoids Humanoid Alien Races as a dependency and avoids broad global Harmony takeover. Optional integrations are designed to leave the external mod authoritative for its own systems.
 
-## Source and development
+## Public mirror boundary
 
-This repository is the **public RimWorld 1.6 release mirror**. Internal development/audit continuity material is intentionally kept out of the public mirror.
+This repository contains the **verified playable 1.6 payload**: About metadata, compiled WNG assembly, Defs, translations, patches, sounds and textures. Internal development/audit continuity material is intentionally not published here.
 
-The public mirror will track verified 1.6 release states. Development changes are prepared and audited privately before being mirrored here.
+Development changes are prepared and audited privately, then verified playable states are mirrored to this repository. This keeps the public repository suitable for direct manual installation rather than exposing the private working-history machinery.
 
 ## Fan-project notice
 
-This is an unofficial, non-commercial fan-made project inspired by Stargate Atlantis themes. It is not affiliated with, endorsed by, or sponsored by the Stargate rights holders, Ludeon Studios, or any associated rights holder. No official logos, ripped models, screenshots, dialogue, music or sound recordings are included.
+This is an unofficial, non-commercial fan-made project inspired by Stargate Atlantis themes. It is not affiliated with, endorsed by, or sponsored by the Stargate rights holders, Ludeon Studios, or any associated rights holder. No official logos, ripped models, screenshots, dialogue, music or sound recordings are intentionally included.
 
 ## Current release-candidate provenance
 
 - Private development release-candidate source head: `d8703f91783bd831fc33e10f4143ca3c69a9f46f`
-- Static Def Audit: **#2489 / run 33924271024 — SUCCESS**
+- Static Def Audit: **#2489 / run `33924271024` — SUCCESS**
 - Automated gate includes RimWorld 1.6 C# compilation, compiled-payload verification, playable-folder assembly and ZIP packaging.
-- Live RimWorld testing remains a separate final proof layer.
+- Public mirror import commit: `5542879780d265941b7a0ba4b7063cfc47864384`
+- Live RimWorld testing remains the final separate proof layer before the Steam release.
