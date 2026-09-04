@@ -1,8 +1,15 @@
 # Wraith & Nanite Gravtech — RimWorld 1.6
 
-Public RimWorld 1.6 manual-install mirror for **Wraith & Nanite Gravtech** by Vardath.
+Public RimWorld 1.6 release mirror for **Wraith & Nanite Gravtech** by Vardath.
 
-> **Release status:** release-candidate validation. The current build has passed the project's complete automated Def/runtime-contract audit, RimWorld 1.6 C# compilation, compiled-payload verification and playable-folder packaging. Final public release remains gated on live in-game testing and fresh Player.log/RimDoctor review.
+> **Release status:** release-candidate validation. The current public mirror now matches the latest audited post-live-log-fix playable state from the private development repository. Final Steam publication remains gated on live in-game testing and fresh Player.log/RimDoctor review.
+
+## Repository roles
+
+- **Private repository — `Vardath/Wraith-Nanite-Gravtech`:** development authority. All new work, fixes, experiments and release candidates are made and audited there first.
+- **This public repository — `Vardath/Wraith-Nanite-Gravtech-1.6`:** release mirror. It should match the current released Steam Workshop build and should not receive unreleased development work.
+- When a private build is fully audited and accepted for release, the exact playable state is promoted here and to Steam together.
+- If a released build develops a confirmed error, the fix is made privately, audited there, then promoted to both this repository and Steam so the public GitHub state and Workshop state remain aligned.
 
 ## Quick links
 
@@ -12,7 +19,7 @@ Public RimWorld 1.6 manual-install mirror for **Wraith & Nanite Gravtech** by Va
 - **Asset provenance:** [`ASSET_PROVENANCE.md`](ASSET_PROVENANCE.md)
 - **Project/fan notice:** [`NOTICE.md`](NOTICE.md)
 
-Steam Workshop will be the recommended installation route once the public Workshop item is live. This repository exists for manual installers, archival use and people who prefer GitHub distribution.
+Steam Workshop will be the recommended installation route once the public Workshop item is live. This repository exists for manual installers, archival use, source inspection and people who prefer GitHub distribution.
 
 ## Requirements
 
@@ -21,7 +28,7 @@ Steam Workshop will be the recommended installation route once the public Worksh
 - **Odyssey** DLC
 - **Ideology** is optional and is only required for the Neural Interface **Enslave** operation.
 
-CatCraft's **Stargates!** is supported as an optional integration and is not a hard dependency.
+CatCraft's **Stargates!** is supported as an optional integration and is not a hard dependency. RimGate and ONAC are also intended as optional/recommended companion mods where compatible.
 
 ## Manual installation
 
@@ -80,9 +87,9 @@ WNG primarily uses RimWorld genes, Hediffs, abilities, comps, custom jobs and Od
 
 ## Public mirror boundary
 
-This repository contains the **verified playable 1.6 payload**: About metadata, compiled WNG assembly, Defs, translations, patches, sounds and textures. Internal development/audit continuity material is intentionally not published here.
+This repository contains the **released/playable 1.6 payload**: About metadata, compiled WNG assembly, Defs, translations, patches, sounds and textures. Internal development/audit continuity material is intentionally not published here.
 
-Development changes are prepared and audited privately, then verified playable states are mirrored to this repository. This keeps the public repository suitable for direct manual installation rather than exposing the private working-history machinery.
+Development changes are prepared and audited privately. Only an accepted release state is mirrored here. Once Steam is live, this repository and the Steam Workshop copy are intended to be the same public release state.
 
 ## Fan-project notice
 
@@ -90,8 +97,8 @@ This is an unofficial, non-commercial fan-made project inspired by Stargate Atla
 
 ## Current release-candidate provenance
 
-- Private development release-candidate source head: `d8703f91783bd831fc33e10f4143ca3c69a9f46f`
-- Static Def Audit: **#2489 / run `33924271024` — SUCCESS**
-- Automated gate includes RimWorld 1.6 C# compilation, compiled-payload verification, playable-folder assembly and ZIP packaging.
-- Public mirror import commit: `5542879780d265941b7a0ba4b7063cfc47864384`
+- Private development release head: `13d437b36bc0db313881e585fc76dbf16ae2b851`
+- Static Def Audit: **#2492 / run `33927936424` — SUCCESS**
+- Automated gate includes the full WNG audit suite, RimWorld 1.6 C# compilation, compiled-payload verification, playable-folder assembly and ZIP packaging.
+- Fresh live-log fixes included removal of the obsolete `WNG_RimWorld16_RuntimeRepair.xml` shim and corrected living-equipment support patching for the Wraith Boneblade and War Glaive.
 - Live RimWorld testing remains the final separate proof layer before the Steam release.
