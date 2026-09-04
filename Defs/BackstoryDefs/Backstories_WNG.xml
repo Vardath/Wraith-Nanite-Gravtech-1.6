@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Wraith origins: shared childhood pool for generated Wraith of every caste. -->
+  <BackstoryDef>
+    <defName>WNG_WraithOrigin_HiveCrecheBroodling</defName>
+    <slot>Childhood</slot>
+    <title>hive creche broodling</title>
+    <titleShort>creche broodling</titleShort>
+    <description>[PAWN_nameDef] was raised inside a warm living creche among the pulse of hive tissue and the voices of older Wraith. Early life taught [PAWN_objective] to read posture, rank and threat almost as instinctively as hunger.</description>
+    <skillGains><Melee>2</Melee><Social>1</Social></skillGains>
+    <spawnCategories><li>WNG_WraithOrigin</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithOrigin_LivingShipBroodling</defName>
+    <slot>Childhood</slot>
+    <title>living-ship broodling</title>
+    <titleShort>ship broodling</titleShort>
+    <description>[PAWN_nameDef] grew among the responsive membranes, conduits and maintenance organs of a living vessel. [PAWN_pronoun] learned that Wraith technology is not assembled so much as cultivated, persuaded and kept healthy.</description>
+    <skillGains><Crafting>2</Crafting><Intellectual>1</Intellectual></skillGains>
+    <spawnCategories><li>WNG_WraithOrigin</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithOrigin_FeedingCourtWard</defName>
+    <slot>Childhood</slot>
+    <title>feeding-court ward</title>
+    <titleShort>court ward</titleShort>
+    <description>[PAWN_nameDef] spent [PAWN_possessive] early years in a feeding court where prey health, Wraith hunger and hierarchy all had to be managed carefully. The work made [PAWN_objective] attentive to bodies and to the moods of those around them.</description>
+    <skillGains><Medicine>2</Medicine><Social>1</Social></skillGains>
+    <spawnCategories><li>WNG_WraithOrigin</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Wraith Hunters. -->
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_CullingPathfinder</defName>
+    <slot>Adulthood</slot>
+    <title>culling pathfinder</title>
+    <titleShort>pathfinder</titleShort>
+    <description>[PAWN_nameDef] ranged ahead of culling parties, identifying prey concentrations, safe approaches and extraction routes before the main strike arrived. [PAWN_pronoun] became a patient shot and a careful reader of unfamiliar settlements.</description>
+    <skillGains><Shooting>4</Shooting><Intellectual>1</Intellectual></skillGains>
+    <spawnCategories><li>WNG_WraithHunterAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_PreyStalker</defName>
+    <slot>Adulthood</slot>
+    <title>prey stalker</title>
+    <titleShort>stalker</titleShort>
+    <description>[PAWN_nameDef] specialised in following isolated prey beyond the protection of their settlements. Long hunts taught [PAWN_objective] when to fire, when to close the distance and when a living captive was worth more than a corpse.</description>
+    <skillGains><Shooting>3</Shooting><Melee>2</Melee></skillGains>
+    <spawnCategories><li>WNG_WraithHunterAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Wraith Warriors. -->
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_CarapaceLineguard</defName>
+    <slot>Adulthood</slot>
+    <title>carapace lineguard</title>
+    <titleShort>lineguard</titleShort>
+    <description>[PAWN_nameDef] served where a hive expected resistance to be strongest, advancing in living carapace while lighter hunters worked around the flanks. Repeated close fighting made [PAWN_objective] difficult to dislodge once committed.</description>
+    <skillGains><Melee>4</Melee><Shooting>2</Shooting></skillGains>
+    <spawnCategories><li>WNG_WraithWarriorAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_BoardingWarrior</defName>
+    <slot>Adulthood</slot>
+    <title>boarding warrior</title>
+    <titleShort>boarder</titleShort>
+    <description>[PAWN_nameDef] fought in the cramped passages of ships and sealed installations where neither range nor cover lasted long. [PAWN_pronoun] became equally comfortable opening a fight with a weapon and finishing it at arm's length.</description>
+    <skillGains><Melee>3</Melee><Shooting>3</Shooting></skillGains>
+    <spawnCategories><li>WNG_WraithWarriorAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Wraith Commanders. -->
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_HiveTactician</defName>
+    <slot>Adulthood</slot>
+    <title>hive tactician</title>
+    <titleShort>tactician</titleShort>
+    <description>[PAWN_nameDef] coordinated hunters, warriors and living craft for a senior hive. The role rewarded an ability to impose order quickly, interpret imperfect information and still remain dangerous when plans collapsed.</description>
+    <skillGains><Social>3</Social><Intellectual>2</Intellectual><Shooting>1</Shooting></skillGains>
+    <spawnCategories><li>WNG_WraithCommanderAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_CullingCommander</defName>
+    <slot>Adulthood</slot>
+    <title>culling commander</title>
+    <titleShort>culling commander</titleShort>
+    <description>[PAWN_nameDef] led culling operations where the measure of success was not simply enemy dead but prey captured and craft returned intact. [PAWN_pronoun] learned to command under pressure without losing sight of the hunt's purpose.</description>
+    <skillGains><Social>3</Social><Shooting>3</Shooting></skillGains>
+    <spawnCategories><li>WNG_WraithCommanderAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Wraith Keepers. -->
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_DormancyKeeper</defName>
+    <slot>Adulthood</slot>
+    <title>dormancy keeper</title>
+    <titleShort>dormancy keeper</titleShort>
+    <description>[PAWN_nameDef] maintained hibernating Wraith through long periods when a neglected organ, failed cradle or depleted reserve could cost lives before anyone woke. [PAWN_pronoun] became meticulous with both biology and living systems.</description>
+    <skillGains><Medicine>4</Medicine><Intellectual>2</Intellectual></skillGains>
+    <spawnCategories><li>WNG_WraithKeeperAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_FeedingSteward</defName>
+    <slot>Adulthood</slot>
+    <title>feeding steward</title>
+    <titleShort>feeding steward</titleShort>
+    <description>[PAWN_nameDef] balanced captive health, hive hunger and the demands of higher castes. Good stewardship required enough medical judgement to preserve feeding stock and enough authority to make hungry Wraith wait.</description>
+    <skillGains><Medicine>3</Medicine><Social>2</Social><Intellectual>1</Intellectual></skillGains>
+    <spawnCategories><li>WNG_WraithKeeperAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Wraith Queens. -->
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_LineageSovereign</defName>
+    <slot>Adulthood</slot>
+    <title>lineage sovereign</title>
+    <titleShort>sovereign</titleShort>
+    <description>[PAWN_nameDef] became the living political centre of a Wraith lineage, settling disputes among dangerous subordinates while deciding where the hive would feed, sleep, grow and wage war. Authority became as practical a weapon as any grown blade.</description>
+    <skillGains><Social>4</Social><Intellectual>2</Intellectual></skillGains>
+    <spawnCategories><li>WNG_WraithQueenAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_BroodMatriarch</defName>
+    <slot>Adulthood</slot>
+    <title>brood matriarch</title>
+    <titleShort>matriarch</titleShort>
+    <description>[PAWN_nameDef] spent decades directing brood health, feeding priorities and the biological continuity of a hive. [PAWN_possessive] rule joined social command with an unusually close understanding of Wraith physiology and long-term planning.</description>
+    <skillGains><Social>3</Social><Medicine>2</Medicine><Intellectual>1</Intellectual></skillGains>
+    <spawnCategories><li>WNG_WraithQueenAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Player-aligned / independent Wraith. -->
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_SeveredCullingScout</defName>
+    <slot>Adulthood</slot>
+    <title>severed culling scout</title>
+    <titleShort>severed scout</titleShort>
+    <description>[PAWN_nameDef] once scouted for a larger culling force but became separated from the hive that gave those orders. Survival without its infrastructure forced [PAWN_objective] to improvise repairs, judge strangers quickly and choose targets without a Queen's direction.</description>
+    <skillGains><Shooting>3</Shooting><Crafting>1</Crafting><Social>1</Social></skillGains>
+    <spawnCategories><li>WNG_WraithPlayerAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_HiveDefector</defName>
+    <slot>Adulthood</slot>
+    <title>hive defector</title>
+    <titleShort>defector</titleShort>
+    <description>[PAWN_nameDef] deliberately abandoned a hive whose rule [PAWN_pronoun] could no longer accept. Leaving meant learning to explain Wraith needs to outsiders, preserve [PAWN_possessive] own biology and reason about survival without inherited hierarchy.</description>
+    <skillGains><Social>2</Social><Intellectual>2</Intellectual><Medicine>1</Medicine></skillGains>
+    <spawnCategories><li>WNG_WraithPlayerAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_WraithAdult_StrandedCultivator</defName>
+    <slot>Adulthood</slot>
+    <title>stranded cultivator</title>
+    <titleShort>cultivator</titleShort>
+    <description>[PAWN_nameDef] survived the loss of a Wraith outpost with little more than damaged living technology and a knowledge of how to keep it alive. [PAWN_pronoun] learned to rebuild from scraps while treating every reserve of biomass as precious.</description>
+    <skillGains><Crafting>3</Crafting><Intellectual>2</Intellectual><Medicine>1</Medicine></skillGains>
+    <spawnCategories><li>WNG_WraithPlayerAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Synthetic/Asuran origins: the childhood slot represents initial pattern formation rather than biological childhood. -->
+  <BackstoryDef>
+    <defName>WNG_AsuranOrigin_ArchiveBornTemplate</defName>
+    <slot>Childhood</slot>
+    <title>archive-born template</title>
+    <titleShort>archive template</titleShort>
+    <description>[PAWN_nameDef]'s earliest coherent memories were assembled from an archived template and reconciled against a collective knowledge base. [PAWN_pronoun] began existence with abstract knowledge already present but still had to learn how to apply it as an individual.</description>
+    <skillGains><Intellectual>2</Intellectual><Social>1</Social></skillGains>
+    <spawnCategories><li>WNG_AsuranOrigin</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranOrigin_ConstructedServicePattern</defName>
+    <slot>Childhood</slot>
+    <title>constructed service pattern</title>
+    <titleShort>service pattern</titleShort>
+    <description>[PAWN_nameDef] first existed as a purpose-built service pattern tasked with maintaining advanced systems. Repeated reconstruction gradually broadened that narrow purpose into a more independent sense of self.</description>
+    <skillGains><Crafting>2</Crafting><Intellectual>1</Intellectual></skillGains>
+    <spawnCategories><li>WNG_AsuranOrigin</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranOrigin_RecoveredBiologicalImprint</defName>
+    <slot>Childhood</slot>
+    <title>recovered biological imprint</title>
+    <titleShort>recovered imprint</titleShort>
+    <description>[PAWN_nameDef] was stabilised from a damaged biological personality imprint rather than a clean synthetic template. Fragments of another life gave [PAWN_objective] an unusual sensitivity to organic bodies and interpersonal nuance.</description>
+    <skillGains><Social>2</Social><Medicine>1</Medicine></skillGains>
+    <spawnCategories><li>WNG_AsuranOrigin</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Synthetic engineers. -->
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_LatticeSystemsArchitect</defName>
+    <slot>Adulthood</slot>
+    <title>lattice systems architect</title>
+    <titleShort>systems architect</titleShort>
+    <description>[PAWN_nameDef] designed and repaired the physical systems that let distributed synthetic minds act through buildings, power networks and field devices. [PAWN_pronoun] approaches structures as parts of one larger machine.</description>
+    <skillGains><Intellectual>4</Intellectual><Construction>2</Construction></skillGains>
+    <spawnCategories><li>WNG_AsuranEngineerAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_PatternFabricator</defName>
+    <slot>Adulthood</slot>
+    <title>pattern fabricator</title>
+    <titleShort>fabricator</titleShort>
+    <description>[PAWN_nameDef] translated stored patterns into stable physical assemblies, correcting tiny errors before they propagated through a finished object. The work rewarded precision, patience and deep familiarity with synthetic fabrication.</description>
+    <skillGains><Crafting>4</Crafting><Intellectual>2</Intellectual></skillGains>
+    <spawnCategories><li>WNG_AsuranEngineerAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Synthetic soldiers. -->
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_LatticeEnforcer</defName>
+    <slot>Adulthood</slot>
+    <title>lattice enforcer</title>
+    <titleShort>enforcer</titleShort>
+    <description>[PAWN_nameDef] enforced collective decisions against armed opposition, combining disciplined ranged fire with the confidence of a body that could be reconstructed if enough of the pattern survived.</description>
+    <skillGains><Shooting>4</Shooting><Melee>2</Melee></skillGains>
+    <spawnCategories><li>WNG_AsuranSoldierAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_FieldSuppressor</defName>
+    <slot>Adulthood</slot>
+    <title>field suppressor</title>
+    <titleShort>field suppressor</titleShort>
+    <description>[PAWN_nameDef] specialised in keeping hostile formations pinned while damaged synthetic allies were recovered or reconstructed. [PAWN_pronoun] learned both accurate fire and enough field repair medicine to keep fragile situations from collapsing.</description>
+    <skillGains><Shooting>3</Shooting><Medicine>2</Medicine><Melee>1</Melee></skillGains>
+    <spawnCategories><li>WNG_AsuranSoldierAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Synthetic commanders. -->
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_ConsensusDirector</defName>
+    <slot>Adulthood</slot>
+    <title>consensus director</title>
+    <titleShort>consensus director</titleShort>
+    <description>[PAWN_nameDef] mediated competing recommendations inside a collective and translated them into decisions other minds could act on quickly. [PAWN_pronoun] became skilled at persuasion without losing sight of the underlying systems problem.</description>
+    <skillGains><Social>4</Social><Intellectual>2</Intellectual></skillGains>
+    <spawnCategories><li>WNG_AsuranCommanderAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_StrategicCoordinator</defName>
+    <slot>Adulthood</slot>
+    <title>strategic coordinator</title>
+    <titleShort>coordinator</titleShort>
+    <description>[PAWN_nameDef] coordinated distributed observers, soldiers and machines during fast-moving operations. The role demanded analytical discipline, the ability to direct independent minds and enough combat experience to understand what [PAWN_possessive] orders cost.</description>
+    <skillGains><Intellectual>3</Intellectual><Social>2</Social><Shooting>1</Shooting></skillGains>
+    <spawnCategories><li>WNG_AsuranCommanderAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Hostile/default human-form roles. These are overt operatives, not the unimplemented disguise/infiltration system. -->
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_ReconstructionOperative</defName>
+    <slot>Adulthood</slot>
+    <title>reconstruction operative</title>
+    <titleShort>reconstruction operative</titleShort>
+    <description>[PAWN_nameDef] travelled between damaged synthetic sites recovering pattern fragments, stabilising bodies and securing the technology needed to rebuild. The work often took place under fire, so technical knowledge and combat competence developed together.</description>
+    <skillGains><Intellectual>3</Intellectual><Medicine>2</Medicine><Shooting>1</Shooting></skillGains>
+    <spawnCategories><li>WNG_AsuranHumanFormAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_PatternSurveyOperative</defName>
+    <slot>Adulthood</slot>
+    <title>pattern survey operative</title>
+    <titleShort>survey operative</titleShort>
+    <description>[PAWN_nameDef] assessed unfamiliar societies and technologies openly enough to gather useful patterns without relying on disguise. [PAWN_pronoun] learned to speak, observe and defend [PAWN_objective] while deciding what information deserved preservation.</description>
+    <skillGains><Social>2</Social><Shooting>2</Shooting><Intellectual>2</Intellectual></skillGains>
+    <spawnCategories><li>WNG_AsuranHumanFormAdult</li></spawnCategories>
+  </BackstoryDef>
+
+  <!-- Player-aligned / independent human-form synthetic roles. -->
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_IndependentPattern</defName>
+    <slot>Adulthood</slot>
+    <title>independent pattern</title>
+    <titleShort>independent pattern</titleShort>
+    <description>[PAWN_nameDef] chose to continue as an individual rather than remain continuously subordinated to a collective consensus. Independence required [PAWN_objective] to maintain [PAWN_possessive] own systems, reason without constant lattice support and negotiate with organic neighbours.</description>
+    <skillGains><Intellectual>3</Intellectual><Crafting>2</Crafting><Social>1</Social></skillGains>
+    <spawnCategories><li>WNG_AsuranPlayerAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_SeveredConsensus</defName>
+    <slot>Adulthood</slot>
+    <title>severed consensus</title>
+    <titleShort>severed consensus</titleShort>
+    <description>[PAWN_nameDef] lost reliable contact with the collective that once supplied context for every major decision. [PAWN_pronoun] adapted by becoming more self-directed, more socially explicit and more capable of protecting [PAWN_objective] without waiting for agreement.</description>
+    <skillGains><Social>3</Social><Shooting>2</Shooting><Intellectual>1</Intellectual></skillGains>
+    <spawnCategories><li>WNG_AsuranPlayerAdult</li></spawnCategories>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_AsuranAdult_ReconstructionPilgrim</defName>
+    <slot>Adulthood</slot>
+    <title>reconstruction pilgrim</title>
+    <titleShort>reconstruction pilgrim</titleShort>
+    <description>[PAWN_nameDef] moved between scattered ruins looking for enough intact knowledge to rebuild more than a body: a durable community, a working archive and a reason to preserve continuity. [PAWN_pronoun] became practiced at repair, diagnosis and technical interpretation.</description>
+    <skillGains><Medicine>3</Medicine><Intellectual>2</Intellectual><Crafting>1</Crafting></skillGains>
+    <spawnCategories><li>WNG_AsuranPlayerAdult</li></spawnCategories>
+  </BackstoryDef>
+</Defs>

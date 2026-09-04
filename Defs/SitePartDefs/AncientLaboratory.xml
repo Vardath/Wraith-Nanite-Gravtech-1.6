@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_AncientPrecursorLaboratory</defName>
+    <label>abandoned precursor laboratory</label>
+    <description>A fractured precursor-era research installation. Its active laboratory systems are dead, but ruined diagnostic, containment and drone-service apparatus remain among precise composite walls. Old automated security may still defend whatever fragments survived.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_AncientPrecursorLaboratory</workerClass>
+    <siteTexture>World/WNG_AncientPrecursorLaboratory</siteTexture>
+    <expandingIconTexture>World/WNG_AncientPrecursorLaboratory</expandingIconTexture>
+    <applyFactionColorToSiteTexture>false</applyFactionColorToSiteTexture>
+    <showFactionInInspectString>false</showFactionInInspectString>
+    <requiresFaction>false</requiresFaction>
+    <approachOrderString>Approach {0}</approachOrderString>
+    <approachingReportString>Approaching {0}</approachingReportString>
+    <arrivedLetterLabelPart>Abandoned precursor laboratory</arrivedLetterLabelPart>
+    <arrivedLetter>You have reached the abandoned precursor laboratory. The outer shell has fractured cleanly with age, and the surviving diagnostic and containment equipment is visibly dead. An intact analysis specimen may remain among the wreckage, but old machine security is still possible.</arrivedLetter>
+    <arrivedLetterDef>ThreatBig</arrivedLetterDef>
+    <wantsThreatPoints>true</wantsThreatPoints>
+    <badEvenIfNoMap>true</badEvenIfNoMap>
+    <forceExitAndRemoveMapCountdownDurationDays>5</forceExitAndRemoveMapCountdownDurationDays>
+    <considerEnteringAsAttack>false</considerEnteringAsAttack>
+    <mainPartAllThreatsLabel>ancient laboratory security</mainPartAllThreatsLabel>
+    <minMapSize>(190,1,190)</minMapSize>
+    <gravShipsCanLandOn>true</gravShipsCanLandOn>
+  </SitePartDef>
+</Defs>

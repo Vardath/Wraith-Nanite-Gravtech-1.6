@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="LampBase">
+    <defName>WNG_WraithLumenOrgan</defName>
+    <label>wraith lumen organ</label>
+    <description>A translucent cultivated organ that converts bioelectric current into a soft, steady glow.</description>
+    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_LumenOrgan</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <costList><WNG_Biomass>12</WNG_Biomass></costList>
+    <statBases><MaxHitPoints>120</MaxHitPoints><Mass>4</Mass><Flammability>0.35</Flammability><Beauty>4</Beauty></statBases>
+    <uiOrder>2960</uiOrder>
+    <comps Inherit="False"><li Class="CompProperties_Flickable"/><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>15</basePowerConsumption></li><li Class="CompProperties_Glower"><glowRadius>12</glowRadius><glowColor>(118,166,124,0)</glowColor></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="LampBase">
+    <defName>WNG_PrecursorLumen</defName>
+    <label>precursor lumen</label>
+    <description>A compact field-driven light source embedded in a smooth geometric pedestal.</description>
+    <graphicData><texPath>Things/Building/Furniture/Precursor/WNG_Lumen</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <costList><Plasteel>6</Plasteel><Steel>8</Steel><ComponentIndustrial>1</ComponentIndustrial></costList>
+    <statBases><MaxHitPoints>140</MaxHitPoints><Mass>4</Mass><Flammability>0.05</Flammability><Beauty>7</Beauty></statBases>
+    <uiOrder>2961</uiOrder>
+    <comps Inherit="False"><li Class="CompProperties_Flickable"/><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>10</basePowerConsumption></li><li Class="CompProperties_Glower"><glowRadius>13</glowRadius><glowColor>(172,204,232,0)</glowColor><colorPickerEnabled>true</colorPickerEnabled></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="LampBase">
+    <defName>WNG_WraithWallLumen</defName>
+    <thingClass>Building</thingClass>
+    <label>wraith wall lumen</label>
+    <description>A flat luminous membrane grown against a wall and fed by the colony's power network.</description>
+    <rotatable>true</rotatable>
+    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_WallLumen</texPath><graphicClass>Graphic_Multi</graphicClass><drawOffsetNorth>(0,0,0.9)</drawOffsetNorth><drawOffsetSouth>(0,0,-0.9)</drawOffsetSouth><drawOffsetWest>(-0.9,0,0)</drawOffsetWest><drawOffsetEast>(0.9,0,0)</drawOffsetEast><damageData><enabled>false</enabled></damageData></graphicData>
+    <costList><WNG_Biomass>8</WNG_Biomass></costList>
+    <statBases><MaxHitPoints>80</MaxHitPoints><Mass>1.5</Mass><Flammability>0.35</Flammability><Beauty>3</Beauty></statBases>
+    <comps Inherit="False"><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>12</basePowerConsumption></li><li Class="CompProperties_Glower"><glowRadius>10</glowRadius><glowColor>(118,166,124,0)</glowColor></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="LampBase">
+    <defName>WNG_PrecursorWallLumen</defName>
+    <thingClass>Building</thingClass>
+    <label>precursor wall lumen</label>
+    <description>A nearly flush luminous strip that casts clean, even light from a wall surface.</description>
+    <rotatable>true</rotatable>
+    <graphicData><texPath>Things/Building/Furniture/Precursor/WNG_WallLumen</texPath><graphicClass>Graphic_Multi</graphicClass><drawOffsetNorth>(0,0,0.9)</drawOffsetNorth><drawOffsetSouth>(0,0,-0.9)</drawOffsetSouth><drawOffsetWest>(-0.9,0,0)</drawOffsetWest><drawOffsetEast>(0.9,0,0)</drawOffsetEast><damageData><enabled>false</enabled></damageData></graphicData>
+    <costList><Plasteel>4</Plasteel><Steel>6</Steel></costList>
+    <statBases><MaxHitPoints>100</MaxHitPoints><Mass>1.5</Mass><Flammability>0.05</Flammability><Beauty>5</Beauty></statBases>
+    <comps Inherit="False"><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>8</basePowerConsumption></li><li Class="CompProperties_Glower"><glowRadius>11</glowRadius><glowColor>(172,204,232,0)</glowColor><colorPickerEnabled>true</colorPickerEnabled></li></comps>
+  </ThingDef>
+</Defs>

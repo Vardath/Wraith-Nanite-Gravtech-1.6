@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Payload-free visual flyovers used only after a roofed Stargate ingress. The real craft is
+       created once at final landing by MapComponent_WNGStargateCraftIngress. -->
+  <ThingDef ParentName="ShuttleSkyfallerBase">
+    <defName>WNG_WraithDartGateFlyover</defName>
+    <label>Wraith Dart flyover</label>
+    <thingClass>WraithNaniteGravtech.Skyfaller_WNGCraftFlyover</thingClass>
+    <rotatable>true</rotatable>
+    <graphicData>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3,5)</drawSize>
+    </graphicData>
+    <size>(3,5)</size>
+    <skyfaller>
+      <reversed>true</reversed>
+      <anticipationSound>WNG_WraithDartDrive</anticipationSound>
+      <anticipationSoundTicks>-10</anticipationSoundTicks>
+      <ticksToImpactRange>-40~-15</ticksToImpactRange>
+      <ticksToDiscardInReverse>190~240</ticksToDiscardInReverse>
+      <shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow>
+      <shadowSize>(3.5,5.5)</shadowSize>
+      <rotationCurve><points><li>(0,0)</li><li>(0.15,8)</li><li>(0.5,-4)</li></points></rotationCurve>
+      <zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve>
+      <speedCurve><points><li>(0,0.45)</li><li>(0.4,1.15)</li></points></speedCurve>
+    </skyfaller>
+  </ThingDef>
+
+  <ThingDef ParentName="ShuttleSkyfallerBase">
+    <defName>WNG_PuddleJumperGateFlyover</defName>
+    <label>Puddle Jumper flyover</label>
+    <thingClass>WraithNaniteGravtech.Skyfaller_WNGCraftFlyover</thingClass>
+    <rotatable>true</rotatable>
+    <graphicData>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <texPath>Things/Building/Precursor/Shuttle/WNG_PuddleJumper</texPath>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(3,5)</drawSize>
+    </graphicData>
+    <size>(3,5)</size>
+    <skyfaller>
+      <reversed>true</reversed>
+      <anticipationSound>WNG_PrecursorGravThruster</anticipationSound>
+      <anticipationSoundTicks>-10</anticipationSoundTicks>
+      <ticksToImpactRange>-40~-15</ticksToImpactRange>
+      <ticksToDiscardInReverse>190~240</ticksToDiscardInReverse>
+      <shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow>
+      <shadowSize>(3.5,5.5)</shadowSize>
+      <rotationCurve><points><li>(0,0)</li><li>(0.15,7)</li><li>(0.5,-3)</li></points></rotationCurve>
+      <zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve>
+      <speedCurve><points><li>(0,0.5)</li><li>(0.4,1.2)</li></points></speedCurve>
+    </skyfaller>
+  </ThingDef>
+</Defs>

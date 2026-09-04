@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_WraithHiveDiscovery</defName>
+    <label>mature Wraith Hive discovered</label>
+    <category>ThreatBig</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_WraithHiveDiscovery</workerClass>
+    <baseChance>0.018</baseChance>
+    <earliestDay>45</earliestDay>
+    <letterLabel>Mature Wraith Hive located</letterLabel>
+    <letterText>Long-range traces have exposed a Queen-led Wraith Hive with feeding, cloning, dormancy and regenerative biological infrastructure.</letterText>
+    <letterDef>ThreatBig</letterDef>
+  </IncidentDef>
+</Defs>

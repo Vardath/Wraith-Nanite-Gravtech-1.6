@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_FabricateVacuumEnergyModule</defName>
+    <label>fabricate vacuum-energy containment module</label>
+    <description>Construct and charge one sealed vacuum-energy containment module around a gravcore-derived field seed. The process is extraordinarily material- and labor-intensive.</description>
+    <jobString>Fabricating vacuum-energy containment module.</jobString>
+    <workAmount>18000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <researchPrerequisite>WNG_VacuumEnergyContainment</researchPrerequisite>
+    <ingredients>
+      <li><filter><thingDefs><li>Gravcore</li></thingDefs></filter><count>1</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>80</count></li>
+      <li><filter><thingDefs><li>Uranium</li></thingDefs></filter><count>60</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>5</count></li>
+      <li><filter><thingDefs><li>GravlitePanel</li></thingDefs></filter><count>20</count></li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs><li>Gravcore</li><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li><li>GravlitePanel</li></thingDefs>
+    </fixedIngredientFilter>
+    <products><WNG_VacuumEnergyModule>1</WNG_VacuumEnergyModule></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+</Defs>

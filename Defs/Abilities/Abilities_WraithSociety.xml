@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef>
+    <defName>WNG_Hibernate</defName>
+    <label>enter hibernation</label>
+    <description>Collapse into a three-day metabolic hibernation. Life-force drain falls to two percent of normal, but movement, manipulation and awareness are nearly eliminated. Dedicated hibernation pods extend and manage this state automatically.</description>
+    <iconPath>UI/WNG/Hibernation</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>180000~180000</cooldownTicksRange>
+    <verbProperties><verbClass>Verb_CastAbility</verbClass><range>0</range><warmupTime>1</warmupTime><targetParams><canTargetSelf>true</canTargetSelf><canTargetPawns>false</canTargetPawns><canTargetBuildings>false</canTargetBuildings></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityCasterHediff"><hediffDef>WNG_WraithHibernating</hediffDef><severity>1</severity><refreshExisting>true</refreshExisting><sound>WNG_WraithHibernate</sound></li></comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_TelepathicProbe</defName>
+    <label>telepathic probe</label>
+    <description>Force contact with a biological target's surface thoughts. The mental intrusion leaves the victim disoriented and perceptually compromised for roughly a day.</description>
+    <iconPath>UI/WNG/TelepathicProbe</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <hostile>true</hostile><casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>30000~30000</cooldownTicksRange>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>2</warmupTime><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityApplyWraithHediff"><hediffDef>WNG_TelepathicallyProbed</hediffDef><severity>1</severity><requireBiological>true</requireBiological><requireDowned>false</requireDowned><sound>WNG_WraithTelepathicProbe</sound></li></comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_CaptiveExperiment</defName>
+    <label>invasive captive experiment</label>
+    <description>Subject a biological prisoner held by the caster's faction to a controlled Wraith examination. The victim becomes an experiment subject and suffers lingering neurological disruption, while the Wraith gains a one-day burst of biological research insight. This does not enthrall or change faction ownership.</description>
+    <iconPath>UI/WNG/CaptiveExperiment</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <hostile>true</hostile><casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>120000~120000</cooldownTicksRange>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>3</warmupTime><stunTargetOnCastStart>true</stunTargetOnCastStart><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityApplyWraithHediff"><hediffDef>WNG_WraithExperimentSubject</hediffDef><severity>1</severity><requireBiological>true</requireBiological><requireDowned>false</requireDowned><requirePrisonerOfCaster>true</requirePrisonerOfCaster><sound>WNG_WraithTelepathicProbe</sound></li>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityCasterHediff"><hediffDef>WNG_WraithExperimentalInsight</hediffDef><severity>1</severity><refreshExisting>true</refreshExisting></li>
+    </comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_Hallucination</defName>
+    <label>induce hallucination</label>
+    <description>Project a vivid false perception into a biological target. For several hours the victim's movement, sight and conscious processing are impaired.</description>
+    <iconPath>UI/WNG/Hallucination</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <hostile>true</hostile><casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>60000~60000</cooldownTicksRange>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>1.5</warmupTime><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityApplyWraithHediff"><hediffDef>WNG_WraithHallucination</hediffDef><severity>1</severity><requireBiological>true</requireBiological><requireDowned>false</requireDowned><sound>WNG_WraithHallucination</sound></li></comps>
+  </AbilityDef>
+
+  <AbilityDef>
+    <defName>WNG_HiveSense</defName>
+    <label>focus hive sense</label>
+    <description>Briefly intensify the Wraith's telepathic awareness, sharpening sight, hearing and conscious processing for six in-game hours.</description>
+    <iconPath>UI/WNG/HiveSense</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>30000~30000</cooldownTicksRange>
+    <verbProperties><verbClass>Verb_CastAbility</verbClass><range>0</range><warmupTime>0.5</warmupTime><targetParams><canTargetSelf>true</canTargetSelf><canTargetPawns>false</canTargetPawns><canTargetBuildings>false</canTargetBuildings></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityCasterHediff"><hediffDef>WNG_HiveSenseFocused</hediffDef><severity>1</severity><refreshExisting>true</refreshExisting><sound>WNG_WraithHiveSense</sound></li></comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_ReturnLife</defName>
+    <label>return life</label>
+    <description>An exceptional Wraith reverses the feeding process and returns a large portion of its stored vitality to another living biological humanlike. The recipient recovers up to 10 biological years and loses the temporary Life Drained state. The Wraith spends two thirds of a full life-force reserve and cannot repeat the act for ten days. This cannot resurrect the dead or repair arbitrary injuries.</description>
+    <iconPath>UI/WNG/LifeRestore</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <hostile>false</hostile><casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>600000~600000</cooldownTicksRange>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>3</warmupTime><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityReturnLife"><lifeForceCost>0.66</lifeForceCost><restoredAgeYears>10</restoredAgeYears><minimumTargetAgeYears>18</minimumTargetAgeYears><removeHediffDefName>WNG_LifeDrained</removeHediffDefName><sound>WNG_WraithReturnLife</sound></li></comps>
+  </AbilityDef>
+</Defs>

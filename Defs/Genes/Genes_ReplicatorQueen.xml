@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_ReplicatorQueenLink</defName>
+    <label>sovereign replicator lattice</label>
+    <description>A unique coordination architecture distributed through this child's nanites. Other Replicators recognize the pattern as a sovereign command root. Nearby same-faction block Replicators remain stable without mechanitor oversight, and the bearer can impose a deliberate directive on individual block or human-form Replicators.</description>
+    <geneClass>Gene</geneClass>
+    <iconPath>UI/WNG/ReplicatorQueen</iconPath>
+    <displayCategory>Miscellaneous</displayCategory>
+    <displayOrderInCategory>580</displayOrderInCategory>
+    <abilities><li>WNG_ReplicatorDirective</li></abilities>
+  </GeneDef>
+</Defs>

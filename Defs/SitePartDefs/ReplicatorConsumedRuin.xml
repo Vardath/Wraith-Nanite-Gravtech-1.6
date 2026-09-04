@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_ReplicatorConsumedRuin</defName>
+    <label>replicator-consumed ruins</label>
+    <description>The stripped remains of a once-technological site after a Replicator swarm passed through it. Structural ribs terminate abruptly, machines have been hollowed out and standardized blocks of dormant Replicator Matter remain where the swarm left excess mass behind.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_ReplicatorConsumedRuin</workerClass>
+    <siteTexture>World/WNG_ReplicatorConsumedRuin</siteTexture>
+    <expandingIconTexture>World/WNG_ReplicatorConsumedRuin</expandingIconTexture>
+    <applyFactionColorToSiteTexture>false</applyFactionColorToSiteTexture>
+    <showFactionInInspectString>false</showFactionInInspectString>
+    <requiresFaction>false</requiresFaction>
+    <approachOrderString>Approach {0}</approachOrderString>
+    <approachingReportString>Approaching {0}</approachingReportString>
+    <arrivedLetterLabelPart>Replicator-consumed ruins</arrivedLetterLabelPart>
+    <arrivedLetter>You have reached the consumed ruins. Nothing is attacking immediately. What remains is worse in a different way: architecture has been eaten into regular block-sized gaps, machinery is little more than shell and several clusters of dormant Replicator Matter lie among the debris. Uncontained Matter follows its normal half-day dormancy before reassembly risk begins, so extraction or containment should be planned before lingering.</arrivedLetter>
+    <arrivedLetterDef>ThreatSmall</arrivedLetterDef>
+    <wantsThreatPoints>false</wantsThreatPoints>
+    <badEvenIfNoMap>false</badEvenIfNoMap>
+    <forceExitAndRemoveMapCountdownDurationDays>5</forceExitAndRemoveMapCountdownDurationDays>
+    <considerEnteringAsAttack>false</considerEnteringAsAttack>
+    <mainPartAllThreatsLabel>dormant replicator substrate</mainPartAllThreatsLabel>
+    <minMapSize>(180,1,180)</minMapSize>
+    <gravShipsCanLandOn>true</gravShipsCanLandOn>
+  </SitePartDef>
+</Defs>

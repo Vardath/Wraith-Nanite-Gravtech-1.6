@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>WNG_RecoveredPrecursorPulseRifle</defName>
+    <label>recovered precursor pulse rifle</label>
+    <description>An original Asuran field rifle recovered from a dormant installation. Its emitter still functions, but centuries of lattice drift have left the self-aligning geometry unstable. Each specimen retains its own field-alignment state: poorer alignment and physical damage increase the chance that a discharge collapses harmlessly instead of firing. A recovered specimen can be analyzed before the colony reconstructs stable Asuran field technology.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Item/Weapon/Precursor/WNG_PrecursorPulseRifle</texPath><graphicClass>Graphic_Single</graphicClass><color>(0.68,0.76,0.78)</color></graphicData>
+    <statBases><MaxHitPoints>220</MaxHitPoints><MarketValue>1100</MarketValue><Mass>4.1</Mass><AccuracyTouch>0.62</AccuracyTouch><AccuracyShort>0.80</AccuracyShort><AccuracyMedium>0.76</AccuracyMedium><AccuracyLong>0.66</AccuracyLong><RangedWeapon_Cooldown>1.9</RangedWeapon_Cooldown></statBases>
+    <tradeability>Sellable</tradeability>
+    <weaponClasses><li>RangedLight</li></weaponClasses>
+    <recipeMaker IsNull="True" />
+    <smeltable>false</smeltable>
+    <comps>
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>860102</analysisID><analysisRequiredRange>1~1</analysisRequiredRange><analysisDurationHours>3</analysisDurationHours><destroyedOnAnalyzed>false</destroyedOnAnalyzed><allowRepeatAnalysis>false</allowRepeatAnalysis><canStudyInPlace>false</canStudyInPlace>
+        <activateTexPath>UI/WNG/Nanite</activateTexPath><activateLabelString>Analyze recovered Asuran field rifle</activateLabelString><activateDescString>Assign a researcher to map the surviving field geometry and degraded self-alignment lattice at a research bench.</activateDescString><jobString>analyzing recovered Asuran field rifle</jobString>
+        <completedLetterLabel>Recovered Asuran field technology analyzed</completedLetterLabel><completedLetter>The recovered rifle's surviving emitter geometry and nanite-maintained control lattice have yielded enough information to begin systematic nanite analysis. Its original field alignment remains too unstable to reproduce directly without later reconstruction.</completedLetter><completedLetterDef>PositiveEvent</completedLetterDef>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_RecoveredPrecursorEquipment">
+        <fieldAlignmentRange>0.58~0.88</fieldAlignmentRange>
+        <baseFaultChance>0.025</baseFaultChance>
+        <alignmentFaultScale>0.25</alignmentFaultScale>
+        <damageFaultScale>0.12</damageFaultScale>
+        <maximumFaultChance>0.28</maximumFaultChance>
+        <wearPerFault>3</wearPerFault>
+      </li>
+    </comps>
+    <verbs><li><verbClass>WraithNaniteGravtech.Verb_Shoot_RecoveredPrecursor</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ProjectilePrecursorPulse</defaultProjectile><warmupTime>0.85</warmupTime><range>30.9</range><ticksBetweenBurstShots>10</ticksBetweenBurstShots><burstShotCount>3</burstShotCount><soundCast>WNG_PrecursorPulseRifle_Fire</soundCast><soundCastTail>GunTail_Medium</soundCastTail></li></verbs>
+  </ThingDef>
+</Defs>

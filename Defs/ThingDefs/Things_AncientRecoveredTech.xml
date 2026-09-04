@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_RecoveredAncientDrone</defName>
+    <label>fractured Ancient drone core</label>
+    <description>The damaged core of an original precursor drone recovered from archaeological ruins. Guidance memory, neural-link architecture and control handshakes survive, but the propulsion and warhead systems are physically unsafe and cannot be loaded into an Ancient control chair. Analysis can reveal enough of the original design to reconstruct stable new drones later.</description>
+    <graphicData>
+      <texPath>Things/Item/Weapon/Precursor/WNG_RecoveredAncientDrone</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.9,0.9)</drawSize>
+    </graphicData>
+    <thingCategories><li>Manufactured</li></thingCategories>
+    <stackLimit>1</stackLimit>
+    <statBases><MaxHitPoints>120</MaxHitPoints><MarketValue>380</MarketValue><Mass>4.2</Mass><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate></statBases>
+    <tradeability>None</tradeability><alwaysHaulable>true</alwaysHaulable><drawGUIOverlay>false</drawGUIOverlay>
+    <comps>
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>860104</analysisID><analysisRequiredRange>1~1</analysisRequiredRange><analysisDurationHours>4</analysisDurationHours><destroyedOnAnalyzed>false</destroyedOnAnalyzed><allowRepeatAnalysis>false</allowRepeatAnalysis><canStudyInPlace>false</canStudyInPlace>
+        <activateTexPath>UI/WNG/RecoveredAncientDrone</activateTexPath><activateLabelString>Analyze fractured Ancient drone</activateLabelString><activateDescString>Assign a researcher to map the surviving guidance, neural-link and control architecture in this damaged original drone core.</activateDescString><jobString>analyzing fractured Ancient drone</jobString>
+        <completedLetterLabel>Ancient drone architecture recovered</completedLetterLabel><completedLetter>The fractured drone core's surviving guidance memory and neural-control geometry have been mapped. The original weapon remains unusable, but its architecture can now support formal reconstruction research.</completedLetter><completedLetterDef>PositiveEvent</completedLetterDef>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_RecoveredVacuumEnergyModule</defName>
+    <label>degraded vacuum containment shell</label>
+    <description>A damaged original precursor containment lattice recovered from archaeology. Its metastable energy pocket has collapsed and several field vanes are fractured, so it cannot fuel a vacuum-energy tap. The surviving geometry is still valuable evidence: careful analysis can reveal how a fresh sealed containment module might be reconstructed safely.</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/Precursor/WNG_RecoveredVacuumEnergyModule</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.85,0.85)</drawSize>
+    </graphicData>
+    <thingCategories><li>Manufactured</li></thingCategories>
+    <stackLimit>1</stackLimit>
+    <statBases><MaxHitPoints>140</MaxHitPoints><MarketValue>1600</MarketValue><Mass>7.2</Mass><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate></statBases>
+    <tradeability>None</tradeability><alwaysHaulable>true</alwaysHaulable><drawGUIOverlay>false</drawGUIOverlay>
+    <comps>
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>860105</analysisID><analysisRequiredRange>1~1</analysisRequiredRange><analysisDurationHours>6</analysisDurationHours><destroyedOnAnalyzed>false</destroyedOnAnalyzed><allowRepeatAnalysis>false</allowRepeatAnalysis><canStudyInPlace>false</canStudyInPlace>
+        <activateTexPath>UI/WNG/RecoveredVacuumModule</activateTexPath><activateLabelString>Analyze degraded containment shell</activateLabelString><activateDescString>Assign a researcher to map the surviving precursor containment geometry without pretending the collapsed shell is still a usable power module.</activateDescString><jobString>analyzing degraded vacuum containment</jobString>
+        <completedLetterLabel>Vacuum containment geometry recovered</completedLetterLabel><completedLetter>The damaged shell's surviving field geometry has been mapped. The archaeological original remains inert, but the recovered relationships are sufficient to investigate construction of fresh sealed vacuum-energy modules.</completedLetter><completedLetterDef>PositiveEvent</completedLetterDef>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

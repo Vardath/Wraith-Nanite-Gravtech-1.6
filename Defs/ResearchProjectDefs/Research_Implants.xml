@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>WNG_WraithAugmentation</defName>
+    <label>wraith biological augmentation</label>
+    <description>Grow stable symbiotic organs that can be surgically integrated into ordinary humanlike bodies. These modifications borrow from Wraith reflexes, metabolism and regeneration without turning the recipient into a Wraith.</description>
+    <baseCost>3000</baseCost><techLevel>Spacer</techLevel><researchViewX>15.2</researchViewX><researchViewY>6.2</researchViewY>
+    <prerequisites><li>WNG_AdvancedCarapace</li><li>WNG_FeedingResistance</li></prerequisites>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>WNG_AsuranAugmentation</defName>
+    <label>Asuran augmentation lattices</label>
+    <description>Miniaturise Asuran motor, sensor, autonomic and repair systems into surgically implantable lattices suitable for ordinary humanlike bodies.</description>
+    <baseCost>3200</baseCost><techLevel>Spacer</techLevel><researchViewX>14.2</researchViewX><researchViewY>9.2</researchViewY>
+    <prerequisites><li>WNG_PrecursorFabrication</li><li>WNG_AsuranCollectiveSystems</li></prerequisites>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>WNG_SovereignAugmentation</defName>
+    <label>sovereign neural augmentation</label>
+    <description>Combine Asuran neural architecture, recovered Ancient command theory and Replicator suppression research into a rare implantable command lattice. The result can interface with Ancient control chairs and issue bounded one-target Replicator directives, but it does not reproduce a true Replicator Queen.</description>
+    <baseCost>6500</baseCost><techLevel>Ultra</techLevel><researchViewX>18.4</researchViewX><researchViewY>11.7</researchViewY>
+    <prerequisites><li>WNG_AsuranAugmentation</li><li>WNG_AncientDroneControl</li><li>WNG_AdvancedNaniteSuppression</li></prerequisites>
+  </ResearchProjectDef>
+</Defs>

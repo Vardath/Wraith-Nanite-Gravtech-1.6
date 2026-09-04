@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_ReplicatorTitan']/comps</xpath>
+    <value>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSiegeFormation">
+        <swarmThreshold>48</swarmThreshold>
+        <titansRequired>2</titansRequired>
+        <formationRadius>12</formationRadius>
+        <checkIntervalTicks>1800</checkIntervalTicks>
+      </li>
+    </value>
+  </Operation>
+</Patch>

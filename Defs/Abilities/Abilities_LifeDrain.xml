@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_LifeDrain</defName>
+    <label>drain life</label>
+    <description>Seize a living biological target and violently strip away decades of vitality. A full feeding adds 50 biological years to the victim, de-ages the Wraith by 5 years down to a minimum biological age of 18, completely renews life force, yields 8 units of cultured biomass for the Hive economy, and leaves a temporary life-drained state. Feeding again from a still-drained victim is fatal.</description>
+    <iconPath>UI/WNG/LifeDrain</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>2500~2500</cooldownTicksRange>
+    <hostile>true</hostile><casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>2</warmupTime><stunTargetOnCastStart>true</stunTargetOnCastStart><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityLifeDrain"><victimAgeYears>50</victimAgeYears><casterRejuvenationYears>5</casterRejuvenationYears><minimumCasterAgeYears>18</minimumCasterAgeYears><lifeForceGain>1</lifeForceGain><biomassYield>8</biomassYield><killIfAlreadyDrained>true</killIfAlreadyDrained><addLifeDrainedHediff>true</addLifeDrainedHediff><addFedRecentlyHediff>true</addFedRecentlyHediff><sound>WNG_WraithLifeDrain</sound></li></comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_PartialFeed</defName>
+    <label>partial feed</label>
+    <description>Take only part of a victim's vitality. The target survives the feeding, ages by 10 biological years and is left temporarily weakened. The Wraith gains one third of its life-force reserve, de-ages by 1 year down to biological age 18, and yields 2 units of cultured biomass. Partial feeding can be repeated without the automatic fatal exhaustion of a full second drain.</description>
+    <iconPath>UI/WNG/PartialFeed</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>1500~1500</cooldownTicksRange>
+    <hostile>true</hostile><casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>1.25</warmupTime><stunTargetOnCastStart>true</stunTargetOnCastStart><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityLifeDrain"><victimAgeYears>10</victimAgeYears><casterRejuvenationYears>1</casterRejuvenationYears><minimumCasterAgeYears>18</minimumCasterAgeYears><lifeForceGain>0.34</lifeForceGain><biomassYield>2</biomassYield><killIfAlreadyDrained>false</killIfAlreadyDrained><addLifeDrainedHediff>true</addLifeDrainedHediff><addFedRecentlyHediff>true</addFedRecentlyHediff><sound>WNG_WraithPartialFeed</sound></li></comps>
+  </AbilityDef>
+</Defs>

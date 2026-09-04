@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="WNG_AsuranPatternArchive"]/comps</xpath>
+        <value>
+          <li Class="WraithNaniteGravtech.CompProperties_AsuranTechnologyPatternLibrary">
+            <scanRadius>8</scanRadius>
+            <scanWorkTicks>30000</scanWorkTicks>
+          </li>
+        </value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="WNG_AsuranPatternArchive"]/description</xpath>
+        <value><description>A powered collective relay, continuity repository and technology-pattern library. It periodically records linked human-form nanite identities for reconstruction, while a player archive can non-destructively scan supported nearby technology specimens and retain learned fabrication patterns. A powered archive also extends Asuran collective coordination and structure self-repair across nearby systems.</description></value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

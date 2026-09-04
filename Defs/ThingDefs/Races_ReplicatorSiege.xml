@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="WNG_ReplicatorRaceBase">
+    <defName>WNG_ReplicatorSiegeMass</defName>
+    <label>replicator siege mass</label>
+    <description>A huge late-stage machine ecosystem assembled from multiple siege titans under active swarm coordination. It is not a new base rung: it is a temporary concentration of an already mature infestation, built to devour large amounts of matter and survive through staged breakup. Destroying one releases two operational siege titans, which can themselves break down through the ordinary Replicator hierarchy.</description>
+    <statBases>
+      <MarketValue>19000</MarketValue>
+      <MoveSpeed>1.85</MoveSpeed>
+      <ArmorRating_Blunt>0.58</ArmorRating_Blunt>
+      <ArmorRating_Sharp>0.72</ArmorRating_Sharp>
+      <ArmorRating_Heat>0.48</ArmorRating_Heat>
+      <MechEnergyLossPerHP>0.34</MechEnergyLossPerHP>
+    </statBases>
+    <race>
+      <baseBodySize>3.8</baseBodySize>
+      <mechWeightClass>Heavy</mechWeightClass>
+    </race>
+    <tools Inherit="False">
+      <li>
+        <label>devouring ram</label>
+        <capacities><li>Blunt</li><li>Cut</li></capacities>
+        <power>48</power>
+        <cooldownTime>3.2</cooldownTime>
+      </li>
+    </tools>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy">
+        <splitChildPawnKind>WNG_ReplicatorTitan</splitChildPawnKind>
+        <splitCount>2</splitCount>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorRegeneration">
+        <intervalTicks>550</intervalTicks>
+        <healAmount>0.32</healAmount>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage">
+        <minMatter>34</minMatter>
+        <maxMatter>52</maxMatter>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <PawnKindDef ParentName="WNG_ReplicatorKindBase">
+    <defName>WNG_ReplicatorSiegeMass</defName>
+    <label>replicator siege mass</label>
+    <race>WNG_ReplicatorSiegeMass</race>
+    <combatPower>980</combatPower>
+    <lifeStages>
+      <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Replicator/WNG_ReplicatorSiegeMass</texPath>
+          <shaderType>Cutout</shaderType>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <drawSize>3.5</drawSize>
+          <shadowData><volume>(1.4,0.45,1.4)</volume></shadowData>
+        </bodyGraphicData>
+      </li>
+      <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Replicator/WNG_ReplicatorSiegeMass</texPath>
+          <shaderType>Cutout</shaderType>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <drawSize>3.5</drawSize>
+          <shadowData><volume>(1.4,0.45,1.4)</volume></shadowData>
+        </bodyGraphicData>
+      </li>
+    </lifeStages>
+  </PawnKindDef>
+</Defs>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_WraithRuinedLaboratoryDiscovery</defName>
+    <label>ruined wraith laboratory discovered</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_WraithRuinedLaboratoryDiscovery</workerClass>
+    <baseChance>0.014</baseChance>
+    <earliestDay>20</earliestDay>
+    <letterLabel>Ruined Wraith laboratory located</letterLabel>
+    <letterText>Long-range biological traces have exposed an abandoned Wraith laboratory. Its major life-support systems appear dead, but surviving specimens and cultured biomass may still be recoverable. Treat this as an early glimpse of Wraith biology rather than functioning production technology. Predatory Wraith are also known to scavenge such sites, so secure the ruin before harvesting what remains.</letterText>
+    <letterDef>NeutralEvent</letterDef>
+  </IncidentDef>
+</Defs>

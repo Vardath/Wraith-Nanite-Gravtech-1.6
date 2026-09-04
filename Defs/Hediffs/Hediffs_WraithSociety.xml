@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_WraithHibernating</defName>
+    <label>wraith hibernation</label>
+    <description>The Wraith has deliberately collapsed its metabolism into a deep survival state. Life-force consumption is reduced to two percent of normal and regeneration nearly stops until the hibernation cycle ends.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>180000~180000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><setMax>0.08</setMax></li>
+          <li><capacity>Manipulation</capacity><setMax>0.08</setMax></li>
+          <li><capacity>Consciousness</capacity><setMax>0.18</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithFeedingStock</defName>
+    <label>wraith feeding stock</label>
+    <description>The Wraith have classified this captive as a renewable feeding reserve. They are deliberately keeping the subject alive between controlled feeding cycles rather than consuming them immediately.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>90000~90000</disappearsAfterTicks></li>
+    </comps>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithExperimentSubject</defName>
+    <label>wraith experiment subject</label>
+    <description>Repeated Wraith examinations and invasive biological testing have left lingering neurological and motor disruption. The subject is being studied as well as fed upon.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>180000~180000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <statOffsets>
+          <PsychicSensitivity>0.15</PsychicSensitivity>
+        </statOffsets>
+        <capMods>
+          <li><capacity>Manipulation</capacity><offset>-0.08</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.04</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithConditionedCaptive</defName>
+    <label>wraith-conditioned captive</label>
+    <description>Prolonged psychic pressure has begun to erode the captive's independent responses. The conditioning is not yet full enthrallment, but the target has become unusually receptive to Wraith influence.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>300000~300000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <statOffsets>
+          <MentalBreakThreshold>-0.10</MentalBreakThreshold>
+          <PsychicSensitivity>0.30</PsychicSensitivity>
+        </statOffsets>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.06</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithExperimentalInsight</defName>
+    <label>wraith experimental insight</label>
+    <description>Fresh observations from a living captive have sharpened this Wraith's understanding of biological systems. Research work is temporarily accelerated while the observations remain vivid.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60000~60000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <statOffsets>
+          <ResearchSpeed>0.20</ResearchSpeed>
+        </statOffsets>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_TelepathicallyProbed</defName>
+    <label>telepathically probed</label>
+    <description>A Wraith has forced its way into this pawn's surface thoughts. The lingering intrusion disrupts concentration, awareness and resistance to further psychological pressure.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>45000~75000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.08</offset></li>
+          <li><capacity>Sight</capacity><offset>-0.06</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithHallucination</defName>
+    <label>wraith hallucinations</label>
+    <description>The target's senses are being flooded with a Wraith-generated false perception. Movement, sight and conscious processing are impaired until the psychic imprint fades.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>12000~24000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>-0.12</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.12</offset></li>
+          <li><capacity>Sight</capacity><offset>-0.18</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_HiveSenseFocused</defName>
+    <label>hive sense focus</label>
+    <description>The Wraith is actively extending its awareness through nearby minds and biological signals, sharpening perception at the cost of divided attention.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>15000~15000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Sight</capacity><offset>0.10</offset></li>
+          <li><capacity>Hearing</capacity><offset>0.10</offset></li>
+          <li><capacity>Consciousness</capacity><offset>0.04</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_QueenAuthority</defName>
+    <label>queen's hive authority</label>
+    <description>A living Wraith Queen is actively coordinating this pawn through the local hive network. Shared intent sharpens movement, manipulation and conscious response.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>0.04</offset></li>
+          <li><capacity>Manipulation</capacity><offset>0.05</offset></li>
+          <li><capacity>Consciousness</capacity><offset>0.04</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_RegentAuthority</defName>
+    <label>provisional hive coordination</label>
+    <description>An acting Wraith regent is holding the local hive network together after the loss of its Queen. Coordination has returned, but it is weaker and less instinctive than true Queen authority.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>0.02</offset></li>
+          <li><capacity>Manipulation</capacity><offset>0.025</offset></li>
+          <li><capacity>Consciousness</capacity><offset>0.02</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_QueenlessDisruption</defName>
+    <label>queenless hive disruption</label>
+    <description>The local Wraith hive has lost its Queen and has not yet resolved succession. Telepathic command fragments into competing impulses, impairing coordination and conscious response.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>-0.06</offset></li>
+          <li><capacity>Manipulation</capacity><offset>-0.08</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.08</offset></li>
+          <li><capacity>Sight</capacity><offset>-0.04</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_ActingHiveRegent</defName>
+    <label>acting hive regent</label>
+    <description>This Wraith has assumed provisional authority after the death of a Queen. The role can restore basic hive coordination, but it does not equal the biological and psychic authority of a true Queen.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+  </HediffDef>
+</Defs>

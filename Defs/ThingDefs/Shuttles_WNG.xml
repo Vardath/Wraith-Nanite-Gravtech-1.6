@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Dedicated flight wrappers keep each craft's WNG art/identity through takeoff, world travel and landing. -->
+  <ThingDef ParentName="ShuttleSkyfallerBase">
+    <defName>WNG_WraithDartIncoming</defName>
+    <label>Wraith Dart (incoming)</label>
+    <thingClass>PassengerShuttleIncoming</thingClass>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize></graphicData>
+    <size>(3,5)</size>
+    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(3.5,5.5)</shadowSize><rotationCurve><points><li>(0,30)</li><li>(0.5,5)</li><li>(0.9,-5)</li><li>(0.95,0)</li></points></rotationCurve><zPositionCurve><points><li>(0.95,2.5)</li><li>(1,0)</li></points></zPositionCurve><speedCurve><points><li>(0.6,0.6)</li><li>(0.95,0.1)</li></points></speedCurve></skyfaller>
+  </ThingDef>
+  <ThingDef ParentName="ShuttleSkyfallerBase">
+    <defName>WNG_WraithDartLeaving</defName>
+    <label>Wraith Dart (leaving)</label>
+    <thingClass>PassengerShuttleLeaving</thingClass><rotatable>true</rotatable>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize></graphicData>
+    <size>(3,5)</size>
+    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><moteSpawnTime>0.05</moteSpawnTime><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(3.5,5.5)</shadowSize><motesPerCell>1</motesPerCell><rotationCurve><points><li>(0,0)</li><li>(0.15,10)</li><li>(0.5,-5)</li></points></rotationCurve><zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve><speedCurve><points><li>(0,0.2)</li><li>(0.4,0.7)</li></points></speedCurve></skyfaller>
+  </ThingDef>
+
+  <ThingDef ParentName="ShuttleSkyfallerBase">
+    <defName>WNG_PuddleJumperIncoming</defName>
+    <label>Puddle Jumper (incoming)</label>
+    <thingClass>PassengerShuttleIncoming</thingClass>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Shuttle/WNG_PuddleJumper</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize></graphicData>
+    <size>(3,5)</size>
+    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(3.5,5.5)</shadowSize><rotationCurve><points><li>(0,30)</li><li>(0.5,5)</li><li>(0.9,-5)</li><li>(0.95,0)</li></points></rotationCurve><zPositionCurve><points><li>(0.95,2.5)</li><li>(1,0)</li></points></zPositionCurve><speedCurve><points><li>(0.6,0.6)</li><li>(0.95,0.1)</li></points></speedCurve></skyfaller>
+  </ThingDef>
+  <ThingDef ParentName="ShuttleSkyfallerBase">
+    <defName>WNG_PuddleJumperLeaving</defName>
+    <label>Puddle Jumper (leaving)</label>
+    <thingClass>PassengerShuttleLeaving</thingClass><rotatable>true</rotatable>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Shuttle/WNG_PuddleJumper</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize></graphicData>
+    <size>(3,5)</size>
+    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><moteSpawnTime>0.05</moteSpawnTime><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(3.5,5.5)</shadowSize><motesPerCell>1</motesPerCell><rotationCurve><points><li>(0,0)</li><li>(0.15,10)</li><li>(0.5,-5)</li></points></rotationCurve><zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve><speedCurve><points><li>(0,0.2)</li><li>(0.4,0.7)</li></points></speedCurve></skyfaller>
+  </ThingDef>
+
+  <WorldObjectDef ParentName="ShuttleWorldObjectBase">
+    <defName>WNG_WraithDartWorld</defName><label>Wraith Dart</label><description>A Wraith Dart in flight.</description>
+    <expandingIconTexture>UI/WNG/Build/WNG_WraithDart</expandingIconTexture><expandingIconDrawSize>1</expandingIconDrawSize>
+  </WorldObjectDef>
+  <WorldObjectDef ParentName="ShuttleWorldObjectBase">
+    <defName>WNG_PuddleJumperWorld</defName><label>Puddle Jumper</label><description>A Puddle Jumper in flight.</description>
+    <expandingIconTexture>UI/WNG/Build/WNG_PuddleJumper</expandingIconTexture><expandingIconDrawSize>1</expandingIconDrawSize>
+  </WorldObjectDef>
+
+  <TransportShipDef>
+    <defName>WNG_Ship_WraithDart</defName><label>Wraith Dart</label><shipThing>WNG_WraithDart</shipThing>
+    <arrivingSkyfaller>WNG_WraithDartIncoming</arrivingSkyfaller><leavingSkyfaller>WNG_WraithDartLeaving</leavingSkyfaller><worldObject>WNG_WraithDartWorld</worldObject><maxLaunchDistance>78</maxLaunchDistance>
+  </TransportShipDef>
+  <TransportShipDef>
+    <defName>WNG_Ship_PuddleJumper</defName><label>Puddle Jumper</label><shipThing>WNG_PuddleJumper</shipThing>
+    <arrivingSkyfaller>WNG_PuddleJumperIncoming</arrivingSkyfaller><leavingSkyfaller>WNG_PuddleJumperLeaving</leavingSkyfaller><worldObject>WNG_PuddleJumperWorld</worldObject><maxLaunchDistance>95</maxLaunchDistance>
+  </TransportShipDef>
+
+  <!-- These are shuttlecraft, not gravships. They use Odyssey's shuttle machinery but retain dedicated WNG visual wrappers. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_WraithDart</defName>
+    <label>Wraith Dart</label>
+    <description>A compact Wraith attack and transport shuttle grown around a living gravitic drive. It uses Odyssey shuttle flight mechanics while retaining its own Wraith form during takeoff, travel and landing.</description>
+    <thingClass>Building_PassengerShuttle</thingClass>
+    <preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>50</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.5</fillPercent>
+    <size>(3,5)</size><drawHighlight>true</drawHighlight><highlightColor>(0.25,0.75,0.62)</highlightColor><uiIconScale>1</uiIconScale>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize><shadowData><volume>(1.8,1.0,4.1)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
+    <statBases><MaxHitPoints>760</MaxHitPoints><Flammability>0.12</Flammability><WorkToBuild>38000</WorkToBuild><Mass>90</Mass><Comfort>0.58</Comfort></statBases>
+    <tickerType>Normal</tickerType><designationCategory>WNG_Architect</designationCategory><constructionSkillPrerequisite>7</constructionSkillPrerequisite>
+    <costList><WNG_Biomass>220</WNG_Biomass><GravlitePanel>40</GravlitePanel><ComponentIndustrial>4</ComponentIndustrial><ShuttleEngine>1</ShuttleEngine></costList>
+    <canOverlapZones>true</canOverlapZones><rotatable>true</rotatable><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(2,0,0)</interactionCellOffset><defaultPlacingRot>East</defaultPlacingRot><selectable>true</selectable><terrainAffordanceNeeded>Light</terrainAffordanceNeeded><soundImpactDefault>BulletImpact_Metal</soundImpactDefault><preventSkyfallersLandingOn>true</preventSkyfallersLandingOn><drawerType>RealtimeOnly</drawerType><repairEffect>ConstructDirt</repairEffect><forceDebugSpawnable>true</forceDebugSpawnable>
+    <building><claimable>false</claimable><destroySound>BuildingDestroyed_Wood_Big</destroySound><paintable>false</paintable><isInert>true</isInert><forcedCostLeavings><li MayRequire="Ludeon.RimWorld.Odyssey">ShuttleEngine</li></forcedCostLeavings></building>
+    <inspectorTabs><li>ITab_ContentsTransporter</li></inspectorTabs>
+    <researchPrerequisites><li>Shuttles</li><li>WNG_OrganicFlight</li></researchPrerequisites>
+    <comps>
+      <li Class="CompProperties_Shuttle"><shipDef>WNG_Ship_WraithDart</shipDef></li>
+      <li Class="CompProperties_Launchable"><fuelPerTile>2.4</fuelPerTile><minFuelCost>35</minFuelCost><skyfallerLeaving>WNG_WraithDartLeaving</skyfallerLeaving><worldObjectDef>WNG_WraithDartWorld</worldObjectDef><cooldownTicks>3000</cooldownTicks><fixedLaunchDistanceMax>78</fixedLaunchDistanceMax><cooldownEndedMessage>{0} is ready to launch again.</cooldownEndedMessage></li>
+      <li Class="CompProperties_Transporter"><massCapacity>320</massCapacity><max1PerGroup>true</max1PerGroup><canChangeAssignedThingsAfterStarting>true</canChangeAssignedThingsAfterStarting><pawnLoadedSound>Shuttle_PawnLoaded</pawnLoadedSound><pawnExitSound>Shuttle_PawnExit</pawnExitSound><showMassInInspectString>true</showMassInInspectString></li>
+      <li Class="CompProperties_Refuelable"><fuelCapacity>300</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>300</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>Chemfuel</li></thingDefs></fuelFilter><fuelLabel>Chemfuel</fuelLabel><fuelGizmoLabel>Chemfuel</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay><showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle><canEjectFuel>true</canEjectFuel></li>
+      <li Class="CompProperties_AmbientSound"><sound>ShuttleIdle_Ambience</sound></li>
+    </comps>
+    <placeWorkers><li>PlaceWorker_NotUnderRoof</li></placeWorkers><uiOrder>2601</uiOrder>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_PuddleJumper</defName>
+    <label>Puddle Jumper</label>
+    <description>An Asuran-designed compact transport shuttle with highly efficient field propulsion and generous internal capacity. It uses Odyssey shuttle flight mechanics while retaining its own form during takeoff, travel and landing.</description>
+    <thingClass>Building_PassengerShuttle</thingClass>
+    <preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>50</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.5</fillPercent>
+    <size>(3,5)</size><drawHighlight>true</drawHighlight><highlightColor>(0.48,0.82,0.95)</highlightColor><uiIconScale>1</uiIconScale>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Shuttle/WNG_PuddleJumper</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize><shadowData><volume>(1.8,1.0,4.1)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
+    <statBases><MaxHitPoints>850</MaxHitPoints><Flammability>0</Flammability><WorkToBuild>44000</WorkToBuild><Mass>82</Mass><Comfort>0.82</Comfort></statBases>
+    <tickerType>Normal</tickerType><designationCategory>WNG_Architect</designationCategory><constructionSkillPrerequisite>8</constructionSkillPrerequisite>
+    <costList><Plasteel>180</Plasteel><GravlitePanel>55</GravlitePanel><ComponentSpacer>4</ComponentSpacer><ShuttleEngine>1</ShuttleEngine></costList>
+    <canOverlapZones>true</canOverlapZones><rotatable>true</rotatable><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(2,0,0)</interactionCellOffset><defaultPlacingRot>East</defaultPlacingRot><selectable>true</selectable><terrainAffordanceNeeded>Light</terrainAffordanceNeeded><soundImpactDefault>BulletImpact_Metal</soundImpactDefault><preventSkyfallersLandingOn>true</preventSkyfallersLandingOn><drawerType>RealtimeOnly</drawerType><repairEffect>ConstructMetal</repairEffect><forceDebugSpawnable>true</forceDebugSpawnable>
+    <building><claimable>false</claimable><destroySound>BuildingDestroyed_Metal_Big</destroySound><paintable>false</paintable><isInert>true</isInert><forcedCostLeavings><li MayRequire="Ludeon.RimWorld.Odyssey">ShuttleEngine</li></forcedCostLeavings></building>
+    <inspectorTabs><li>ITab_ContentsTransporter</li></inspectorTabs>
+    <researchPrerequisites><li>Shuttles</li><li>WNG_SkimmerSystems</li></researchPrerequisites>
+    <comps>
+      <li Class="CompProperties_Shuttle"><shipDef>WNG_Ship_PuddleJumper</shipDef></li>
+      <li Class="CompProperties_Launchable"><fuelPerTile>1.8</fuelPerTile><minFuelCost>30</minFuelCost><skyfallerLeaving>WNG_PuddleJumperLeaving</skyfallerLeaving><worldObjectDef>WNG_PuddleJumperWorld</worldObjectDef><cooldownTicks>2400</cooldownTicks><fixedLaunchDistanceMax>95</fixedLaunchDistanceMax><cooldownEndedMessage>{0} is ready to launch again.</cooldownEndedMessage></li>
+      <li Class="CompProperties_Transporter"><massCapacity>650</massCapacity><max1PerGroup>true</max1PerGroup><canChangeAssignedThingsAfterStarting>true</canChangeAssignedThingsAfterStarting><pawnLoadedSound>Shuttle_PawnLoaded</pawnLoadedSound><pawnExitSound>Shuttle_PawnExit</pawnExitSound><showMassInInspectString>true</showMassInInspectString></li>
+      <li Class="CompProperties_Refuelable"><fuelCapacity>340</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>340</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>Chemfuel</li></thingDefs></fuelFilter><fuelLabel>Chemfuel</fuelLabel><fuelGizmoLabel>Chemfuel</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay><showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle><canEjectFuel>true</canEjectFuel></li>
+      <li Class="CompProperties_AmbientSound"><sound>ShuttleIdle_Ambience</sound></li>
+    </comps>
+    <placeWorkers><li>PlaceWorker_NotUnderRoof</li></placeWorkers><uiOrder>2602</uiOrder>
+  </ThingDef>
+</Defs>

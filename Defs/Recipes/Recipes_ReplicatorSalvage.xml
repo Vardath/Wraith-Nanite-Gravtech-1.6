@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_ReprocessReplicatorMatter</defName>
+    <label>reprocess replicator matter</label>
+    <description>Heat and mechanically disrupt dormant Replicator blocks before they can reconnect, recovering a modest amount of ordinary steel.</description>
+    <jobString>Reprocessing replicator matter.</jobString>
+    <workAmount>900</workAmount>
+    <workSkill>Crafting</workSkill>
+    <recipeUsers><li>ElectricSmelter</li></recipeUsers>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter>
+        <count>10</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
+    <products><Steel>6</Steel></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_DestroyReplicatorCoreFragment</defName>
+    <label>destroy replicator core fragment</label>
+    <description>Deliberately melt down a damaged Replicator control lattice, sacrificing its research value to ensure it cannot be reused and recovering a little steel.</description>
+    <jobString>Destroying replicator core fragment.</jobString>
+    <workAmount>1200</workAmount>
+    <workSkill>Crafting</workSkill>
+    <recipeUsers><li>ElectricSmelter</li></recipeUsers>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>WNG_ReplicatorCoreFragment</li></thingDefs></filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorCoreFragment</li></thingDefs></fixedIngredientFilter>
+    <products><Steel>8</Steel></products>
+  </RecipeDef>
+</Defs>

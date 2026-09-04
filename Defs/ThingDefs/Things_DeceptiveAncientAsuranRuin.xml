@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_DeceptiveAncientSurveyMatrix</defName>
+    <label>precursor survey matrix</label>
+    <description>An unusually intact precursor survey matrix standing among much older damaged laboratory hardware. Its ceramic shell, bronze field channels and control geometry appear Ancient, though several internal layers are inaccessible.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <graphicData><texPath>Things/Building/Precursor/Ruins/WNG_DeceptiveAncientSurveyMatrix</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(2.3,2.3)</drawSize></graphicData>
+    <size>(2,2)</size><rotatable>false</rotatable><tickerType>Normal</tickerType><passability>PassThroughOnly</passability><fillPercent>0.46</fillPercent>
+    <statBases><MaxHitPoints>430</MaxHitPoints><Mass>58</Mass><Flammability>0</Flammability><Beauty>3</Beauty></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_DeceptiveAncientMatrix">
+        <warningRadius>14</warningRadius><activationRadius>7</activationRadius><minimumWarningTicks>600</minimumWarningTicks><initialGraceTicks>600</initialGraceTicks><checkIntervalTicks>120</checkIntervalTicks><hostileFactionDefName>WNG_PrecursorCollective</hostileFactionDefName>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

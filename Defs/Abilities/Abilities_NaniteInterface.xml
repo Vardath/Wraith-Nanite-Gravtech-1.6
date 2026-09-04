@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_NeuralInterface</defName>
+    <label>neural interface</label>
+    <description>Establish an invasive nanite interface with another humanlike pawn. The interface can be used for controlled capture, allegiance rewriting, acquisition of learned patterns, or construction of a human-form nanite copy.</description>
+    <iconPath>UI/WNG/Neural</iconPath>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <warmupTime>2.0</warmupTime>
+      <targetParams>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetSelf>false</canTargetSelf>
+      </targetParams>
+    </verbProperties>
+    <cooldownTicksRange>5000~5000</cooldownTicksRange>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityNaniteInterface" />
+    </comps>
+  </AbilityDef>
+</Defs>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_GrowthChamberSeed</defName>
+    <label>growth chamber seed (advanced vat)</label>
+    <description>A cultivated organ-seed for the Growth Chamber, the large advanced Wraith production vat. Plant it from the Wraith &amp; Nanite architect category; after about three quarters of a day it matures into a Growth Chamber. This is not the basic Living Forge workshop seed.</description>
+    <graphicData><texPath>Things/Item/Resource/WNG_GrowthChamberSeed</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>10</stackLimit>
+    <statBases><MarketValue>420</MarketValue><Mass>3</Mass></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_PlantedGrowthChamberSeed</defName>
+    <label>plant growth chamber seed (advanced vat)</label>
+    <description>Plant a Growth Chamber seed. This becomes the large advanced Wraith production vat, not the basic Living Forge workshop. It occupies the future 4x3 chamber footprint and matures into a finished Growth Chamber after about three quarters of a day.</description>
+    <thingClass>Building</thingClass>
+    <graphicData><texPath>Things/Building/Production/WNG_PlantedGrowthChamberSeed</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(4,3)</drawSize></graphicData>
+    <size>(4,3)</size><designationCategory>WNG_Architect</designationCategory><uiOrder>110</uiOrder>
+    <rotatable>true</rotatable><passability>PassThroughOnly</passability><fillPercent>0.2</fillPercent><tickerType>Rare</tickerType>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+    <statBases><WorkToBuild>180</WorkToBuild><MaxHitPoints>260</MaxHitPoints><Flammability>0.4</Flammability></statBases>
+    <costList><WNG_GrowthChamberSeed>1</WNG_GrowthChamberSeed><WNG_Biomass>20</WNG_Biomass></costList>
+    <researchPrerequisites><li>WNG_AdvancedCarapace</li></researchPrerequisites>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_TechnologicalSeedGrowth"><targetThingDefName>WNG_GrowthChamber</targetThingDefName><growTicks>45000</growTicks></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BenchBase">
+    <defName>WNG_GrowthChamber</defName>
+    <label>growth chamber (advanced vat)</label>
+    <description>The large advanced Wraith production vat. It matures complex weapons, armour, power organs and ship tissues; after cloning infrastructure is understood, the same organ can gestate Hunters, Warriors and Keepers by consuming cultured biomass and a measured life-force contribution from an existing Wraith. Forbidden hybridisation research adds an optional living-subject graft that preserves the exact humanlike pawn while layering unstable Wraith-derived xenogenes onto them. A functional gravcore can amplify either process without replacing the required biological life-force donation.</description>
+    <thingClass>Building_WorkTable</thingClass>
+    <graphicData><texPath>Things/Building/Production/WNG_GrowthChamber</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(4,3)</drawSize></graphicData>
+    <size>(4,3)</size><designationCategory>WNG_Architect</designationCategory><uiOrder>111</uiOrder>
+    <hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-2)</interactionCellOffset>
+    <tickerType>Normal</tickerType>
+    <statBases><WorkToBuild>9000</WorkToBuild><MaxHitPoints>900</MaxHitPoints><Flammability>0.25</Flammability></statBases>
+    <costList><WNG_GrowthChamberSeed>1</WNG_GrowthChamberSeed><WNG_Biomass>40</WNG_Biomass></costList>
+    <researchPrerequisites><li>WNG_AdvancedCarapace</li></researchPrerequisites>
+    <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <building><spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity></building>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithCloningChamber">
+        <requiredResearchDefName>WNG_CloningInfrastructure</requiredResearchDefName>
+        <donorLifeForceCost>0.25</donorLifeForceCost>
+        <minimumDonorLifeForce>0.55</minimumDonorLifeForce>
+        <newbornLifeForce>0.35</newbornLifeForce>
+        <efficiencyCoreDefName>Gravcore</efficiencyCoreDefName>
+        <gravcoreBiomassFactor>0.70</gravcoreBiomassFactor>
+        <gravcoreDurationFactor>0.65</gravcoreDurationFactor>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithHybridization">
+        <requiredResearchDefName>WNG_ForbiddenHybridization</requiredResearchDefName>
+        <biomassCost>360</biomassCost>
+        <durationTicks>180000</durationTicks>
+        <donorLifeForceCost>0.40</donorLifeForceCost>
+        <minimumDonorLifeForce>0.70</minimumDonorLifeForce>
+        <initialHybridLifeForce>0.45</initialHybridLifeForce>
+        <subjectRadius>12</subjectRadius>
+        <efficiencyCoreDefName>Gravcore</efficiencyCoreDefName>
+        <gravcoreBiomassFactor>0.80</gravcoreBiomassFactor>
+        <gravcoreDurationFactor>0.70</gravcoreDurationFactor>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

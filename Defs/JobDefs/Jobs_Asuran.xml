@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>WNG_AsuranStealZPM</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_AsuranStealZPM</driverClass>
+    <reportString>securing a zero-point module.</reportString>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+  <JobDef>
+    <defName>WNG_AsuranStealPattern</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_AsuranStealPattern</driverClass>
+    <reportString>scanning a colony technology pattern.</reportString>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+</Defs>

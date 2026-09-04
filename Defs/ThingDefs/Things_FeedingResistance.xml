@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="MakeableDrugBase">
+    <defName>WNG_VitalResistanceDose</defName>
+    <label>vital resistance dose</label>
+    <description>A costly five-day anti-feeding treatment. It strongly reduces Wraith life-force extraction but does not make the patient untouchable. Taking a dose causes temporary systemic strain, and a Wraith that tries to feed through the active therapy can trigger a rejection crisis in the victim and a short backlash in itself. Use it when reducing feeding risk is worth accepting those temporary costs.</description>
+    <graphicData>
+      <texPath>Things/Item/Drug/WNG_VitalResistanceDose</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.75</drawSize>
+    </graphicData>
+    <rotatable>false</rotatable>
+    <tradeability>Sellable</tradeability>
+    <socialPropernessMatters>true</socialPropernessMatters>
+    <statBases>
+      <MarketValue>95</MarketValue>
+      <Mass>0.05</Mass>
+      <DeteriorationRate>1</DeteriorationRate>
+    </statBases>
+    <techLevel>Industrial</techLevel>
+    <ingestible>
+      <baseIngestTicks>180</baseIngestTicks>
+      <chairSearchRadius>0</chairSearchRadius>
+      <preferability>NeverForNutrition</preferability>
+      <foodType>Processed</foodType>
+      <drugCategory>None</drugCategory>
+      <nurseable>true</nurseable>
+      <canAutoSelectAsFoodForCaravan>false</canAutoSelectAsFoodForCaravan>
+      <ingestSound>Ingest_Pill</ingestSound>
+      <ingestCommandString>Take {0}</ingestCommandString>
+      <ingestReportString>Taking {0}.</ingestReportString>
+      <outcomeDoers>
+        <li Class="IngestionOutcomeDoer_GiveHediff">
+          <hediffDef>WNG_FeedingResistance</hediffDef>
+          <severity>1</severity>
+        </li>
+        <li Class="IngestionOutcomeDoer_GiveHediff">
+          <hediffDef>WNG_FeedingResistanceStrain</hediffDef>
+          <severity>1</severity>
+        </li>
+      </outcomeDoers>
+    </ingestible>
+    <recipeMaker>
+      <researchPrerequisite>WNG_FeedingResistance</researchPrerequisite>
+      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <workAmount>900</workAmount>
+    </recipeMaker>
+    <costList>
+      <Neutroamine>5</Neutroamine>
+      <MedicineIndustrial>1</MedicineIndustrial>
+    </costList>
+  </ThingDef>
+</Defs>

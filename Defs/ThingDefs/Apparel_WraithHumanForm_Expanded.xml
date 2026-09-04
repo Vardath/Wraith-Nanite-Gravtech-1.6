@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_WraithHunterCoat</defName><label>wraith hunter coat</label>
+    <description>A long flexible coat grown from layered Wraith membrane. It provides modest protection without obscuring the lean silhouette of its wearer.</description><techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>180</MaxHitPoints><WorkToMake>14000</WorkToMake><Mass>3.5</Mass><EquipDelay>2</EquipDelay><ArmorRating_Sharp>0.55</ArmorRating_Sharp><ArmorRating_Blunt>0.25</ArmorRating_Blunt><ArmorRating_Heat>0.4</ArmorRating_Heat></statBases>
+    <costList><WNG_Biomass>24</WNG_Biomass></costList>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</wornGraphicPath><tags><li>WNG_WraithClothing</li></tags></apparel>
+    <recipeMaker><researchPrerequisite>WNG_BiologicalCultivation</researchPrerequisite><workSkill>Crafting</workSkill><skillRequirements><Crafting>4</Crafting></skillRequirements><recipeUsers Inherit="False"><li>WNG_GrowthChamber</li></recipeUsers></recipeMaker>
+  </ThingDef>
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_WraithQueenRaiment</defName><label>wraith queen raiment</label>
+    <description>Regal living robes grown for Wraith queens and high-ranking brood leaders, reinforced with fine chitin ribs while remaining flowing and light.</description><techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>220</MaxHitPoints><WorkToMake>26000</WorkToMake><Mass>4</Mass><EquipDelay>2.5</EquipDelay><ArmorRating_Sharp>0.72</ArmorRating_Sharp><ArmorRating_Blunt>0.32</ArmorRating_Blunt><ArmorRating_Heat>0.52</ArmorRating_Heat><Beauty>5</Beauty></statBases>
+    <costList><WNG_Biomass>38</WNG_Biomass><ComponentIndustrial>1</ComponentIndustrial></costList>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment</wornGraphicPath><tags><li>WNG_WraithClothing</li><li>WNG_WraithQueenClothing</li></tags></apparel>
+    <recipeMaker><researchPrerequisite>WNG_AdvancedCarapace</researchPrerequisite><workSkill>Crafting</workSkill><skillRequirements><Crafting>7</Crafting></skillRequirements><recipeUsers Inherit="False"><li>WNG_GrowthChamber</li></recipeUsers></recipeMaker>
+  </ThingDef>
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_HumanFormUniform</defName><label>human-form replicator uniform</label>
+    <description>A fitted pale uniform assembled from self-aligning precursor fibers. Its clean geometric panels distinguish human-form Replicators from ordinary colonists.</description><techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormUniform</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>220</MaxHitPoints><WorkToMake>18000</WorkToMake><Mass>2.5</Mass><EquipDelay>1.8</EquipDelay><ArmorRating_Sharp>0.45</ArmorRating_Sharp><ArmorRating_Blunt>0.22</ArmorRating_Blunt><ArmorRating_Heat>0.45</ArmorRating_Heat></statBases>
+    <costList><Synthread>45</Synthread><Plasteel>10</Plasteel></costList>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormUniform</wornGraphicPath><tags><li>WNG_HumanFormClothing</li></tags></apparel>
+    <recipeMaker><researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite><workSkill>Crafting</workSkill><skillRequirements><Crafting>5</Crafting></skillRequirements><recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers></recipeMaker>
+  </ThingDef>
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_HumanFormCombatArmor</defName><label>human-form replicator combat armor</label>
+    <description>A close-fitted combat shell of plasteel, field mesh and self-repairing precursor composites, built around a human-form Replicator rather than conventional human physiology.</description><techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>340</MaxHitPoints><WorkToMake>52000</WorkToMake><Mass>7.5</Mass><EquipDelay>3</EquipDelay><ArmorRating_Sharp>1.58</ArmorRating_Sharp><ArmorRating_Blunt>0.68</ArmorRating_Blunt><ArmorRating_Heat>0.9</ArmorRating_Heat></statBases>
+    <costList><Plasteel>80</Plasteel><ComponentSpacer>3</ComponentSpacer></costList>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</wornGraphicPath><tags><li>WNG_HumanFormArmor</li><li>WNG_PrecursorArmor</li></tags><defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags></apparel>
+    <recipeMaker><researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite><workSkill>Crafting</workSkill><skillRequirements><Crafting>8</Crafting></skillRequirements><recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers></recipeMaker>
+  </ThingDef>
+</Defs>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Legacy save-compatibility Def only. Wither was merged into Drain Life and is stripped from live pawn ability trackers. -->
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_Wither</defName>
+    <label>wither (legacy)</label>
+    <description>Legacy compatibility entry retained so older saves can load. Wither has been merged into Drain Life and is no longer a separate usable Wraith ability.</description>
+    <iconPath>UI/WNG/Wither</iconPath>
+    <displayGizmoWhileUndrafted>false</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>true</disableGizmoWhileUndrafted><hostile>true</hostile><casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>1.5</warmupTime><stunTargetOnCastStart>true</stunTargetOnCastStart><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <cooldownTicksRange>60000~60000</cooldownTicksRange>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityApplyWraithHediff"><hediffDef>WNG_Withered</hediffDef><severity>0.35</severity><requireBiological>true</requireBiological><requireDowned>false</requireDowned></li></comps>
+  </AbilityDef>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_Enthrall</defName>
+    <label>enthrall</label>
+    <description>Overwhelm a humanlike biological target's will and bind them to the caster's faction as a slave. The target does not need to be downed. Requires Ideology.</description>
+    <iconPath>UI/WNG/Enthrall</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted><hostile>true</hostile><casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>2</warmupTime><stunTargetOnCastStart>true</stunTargetOnCastStart><targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <cooldownTicksRange>120000~120000</cooldownTicksRange>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityApplyWraithHediff"><hediffDef>WNG_Enthralled</hediffDef><severity>1</severity><requireBiological>true</requireBiological><requireDowned>false</requireDowned><enslaveTarget>true</enslaveTarget></li></comps>
+  </AbilityDef>
+</Defs>

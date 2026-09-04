@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_WraithBrood</defName><label>hostile wraith brood</label><fixedName>The Sable Brood</fixedName>
+    <description>An uncompromising predatory Hive lineage that regards other peoples as feeding stock and rival Wraith lineages as competitors for territory, captives and living technology.</description>
+    <basicMemberKind>WNG_WraithWarrior</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>queen</leaderTitle>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.36</settlementGenerationWeight>
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath><factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker><settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+    <techLevel>Spacer</techLevel><humanlikeFaction>true</humanlikeFaction><permanentEnemy>true</permanentEnemy><canSiege>true</canSiege><canStageAttacks>true</canStageAttacks><autoFlee>false</autoFlee><rescueesCanJoin>false</rescueesCanJoin>
+    <backstoryCategories><li>Outlander</li><li>Offworld</li></backstoryCategories>
+    <backstoryFilters><li><categories><li>Outlander</li></categories><commonality>0.35</commonality></li><li><categories><li>Offworld</li></categories><commonality>0.65</commonality></li></backstoryFilters>
+    <allowedArrivalTemperatureRange>-50~55</allowedArrivalTemperatureRange><colorSpectrum><li>(0.20,0.24,0.22)</li><li>(0.35,0.22,0.28)</li></colorSpectrum>
+    <xenotypeSet><xenotypeChances><WNG_Wraith>999</WNG_Wraith></xenotypeChances></xenotypeSet>
+    <raidCommonalityFromPointsCurve><points><li>(0,0.22)</li></points></raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve><points><li>(0,95)</li><li>(500,145)</li><li>(1400,230)</li><li>(3000,320)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_WraithHunter>8</WNG_WraithHunter><WNG_WraithWarrior>14</WNG_WraithWarrior><WNG_WraithCommander>2.5</WNG_WraithCommander><WNG_WraithQueen>0.12</WNG_WraithQueen></options></li>
+      <li><kindDef>Settlement</kindDef><options><WNG_WraithHunter>5</WNG_WraithHunter><WNG_WraithWarrior>12</WNG_WraithWarrior><WNG_WraithCommander>3</WNG_WraithCommander><WNG_WraithQueen>0.35</WNG_WraithQueen></options></li>
+    </pawnGroupMakers>
+  </FactionDef>
+
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_WraithCinderCourt</defName><label>militant wraith court</label><fixedName>The Cinder Court</fixedName>
+    <description>A Queen-led militant Hive that raids aggressively and contests other Wraith territories, but unlike the Sable Brood its hostility is political rather than absolute. Sufficient leverage can change its relationship with outsiders, at least temporarily.</description>
+    <basicMemberKind>WNG_WraithWarrior</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>queen</leaderTitle>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.24</settlementGenerationWeight>
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath><factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker><settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+    <techLevel>Spacer</techLevel><humanlikeFaction>true</humanlikeFaction><permanentEnemy>false</permanentEnemy><canSiege>true</canSiege><canStageAttacks>true</canStageAttacks><autoFlee>false</autoFlee><rescueesCanJoin>false</rescueesCanJoin>
+    <backstoryCategories><li>Outlander</li><li>Offworld</li></backstoryCategories>
+    <backstoryFilters><li><categories><li>Outlander</li></categories><commonality>0.25</commonality></li><li><categories><li>Offworld</li></categories><commonality>0.75</commonality></li></backstoryFilters>
+    <allowedArrivalTemperatureRange>-50~55</allowedArrivalTemperatureRange><colorSpectrum><li>(0.31,0.16,0.17)</li><li>(0.46,0.25,0.18)</li></colorSpectrum>
+    <xenotypeSet><xenotypeChances><WNG_Wraith>999</WNG_Wraith></xenotypeChances></xenotypeSet>
+    <raidCommonalityFromPointsCurve><points><li>(0,0.14)</li></points></raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve><points><li>(0,100)</li><li>(500,155)</li><li>(1400,240)</li><li>(3000,335)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_WraithHunter>6</WNG_WraithHunter><WNG_WraithWarrior>16</WNG_WraithWarrior><WNG_WraithCommander>3.5</WNG_WraithCommander><WNG_WraithQueen>0.16</WNG_WraithQueen></options></li>
+      <li><kindDef>Peaceful</kindDef><commonality>35</commonality><options><WNG_WraithHunter>4</WNG_WraithHunter><WNG_WraithWarrior>3</WNG_WraithWarrior><WNG_WraithKeeper>1</WNG_WraithKeeper><WNG_WraithCommander>0.35</WNG_WraithCommander></options></li>
+      <li><kindDef>Settlement</kindDef><options><WNG_WraithHunter>4</WNG_WraithHunter><WNG_WraithWarrior>13</WNG_WraithWarrior><WNG_WraithCommander>4</WNG_WraithCommander><WNG_WraithKeeper>2</WNG_WraithKeeper><WNG_WraithQueen>0.40</WNG_WraithQueen></options></li>
+    </pawnGroupMakers>
+  </FactionDef>
+
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_WraithVeiledHive</defName><label>wary wraith hive</label><fixedName>The Veiled Hive</fixedName>
+    <description>A cautious Wraith Hive that prefers selective feeding, concealment and negotiated access over open territorial war. It is still biologically predatory and can become a dangerous enemy, but does not begin by treating every outsider as prey.</description>
+    <basicMemberKind>WNG_WraithHunter</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>queen</leaderTitle>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.16</settlementGenerationWeight>
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath><factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker><settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+    <techLevel>Spacer</techLevel><humanlikeFaction>true</humanlikeFaction><permanentEnemy>false</permanentEnemy><canSiege>true</canSiege><canStageAttacks>true</canStageAttacks><autoFlee>true</autoFlee><rescueesCanJoin>false</rescueesCanJoin>
+    <backstoryCategories><li>Outlander</li><li>Offworld</li></backstoryCategories><allowedArrivalTemperatureRange>-50~55</allowedArrivalTemperatureRange>
+    <colorSpectrum><li>(0.18,0.29,0.28)</li><li>(0.27,0.36,0.31)</li></colorSpectrum>
+    <xenotypeSet><xenotypeChances><WNG_Wraith>999</WNG_Wraith></xenotypeChances></xenotypeSet>
+    <raidCommonalityFromPointsCurve><points><li>(0,0.045)</li></points></raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve><points><li>(0,95)</li><li>(500,145)</li><li>(1400,225)</li><li>(3000,310)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_WraithHunter>12</WNG_WraithHunter><WNG_WraithWarrior>9</WNG_WraithWarrior><WNG_WraithCommander>1.5</WNG_WraithCommander><WNG_WraithQueen>0.08</WNG_WraithQueen></options></li>
+      <li><kindDef>Peaceful</kindDef><commonality>80</commonality><options><WNG_WraithHunter>6</WNG_WraithHunter><WNG_WraithWarrior>4</WNG_WraithWarrior><WNG_WraithKeeper>1.5</WNG_WraithKeeper><WNG_WraithCommander>0.5</WNG_WraithCommander></options></li>
+      <li><kindDef>Settlement</kindDef><options><WNG_WraithHunter>8</WNG_WraithHunter><WNG_WraithWarrior>8</WNG_WraithWarrior><WNG_WraithKeeper>2</WNG_WraithKeeper><WNG_WraithCommander>1.5</WNG_WraithCommander><WNG_WraithQueen>0.30</WNG_WraithQueen></options></li>
+    </pawnGroupMakers>
+  </FactionDef>
+
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_WraithExiles</defName><label>wraith exiles</label><fixedName>The Pale Covenant</fixedName>
+    <description>A small Wraith offshoot that has abandoned indiscriminate predation. They remain dangerous and biologically dependent on life-force harvesting, but can trade, negotiate and coexist when supplied by less destructive means.</description>
+    <basicMemberKind>WNG_WraithWarrior</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>elder</leaderTitle>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.16</settlementGenerationWeight>
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath><factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker><settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+    <techLevel>Spacer</techLevel><humanlikeFaction>true</humanlikeFaction><permanentEnemy>false</permanentEnemy><canSiege>true</canSiege><canStageAttacks>true</canStageAttacks><autoFlee>true</autoFlee><rescueesCanJoin>true</rescueesCanJoin>
+    <backstoryCategories><li>Outlander</li><li>Offworld</li></backstoryCategories><allowedArrivalTemperatureRange>-50~55</allowedArrivalTemperatureRange>
+    <xenotypeSet><xenotypeChances><WNG_Wraith>999</WNG_Wraith></xenotypeChances></xenotypeSet>
+    <raidCommonalityFromPointsCurve><points><li>(0,0.045)</li></points></raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve><points><li>(0,95)</li><li>(500,145)</li><li>(1400,230)</li><li>(3000,320)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_WraithHunter>8</WNG_WraithHunter><WNG_WraithWarrior>12</WNG_WraithWarrior><WNG_WraithCommander>1.2</WNG_WraithCommander></options></li>
+      <li><kindDef>Peaceful</kindDef><commonality>80</commonality><options><WNG_WraithHunter>3</WNG_WraithHunter><WNG_WraithWarrior>6</WNG_WraithWarrior><WNG_WraithKeeper>1.5</WNG_WraithKeeper><WNG_WraithCommander>0.4</WNG_WraithCommander></options></li>
+      <li><kindDef>Settlement</kindDef><options><WNG_WraithHunter>5</WNG_WraithHunter><WNG_WraithWarrior>8</WNG_WraithWarrior><WNG_WraithKeeper>2</WNG_WraithKeeper><WNG_WraithCommander>1.5</WNG_WraithCommander></options></li>
+    </pawnGroupMakers>
+  </FactionDef>
+
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_PrecursorCollective</defName><label>hostile human-form collective</label><fixedName>The Lattice Collective</fixedName>
+    <description>A hostile society of human-form synthetic beings built from self-organising nanite systems and inherited precursor technology.</description>
+    <basicMemberKind>WNG_HumanFormReplicator</basicMemberKind><pawnSingular>human-form replicator</pawnSingular><pawnsPlural>human-form replicators</pawnsPlural><leaderTitle>coordinator</leaderTitle>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.35</settlementGenerationWeight>
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath><factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker><settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+    <techLevel>Spacer</techLevel><humanlikeFaction>true</humanlikeFaction><permanentEnemy>true</permanentEnemy><canSiege>true</canSiege><canStageAttacks>true</canStageAttacks><autoFlee>false</autoFlee><rescueesCanJoin>false</rescueesCanJoin>
+    <backstoryCategories><li>Outlander</li><li>Offworld</li></backstoryCategories>
+    <backstoryFilters><li><categories><li>Outlander</li></categories><commonality>0.20</commonality></li><li><categories><li>Offworld</li></categories><commonality>0.80</commonality></li></backstoryFilters>
+    <allowedArrivalTemperatureRange>-80~80</allowedArrivalTemperatureRange><colorSpectrum><li>(0.72,0.78,0.82)</li><li>(0.38,0.60,0.68)</li></colorSpectrum>
+    <xenotypeSet><xenotypeChances><WNG_NanitePrecursor>999</WNG_NanitePrecursor></xenotypeChances></xenotypeSet>
+    <raidCommonalityFromPointsCurve><points><li>(0,0.23)</li></points></raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve><points><li>(0,110)</li><li>(500,220)</li><li>(1800,300)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_HumanFormReplicator>16</WNG_HumanFormReplicator><WNG_PrecursorSoldier>4</WNG_PrecursorSoldier><WNG_PrecursorCommander>1.5</WNG_PrecursorCommander></options></li>
+      <li><kindDef>Settlement</kindDef><options><WNG_HumanFormReplicator>10</WNG_HumanFormReplicator><WNG_PrecursorEngineer>4</WNG_PrecursorEngineer><WNG_PrecursorCommander>2</WNG_PrecursorCommander></options></li>
+    </pawnGroupMakers>
+  </FactionDef>
+
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_HumanFormEnclave</defName><label>human-form enclave</label><fixedName>The Quiet Lattice</fixedName>
+    <description>A non-hostile human-form Replicator enclave that has chosen controlled replication and negotiated coexistence over unrestricted expansion.</description>
+    <basicMemberKind>WNG_HumanFormReplicator</basicMemberKind><pawnSingular>human-form replicator</pawnSingular><pawnsPlural>human-form replicators</pawnsPlural><leaderTitle>coordinator</leaderTitle>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.22</settlementGenerationWeight>
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath><factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker><settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+    <techLevel>Spacer</techLevel><humanlikeFaction>true</humanlikeFaction><permanentEnemy>false</permanentEnemy><canSiege>true</canSiege><canStageAttacks>true</canStageAttacks><autoFlee>true</autoFlee><rescueesCanJoin>true</rescueesCanJoin>
+    <backstoryCategories><li>Outlander</li><li>Offworld</li></backstoryCategories><allowedArrivalTemperatureRange>-80~80</allowedArrivalTemperatureRange>
+    <xenotypeSet><xenotypeChances><WNG_NanitePrecursor>999</WNG_NanitePrecursor></xenotypeChances></xenotypeSet>
+    <raidCommonalityFromPointsCurve><points><li>(0,0.06)</li></points></raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve><points><li>(0,110)</li><li>(500,220)</li><li>(1800,300)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_HumanFormReplicator>12</WNG_HumanFormReplicator><WNG_PrecursorSoldier>4</WNG_PrecursorSoldier></options></li>
+      <li><kindDef>Peaceful</kindDef><commonality>80</commonality><options><WNG_HumanFormReplicator>8</WNG_HumanFormReplicator><WNG_PrecursorEngineer>4</WNG_PrecursorEngineer></options></li>
+      <li><kindDef>Settlement</kindDef><options><WNG_HumanFormReplicator>9</WNG_HumanFormReplicator><WNG_PrecursorEngineer>5</WNG_PrecursorEngineer><WNG_PrecursorCommander>1</WNG_PrecursorCommander></options></li>
+    </pawnGroupMakers>
+  </FactionDef>
+</Defs>

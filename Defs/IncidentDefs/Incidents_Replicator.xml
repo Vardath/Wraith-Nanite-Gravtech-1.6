@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_ReplicatorMatterMeteorShower</defName>
+    <label>replicator matter meteor shower</label>
+    <category>ThreatSmall</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_ReplicatorMatterMeteorShower</workerClass>
+    <baseChance>0.10</baseChance>
+    <earliestDay>10</earliestDay>
+    <letterLabel>Replicator matter meteor shower</letterLabel>
+    <letterText>Orbital tracking has detected several compact machine-matter fragments on intersecting trajectories. The impacts contain salvageable Replicator Matter rather than active attackers, but the material retains a dormant self-assembly lattice.</letterText>
+    <letterDef>ThreatSmall</letterDef>
+  </IncidentDef>
+
+  <IncidentDef>
+    <defName>WNG_ReplicatorOutbreak</defName>
+    <label>replicator outbreak</label>
+    <category>ThreatBig</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_ReplicatorOutbreak</workerClass>
+    <baseChance>0.12</baseChance>
+    <earliestDay>18</earliestDay>
+    <letterLabel>Replicator outbreak</letterLabel>
+    <letterText>A handful of small modular machines have entered the area. Individually they are minor threats, but they are dismantling structures and mineral deposits to create more of themselves. If they find enough matter, their numbers may rise extremely quickly.</letterText>
+    <letterDef>ThreatBig</letterDef>
+  </IncidentDef>
+</Defs>

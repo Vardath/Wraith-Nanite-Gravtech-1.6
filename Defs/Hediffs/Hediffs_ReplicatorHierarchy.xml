@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_ReplicatorHierarchyMarker</defName>
+    <label>replicator assembly lattice</label>
+    <description>The machine is assembled from smaller autonomous Replicator forms. If this body is destroyed, surviving subassemblies can separate and continue operating.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <comps>
+      <li Class="WraithNaniteGravtech.HediffCompProperties_ReplicatorDeathSplit" />
+    </comps>
+  </HediffDef>
+</Defs>

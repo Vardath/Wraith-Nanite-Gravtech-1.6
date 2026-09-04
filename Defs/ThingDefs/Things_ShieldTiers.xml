@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_PrecursorPersonalShield</defName>
+    <label>Asuran personal shield harness</label>
+    <description>A compact Asuran defensive-field harness built for one wearer rather than a structure or gravship. Its self-contained charge absorbs ranged-weapon impacts without preventing the wearer from firing back, but the small field collapses under sustained fire and EMP forces a long reset.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData>
+      <texPath>Things/Item/Apparel/Precursor/WNG_PersonalShield</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stackLimit>1</stackLimit>
+    <statBases>
+      <MaxHitPoints>180</MaxHitPoints>
+      <WorkToMake>20000</WorkToMake>
+      <Mass>1.8</Mass>
+      <EquipDelay>1.2</EquipDelay>
+    </statBases>
+    <costList>
+      <Plasteel>25</Plasteel>
+      <ComponentSpacer>2</ComponentSpacer>
+      <WNG_ReplicatorMatter>8</WNG_ReplicatorMatter>
+    </costList>
+    <apparel>
+      <bodyPartGroups><li>Torso</li></bodyPartGroups>
+      <layers><li>Belt</li></layers>
+      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PersonalShield</wornGraphicPath>
+      <tags><li>WNG_PrecursorArmor</li><li>Utility</li></tags>
+      <defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
+    </apparel>
+    <recipeMaker>
+      <researchPrerequisite>WNG_PrecursorPersonalShields</researchPrerequisite>
+      <workSkill>Crafting</workSkill>
+      <skillRequirements><Crafting>8</Crafting></skillRequirements>
+      <recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers>
+    </recipeMaker>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_PrecursorPersonalShield">
+        <energyMax>120</energyMax>
+        <rechargePerTick>0.015</rechargePerTick>
+        <resetDelayTicks>1800</resetDelayTicks>
+        <empDisableTicks>2400</empDisableTicks>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_PrecursorSettlementShield</defName>
+    <label>Asuran settlement shield projector</label>
+    <description>A fixed Asuran defensive-field projector for settlements. While switched on and supplied with 1.8 kilowatts, it maintains a local 14.9-cell field that destroys hostile projectiles entering from outside while allowing defenders inside to fire out. Its finite field charge must recover after sustained fire, and EMP collapses it immediately. It cannot function as a gravship shield component.</description>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Precursor/Defense/WNG_PrecursorSettlementShield</texPath>
+      <drawSize>(2.3,2.3)</drawSize>
+    </graphicData>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <drawOffscreen>true</drawOffscreen>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MaxHitPoints>420</MaxHitPoints>
+      <Flammability>0</Flammability>
+      <Beauty>6</Beauty>
+      <WorkToBuild>16000</WorkToBuild>
+      <Mass>46</Mass>
+    </statBases>
+    <size>(2,2)</size>
+    <constructionSkillPrerequisite>9</constructionSkillPrerequisite>
+    <fillPercent>0.55</fillPercent>
+    <passability>PassThroughOnly</passability>
+    <pathCost>20</pathCost>
+    <canOverlapZones>false</canOverlapZones>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <specialDisplayRadius>14.9</specialDisplayRadius>
+    <designationCategory>WNG_Architect</designationCategory>
+    <uiOrder>2580</uiOrder>
+    <costList>
+      <Plasteel>160</Plasteel>
+      <ComponentSpacer>8</ComponentSpacer>
+      <WNG_ReplicatorMatter>24</WNG_ReplicatorMatter>
+    </costList>
+    <researchPrerequisites><li>WNG_PrecursorShields</li></researchPrerequisites>
+    <comps>
+      <li Class="CompProperties_Flickable"/>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>1800</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Breakdownable"/>
+      <li Class="WraithNaniteGravtech.CompProperties_PrecursorSettlementShield">
+        <radius>14.9</radius>
+        <energyMax>500</energyMax>
+        <rechargePerTick>0.025</rechargePerTick>
+        <resetDelayTicks>3000</resetDelayTicks>
+        <empDisableTicks>3000</empDisableTicks>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

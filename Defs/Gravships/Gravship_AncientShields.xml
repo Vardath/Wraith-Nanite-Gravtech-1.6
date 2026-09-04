@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="GravshipComponentBase">
+    <defName>WNG_AncientVacuumShieldEmitter</defName>
+    <label>Ancient vacuum shield emitter</label>
+    <description>A reconstructed precursor defensive-field projector driven at vacuum-harmonic energy density. It uses Odyssey's normal gravship shield architecture, but projects a wider and much tougher barrier than the standard Asuran emitter. The field is not permanent or invulnerable: EMP disruption, depleted shield strength, recharge time and loss of electrical power remain meaningful weaknesses. Keeping the emitter energized draws 7.2 kilowatts continuously.</description>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Precursor/Gravship/WNG_AncientVacuumShieldEmitter</texPath>
+      <drawSize>(3.4,3.4)</drawSize>
+    </graphicData>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <drawOffscreen>true</drawOffscreen>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MaxHitPoints>560</MaxHitPoints>
+      <Flammability>0</Flammability>
+      <Mass>86</Mass>
+      <Beauty>14</Beauty>
+      <WorkToBuild>24000</WorkToBuild>
+    </statBases>
+    <size>(3,3)</size>
+    <constructionSkillPrerequisite>12</constructionSkillPrerequisite>
+    <fillPercent>0.62</fillPercent>
+    <passability>PassThroughOnly</passability>
+    <pathCost>24</pathCost>
+    <canOverlapZones>false</canOverlapZones>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <specialDisplayRadius>34.9</specialDisplayRadius>
+    <designationCategory>WNG_Architect</designationCategory>
+    <uiOrder>2590</uiOrder>
+    <costList>
+      <Plasteel>360</Plasteel>
+      <Uranium>80</Uranium>
+      <GravlitePanel>150</GravlitePanel>
+      <ComponentSpacer>16</ComponentSpacer>
+    </costList>
+    <researchPrerequisites>
+      <li>WNG_AncientShieldHarmonics</li>
+    </researchPrerequisites>
+    <comps>
+      <li Class="CompProperties_GravshipFacility">
+        <requiresLOS>false</requiresLOS>
+        <maxSimultaneous>1</maxSimultaneous>
+        <maxDistance>650</maxDistance>
+      </li>
+      <li Class="CompProperties_Flickable"/>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>7200</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Interactable">
+        <compClass>CompInteractable_GravshipShieldGenerator</compClass>
+        <ticksToActivate>180</ticksToActivate>
+        <jobString>stabilize vacuum-harmonic shield</jobString>
+        <activateTexPath>UI/Commands/ActivateGravshipShield</activateTexPath>
+        <soundActivate>GravshipShieldGenerator_Activate</soundActivate>
+        <requiresPower>true</requiresPower>
+        <targetingParameters>
+          <canTargetBuildings>false</canTargetBuildings>
+          <canTargetAnimals>false</canTargetAnimals>
+          <canTargetMechs>false</canTargetMechs>
+          <onlyTargetControlledPawns>true</onlyTargetControlledPawns>
+        </targetingParameters>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorShieldEngagementMonitor">
+        <radius>34.9</radius>
+        <sampleIntervalTicks>300</sampleIntervalTicks>
+      </li>
+      <li Class="CompProperties_ProjectileInterceptor">
+        <compClass>CompGravshipShieldGenerator</compClass>
+        <radius>34.9</radius>
+        <interceptGroundProjectiles>true</interceptGroundProjectiles>
+        <interceptAirProjectiles>true</interceptAirProjectiles>
+        <color>(0.56,0.88,1.00)</color>
+        <reactivateEffect>BulletShieldGenerator_Reactivate</reactivateEffect>
+        <activeSound>BulletShield_Ambience</activeSound>
+        <hitPoints>1800</hitPoints>
+        <hitPointsRestoreInstantlyAfterCharge>false</hitPointsRestoreInstantlyAfterCharge>
+        <startWithMaxHitPoints>false</startWithMaxHitPoints>
+        <chargeDurationTicks>12000</chargeDurationTicks>
+        <minIdleAlpha>0.22</minIdleAlpha>
+        <drawWithNoSelection>true</drawWithNoSelection>
+        <disarmedByEmpForTicks>2400</disarmedByEmpForTicks>
+        <gizmoTipKey>GravshipShieldTip</gizmoTipKey>
+        <alwaysShowHitpointsGizmo>true</alwaysShowHitpointsGizmo>
+        <rechargeHitPointsIntervalTicks>45</rechargeHitPointsIntervalTicks>
+        <activated>true</activated>
+        <activeDuration>7200</activeDuration>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

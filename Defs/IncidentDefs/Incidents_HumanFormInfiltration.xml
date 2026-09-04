@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_HumanFormInfiltration</defName>
+    <label>unaffiliated technical traveller</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_HumanFormInfiltration</workerClass>
+    <baseChance>0.045</baseChance>
+    <earliestDay>30</earliestDay>
+    <minRefireDays>30</minRefireDays>
+    <letterLabel>Unaffiliated technical traveller</letterLabel>
+    <letterText>A lone offworld technician has entered the area claiming no faction allegiance. No weapon is visible, and the traveller is dressed in ordinary civilian clothing. They say they are mapping local field interference before continuing on. Human-form synthetic bodies are capable of extremely convincing social presentation, however: close inspection may reveal unusual physiology, EMP disruption destabilizes coordinated nanites, and a powered Asuran Pattern Archive can authenticate nearby lattice traffic.</letterText>
+    <letterDef>NeutralEvent</letterDef>
+  </IncidentDef>
+</Defs>

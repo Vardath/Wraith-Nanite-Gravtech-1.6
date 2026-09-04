@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_AncientPrecursorVaultDiscovery</defName>
+    <label>precursor vault discovered</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_AncientPrecursorVaultDiscovery</workerClass>
+    <baseChance>0.010</baseChance>
+    <earliestDay>52</earliestDay>
+    <letterLabel>Ancient precursor vault detected</letterLabel>
+    <letterText>Long-range sensors have isolated a weak but highly ordered power trace from a sealed precursor-era installation. The signal is intermittent, suggesting better-preserved machinery is still cycling inside. Expect more intact evidence than in an open laboratory, not a free shortcut to stable Ancient industry: recovered systems still require analysis and reconstruction before they can be trusted.</letterText>
+    <letterDef>PositiveEvent</letterDef>
+  </IncidentDef>
+</Defs>

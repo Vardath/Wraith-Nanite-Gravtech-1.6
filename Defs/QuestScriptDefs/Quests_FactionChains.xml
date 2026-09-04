@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <QuestScriptDef>
+    <defName>WNG_WraithLegacyChain</defName>
+    <rootSelectionWeight>0.18</rootSelectionWeight>
+    <rootEarliestDay>45</rootEarliestDay>
+    <minRefireDays>40</minRefireDays>
+    <expireDaysRange>8~12</expireDaysRange>
+    <affectedByPoints>false</affectedByPoints>
+    <root Class="WraithNaniteGravtech.QuestNode_Root_WNGWraithLegacyChain" />
+    <questNameRules>
+      <rulesStrings><li>questName->the hunger lineage</li></rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+        <li>questDescription->Several Wraith biological traces that once looked unrelated now form a sequence. Follow the trail from failed feeding research, through population cultivation, to a living mature Hive. Each lead reuses the real WNG site behind it: you must physically reach the marked sites for the chain to advance, and their existing defenders, salvage and hazards remain unchanged.</li>
+      </rulesStrings>
+    </questDescriptionRules>
+  </QuestScriptDef>
+
+  <QuestScriptDef>
+    <defName>WNG_ReplicatorPatternChain</defName>
+    <rootSelectionWeight>0.16</rootSelectionWeight>
+    <rootEarliestDay>48</rootEarliestDay>
+    <minRefireDays>40</minRefireDays>
+    <expireDaysRange>8~12</expireDaysRange>
+    <affectedByPoints>false</affectedByPoints>
+    <root Class="WraithNaniteGravtech.QuestNode_Root_WNGReplicatorPatternChain" />
+    <questNameRules>
+      <rulesStrings><li>questName->the copied pattern</li></rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+        <li>questDescription->A consumed ruin, a human-form infiltration signature and an old Queen-pattern vault appear to belong to the same Replicator information trail. Follow all three stages to understand how matter consumption, copied social form and stable higher-order nanite identity fit together. Existing Replicator Matter dormancy, containment, adaptation, human-form behavior and Queen-vault rules remain authoritative.</li>
+      </rulesStrings>
+    </questDescriptionRules>
+  </QuestScriptDef>
+
+  <QuestScriptDef>
+    <defName>WNG_AncientLegacyChain</defName>
+    <rootSelectionWeight>0.15</rootSelectionWeight>
+    <rootEarliestDay>36</rootEarliestDay>
+    <minRefireDays>40</minRefireDays>
+    <expireDaysRange>8~12</expireDaysRange>
+    <affectedByPoints>false</affectedByPoints>
+    <root Class="WraithNaniteGravtech.QuestNode_Root_WNGAncientLegacyChain" />
+    <questNameRules>
+      <rulesStrings><li>questName->the precursor wake</li></rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+        <li>questDescription->Fragments from precursor laboratories, sealed vaults and dormant Asuran-pattern facilities form a recoverable historical trail. Reach each marked site in sequence. The chain does not award free Ancient research or working technology: archaeology, damaged originals, security, analysis and reconstruction continue to use their existing WNG systems.</li>
+      </rulesStrings>
+    </questDescriptionRules>
+  </QuestScriptDef>
+
+  <QuestScriptDef>
+    <defName>WNG_LegacyConvergence</defName>
+    <rootSelectionWeight>0.08</rootSelectionWeight>
+    <rootEarliestDay>60</rootEarliestDay>
+    <minRefireDays>120</minRefireDays>
+    <expireDaysRange>10~15</expireDaysRange>
+    <affectedByPoints>false</affectedByPoints>
+    <root Class="WraithNaniteGravtech.QuestNode_Root_WNGLegacyConvergence" />
+    <questNameRules>
+      <rulesStrings><li>questName->three legacies</li></rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+        <li>questDescription->Only after completing at least one Wraith, Replicator and Ancient legacy chain do their historical traces overlap strongly enough to compare directly. Revisit one mature expression of each branch and resolve the convergence. This is a one-time capstone: it establishes intersecting history without claiming that Wraith biology, Replicator nanites and Ancient/Asuran control systems are the same technology, and it grants no automatic research or endgame equipment.</li>
+      </rulesStrings>
+    </questDescriptionRules>
+  </QuestScriptDef>
+</Defs>

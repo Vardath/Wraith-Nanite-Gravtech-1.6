@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithDart']/comps/li[@Class='CompProperties_Refuelable']/fuelFilter/thingDefs/li</xpath>
+    <value><li>WNG_Biomass</li></value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithDart']/comps/li[@Class='CompProperties_Refuelable']/fuelLabel</xpath>
+    <value><fuelLabel>cultured biomass</fuelLabel></value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithDart']/comps/li[@Class='CompProperties_Refuelable']/fuelGizmoLabel</xpath>
+    <value><fuelGizmoLabel>cultured biomass</fuelGizmoLabel></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithDart']/comps[not(li[@Class='WraithNaniteGravtech.CompProperties_WraithCraftRegeneration'])]</xpath>
+    <value>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithCraftRegeneration">
+        <repairIntervalTicks>900</repairIntervalTicks><healPerPulse>8</healPerPulse><biomassFuelPerPulse>1</biomassFuelPerPulse>
+      </li>
+    </value>
+  </Operation>
+</Patch>

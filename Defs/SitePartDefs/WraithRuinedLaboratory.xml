@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_WraithRuinedLaboratory</defName>
+    <label>ruined wraith laboratory</label>
+    <description>The remains of an abandoned Wraith feeding and biological-experimentation site. Its active cultivation organs are dead, but damaged living architecture and recoverable specimens may remain. Predatory Wraith sometimes scavenge such ruins.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_WraithRuinedLaboratory</workerClass>
+    <siteTexture>World/WNG_WraithRuinedLabSite</siteTexture>
+    <expandingIconTexture>World/WNG_WraithRuinedLabSite</expandingIconTexture>
+    <applyFactionColorToSiteTexture>false</applyFactionColorToSiteTexture>
+    <showFactionInInspectString>false</showFactionInInspectString>
+    <requiresFaction>false</requiresFaction>
+    <approachOrderString>Approach {0}</approachOrderString>
+    <approachingReportString>Approaching {0}</approachingReportString>
+    <arrivedLetterLabelPart>Ruined Wraith laboratory</arrivedLetterLabelPart>
+    <arrivedLetter>You have reached the ruined Wraith laboratory. Much of the living structure has died or ruptured. The surviving growth and feeding apparatus is nonfunctional, but loose biomass and intact field specimens may remain. Watch for Wraith scavengers using the ruins as temporary cover.</arrivedLetter>
+    <arrivedLetterDef>NeutralEvent</arrivedLetterDef>
+    <wantsThreatPoints>true</wantsThreatPoints>
+    <badEvenIfNoMap>false</badEvenIfNoMap>
+    <forceExitAndRemoveMapCountdownDurationDays>5</forceExitAndRemoveMapCountdownDurationDays>
+    <considerEnteringAsAttack>false</considerEnteringAsAttack>
+    <mainPartAllThreatsLabel>wraith scavengers</mainPartAllThreatsLabel>
+    <minMapSize>(180,1,180)</minMapSize>
+    <gravShipsCanLandOn>true</gravShipsCanLandOn>
+  </SitePartDef>
+</Defs>

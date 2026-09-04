@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_SynthesizeAsuranGravcore</defName>
+    <label>synthesize human-form Replicator gravcore</label>
+    <description>Assemble a functional gravcore using human-form Replicator nanite fabrication and precursor field-control technology. The resulting core is fully compatible with Odyssey gravship systems.</description>
+    <jobString>Synthesizing a human-form Replicator gravcore.</jobString>
+    <workAmount>9000</workAmount>
+    <workSkill>Intellectual</workSkill>
+    <researchPrerequisites>
+      <li>WNG_PrecursorEnergySystems</li>
+      <li>AdvancedGravtech</li>
+    </researchPrerequisites>
+    <recipeUsers>
+      <li>WNG_PrecursorFabricator</li>
+    </recipeUsers>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter>
+        <count>80</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>Plasteel</li></thingDefs></filter>
+        <count>100</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>GravlitePanel</li></thingDefs></filter>
+        <count>20</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter>
+        <count>4</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>WNG_ReplicatorMatter</li>
+        <li>Plasteel</li>
+        <li>GravlitePanel</li>
+        <li>ComponentSpacer</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <products>
+      <Gravcore>1</Gravcore>
+    </products>
+  </RecipeDef>
+</Defs>

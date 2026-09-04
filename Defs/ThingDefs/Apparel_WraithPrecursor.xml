@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_WraithWarriorCarapace</defName>
+    <label>wraith warrior carapace</label>
+    <description>A grown shell of layered chitin and regenerative membrane. It flexes with the wearer while dispersing bullets, blades and heat.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WarriorCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>260</MaxHitPoints><WorkToMake>24000</WorkToMake><Mass>8</Mass><EquipDelay>3.5</EquipDelay><ArmorRating_Sharp>1.25</ArmorRating_Sharp><ArmorRating_Blunt>0.55</ArmorRating_Blunt><ArmorRating_Heat>0.65</ArmorRating_Heat></statBases>
+    <costList><WNG_Biomass>45</WNG_Biomass><ComponentIndustrial>1</ComponentIndustrial></costList>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WarriorCarapace</wornGraphicPath><tags><li>WNG_WraithArmor</li><li>WNG_WraithWarriorArmor</li></tags><defaultOutfitTags><li>Soldier</li></defaultOutfitTags></apparel>
+    <recipeMaker><researchPrerequisite>WNG_AdvancedCarapace</researchPrerequisite><workSkill>Crafting</workSkill><skillRequirements><Crafting>6</Crafting></skillRequirements><recipeUsers Inherit="False"><li>WNG_GrowthChamber</li></recipeUsers></recipeMaker>
+  </ThingDef>
+
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_WraithCommanderCarapace</defName>
+    <label>wraith commander carapace</label>
+    <description>A denser command-grade living shell with reinforced plates around the torso, shoulders and spine.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>320</MaxHitPoints><WorkToMake>36000</WorkToMake><Mass>10</Mass><EquipDelay>4</EquipDelay><ArmorRating_Sharp>1.45</ArmorRating_Sharp><ArmorRating_Blunt>0.65</ArmorRating_Blunt><ArmorRating_Heat>0.78</ArmorRating_Heat><Beauty>3</Beauty></statBases>
+    <costList><WNG_Biomass>65</WNG_Biomass><ComponentIndustrial>2</ComponentIndustrial></costList>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace</wornGraphicPath><tags><li>WNG_WraithArmor</li><li>WNG_WraithCommanderArmor</li></tags><defaultOutfitTags><li>Soldier</li></defaultOutfitTags></apparel>
+    <recipeMaker><researchPrerequisite>WNG_AdvancedCarapace</researchPrerequisite><workSkill>Crafting</workSkill><skillRequirements><Crafting>8</Crafting></skillRequirements><recipeUsers Inherit="False"><li>WNG_GrowthChamber</li></recipeUsers></recipeMaker>
+  </ThingDef>
+
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_PrecursorFieldArmor</defName>
+    <label>precursor field armor</label>
+    <description>A seamless composite suit reinforced by distributed field emitters. It remains light while providing high protection against modern weapons, and its hardened field mesh prevents EMP pulses from collapsing a human-form Replicator's internal nanite coordination.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_FieldArmor</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>300</MaxHitPoints><WorkToMake>48000</WorkToMake><Mass>7</Mass><EquipDelay>3</EquipDelay><ArmorRating_Sharp>1.5</ArmorRating_Sharp><ArmorRating_Blunt>0.62</ArmorRating_Blunt><ArmorRating_Heat>0.85</ArmorRating_Heat></statBases>
+    <costList><Plasteel>70</Plasteel><ComponentSpacer>3</ComponentSpacer></costList>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_FieldArmor</wornGraphicPath><tags><li>WNG_PrecursorArmor</li></tags><defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags></apparel>
+    <recipeMaker><researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite><workSkill>Crafting</workSkill><skillRequirements><Crafting>8</Crafting></skillRequirements><recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers></recipeMaker>
+  </ThingDef>
+</Defs>

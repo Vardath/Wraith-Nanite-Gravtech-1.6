@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_ReplicatorAdaptRanged</defName>
+    <label>ranged Replicator specialization</label>
+    <description>This Replicator lineage has learned to reproduce a compact ranged emitter from successfully assimilated turret or weapon technology.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statFactors><MoveSpeed>0.96</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_ReplicatorAdaptArmor</defName>
+    <label>heavy-armored Replicator specialization</label>
+    <description>This Replicator has reorganized its blocks into dense sacrificial armor learned from consumed protective technology. The additional mass makes it slower.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statOffsets><ArmorRating_Sharp>0.24</ArmorRating_Sharp><ArmorRating_Blunt>0.19</ArmorRating_Blunt><ArmorRating_Heat>0.13</ArmorRating_Heat></statOffsets><statFactors><MoveSpeed>0.87</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_ReplicatorAdaptPower</defName>
+    <label>power-construction Replicator specialization</label>
+    <description>This Replicator carries a denser internal energy-routing lattice derived from consumed generators and power systems. It dismantles matter and reorganizes with nearby units more rapidly.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statFactors><MoveSpeed>1.05</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_ReplicatorAdaptGrav</defName>
+    <label>grav-mobile Replicator specialization</label>
+    <description>This Replicator has learned compact gravitic load-balancing from assimilated gravtech. It does not gain magical flight, but its low-hover support nodes make the body substantially faster and more mobile across ordinary terrain.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statFactors><MoveSpeed>1.32</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_ReplicatorAdaptShield</defName>
+    <label>shielded Replicator specialization</label>
+    <description>This rare Replicator body carries a compact personal field derived from repeatedly assimilated shield technology. The field is finite, slow to recover under fire, and especially vulnerable to EMP.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statFactors><MoveSpeed>0.94</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+</Defs>

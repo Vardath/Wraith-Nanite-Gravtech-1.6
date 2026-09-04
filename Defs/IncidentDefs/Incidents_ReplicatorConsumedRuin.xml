@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_ReplicatorConsumedRuinDiscovery</defName>
+    <label>replicator-consumed ruins discovered</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_ReplicatorConsumedRuinDiscovery</workerClass>
+    <baseChance>0.010</baseChance>
+    <earliestDay>28</earliestDay>
+    <letterLabel>Replicator-consumed ruins located</letterLabel>
+    <letterText>Long-range survey data has exposed the remains of a technological site dismantled from the inside out. Walls end in regular block-sized scars and most machinery has been stripped to empty frames. Dense Replicator Matter remains among the debris: useful evidence of how the swarm consumes technology, but also a live containment problem. Ordinary uncontained Matter can begin self-assembly after roughly half a RimWorld day; secure or suppress it before treating the site as salvage.</letterText>
+    <letterDef>ThreatSmall</letterDef>
+  </IncidentDef>
+</Defs>

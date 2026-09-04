@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_AncientNeuralInterface</defName>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>Ancient neural interface</label>
+    <labelNoun>Ancient neural interface</labelNoun>
+    <description>A surgically integrated precursor control translator seated against the brain's motor and sensory interface regions. It lets an otherwise incompatible humanlike establish the neural handshake required by WNG Ancient control technology. The implant grants no Asuran identity, collective link, nanite abilities, research, ammunition or power.</description>
+    <isBad>false</isBad>
+    <spawnThingOnRemoved>WNG_AncientNeuralInterface</spawnThingOnRemoved>
+  </HediffDef>
+</Defs>

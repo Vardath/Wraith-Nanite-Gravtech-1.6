@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_Biomass</defName>
+    <label>cultured biomass</label>
+    <description>Dense engineered living matter used as feedstock for grown technology.</description>
+    <graphicData><texPath>Things/Item/Resource/WNG_Biomass</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>75</stackLimit>
+    <statBases><MarketValue>4</MarketValue><Mass>0.2</Mass></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_LivingForgeSeed</defName>
+    <label>living forge seed (workshop)</label>
+    <description>A technological organ-seed for a Living Forge, the basic Wraith workshop. Plant this seed from the Wraith &amp; Nanite architect category; after about half a day it matures into a Living Forge. The Living Forge cultures biomass and produces the first Growth Chamber seed.</description>
+    <graphicData><texPath>Things/Item/Resource/WNG_LivingForgeSeed</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>10</stackLimit>
+    <statBases><MarketValue>250</MarketValue><Mass>2</Mass></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_PlantedLivingForgeSeed</defName>
+    <label>plant living forge seed (workshop)</label>
+    <description>Plant a Living Forge seed. This is the basic Wraith workshop seed, not a Growth Chamber seed. It occupies the future 3x2 workshop footprint and matures into a functional Living Forge after about half a day.</description>
+    <thingClass>Building</thingClass>
+    <graphicData><texPath>Things/Building/Production/WNG_PlantedLivingForgeSeed</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(3,2)</drawSize></graphicData>
+    <size>(3,2)</size><designationCategory>WNG_Architect</designationCategory><uiOrder>100</uiOrder>
+    <rotatable>true</rotatable><passability>PassThroughOnly</passability><fillPercent>0.18</fillPercent><tickerType>Rare</tickerType>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+    <statBases><WorkToBuild>120</WorkToBuild><MaxHitPoints>180</MaxHitPoints><Flammability>0.45</Flammability></statBases>
+    <costList><WNG_LivingForgeSeed>1</WNG_LivingForgeSeed></costList>
+    <researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_TechnologicalSeedGrowth"><targetThingDefName>WNG_LivingForge</targetThingDefName><growTicks>30000</growTicks></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BenchBase">
+    <defName>WNG_LivingForge</defName>
+    <label>living forge (basic workshop)</label>
+    <description>The basic Wraith production workshop and bootstrap organ for Wraith industry. It cultures raw meat into biomass and grows the first Growth Chamber seed. Plant that separate Growth Chamber seed to create the larger advanced production vat used for complex Wraith technology.</description>
+    <thingClass>Building_WorkTable</thingClass>
+    <graphicData><texPath>Things/Building/Production/WNG_LivingForge</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(3,2)</drawSize></graphicData>
+    <size>(3,2)</size><designationCategory>WNG_Architect</designationCategory><uiOrder>101</uiOrder>
+    <hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <tickerType>Rare</tickerType>
+    <statBases><WorkToBuild>5000</WorkToBuild><MaxHitPoints>600</MaxHitPoints><Flammability>0.35</Flammability></statBases>
+    <costList><WNG_LivingForgeSeed>1</WNG_LivingForgeSeed></costList>
+    <researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
+    <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <building><spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity></building>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WngAmbientSound"><soundDefName>WNG_LivingForgeAmbient</soundDefName><minIntervalTicks>900</minIntervalTicks><maxIntervalTicks>1500</maxIntervalTicks></li>
+    </comps>
+  </ThingDef>
+</Defs>

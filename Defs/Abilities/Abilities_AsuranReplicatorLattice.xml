@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef>
+    <defName>WNG_AsuranLatticeIntrusion</defName>
+    <label>lattice intrusion</label>
+    <description>Project an Asuran collective control pattern into one hostile block Replicator. Drones and Hunters can be temporarily overwritten and commanded by the caster's faction. Larger forms resist allegiance replacement but suffer temporary replication and coordination suppression instead; Controllers lose their coordination function and a Siege Mass can only be disrupted briefly. Collective peers strengthen the intrusion, while shield-adapted Replicators resist it. This is a temporary contest of machine control, not a permanent swarm conversion.</description>
+    <iconPath>UI/WNG/AsuranLatticeIntrusion</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>15000~15000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <range>20</range>
+      <warmupTime>2.5</warmupTime>
+      <targetParams>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>true</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityAsuranLatticeIntrusion">
+        <droneOverrideTicks>15000</droneOverrideTicks>
+        <hunterOverrideTicks>9000</hunterOverrideTicks>
+        <bulwarkSuppressionTicks>6000</bulwarkSuppressionTicks>
+        <titanSuppressionTicks>4500</titanSuppressionTicks>
+        <controllerSuppressionTicks>7500</controllerSuppressionTicks>
+        <siegeSuppressionTicks>3000</siegeSuppressionTicks>
+        <peerDurationBonus>0.08</peerDurationBonus>
+        <maxPeerBonusCount>3</maxPeerBonusCount>
+        <shieldResistanceFactor>0.75</shieldResistanceFactor>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>

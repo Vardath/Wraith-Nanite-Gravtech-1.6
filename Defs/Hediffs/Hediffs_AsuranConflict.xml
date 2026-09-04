@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_AsuranAutonomyBreak</defName>
+    <label>autonomy break</label>
+    <description>This individualist nanite mind has rejected dense collective consensus for a bounded period. The pawn remains physically compatible with the lattice and retains passive Pattern Archive continuity, but refuses active network assistance to its reconstruction processes until the break passes.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60000</disappearsAfterTicks></li>
+    </comps>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_AsuranConsensusDistress</defName>
+    <label>consensus deprivation</label>
+    <description>This collective-loyalist nanite mind has remained without compatible network peers long enough for its dependency on shared consensus to become disruptive. Reconstruction efficiency and learning remain impaired until the episode passes.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <label>consensus deprived</label>
+        <statOffsets><GlobalLearningFactor>-0.10</GlobalLearningFactor></statOffsets>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60000</disappearsAfterTicks></li>
+    </comps>
+  </HediffDef>
+</Defs>

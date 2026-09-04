@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_WraithHive</defName>
+    <label>mature Wraith Hive</label>
+    <description>A Queen-led Wraith population centre built around feeding reserves, cloning organs, dormancy vaults and a biomass-fed regenerative heart.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_WraithHive</workerClass>
+    <siteTexture>World/WNG_WraithHiveSite</siteTexture>
+    <expandingIconTexture>World/WNG_WraithHiveSite</expandingIconTexture>
+    <applyFactionColorToSiteTexture>false</applyFactionColorToSiteTexture>
+    <showFactionInInspectString>true</showFactionInInspectString>
+    <requiresFaction>true</requiresFaction>
+    <approachOrderString>Approach {0}</approachOrderString>
+    <approachingReportString>Approaching {0}</approachingReportString>
+    <arrivedLetterLabelPart>Mature Wraith Hive</arrivedLetterLabelPart>
+    <arrivedLetter>You have reached a mature Wraith Hive. A Queen and Keeper supervise a regenerative biological complex containing stored biomass and sealed dormancy reservoirs. Destroying the metabolic heart will stop active structural regeneration.</arrivedLetter>
+    <arrivedLetterDef>ThreatBig</arrivedLetterDef>
+    <wantsThreatPoints>true</wantsThreatPoints>
+    <badEvenIfNoMap>true</badEvenIfNoMap>
+    <forceExitAndRemoveMapCountdownDurationDays>6</forceExitAndRemoveMapCountdownDurationDays>
+    <considerEnteringAsAttack>true</considerEnteringAsAttack>
+    <mainPartAllThreatsLabel>wraith hive defenders</mainPartAllThreatsLabel>
+    <minMapSize>(220,1,220)</minMapSize>
+    <gravShipsCanLandOn>true</gravShipsCanLandOn>
+  </SitePartDef>
+</Defs>

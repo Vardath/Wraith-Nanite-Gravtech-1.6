@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_ReplicatorQueenVaultDiscovery</defName>
+    <label>sealed nanite vault detected</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_ReplicatorQueenVaultDiscovery</workerClass>
+    <baseChance>0.004</baseChance>
+    <earliestDay>84</earliestDay>
+    <letterLabel>Impossible nanite signal</letterLabel>
+    <letterText>A precursor-era signal has resolved into something stranger than a power source. Sensors indicate an intact cryptosleep chamber containing a stable human-sized nanite lattice, but the body profile is that of a child. The site is old, sealed, and still defended by automated systems. This is a rare late-stage discovery: recovery is potentially transformative, but the occupant is a sovereign person rather than research material or a free production shortcut.</letterText>
+    <letterDef>PositiveEvent</letterDef>
+  </IncidentDef>
+</Defs>

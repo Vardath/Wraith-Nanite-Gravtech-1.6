@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_DormantChildsToy</defName>
+    <label>child's toy</label>
+    <description>A small articulated object assembled from unusually precise metallic blocks. It has no maker's mark, no visible battery and a mechanism that seems far too intricate for a simple toy.</description>
+    <graphicData>
+      <texPath>Things/Item/Artifact/Replicator/WNG_DormantChildsToy</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.85,0.85)</drawSize>
+    </graphicData>
+    <thingCategories><li>Manufactured</li></thingCategories>
+    <stackLimit>1</stackLimit>
+    <alwaysHaulable>true</alwaysHaulable>
+    <tradeability>All</tradeability>
+    <statBases>
+      <MarketValue>950</MarketValue>
+      <Mass>0.65</Mass>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+    </statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_DormantChildsToy">
+        <pawnKindDef>WNG_ReplicatorDrone</pawnKindDef>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

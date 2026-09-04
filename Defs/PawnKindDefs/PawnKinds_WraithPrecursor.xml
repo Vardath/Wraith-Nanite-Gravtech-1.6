@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef Name="WNG_WraithPawnBase" Abstract="True">
+    <race>Human</race><defaultFactionDef>WNG_WraithBrood</defaultFactionDef><useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet><xenotypeChances><WNG_Wraith>1</WNG_Wraith></xenotypeChances></xenotypeSet>
+    <minGenerationAge>20</minGenerationAge><maxGenerationAge>180</maxGenerationAge><allowOldAgeInjuries>false</allowOldAgeInjuries>
+    <isFighter>true</isFighter><apparelIgnoreSeasons>true</apparelIgnoreSeasons><apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <gearHealthRange>0.75~1</gearHealthRange><itemQuality>Normal</itemQuality><initialWillRange>8~18</initialWillRange><initialResistanceRange>12~28</initialResistanceRange>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithHunter</defName><label>wraith hunter</label><combatPower>95</combatPower><weaponMoney>250~700</weaponMoney><weaponTags><li>WNG_WraithCaptureWeapon</li><li>WNG_WraithLineWeapon</li></weaponTags><apparelMoney>500~1200</apparelMoney><apparelRequired><li>WNG_WraithHunterCoat</li></apparelRequired>
+    <backstoryFiltersOverride><li><categories><li>WNG_WraithOrigin</li><li>WNG_WraithHunterAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithWarrior</defName><label>wraith warrior</label><combatPower>145</combatPower><weaponMoney>400~1000</weaponMoney><weaponTags><li>WNG_WraithLineWeapon</li></weaponTags><apparelMoney>1200~2500</apparelMoney><apparelRequired><li>WNG_WraithWarriorCarapace</li></apparelRequired>
+    <backstoryFiltersOverride><li><categories><li>WNG_WraithOrigin</li><li>WNG_WraithWarriorAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithCommander</defName><label>wraith commander</label><combatPower>230</combatPower><weaponMoney>900~1800</weaponMoney><weaponTags><li>WNG_WraithHeavyWeapon</li><li>WNG_WraithLineWeapon</li></weaponTags><apparelMoney>2200~4000</apparelMoney><apparelRequired><li>WNG_WraithCommanderCarapace</li></apparelRequired><itemQuality>Good</itemQuality>
+    <backstoryFiltersOverride><li><categories><li>WNG_WraithOrigin</li><li>WNG_WraithCommanderAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithKeeper</defName><label>wraith keeper</label><description>A senior Wraith caretaker entrusted with dormant hive populations, feeding reserves and the biological systems that sustain long hibernation cycles.</description><combatPower>185</combatPower><isFighter>true</isFighter><minGenerationAge>45</minGenerationAge><maxGenerationAge>240</maxGenerationAge><weaponMoney>650~1400</weaponMoney><weaponTags><li>WNG_WraithCaptureWeapon</li><li>WNG_WraithLineWeapon</li></weaponTags><apparelMoney>1800~3400</apparelMoney><apparelRequired><li>WNG_WraithCommanderCarapace</li></apparelRequired><itemQuality>Good</itemQuality><initialWillRange>16~28</initialWillRange><initialResistanceRange>22~38</initialResistanceRange>
+    <backstoryFiltersOverride><li><categories><li>WNG_WraithOrigin</li><li>WNG_WraithKeeperAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithQueen</defName><label>wraith queen</label><combatPower>320</combatPower><factionLeader>true</factionLeader><fixedGender>Female</fixedGender><minGenerationAge>35</minGenerationAge><weaponMoney>1000~2200</weaponMoney><weaponTags><li>WNG_WraithHeavyWeapon</li><li>WNG_WraithLineWeapon</li></weaponTags><apparelMoney>2600~5000</apparelMoney><apparelRequired><li>WNG_WraithQueenRaiment</li></apparelRequired><itemQuality>Excellent</itemQuality><initialWillRange>18~30</initialWillRange><initialResistanceRange>25~40</initialResistanceRange>
+    <backstoryFiltersOverride><li><categories><li>WNG_WraithOrigin</li><li>WNG_WraithQueenAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_PlayerWraith</defName><label>player wraith</label><defaultFactionDef>PlayerColony</defaultFactionDef><combatPower>145</combatPower><weaponMoney>400~1000</weaponMoney><weaponTags><li>WNG_WraithLineWeapon</li><li>WNG_WraithCaptureWeapon</li></weaponTags><apparelMoney>500~1800</apparelMoney><apparelRequired><li>WNG_WraithHunterCoat</li></apparelRequired><initialWillRange>0~0</initialWillRange><initialResistanceRange>0~0</initialResistanceRange>
+    <backstoryFiltersOverride><li><categories><li>WNG_WraithOrigin</li><li>WNG_WraithPlayerAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+
+  <PawnKindDef Name="WNG_PrecursorPawnBase" Abstract="True"><race>Human</race><defaultFactionDef>WNG_PrecursorCollective</defaultFactionDef><useFactionXenotypes>false</useFactionXenotypes><xenotypeSet><xenotypeChances><WNG_NanitePrecursor>1</WNG_NanitePrecursor></xenotypeChances></xenotypeSet><minGenerationAge>20</minGenerationAge><maxGenerationAge>80</maxGenerationAge><allowOldAgeInjuries>false</allowOldAgeInjuries><apparelIgnoreSeasons>true</apparelIgnoreSeasons><apparelAllowHeadgearChance>0</apparelAllowHeadgearChance><gearHealthRange>0.9~1</gearHealthRange><itemQuality>Good</itemQuality><initialWillRange>12~24</initialWillRange><initialResistanceRange>18~32</initialResistanceRange></PawnKindDef>
+  <PawnKindDef ParentName="WNG_PrecursorPawnBase">
+    <defName>WNG_PrecursorEngineer</defName><label>precursor engineer</label><combatPower>110</combatPower><isFighter>false</isFighter><weaponMoney>1005~1400</weaponMoney><weaponTags><li>WNG_PrecursorWeapon</li></weaponTags><apparelMoney>0</apparelMoney>
+    <backstoryFiltersOverride><li><categories><li>WNG_AsuranOrigin</li><li>WNG_AsuranEngineerAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_PrecursorPawnBase">
+    <defName>WNG_PrecursorSoldier</defName><label>precursor soldier</label><combatPower>220</combatPower><isFighter>true</isFighter><weaponMoney>1005~2200</weaponMoney><weaponTags><li>WNG_PrecursorWeapon</li></weaponTags><apparelMoney>2500~4500</apparelMoney><apparelRequired><li>WNG_PrecursorFieldArmor</li></apparelRequired>
+    <backstoryFiltersOverride><li><categories><li>WNG_AsuranOrigin</li><li>WNG_AsuranSoldierAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_PrecursorPawnBase">
+    <defName>WNG_PrecursorCommander</defName><label>precursor commander</label><combatPower>300</combatPower><isFighter>true</isFighter><factionLeader>true</factionLeader><weaponMoney>1400~3000</weaponMoney><weaponTags><li>WNG_PrecursorWeapon</li></weaponTags><apparelMoney>3200~5200</apparelMoney><apparelRequired><li>WNG_PrecursorFieldArmor</li></apparelRequired><itemQuality>Excellent</itemQuality>
+    <backstoryFiltersOverride><li><categories><li>WNG_AsuranOrigin</li><li>WNG_AsuranCommanderAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_PrecursorPawnBase">
+    <defName>WNG_HumanFormReplicator</defName><label>human-form replicator</label><xenotypeSet><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet><combatPower>180</combatPower><isFighter>true</isFighter><weaponMoney>1005~1600</weaponMoney><weaponTags><li>WNG_PrecursorWeapon</li></weaponTags><apparelMoney>1800~3600</apparelMoney><apparelRequired><li>WNG_HumanFormCombatArmor</li></apparelRequired><initialWillRange>0~0</initialWillRange><initialResistanceRange>0~0</initialResistanceRange>
+    <backstoryFiltersOverride><li><categories><li>WNG_AsuranOrigin</li><li>WNG_AsuranHumanFormAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+  <PawnKindDef ParentName="WNG_PrecursorPawnBase">
+    <defName>WNG_PlayerHumanFormReplicator</defName><label>player human-form replicator</label><defaultFactionDef>PlayerColony</defaultFactionDef><xenotypeSet><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet><combatPower>180</combatPower><isFighter>true</isFighter><weaponMoney>1005~1600</weaponMoney><weaponTags><li>WNG_PrecursorWeapon</li></weaponTags><apparelMoney>800~2200</apparelMoney><apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired><initialWillRange>0~0</initialWillRange><initialResistanceRange>0~0</initialResistanceRange>
+    <backstoryFiltersOverride><li><categories><li>WNG_AsuranOrigin</li><li>WNG_AsuranPlayerAdult</li></categories></li></backstoryFiltersOverride>
+  </PawnKindDef>
+</Defs>

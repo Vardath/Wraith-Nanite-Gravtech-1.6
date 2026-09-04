@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_WraithCloningInstallationDiscovery</defName>
+    <label>abandoned wraith cloning installation discovered</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_WraithCloningInstallationDiscovery</workerClass>
+    <baseChance>0.009</baseChance>
+    <earliestDay>44</earliestDay>
+    <letterLabel>Abandoned Wraith cloning installation located</letterLabel>
+    <letterText>Long-range biological echoes have isolated a sealed Wraith population-production complex. Its cultivation network has collapsed, but rows of gestation cocoons and donor-transfer machinery remain inside. The ruins explain more of how mature Hives sustain themselves, but they are not functioning cloning technology. Cultured biomass and field equipment may still be recoverable; surviving Wraith caretakers sometimes return to reclaim such sites.</letterText>
+    <letterDef>NeutralEvent</letterDef>
+  </IncidentDef>
+</Defs>

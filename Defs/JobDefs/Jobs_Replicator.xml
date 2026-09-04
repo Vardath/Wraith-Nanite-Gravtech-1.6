@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>WNG_ReplicatorAssimilate</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorAssimilate</driverClass>
+    <reportString>assimilating TargetA.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>WNG_ReplicatorRepairAlly</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorRepairAlly</driverClass>
+    <reportString>reconstructing TargetA.</reportString>
+  </JobDef>
+
+  <JobDef>
+    <defName>WNG_ReplicatorAssimilateBiological</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorAssimilateBiological</driverClass>
+    <reportString>converting TargetA into replicator matter.</reportString>
+  </JobDef>
+</Defs>

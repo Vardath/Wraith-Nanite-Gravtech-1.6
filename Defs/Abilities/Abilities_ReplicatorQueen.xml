@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef>
+    <defName>WNG_ReplicatorDirective</defName>
+    <label>sovereign directive</label>
+    <description>Transmit the Queen's unique coordination pattern to one WNG Replicator, overriding its current allegiance. This works on both modular block forms and human-form Replicators, but only one target can be brought under direct command at a time.</description>
+    <iconPath>UI/WNG/ReplicatorQueen</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>60000~60000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <range>32</range>
+      <warmupTime>2</warmupTime>
+      <targetParams>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>true</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityReplicatorDirective" />
+    </comps>
+  </AbilityDef>
+</Defs>

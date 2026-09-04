@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef>
+    <defName>WNG_SovereignLatticeDirective</defName>
+    <label>sovereign lattice directive</label>
+    <description>Use an implanted Sovereign Neural Lattice to override the allegiance of one WNG Replicator. This deliberately narrow command is slower and shorter-ranged than a true Queen's directive and grants no passive Queen coordination.</description>
+    <iconPath>Things/Item/Implant/WNG_SovereignNeuralLattice</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>90000~90000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass><range>24</range><warmupTime>2.5</warmupTime>
+      <targetParams><canTargetPawns>true</canTargetPawns><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>true</canTargetMechs></targetParams>
+    </verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityReplicatorDirective" /></comps>
+  </AbilityDef>
+</Defs>

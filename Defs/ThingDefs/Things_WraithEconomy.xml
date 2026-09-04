@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BedWithQualityBase">
+    <defName>WNG_WraithFeedingNiche</defName>
+    <label>wraith feeding niche</label>
+    <description>A restrained living niche used to keep prisoners as a managed feeding reserve. With a Keeper or Queen present, the organ can perform conservative ration feeding only when allied Wraith are actually short of life force. The cycle deliberately avoids the fatal repeat-feed behavior of Drain Life and produces a small amount of cultured biomass as the niche processes shed tissue and nutrient fluids.</description>
+    <graphicData>
+      <texPath>Things/Building/Wraith/Storage/WNG_NutrientNiche</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1.4,2.3)</drawSize>
+    </graphicData>
+    <size>(1,2)</size>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MaxHitPoints>320</MaxHitPoints>
+      <WorkToBuild>1900</WorkToBuild>
+      <Mass>34</Mass>
+      <Flammability>0.3</Flammability>
+      <BedRestEffectiveness>0.9</BedRestEffectiveness>
+      <Comfort>0.38</Comfort>
+      <Beauty>-3</Beauty>
+    </statBases>
+    <costList><WNG_Biomass>55</WNG_Biomass></costList>
+    <building>
+      <bed_showSleeperBody>false</bed_showSleeperBody>
+      <bed_healPerDay>2</bed_healPerDay>
+      <destroySound>BuildingDestroyed_Soft_Medium</destroySound>
+    </building>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithFeedingNiche">
+        <cycleTicks>120000</cycleTicks>
+        <victimAgeYears>2</victimAgeYears>
+        <lifeForceGainPerWraith>0.12</lifeForceGainPerWraith>
+        <maxWraithsFed>3</maxWraithsFed>
+        <biomassYield>4</biomassYield>
+        <feedOnlyBelowLifeForce>0.85</feedOnlyBelowLifeForce>
+      </li>
+    </comps>
+    <researchPrerequisites><li>WNG_FeedingEcology</li></researchPrerequisites>
+    <leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
+    <uiOrder>2113</uiOrder>
+  </ThingDef>
+</Defs>

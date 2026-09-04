@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AncientControlChair'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AncientControlChair</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AncientVacuumShieldEmitter'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AncientVacuumShieldEmitter</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranPatternArchive'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranPatternArchive</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_BioelectricOrgan'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_BioelectricOrgan</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_GravshipMetabolicHeart'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_GravshipMetabolicHeart</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_GrowthChamber'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_GrowthChamber</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_HiveMetabolicHeart'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_HiveMetabolicHeart</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_LivingForge'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_LivingForge</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_LivingPowerCell'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_LivingPowerCell</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_OrganicGravshipHull'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_OrganicGravshipHull</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_OrganicPilotNode'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_OrganicPilotNode</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_OrganicThruster'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_OrganicThruster</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PlantedGrowthChamberSeed'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PlantedGrowthChamberSeed</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PlantedLivingForgeSeed'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PlantedLivingForgeSeed</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorFabricator'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorFabricator</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorGravPowerCore'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorGravPowerCore</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorGravshipHull'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorGravshipHull</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorPilotConsole'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorPilotConsole</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorPowerCell'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorPowerCell</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorSettlementShield'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorSettlementShield</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorShieldEmitter'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorShieldEmitter</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorStoragePlinth'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorStoragePlinth</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PrecursorVectorThruster'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PrecursorVectorThruster</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_PuddleJumper'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_PuddleJumper</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_ReplicatorContainmentProjector'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_ReplicatorContainmentProjector</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_ReplicatorSuppressionEmitter'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_ReplicatorSuppressionEmitter</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_VacuumEnergyTap'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_VacuumEnergyTap</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithCruiser'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithCruiser</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithDart'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithDart</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithNutrientNiche'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithNutrientNiche</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithStrikeCraft'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithStrikeCraft</uiIconPath>
+    </value>
+  </Operation>
+</Patch>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_HostSeedGestation</defName>
+    <label>host seed gestation</label>
+    <description>Implant a living technological seed into a downed biological enemy, prisoner, slave, or biological corpse. A living host is kept incapacitated while the seed matures; a corpse is consumed immediately into an incubating mass. After one day, a minified living forge emerges.</description>
+    <iconPath>UI/WNG/HostSeed</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>60000~60000</cooldownTicksRange><hostile>true</hostile><casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <verbProperties><verbClass>Verb_CastAbilityTouch</verbClass><drawAimPie>false</drawAimPie><range>-1</range><warmupTime>2</warmupTime><stunTargetOnCastStart>true</stunTargetOnCastStart><targetParams><canTargetPawns>true</canTargetPawns><canTargetItems>true</canTargetItems><canTargetSelf>false</canTargetSelf><canTargetBuildings>false</canTargetBuildings><canTargetMechs>false</canTargetMechs></targetParams></verbProperties>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityHostSeedGestation"><incubationHediff>WNG_HostSeedIncubation</incubationHediff></li></comps>
+  </AbilityDef>
+</Defs>

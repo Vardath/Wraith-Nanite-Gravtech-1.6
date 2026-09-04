@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_StabilizeRecoveredPrecursorPulseRifle</defName>
+    <label>stabilize recovered precursor pulse rifle</label>
+    <description>Strip the drifting original emitter down to its surviving field architecture, replace failed alignment lattices and rebuild it as one stable precursor pulse rifle. The recovered specimen is consumed in the process.</description>
+    <jobString>Stabilizing recovered precursor pulse rifle.</jobString>
+    <workAmount>12000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>8</Crafting></skillRequirements>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <researchPrerequisite>WNG_PrecursorEnergySystems</researchPrerequisite>
+    <ingredients>
+      <li><filter><thingDefs><li>WNG_RecoveredPrecursorPulseRifle</li></thingDefs></filter><count>1</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>15</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>1</count></li>
+      <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>8</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_RecoveredPrecursorPulseRifle</li><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_PrecursorPulseRifle>1</WNG_PrecursorPulseRifle></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+</Defs>

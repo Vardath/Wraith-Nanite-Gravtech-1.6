@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <WNG_HostSeed_TargetMustBeBiological>{0_labelShort} is not a suitable biological host.</WNG_HostSeed_TargetMustBeBiological>
+  <WNG_HostSeed_AlreadyIncubating>{0_labelShort} is already incubating a living seed.</WNG_HostSeed_AlreadyIncubating>
+  <WNG_HostSeed_MissingDefinition>Host seed gestation is unavailable because a required definition is missing.</WNG_HostSeed_MissingDefinition>
+  <WNG_InvalidBiologicalTarget>This ability requires a valid living biological target; abilities marked for incapacitated prey also accept a stunned target.</WNG_InvalidBiologicalTarget>
+  <WNG_NaniteInterfaceInvalidTarget>Neural interface requires another living humanlike biological pawn.</WNG_NaniteInterfaceInvalidTarget>
+  <WNG_ReplicatorGoneFeral>{0} has been left uncontrolled for too long. Its autonomous replication routines have taken over.</WNG_ReplicatorGoneFeral>
+</LanguageData>

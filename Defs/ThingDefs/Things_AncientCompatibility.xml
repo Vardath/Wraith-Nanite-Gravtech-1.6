@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="WNG_ImplantBase">
+    <defName>WNG_AncientNeuralInterface</defName>
+    <label>Ancient neural interface</label>
+    <description>A compact precursor-control translator designed for surgical placement against the brain's motor and sensory interface regions. It grants the neural handshake needed to operate WNG Ancient control systems without conferring Asuran identity or broader nanite abilities.</description>
+    <graphicData><texPath>Things/Item/Implant/WNG_AncientNeuralInterface</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MarketValue>1900</MarketValue><Mass>0.08</Mass></statBases>
+  </ThingDef>
+</Defs>

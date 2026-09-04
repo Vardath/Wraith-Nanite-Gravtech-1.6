@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_WraithGravcoreSeed</defName>
+    <label>wraith gravcore seed</label>
+    <description>A dense workshop-grown organ seed carrying a gravitic developmental pattern. Implant it into a living biological prisoner or slave, or into a biological humanlike corpse. The seed is committed immediately. A living host is consumed after one day of gestation; a corpse is consumed immediately into an incubating mass. Either route produces a functional gravcore after one day.</description>
+    <graphicData><texPath>Things/Item/Resource/WNG_GrowthChamberSeed</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>5</stackLimit>
+    <statBases><MarketValue>650</MarketValue><Mass>3</Mass></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_HostImplantSeed">
+        <hediffDefName>WNG_GravcoreSeedIncubation</hediffDefName>
+        <commandLabel>Implant gravcore seed</commandLabel>
+        <commandDescription>Implant this seed into a living biological prisoner or slave, or a biological humanlike corpse. After one day, a gravcore emerges.</commandDescription>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_CorpseLivingForgeIncubation</defName>
+    <label>incubating living forge mass</label>
+    <description>A biological corpse consumed by Wraith host-seed tissue. Keep the mass spawned on the map while it converts; after one day it becomes a minified living forge.</description>
+    <graphicData><texPath>Things/Item/Resource/WNG_LivingForgeSeed</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <tickerType>Rare</tickerType>
+    <stackLimit>1</stackLimit>
+    <statBases><MarketValue>0</MarketValue><Mass>20</Mass></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_CorpseSeedIncubation">
+        <targetThingDefName>WNG_LivingForge</targetThingDefName>
+        <incubationTicks>60000</incubationTicks>
+        <minifyOutput>true</minifyOutput>
+        <setPlayerFaction>true</setPlayerFaction>
+        <completionMessage>The corpse-incubated living forge has finished growing.</completionMessage>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_CorpseGravcoreIncubation</defName>
+    <label>incubating gravcore mass</label>
+    <description>A biological humanlike corpse consumed by a Wraith gravcore seed. Keep the mass spawned on the map while it converts; after one day it becomes a functional gravcore.</description>
+    <graphicData><texPath>Things/Item/Resource/WNG_WraithGravcoreSeed</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <tickerType>Rare</tickerType>
+    <stackLimit>1</stackLimit>
+    <statBases><MarketValue>0</MarketValue><Mass>3</Mass></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_CorpseSeedIncubation">
+        <targetThingDefName>Gravcore</targetThingDefName>
+        <incubationTicks>60000</incubationTicks>
+        <minifyOutput>false</minifyOutput>
+        <setPlayerFaction>false</setPlayerFaction>
+        <completionMessage>The corpse-incubated Wraith gravcore has finished growing.</completionMessage>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

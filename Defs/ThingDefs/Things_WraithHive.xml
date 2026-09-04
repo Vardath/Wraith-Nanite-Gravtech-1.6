@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_HiveMetabolicHeart</defName>
+    <label>wraith hive metabolic heart</label>
+    <description>A massive cultivated organ that circulates nutrient-rich fluid through nearby Wraith structures. Each repair pulse consumes cultured biomass and closes damage in a limited number of living systems. It cannot regrow destroyed buildings, making the heart and its biomass reserve strategic weak points in an otherwise regenerative hive. On a naturally established mature NPC Hive, the heart also reports that exact Hive's active, dormant and feeding-stock population and coordinates only resource-funded demographic recovery up to its founding population.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <graphicData>
+      <texPath>Things/Building/Wraith/Hive/WNG_HiveMetabolicHeart</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(3.5,3.5)</drawSize>
+    </graphicData>
+    <size>(3,3)</size>
+    <rotatable>false</rotatable>
+    <tickerType>Normal</tickerType>
+    <passability>PassThroughOnly</passability>
+    <pathCost>60</pathCost>
+    <fillPercent>0.75</fillPercent>
+    <canOverlapZones>false</canOverlapZones>
+    <statBases>
+      <MaxHitPoints>850</MaxHitPoints>
+      <WorkToBuild>7600</WorkToBuild>
+      <Mass>85</Mass>
+      <Flammability>0.18</Flammability>
+      <Beauty>-6</Beauty>
+    </statBases>
+    <costList><WNG_Biomass>120</WNG_Biomass></costList>
+    <designationCategory>WNG_Architect</designationCategory>
+    <uiOrder>115</uiOrder>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <researchPrerequisites><li>WNG_HiveArchitecture</li></researchPrerequisites>
+    <constructionSkillPrerequisite>7</constructionSkillPrerequisite>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithHiveHeart">
+        <pulseIntervalTicks>600</pulseIntervalTicks>
+        <radius>24</radius>
+        <maxTargetsPerPulse>4</maxTargetsPerPulse>
+        <healPerTarget>7</healPerTarget>
+        <biomassPerPulse>1</biomassPerPulse>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithHivePopulation">
+        <checkIntervalTicks>250</checkIntervalTicks>
+        <dormancyTriggerRadius>18</dormancyTriggerRadius>
+        <recoveryRetryTicks>30000</recoveryRetryTicks>
+        <minimumDonorLifeForce>0.55</minimumDonorLifeForce>
+        <donorLifeForceCost>0.25</donorLifeForceCost>
+        <newbornLifeForce>0.35</newbornLifeForce>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_HiveDormancyVault</defName>
+    <label>sealed Wraith dormancy vault</label>
+    <description>A thick communal hibernation organ embedded in mature Wraith sites. It contains a finite reserve of dormant hunters and warriors. Hostile vaults remain sealed until damaged or approached, then release their occupants in waves.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <graphicData>
+      <texPath>Things/Building/Wraith/Hive/WNG_HiveDormancyVault</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(2.5,3.5)</drawSize>
+    </graphicData>
+    <size>(2,3)</size>
+    <rotatable>true</rotatable>
+    <tickerType>Normal</tickerType>
+    <passability>Impassable</passability>
+    <fillPercent>0.95</fillPercent>
+    <canOverlapZones>false</canOverlapZones>
+    <statBases>
+      <MaxHitPoints>720</MaxHitPoints>
+      <Mass>110</Mass>
+      <Flammability>0.12</Flammability>
+      <Beauty>-8</Beauty>
+    </statBases>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithDormancyVault">
+        <dormantCount>4</dormantCount>
+        <triggerRadius>18</triggerRadius>
+        <awakenIntervalTicks>180</awakenIntervalTicks>
+        <awakenPerWave>2</awakenPerWave>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_GravshipMetabolicHeart</defName>
+    <label>wraith gravship metabolic heart</label>
+    <description>A compact ship-grown metabolic heart that circulates repair biomass through a Wraith gravship. It repairs damaged organic hull tissue, controls and drive organs within range while biomass lasts, but cannot restore components that have already been destroyed.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <graphicData>
+      <texPath>Things/Building/Wraith/Gravship/WNG_GravshipMetabolicHeart</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(2.4,2.4)</drawSize>
+    </graphicData>
+    <size>(2,2)</size>
+    <rotatable>false</rotatable>
+    <tickerType>Normal</tickerType>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.65</fillPercent>
+    <pathCost>40</pathCost>
+    <canOverlapZones>false</canOverlapZones>
+    <statBases>
+      <MaxHitPoints>600</MaxHitPoints>
+      <WorkToBuild>9000</WorkToBuild>
+      <Mass>54</Mass>
+      <Flammability>0.1</Flammability>
+      <Beauty>-2</Beauty>
+    </statBases>
+    <costList><WNG_Biomass>100</WNG_Biomass><GravlitePanel>12</GravlitePanel></costList>
+    <designationCategory>WNG_Architect</designationCategory>
+    <uiOrder>1810</uiOrder>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <researchPrerequisites><li>WNG_HiveArchitecture</li><li>WNG_OrganicFlight</li></researchPrerequisites>
+    <constructionSkillPrerequisite>8</constructionSkillPrerequisite>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithHiveHeart">
+        <pulseIntervalTicks>480</pulseIntervalTicks>
+        <radius>30</radius>
+        <maxTargetsPerPulse>5</maxTargetsPerPulse>
+        <healPerTarget>8</healPerTarget>
+        <biomassPerPulse>1</biomassPerPulse>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

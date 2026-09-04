@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <DesignationCategoryDef>
+    <defName>WNG_Architect</defName>
+    <label>Wraith &amp; Nanite</label>
+    <description>Wraith living technology, Asuran precursor systems, Replicator devices and themed gravtech.</description>
+    <order>75</order>
+  </DesignationCategoryDef>
+</Defs>

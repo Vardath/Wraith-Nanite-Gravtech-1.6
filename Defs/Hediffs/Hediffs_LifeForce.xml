@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_LifeForceStarved</defName>
+    <label>life-force starvation</label>
+    <description>Life-force reserves are critically low. Regeneration is suppressed and the body becomes slow, weak and difficult to keep conscious.</description>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>-0.20</offset></li>
+          <li><capacity>Manipulation</capacity><offset>-0.15</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.10</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_LifeForceTorpor</defName>
+    <label>life-force torpor</label>
+    <description>With no usable life force remaining, the body has entered a dormant survival state. This condition does not directly kill the bearer, but leaves them almost helpless.</description>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><setMax>0.02</setMax></li>
+          <li><capacity>Manipulation</capacity><setMax>0.05</setMax></li>
+          <li><capacity>Consciousness</capacity><setMax>0.15</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_LifeDrained</defName>
+    <label>life drained</label>
+    <description>Much of this pawn's vitality has been violently stripped away. The visible weakness fades as the body stabilizes, though the biological aging caused by the feeding remains.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60000~120000</disappearsAfterTicks></li>
+    </comps>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>-0.12</offset></li>
+          <li><capacity>Manipulation</capacity><offset>-0.08</offset></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_FedRecently</defName>
+    <label>fed recently</label>
+    <description>Freshly stolen life force is flooding this Wraith's tissues, accelerating repair for roughly a day.</description>
+    <hediffClass>WraithNaniteGravtech.Hediff_FedRecently</hediffClass>
+    <isBad>false</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60000~60000</disappearsAfterTicks></li>
+    </comps>
+  </HediffDef>
+</Defs>

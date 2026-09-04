@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_WraithRegeneration</defName>
+    <label>wraith regeneration</label>
+    <description>The body continuously rebuilds damaged tissue and can eventually reconstruct lost anatomy. Regeneration strength scales with available life force.</description>
+    <iconPath>UI/WNG/WraithRegeneration</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_WraithRegeneration</geneClass>
+    <biostatCpx>3</biostatCpx>
+    <biostatMet>-3</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_LifeForceMetabolism</defName>
+    <label>life-force metabolism</label>
+    <description>The bearer does not eat conventional food. Instead it survives by draining biological vitality. A full feeding renews the reserve for approximately one quadrum, while partial feeding allows less destructive harvesting at lower efficiency. Going unfed suppresses regeneration and physical capability until the Wraith feeds again.</description>
+    <iconPath>UI/WNG/LifeForce</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_LifeForce</geneClass>
+    <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_LifeForce</resourceGizmoType>
+    <resourceLabel>life force</resourceLabel>
+    <resourceDescription>{PAWN_nameDef} stores biological vitality drained from living prey. Full feeding completely renews the reserve; partial feeding restores roughly one third. Depletion weakens the Wraith but does not directly kill it.</resourceDescription>
+    <resourceLossPerDay>0.0666667</resourceLossPerDay>
+    <resourceGizmoThresholds><li>0.15</li><li>0.4</li><li>0.7</li></resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView>
+    <disablesNeeds><li>Food</li><li>Beauty</li><li>Comfort</li></disablesNeeds>
+    <abilities><li>WNG_LifeDrain</li><li>WNG_PartialFeed</li><li>WNG_Enthrall</li><li>WNG_Hibernate</li></abilities>
+    <biostatCpx>3</biostatCpx><biostatMet>2</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_WraithTelepathy</defName>
+    <label>wraith telepathy</label>
+    <description>The bearer can intrude into nearby biological minds, conduct invasive examinations of held captives, induce controlled hallucinations and briefly intensify its hive-sense perception.</description>
+    <iconPath>UI/WNG/Telepathy</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <abilities><li>WNG_TelepathicProbe</li><li>WNG_CaptiveExperiment</li><li>WNG_Hallucination</li><li>WNG_HiveSense</li></abilities>
+    <biostatCpx>3</biostatCpx><biostatMet>-1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HostCultivator</defName>
+    <label>host cultivator</label>
+    <description>The bearer can cultivate the first living technology seed inside an incapacitated hostile, prisoner, slave, or suitable corpse.</description>
+    <iconPath>UI/WNG/HostCultivator</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <abilities><li>WNG_HostSeedGestation</li></abilities>
+    <biostatCpx>2</biostatCpx><biostatMet>-1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HybridRegeneration</defName>
+    <label>incomplete wraith regeneration</label>
+    <description>An unstable Wraith-derived tissue lattice slowly repairs ordinary injuries. It is far weaker than true Wraith regeneration and cannot rebuild missing anatomy.</description>
+    <iconPath>UI/WNG/HybridRegeneration</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_WraithHybridRegeneration</geneClass>
+    <biostatCpx>2</biostatCpx><biostatMet>-2</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HybridLifeForce</defName>
+    <label>unstable life-force metabolism</label>
+    <description>The hybrid retains ordinary human nutrition but also carries a small unstable life-force reserve. It can only take partial feedings. If the reserve is completely exhausted, Wraith-derived tissues can still collapse into life-force torpor even though the pawn continues to need normal food.</description>
+    <iconPath>UI/WNG/HybridLifeForce</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_HybridLifeForce</geneClass>
+    <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_LifeForce</resourceGizmoType>
+    <resourceLabel>unstable life force</resourceLabel>
+    <resourceDescription>{PAWN_nameDef} carries an incomplete Wraith-derived vitality reserve. Partial feeding replenishes it, but the pawn still needs ordinary food and cannot perform a full Drain Life.</resourceDescription>
+    <resourceLossPerDay>0.10</resourceLossPerDay>
+    <resourceGizmoThresholds><li>0.15</li><li>0.4</li><li>0.7</li></resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView>
+    <abilities><li>WNG_PartialFeed</li></abilities>
+    <biostatCpx>2</biostatCpx><biostatMet>-1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HybridTelepathy</defName>
+    <label>attenuated wraith telepathy</label>
+    <description>The hybrid can force brief surface-thought contact but lacks the stable hive network and deeper sensory projection of a true Wraith.</description>
+    <iconPath>UI/WNG/HybridTelepathy</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <abilities><li>WNG_TelepathicProbe</li></abilities>
+    <biostatCpx>1</biostatCpx><biostatMet>-1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HybridInstability</defName>
+    <label>wraith-human genomic instability</label>
+    <description>The grafted genome never reaches true Wraith equilibrium. Biological and psychic systems periodically fall out of synchronisation, producing recurring debilitating flares.</description>
+    <iconPath>UI/WNG/HybridInstability</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_WraithHybridInstability</geneClass>
+    <biostatCpx>2</biostatCpx><biostatMet>3</biostatMet>
+  </GeneDef>
+</Defs>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>WNG_OperateAncientControlChair</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_OperateAncientControlChair</driverClass>
+    <reportString>operating Ancient control chair.</reportString>
+    <playerInterruptible>true</playerInterruptible>
+    <checkOverrideOnDamage>true</checkOverrideOnDamage>
+  </JobDef>
+</Defs>

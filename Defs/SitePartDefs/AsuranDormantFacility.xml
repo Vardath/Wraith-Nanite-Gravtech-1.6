@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_AsuranDormantFacility</defName>
+    <label>dormant asuran facility</label>
+    <description>A powered-down human-form nanite installation built around a sealed pattern core, relay pylons and reconstruction cradles. The site is clearly Asuran rather than Ancient, but its surviving network is quiet enough that dormant security may not wake until someone enters the inner rooms.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_AsuranDormantFacility</workerClass>
+    <siteTexture>World/WNG_AsuranDormantFacility</siteTexture>
+    <expandingIconTexture>World/WNG_AsuranDormantFacility</expandingIconTexture>
+    <applyFactionColorToSiteTexture>false</applyFactionColorToSiteTexture>
+    <showFactionInInspectString>false</showFactionInInspectString>
+    <requiresFaction>false</requiresFaction>
+    <approachOrderString>Approach {0}</approachOrderString>
+    <approachingReportString>Approaching {0}</approachingReportString>
+    <arrivedLetterLabelPart>Dormant Asuran facility</arrivedLetterLabelPart>
+    <arrivedLetter>You have reached the dormant Asuran facility. Its ceramic shell is largely intact and no active population is visible. A central pattern core remains dark among silent relay pylons and reconstruction cradles. The hardware is not a functioning archive, but approaching the inner network may wake dormant security routines.</arrivedLetter>
+    <arrivedLetterDef>NeutralEvent</arrivedLetterDef>
+    <wantsThreatPoints>true</wantsThreatPoints>
+    <badEvenIfNoMap>false</badEvenIfNoMap>
+    <forceExitAndRemoveMapCountdownDurationDays>5</forceExitAndRemoveMapCountdownDurationDays>
+    <considerEnteringAsAttack>false</considerEnteringAsAttack>
+    <mainPartAllThreatsLabel>dormant asuran security</mainPartAllThreatsLabel>
+    <minMapSize>(190,1,190)</minMapSize>
+    <gravShipsCanLandOn>true</gravShipsCanLandOn>
+  </SitePartDef>
+</Defs>

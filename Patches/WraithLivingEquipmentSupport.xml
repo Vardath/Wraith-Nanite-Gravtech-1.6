@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithStunStaff"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithStunner"]/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithCarbine"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithHeavyBioWeapon"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithBoneBlade"]/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithWarGlaive"]/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithHunterCoat"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithQueenRaiment"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithWarriorCarapace"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithCommanderCarapace"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+
+      <!-- Only ranged Wraith weapons use the living firing verb. Melee weapons receive the same
+           biological support/maturation comp but retain vanilla melee tool resolution. -->
+      <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_WraithStunStaff"]/verbs/li/verbClass</xpath><value><verbClass>WraithNaniteGravtech.Verb_Shoot_WraithLiving</verbClass></value></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_WraithStunner"]/verbs/li/verbClass</xpath><value><verbClass>WraithNaniteGravtech.Verb_Shoot_WraithLiving</verbClass></value></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_WraithCarbine"]/verbs/li/verbClass</xpath><value><verbClass>WraithNaniteGravtech.Verb_Shoot_WraithLiving</verbClass></value></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_WraithHeavyBioWeapon"]/verbs/li/verbClass</xpath><value><verbClass>WraithNaniteGravtech.Verb_Shoot_WraithLiving</verbClass></value></li>
+    </operations>
+  </Operation>
+</Patch>

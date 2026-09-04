@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Grown Wraith melee weapons. These use the existing Wraith line/heavy weapon tags so
+       ordinary generated Wraith can actually field them, and the living-equipment patch adds
+       the same biological support/maturation contract as existing grown armor and guns. -->
+  <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
+    <defName>WNG_WraithBoneBlade</defName>
+    <label>living boneblade</label>
+    <description>A compact grown Wraith fighting blade. Layered cartilage surrounds a mineralized cutting ridge and recurved puncture point, giving hunters and warriors a fast lethal option when capture is no longer the priority. Like other ordinary Wraith equipment, a newly cultivated blade is immature living tissue and depends on a compatible life-force bearer for long-term support.</description>
+    <techLevel>Spacer</techLevel>
+    <smeltable>false</smeltable>
+    <graphicData>
+      <texPath>Things/Item/Weapon/Wraith/WNG_WraithBoneBlade</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1.45,1.45)</drawSize>
+    </graphicData>
+    <statBases>
+      <WorkToMake>11000</WorkToMake>
+      <Mass>1.3</Mass>
+      <EquipDelay>0.7</EquipDelay>
+    </statBases>
+    <recipeMaker>
+      <researchPrerequisite>WNG_LivingWeapons</researchPrerequisite>
+      <skillRequirements><Crafting>5</Crafting></skillRequirements>
+      <recipeUsers Inherit="False"><li>WNG_GrowthChamber</li></recipeUsers>
+    </recipeMaker>
+    <costList><WNG_Biomass>18</WNG_Biomass></costList>
+    <weaponTags>
+      <li>WNG_WraithLineWeapon</li>
+      <li>WNG_WraithWeapon</li>
+      <li>WNG_WraithMeleeWeapon</li>
+    </weaponTags>
+    <tradeTags><li>WeaponMelee</li></tradeTags>
+    <tools>
+      <li>
+        <label>living grip</label>
+        <capacities><li>Blunt</li></capacities>
+        <power>7</power><cooldownTime>1.30</cooldownTime><armorPenetration>0.12</armorPenetration><chanceFactor>0.12</chanceFactor>
+      </li>
+      <li>
+        <label>recurved point</label>
+        <capacities><li>Stab</li></capacities>
+        <power>15</power><cooldownTime>1.25</cooldownTime><armorPenetration>0.34</armorPenetration><chanceFactor>0.42</chanceFactor>
+      </li>
+      <li>
+        <label>mineralized edge</label>
+        <capacities><li>Cut</li></capacities>
+        <power>17</power><cooldownTime>1.35</cooldownTime><armorPenetration>0.30</armorPenetration>
+      </li>
+    </tools>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
+    <defName>WNG_WraithWarGlaive</defName>
+    <label>living war glaive</label>
+    <description>A two-handed Wraith polearm grown around a flexible dark spine and a broad mineralized crescent. The long haft keeps prey at the edge of feeding range while the reinforced blade gives warriors, commanders and Queens a heavy close-combat weapon distinct from the nonlethal stun staff. Its living tissue follows the same support and maturation rules as other cultivated Wraith equipment.</description>
+    <techLevel>Spacer</techLevel>
+    <smeltable>false</smeltable>
+    <graphicData>
+      <texPath>Things/Item/Weapon/Wraith/WNG_WraithWarGlaive</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1.9,1.9)</drawSize>
+    </graphicData>
+    <statBases>
+      <WorkToMake>21000</WorkToMake>
+      <Mass>3.7</Mass>
+      <EquipDelay>1.1</EquipDelay>
+    </statBases>
+    <recipeMaker>
+      <researchPrerequisite>WNG_AdvancedCarapace</researchPrerequisite>
+      <skillRequirements><Crafting>7</Crafting></skillRequirements>
+      <recipeUsers Inherit="False"><li>WNG_GrowthChamber</li></recipeUsers>
+    </recipeMaker>
+    <costList><WNG_Biomass>36</WNG_Biomass><ComponentIndustrial>1</ComponentIndustrial></costList>
+    <weaponTags>
+      <li>WNG_WraithHeavyWeapon</li>
+      <li>WNG_WraithWeapon</li>
+      <li>WNG_WraithMeleeWeapon</li>
+    </weaponTags>
+    <tradeTags><li>WeaponMelee</li></tradeTags>
+    <tools>
+      <li>
+        <label>living haft</label>
+        <capacities><li>Blunt</li></capacities>
+        <power>9</power><cooldownTime>1.75</cooldownTime><armorPenetration>0.16</armorPenetration><chanceFactor>0.14</chanceFactor>
+      </li>
+      <li>
+        <label>hooked point</label>
+        <capacities><li>Stab</li></capacities>
+        <power>19</power><cooldownTime>1.90</cooldownTime><armorPenetration>0.41</armorPenetration><chanceFactor>0.35</chanceFactor>
+      </li>
+      <li>
+        <label>war crescent</label>
+        <capacities><li>Cut</li></capacities>
+        <power>23</power><cooldownTime>2.05</cooldownTime><armorPenetration>0.38</armorPenetration>
+      </li>
+    </tools>
+  </ThingDef>
+
+  <!-- Reconstructed Asuran/precursor melee weapons. The #80 fabrication patch adds finite
+       Replicator Matter feedstock just as it does for the pulse rifle and armor. -->
+  <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
+    <defName>WNG_PrecursorPhaseBlade</defName>
+    <label>Asuran phase blade</label>
+    <description>A reconstructed Asuran close-combat weapon. A narrow self-aligning field rides the edge of a rigid plasteel spine, concentrating force into a precise luminous cutting plane without turning the weapon into an unlimited energy source. It is fabricated through the same finite nanite-feedstock process as other reconstructed Asuran field equipment.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData>
+      <texPath>Things/Item/Weapon/Precursor/WNG_PrecursorPhaseBlade</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1.5,1.5)</drawSize>
+    </graphicData>
+    <statBases>
+      <WorkToMake>24000</WorkToMake>
+      <Mass>1.5</Mass>
+      <EquipDelay>0.75</EquipDelay>
+    </statBases>
+    <recipeMaker>
+      <researchPrerequisite>WNG_PrecursorEnergySystems</researchPrerequisite>
+      <skillRequirements><Crafting>8</Crafting></skillRequirements>
+      <recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers>
+    </recipeMaker>
+    <costList><Plasteel>30</Plasteel><ComponentSpacer>1</ComponentSpacer></costList>
+    <weaponTags><li>WNG_PrecursorWeapon</li><li>WNG_PrecursorMeleeWeapon</li></weaponTags>
+    <tradeTags><li>WeaponMelee</li></tradeTags>
+    <tools>
+      <li>
+        <label>field pommel</label>
+        <capacities><li>Blunt</li></capacities>
+        <power>7</power><cooldownTime>1.35</cooldownTime><armorPenetration>0.16</armorPenetration><chanceFactor>0.10</chanceFactor>
+      </li>
+      <li>
+        <label>phase point</label>
+        <capacities><li>Stab</li></capacities>
+        <power>20</power><cooldownTime>1.35</cooldownTime><armorPenetration>0.50</armorPenetration><chanceFactor>0.42</chanceFactor>
+      </li>
+      <li>
+        <label>phase edge</label>
+        <capacities><li>Cut</li></capacities>
+        <power>23</power><cooldownTime>1.40</cooldownTime><armorPenetration>0.45</armorPenetration>
+      </li>
+    </tools>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
+    <defName>WNG_PrecursorFieldLance</defName>
+    <label>Asuran field lance</label>
+    <description>A long reconstructed Asuran polearm whose forked emitter head compresses a shaped field around a physical spear point. It trades the phase blade's speed for reach-like battlefield presence, armor penetration and stopping power in close combat, while remaining a finite manufactured weapon built from structural materials and recovered nanite feedstock.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData>
+      <texPath>Things/Item/Weapon/Precursor/WNG_PrecursorFieldLance</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1.9,1.9)</drawSize>
+    </graphicData>
+    <statBases>
+      <WorkToMake>36000</WorkToMake>
+      <Mass>3.2</Mass>
+      <EquipDelay>1.0</EquipDelay>
+    </statBases>
+    <recipeMaker>
+      <researchPrerequisite>WNG_PrecursorEnergySystems</researchPrerequisite>
+      <skillRequirements><Crafting>9</Crafting></skillRequirements>
+      <recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers>
+    </recipeMaker>
+    <costList><Plasteel>45</Plasteel><Uranium>8</Uranium><ComponentSpacer>2</ComponentSpacer></costList>
+    <weaponTags><li>WNG_PrecursorWeapon</li><li>WNG_PrecursorMeleeWeapon</li></weaponTags>
+    <tradeTags><li>WeaponMelee</li></tradeTags>
+    <tools>
+      <li>
+        <label>reinforced haft</label>
+        <capacities><li>Blunt</li></capacities>
+        <power>8</power><cooldownTime>1.65</cooldownTime><armorPenetration>0.18</armorPenetration><chanceFactor>0.12</chanceFactor>
+      </li>
+      <li>
+        <label>field point</label>
+        <capacities><li>Stab</li></capacities>
+        <power>28</power><cooldownTime>1.85</cooldownTime><armorPenetration>0.58</armorPenetration>
+      </li>
+      <li>
+        <label>emitter wings</label>
+        <capacities><li>Cut</li></capacities>
+        <power>20</power><cooldownTime>1.90</cooldownTime><armorPenetration>0.45</armorPenetration><chanceFactor>0.32</chanceFactor>
+      </li>
+    </tools>
+  </ThingDef>
+</Defs>

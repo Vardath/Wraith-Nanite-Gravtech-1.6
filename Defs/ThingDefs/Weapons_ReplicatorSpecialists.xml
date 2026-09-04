@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>WNG_ReplicatorArtilleryCaster</defName>
+    <label>integrated Replicator artillery caster</label>
+    <description>A long-range pulse array grown as part of a dedicated Replicator artillery body. It is used only by the swarm's bounded defensive/retaliation logic and is not ordinary trade equipment.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorArtilleryCaster</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1.05,1.05)</drawSize></graphicData>
+    <statBases>
+      <MarketValue>1</MarketValue><Mass>0.8</Mass>
+      <AccuracyTouch>0.46</AccuracyTouch><AccuracyShort>0.72</AccuracyShort><AccuracyMedium>0.82</AccuracyMedium><AccuracyLong>0.74</AccuracyLong>
+      <RangedWeapon_Cooldown>4.8</RangedWeapon_Cooldown>
+    </statBases>
+    <tradeability>None</tradeability>
+    <weaponTags><li>WNG_ReplicatorIntegrated</li></weaponTags>
+    <recipeMaker IsNull="True" />
+    <smeltable>false</smeltable>
+    <verbs>
+      <li><verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ReplicatorArtilleryProjectile</defaultProjectile><warmupTime>2.4</warmupTime><range>43.9</range><ticksBetweenBurstShots>18</ticksBetweenBurstShots><burstShotCount>2</burstShotCount><soundCast>WNG_ReplicatorPulseCaster_Fire</soundCast><soundCastTail>GunTail_Heavy</soundCastTail></li>
+    </verbs>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseBullet">
+    <defName>WNG_ReplicatorArtilleryProjectile</defName>
+    <label>Replicator artillery pulse</label>
+    <graphicData><texPath>Things/Projectile/Charge_Small</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <projectile><damageDef>Bullet</damageDef><damageAmountBase>16</damageAmountBase><armorPenetrationBase>0.34</armorPenetrationBase><speed>62</speed></projectile>
+  </ThingDef>
+</Defs>

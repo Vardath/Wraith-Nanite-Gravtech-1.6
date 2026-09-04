@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_VacuumEnergyModule</defName><label>vacuum-energy containment module</label><description>A freshly reconstructed sealed precursor field lattice holding a metastable pocket of vacuum energy. It is not a perpetual battery: once coupled to a tap, the containment geometry is gradually exhausted and the module becomes useless. Archaeological originals are normally recovered as degraded, discharged containment shells rather than plug-and-play power sources; exceptionally rare intact modules can still circulate through exotic artifact traders.</description>
+    <graphicData><texPath>Things/Item/Resource/Precursor/WNG_VacuumEnergyModule</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.85,0.85)</drawSize></graphicData>
+    <thingCategories><li>Manufactured</li></thingCategories><stackLimit>4</stackLimit>
+    <statBases><MarketValue>9800</MarketValue><Mass>8</Mass><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate><FuelValue>1</FuelValue></statBases>
+    <tradeability>All</tradeability><alwaysHaulable>true</alwaysHaulable><drawGUIOverlay>true</drawGUIOverlay>
+    <comps>
+      <!-- Legacy compatibility: old saves may already have analysis progress keyed to 860105 on
+           this Def. New archaeology uses WNG_RecoveredVacuumEnergyModule with the same native ID. -->
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>860105</analysisID><analysisRequiredRange>1~1</analysisRequiredRange><analysisDurationHours>6</analysisDurationHours><destroyedOnAnalyzed>false</destroyedOnAnalyzed><allowRepeatAnalysis>false</allowRepeatAnalysis><canStudyInPlace>false</canStudyInPlace>
+        <activateTexPath>UI/WNG/Nanite</activateTexPath><activateLabelString>Analyze vacuum-energy module</activateLabelString><activateDescString>Analyze this exceptionally intact sealed module as a rare precursor exemplar.</activateDescString><jobString>analyzing vacuum-energy containment</jobString>
+        <completedLetterLabel>Vacuum-energy containment analyzed</completedLetterLabel><completedLetter>The module's field geometry has been mapped without consuming its stored energy. Precursor vacuum-energy containment can now be investigated as a formal research problem.</completedLetter><completedLetterDef>PositiveEvent</completedLetterDef>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_VacuumEnergyTap</defName><label>vacuum-energy tap</label><description>A precursor conversion frame that safely couples a reconstructed or exceptionally intact sealed vacuum-energy containment module to a colony power grid. A loaded module provides immense output, but its field geometry is consumed over roughly fifteen days of continuous operation. Switching the tap off preserves the remaining module.</description>
+    <graphicData><texPath>Things/Building/Precursor/Power/WNG_VacuumEnergyTap</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(2.4,2.4)</drawSize></graphicData>
+    <size>(2,2)</size><rotatable>true</rotatable><defaultPlacingRot>South</defaultPlacingRot><drawerType>MapMeshAndRealTime</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><pathCost>40</pathCost><blockWind>true</blockWind><castEdgeShadows>true</castEdgeShadows><fillPercent>0.55</fillPercent><tickerType>Normal</tickerType><minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsPower</li></thingCategories><designationCategory>Power</designationCategory><uiOrder>2025</uiOrder><constructionSkillPrerequisite>12</constructionSkillPrerequisite><researchPrerequisites><li>WNG_VacuumEnergyContainment</li></researchPrerequisites><terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <costList><Plasteel>220</Plasteel><Uranium>80</Uranium><ComponentSpacer>10</ComponentSpacer><GravlitePanel>45</GravlitePanel></costList>
+    <statBases><MaxHitPoints>650</MaxHitPoints><WorkToBuild>26000</WorkToBuild><Mass>95</Mass><Flammability>0</Flammability><Beauty>12</Beauty></statBases>
+    <comps>
+      <li Class="CompProperties_Flickable" />
+      <li Class="CompProperties_Refuelable"><fuelCapacity>1</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>1</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>WNG_VacuumEnergyModule</li></thingDefs></fuelFilter><fuelLabel>vacuum-energy module</fuelLabel><fuelGizmoLabel>vacuum-energy reserve</fuelGizmoLabel><fuelConsumptionRate>0.0666667</fuelConsumptionRate><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay><showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle><canEjectFuel>true</canEjectFuel></li>
+      <li Class="WraithNaniteGravtech.CompProperties_VacuumEnergyPower"><basePowerConsumption>0</basePowerConsumption><transmitsPower>true</transmitsPower><generatedPower>15000</generatedPower></li>
+      <li Class="CompProperties_Stunnable"><useLargeEMPEffecter>true</useLargeEMPEffecter><affectedDamageDefs><li>EMP</li></affectedDamageDefs></li>
+    </comps>
+  </ThingDef>
+</Defs>

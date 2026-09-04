@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_BioelectricOrgan</defName>
+    <label>bioelectric organ</label>
+    <description>A cultivated organ that metabolises dense biomass and converts it into electricity for a conventional power net.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <graphicData>
+      <texPath>Things/Building/Wraith/Power/WNG_BioelectricOrgan</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(2,2)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.9</fillPercent>
+    <pathCost>50</pathCost>
+    <rotatable>false</rotatable>
+    <blockWind>true</blockWind>
+    <castEdgeShadows>false</castEdgeShadows>
+    <tickerType>Normal</tickerType>
+    <canOverlapZones>false</canOverlapZones>
+    <size>(2,2)</size>
+    <building>
+      <destroySound>BuildingDestroyed_Wood_Medium</destroySound>
+    </building>
+    <costList>
+      <WNG_Biomass>65</WNG_Biomass>
+    </costList>
+    <statBases>
+      <MaxHitPoints>420</MaxHitPoints>
+      <WorkToBuild>3200</WorkToBuild>
+      <Flammability>0.35</Flammability>
+      <Beauty>-4</Beauty>
+    </statBases>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerPlant</compClass>
+        <basePowerConsumption>-1400</basePowerConsumption>
+        <transmitsPower>true</transmitsPower>
+      </li>
+      <li Class="CompProperties_Flickable"/>
+      <li Class="CompProperties_Refuelable">
+        <fuelConsumptionRate>18</fuelConsumptionRate>
+        <fuelCapacity>60</fuelCapacity>
+        <fuelFilter><thingDefs><li>WNG_Biomass</li></thingDefs></fuelFilter>
+        <showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle>
+        <canEjectFuel>true</canEjectFuel>
+      </li>
+      <li Class="CompProperties_Glower">
+        <glowRadius>5</glowRadius>
+        <glowColor>(110,160,90,0)</glowColor>
+      </li>
+    </comps>
+    <terrainAffordanceNeeded>Medium</terrainAffordanceNeeded>
+    <designationCategory>Power</designationCategory>
+    <uiOrder>2105</uiOrder>
+    <constructEffect>ConstructDirt</constructEffect>
+    <researchPrerequisites><li>Electricity</li></researchPrerequisites>
+    <constructionSkillPrerequisite>4</constructionSkillPrerequisite>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_LivingPowerCell</defName>
+    <label>living power cell</label>
+    <description>A layered electrochemical organ grown to store power. It interfaces directly with ordinary power conduits.</description>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <thingClass>Building_Battery</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Wraith/Power/WNG_LivingPowerCell</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(2,3)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <blockWind>true</blockWind>
+    <castEdgeShadows>true</castEdgeShadows>
+    <fillPercent>0.40</fillPercent>
+    <tickerType>Normal</tickerType>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsPower</li></thingCategories>
+    <statBases>
+      <MaxHitPoints>260</MaxHitPoints>
+      <WorkToBuild>1800</WorkToBuild>
+      <Mass>18</Mass>
+      <Flammability>0.25</Flammability>
+      <Beauty>-2</Beauty>
+    </statBases>
+    <size>(1,2)</size>
+    <costList>
+      <WNG_Biomass>40</WNG_Biomass>
+      <ComponentIndustrial>1</ComponentIndustrial>
+    </costList>
+    <comps>
+      <li Class="CompProperties_Battery">
+        <storedEnergyMax>750</storedEnergyMax>
+        <efficiency>0.7</efficiency>
+        <shortCircuitInRain>false</shortCircuitInRain>
+        <transmitsPower>true</transmitsPower>
+      </li>
+    </comps>
+    <terrainAffordanceNeeded>Medium</terrainAffordanceNeeded>
+    <designationCategory>Power</designationCategory>
+    <uiOrder>2021</uiOrder>
+    <staticSunShadowHeight>0.2</staticSunShadowHeight>
+    <canOverlapZones>false</canOverlapZones>
+    <researchPrerequisites><li>Batteries</li></researchPrerequisites>
+  </ThingDef>
+</Defs>

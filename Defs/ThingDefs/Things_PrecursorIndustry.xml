@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BenchBase">
+    <defName>WNG_PrecursorFabricator</defName>
+    <label>Asuran fabricator</label>
+    <description>A compact high-precision Asuran fabrication platform for advanced precursor weapons, armor, components and gravitic systems.</description>
+    <thingClass>Building_WorkTable</thingClass>
+    <graphicData><texPath>Things/Building/Precursor/Production/WNG_PrecursorFabricator</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(3,2)</drawSize></graphicData>
+    <size>(3,2)</size><designationCategory>WNG_Architect</designationCategory>
+    <hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <statBases><WorkToBuild>9000</WorkToBuild><MaxHitPoints>450</MaxHitPoints><Beauty>6</Beauty><Flammability>0</Flammability></statBases>
+    <costList><Plasteel>120</Plasteel><ComponentSpacer>4</ComponentSpacer></costList>
+    <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
+    <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <building><spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity></building>
+  </ThingDef>
+
+  <ThingDef ParentName="FurnitureBase">
+    <defName>WNG_PrecursorStoragePlinth</defName>
+    <label>Asuran equipment plinth</label>
+    <description>A clean low-profile equipment surface intended for compact high-value rooms and gravship interiors.</description>
+    <graphicData><texPath>Things/Building/Precursor/Storage/WNG_StoragePlinth</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>180</MaxHitPoints><WorkToBuild>700</WorkToBuild><Beauty>3</Beauty><Mass>8</Mass><Flammability>0</Flammability></statBases>
+    <costList><Plasteel>15</Plasteel></costList><surfaceType>Item</surfaceType><designationCategory>WNG_Architect</designationCategory>
+  </ThingDef>
+
+  <ThingDef ParentName="FurnitureBase">
+    <defName>WNG_WraithNutrientNiche</defName>
+    <label>living nutrient niche</label>
+    <description>A shallow grown alcove and work surface for biomass, tools and harvested organic materials within living structures.</description>
+    <graphicData><texPath>Things/Building/Wraith/Storage/WNG_NutrientNiche</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases><MaxHitPoints>210</MaxHitPoints><WorkToBuild>550</WorkToBuild><Beauty>1</Beauty><Mass>7</Mass><Flammability>0.25</Flammability></statBases>
+    <costList><WNG_Biomass>12</WNG_Biomass></costList><surfaceType>Item</surfaceType><designationCategory>WNG_Architect</designationCategory>
+  </ThingDef>
+</Defs>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_AsuranKamikazeCharge</defName>
+    <label>armed nanite demolition lattice</label>
+    <description>The Asuran's own reconstruction lattice has been inverted into a compact demolition charge. The fuse began when the operative crossed onto the map. Reaching its selected objective can trigger early detonation, while incapacitation engages a short dead-man fuse rather than disarming the body.</description>
+    <hediffClass>WraithNaniteGravtech.Hediff_AsuranKamikazeCharge</hediffClass>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <isBad>true</isBad>
+    <stages>
+      <li>
+        <statOffsets>
+          <MoveSpeed>1.20</MoveSpeed>
+        </statOffsets>
+      </li>
+    </stages>
+  </HediffDef>
+</Defs>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_ReplicatorQueenVault</defName>
+    <label>sealed nanite vault</label>
+    <description>A unique precursor vault broadcasting an impossible child-sized nanite signature from inside an ancient cryptosleep chamber.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_ReplicatorQueenVault</workerClass>
+    <siteTexture>World/WNG_ReplicatorQueenVault</siteTexture>
+    <expandingIconTexture>World/WNG_ReplicatorQueenVault</expandingIconTexture>
+    <applyFactionColorToSiteTexture>false</applyFactionColorToSiteTexture>
+    <showFactionInInspectString>false</showFactionInInspectString>
+    <requiresFaction>false</requiresFaction>
+    <approachOrderString>Approach {0}</approachOrderString>
+    <approachingReportString>Approaching {0}</approachingReportString>
+    <arrivedLetterLabelPart>Sealed nanite vault</arrivedLetterLabelPart>
+    <arrivedLetter>You have reached the source of the signal. The site resembles an abandoned precursor vault, but deep inside is an ancient cryptosleep casket containing a stable child-sized nanite pattern. Old automated defenses remain active.</arrivedLetter>
+    <arrivedLetterDef>ThreatBig</arrivedLetterDef>
+    <wantsThreatPoints>true</wantsThreatPoints>
+    <badEvenIfNoMap>true</badEvenIfNoMap>
+    <forceExitAndRemoveMapCountdownDurationDays>6</forceExitAndRemoveMapCountdownDurationDays>
+    <considerEnteringAsAttack>false</considerEnteringAsAttack>
+    <mainPartAllThreatsLabel>ancient security and recovery forces</mainPartAllThreatsLabel>
+    <minMapSize>(200,1,200)</minMapSize>
+    <gravShipsCanLandOn>true</gravShipsCanLandOn>
+  </SitePartDef>
+</Defs>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>WNG_ReplicatorPulseCaster</defName>
+    <label>integrated Replicator pulse caster</label>
+    <description>A compact ranged emitter reproduced as part of a Replicator specialist body after its lineage has assimilated sufficient turret technology. It is an integrated machine organ rather than normal salvageable equipment.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorPulseCaster</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.8,0.8)</drawSize></graphicData>
+    <statBases>
+      <MarketValue>1</MarketValue><Mass>0.35</Mass>
+      <AccuracyTouch>0.62</AccuracyTouch><AccuracyShort>0.72</AccuracyShort><AccuracyMedium>0.58</AccuracyMedium><AccuracyLong>0.34</AccuracyLong>
+      <RangedWeapon_Cooldown>2.15</RangedWeapon_Cooldown>
+    </statBases>
+    <tradeability>None</tradeability>
+    <weaponTags><li>WNG_ReplicatorIntegrated</li></weaponTags>
+    <recipeMaker IsNull="True" />
+    <smeltable>false</smeltable>
+    <verbs>
+      <li><verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ReplicatorPulseProjectile</defaultProjectile><warmupTime>0.9</warmupTime><range>19.9</range><ticksBetweenBurstShots>13</ticksBetweenBurstShots><burstShotCount>3</burstShotCount><soundCast>WNG_ReplicatorPulseCaster_Fire</soundCast><soundCastTail>GunTail_Medium</soundCastTail></li>
+    </verbs>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseBullet">
+    <defName>WNG_ReplicatorPulseProjectile</defName>
+    <label>Replicator pulse</label>
+    <graphicData><texPath>Things/Projectile/Charge_Small</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <projectile><damageDef>Bullet</damageDef><damageAmountBase>9</damageAmountBase><armorPenetrationBase>0.20</armorPenetrationBase><speed>70</speed></projectile>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>WNG_ReplicatorShieldDisruptor</defName>
+    <label>integrated Replicator phase disruptor</label>
+    <description>A phase-tuned emitter grown only by rare shield-specialist Replicators after their lineage has both assimilated shield technology and spent prolonged time under active defensive fields. Its low-damage focused EMP harmonics are specialized for collapsing barriers, not replacing the swarm's normal weapons or granting universal shield immunity.</description>
+    <techLevel>Ultra</techLevel>
+    <graphicData><texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorShieldDisruptor</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.82,0.82)</drawSize></graphicData>
+    <statBases>
+      <MarketValue>1</MarketValue><Mass>0.45</Mass>
+      <AccuracyTouch>0.70</AccuracyTouch><AccuracyShort>0.78</AccuracyShort><AccuracyMedium>0.56</AccuracyMedium><AccuracyLong>0.18</AccuracyLong>
+      <RangedWeapon_Cooldown>3.4</RangedWeapon_Cooldown>
+    </statBases>
+    <tradeability>None</tradeability>
+    <weaponTags><li>WNG_ReplicatorIntegrated</li></weaponTags>
+    <recipeMaker IsNull="True" />
+    <smeltable>false</smeltable>
+    <verbs>
+      <li><verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ReplicatorShieldDisruptorProjectile</defaultProjectile><warmupTime>1.15</warmupTime><range>17.9</range><burstShotCount>1</burstShotCount><soundCast>WNG_ReplicatorPulseCaster_Fire</soundCast><soundCastTail>GunTail_Medium</soundCastTail></li>
+    </verbs>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseBullet">
+    <defName>WNG_ReplicatorShieldDisruptorProjectile</defName>
+    <label>Replicator phase-disruption pulse</label>
+    <graphicData><texPath>Things/Projectile/WNG_ReplicatorShieldDisruptor</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.42,0.42)</drawSize></graphicData>
+    <projectile>
+      <damageDef>EMP</damageDef>
+      <damageAmountBase>6</damageAmountBase>
+      <armorPenetrationBase>0</armorPenetrationBase>
+      <speed>58</speed>
+    </projectile>
+  </ThingDef>
+</Defs>

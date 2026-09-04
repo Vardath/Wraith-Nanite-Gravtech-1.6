@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>WNG_AbductReplicatorQueen</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_AbductReplicatorQueen</driverClass>
+    <reportString>abducting TargetA.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <playerInterruptible>false</playerInterruptible>
+  </JobDef>
+</Defs>

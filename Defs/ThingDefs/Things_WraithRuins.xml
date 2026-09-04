@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_RuinedWraithGrowthVat</defName>
+    <label>ruptured wraith growth vat</label>
+    <description>The split remains of a Wraith biological cultivation vat. Its nutrient membranes have collapsed and the control tissue is dead, leaving only a decaying shell that hints at whatever was being grown here.</description>
+    <graphicData><texPath>Things/Building/Wraith/Ruins/WNG_RuinedGrowthVat</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(2.2,2.2)</drawSize></graphicData>
+    <size>(2,2)</size><rotatable>false</rotatable><drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><fillPercent>0.38</fillPercent>
+    <statBases><MaxHitPoints>190</MaxHitPoints><Mass>45</Mass><Flammability>0.28</Flammability><Beauty>-3</Beauty></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_RuinedWraithFeedingRig</defName>
+    <label>collapsed wraith feeding rig</label>
+    <description>A dead restraint-and-transfer cradle from an abandoned Wraith laboratory. Torn conduits, calcified restraints and dried nutrient channels show that living subjects were once held here for feeding or experimentation.</description>
+    <graphicData><texPath>Things/Building/Wraith/Ruins/WNG_RuinedFeedingRig</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1.9,1.9)</drawSize></graphicData>
+    <size>(2,1)</size><rotatable>false</rotatable><drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><fillPercent>0.30</fillPercent>
+    <statBases><MaxHitPoints>150</MaxHitPoints><Mass>28</Mass><Flammability>0.32</Flammability><Beauty>-4</Beauty></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_RuinedWraithGestationCocoon</defName>
+    <label>calcified wraith gestation cocoon</label>
+    <description>A dead Wraith gestation shell from a population-production complex. Layered membranes and caste-shaping nutrient channels have mineralised around an empty central cavity. Whatever growth cycle once occurred here ended long ago.</description>
+    <graphicData><texPath>Things/Building/Wraith/Ruins/WNG_RuinedGestationCocoon</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(2.1,2.1)</drawSize></graphicData>
+    <size>(2,2)</size><rotatable>false</rotatable><drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><fillPercent>0.42</fillPercent>
+    <statBases><MaxHitPoints>210</MaxHitPoints><Mass>52</Mass><Flammability>0.24</Flammability><Beauty>-5</Beauty></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_RuinedWraithCloneManifold</defName>
+    <label>collapsed wraith clone manifold</label>
+    <description>The dead distribution organ of a Wraith cloning installation. Thick vascular trunks once divided cultured biomass and tailored nutrient chemistry between multiple gestation bays; the channels are now dry, split and useless.</description>
+    <graphicData><texPath>Things/Building/Wraith/Ruins/WNG_RuinedCloneManifold</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(3.0,2.2)</drawSize></graphicData>
+    <size>(3,2)</size><rotatable>false</rotatable><drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><fillPercent>0.40</fillPercent>
+    <statBases><MaxHitPoints>260</MaxHitPoints><Mass>72</Mass><Flammability>0.26</Flammability><Beauty>-4</Beauty></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_RuinedWraithDonorDais</defName>
+    <label>drained wraith donor dais</label>
+    <description>A calcified transfer cradle where a living Wraith donor once contributed life force to gestation cycles. The restraint ribs remain, but the transfer tissue has collapsed into brittle cords and cannot function.</description>
+    <graphicData><texPath>Things/Building/Wraith/Ruins/WNG_RuinedDonorDais</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(2.0,1.6)</drawSize></graphicData>
+    <size>(2,1)</size><rotatable>false</rotatable><drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><fillPercent>0.28</fillPercent>
+    <statBases><MaxHitPoints>155</MaxHitPoints><Mass>30</Mass><Flammability>0.30</Flammability><Beauty>-5</Beauty></statBases>
+  </ThingDef>
+</Defs>

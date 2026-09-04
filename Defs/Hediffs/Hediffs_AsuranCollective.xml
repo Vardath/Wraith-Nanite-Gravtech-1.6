@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_AsuranCollectiveState</defName>
+    <label>collective state</label>
+    <description>Current connectivity to compatible Asuran or human-form nanite minds. Powered pattern archives can relay the collective across the whole map; EMP disruption severs this coordination until the nanites recover.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <stages>
+      <li><label>isolated</label><minSeverity>0</minSeverity></li>
+      <li><label>linked</label><minSeverity>0.25</minSeverity></li>
+      <li><label>meshed</label><minSeverity>0.5</minSeverity></li>
+      <li><label>dense collective</label><minSeverity>0.75</minSeverity></li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_AsuranCollectiveLoyalist</defName>
+    <label>collective loyalist</label>
+    <description>This nanite mind believes individual continuity is subordinate to the strength and purpose of the collective. It reconstructs poorly when isolated, but gains the strongest regeneration multiplier from dense same-faction network support.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <duplicationAllowed>false</duplicationAllowed>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_AsuranReconstructionist</defName>
+    <label>reconstructionist</label>
+    <description>This nanite mind treats survival, archived continuity and the recovery of lost precursor capability as the central purpose of the lattice. It maintains a strong reconstruction baseline and still benefits substantially from network peers.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <duplicationAllowed>false</duplicationAllowed>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_AsuranIndividualist</defName>
+    <label>individualist</label>
+    <description>This nanite mind regards the self as more than a replaceable process inside the collective. It remains comparatively capable while isolated, but receives much less reconstruction benefit from additional linked peers.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <duplicationAllowed>false</duplicationAllowed>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_AsuranContinuityLoss</defName>
+    <label>continuity loss</label>
+    <description>This body was reconstructed from an archived pattern. Identity, backstory and major personality traits were retained, but events and learning after the last backup are permanently absent. The reconstructed mind needs time to reconcile the discontinuity.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <stages><li><label>continuity loss</label><statOffsets><GlobalLearningFactor>-0.15</GlobalLearningFactor></statOffsets></li></stages>
+    <comps><li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>300000</disappearsAfterTicks></li></comps>
+  </HediffDef>
+</Defs>

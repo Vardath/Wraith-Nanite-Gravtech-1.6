@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_ReplicatorMaterialFragile</defName>
+    <label>fragile replication material</label>
+    <description>This Replicator was assembled primarily from comparatively weak matter.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statOffsets><ArmorRating_Sharp>-0.08</ArmorRating_Sharp><ArmorRating_Blunt>-0.05</ArmorRating_Blunt><ArmorRating_Heat>-0.03</ArmorRating_Heat></statOffsets><statFactors><MoveSpeed>1.08</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+  <HediffDef>
+    <defName>WNG_ReplicatorMaterialStandard</defName>
+    <label>standard replication material</label>
+    <description>This Replicator was assembled from ordinary structural matter.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statOffsets><ArmorRating_Sharp>0</ArmorRating_Sharp></statOffsets></li></stages>
+  </HediffDef>
+  <HediffDef>
+    <defName>WNG_ReplicatorMaterialHardened</defName>
+    <label>hardened replication material</label>
+    <description>This Replicator inherited the durability of a strong source material.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statOffsets><ArmorRating_Sharp>0.18</ArmorRating_Sharp><ArmorRating_Blunt>0.12</ArmorRating_Blunt><ArmorRating_Heat>0.08</ArmorRating_Heat></statOffsets><statFactors><MoveSpeed>0.96</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+  <HediffDef>
+    <defName>WNG_ReplicatorMaterialUltra</defName>
+    <label>ultra-dense replication material</label>
+    <description>This Replicator was assembled from exceptionally durable matter and carries that resilience into its body.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>false</isBad><scenarioCanAdd>false</scenarioCanAdd><everCurableByItem>false</everCurableByItem>
+    <stages><li><statOffsets><ArmorRating_Sharp>0.34</ArmorRating_Sharp><ArmorRating_Blunt>0.24</ArmorRating_Blunt><ArmorRating_Heat>0.16</ArmorRating_Heat></statOffsets><statFactors><MoveSpeed>0.90</MoveSpeed></statFactors></li></stages>
+  </HediffDef>
+</Defs>

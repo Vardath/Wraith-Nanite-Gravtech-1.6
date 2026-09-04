@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_ReplicatorContainmentProjector</defName>
+    <label>replicator containment projector</label>
+    <description>A powered electromagnetic phase cage tuned from recovered Replicator control lattices. Within its local field, dormant Replicator Matter cannot reconnect and uncontrolled block Replicators cannot complete the assimilation or recombination steps that let a swarm multiply. The field does not kill or physically imprison them, so reliable containment still requires walls, doors and uninterrupted power.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <graphicData>
+      <texPath>Things/Building/Replicator/Containment/WNG_ReplicatorContainmentProjector</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(2.4,2.4)</drawSize>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>45</pathCost>
+    <blockWind>false</blockWind>
+    <fillPercent>0.45</fillPercent>
+    <size>(2,2)</size>
+    <rotatable>true</rotatable>
+    <statBases>
+      <MaxHitPoints>480</MaxHitPoints>
+      <WorkToBuild>7200</WorkToBuild>
+      <Mass>34</Mass>
+      <Flammability>0</Flammability>
+      <Beauty>2</Beauty>
+    </statBases>
+    <costList>
+      <Steel>140</Steel>
+      <ComponentIndustrial>6</ComponentIndustrial>
+      <Uranium>15</Uranium>
+      <WNG_ReplicatorCoreFragment>1</WNG_ReplicatorCoreFragment>
+    </costList>
+    <designationCategory>WNG_Architect</designationCategory>
+    <constructionSkillPrerequisite>7</constructionSkillPrerequisite>
+    <researchPrerequisites><li>WNG_NaniteContainment</li></researchPrerequisites>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>1200</basePowerConsumption>
+        <transmitsPower>true</transmitsPower>
+      </li>
+      <li Class="CompProperties_Breakdownable" />
+      <li Class="CompProperties_Glower"><glowRadius>4.5</glowRadius><glowColor>(80,205,190,0)</glowColor></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorContainmentProjector"><radius>8.5</radius></li>
+    </comps>
+    <building><destroySound>BuildingDestroyed_Metal_Big</destroySound><paintable>false</paintable></building>
+    <uiOrder>2545</uiOrder>
+  </ThingDef>
+</Defs>

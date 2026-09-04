@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="Wall">
+    <defName>WNG_OrganicGravshipHull</defName>
+    <label>wraith gravship hull tissue</label>
+    <description>Dense airtight living hull tissue for a full-sized Wraith gravship. Ribbed support tissue and regenerative chitin outperform ordinary gravship hulls while preserving a wholly organic architecture.</description>
+    <designationCategory>WNG_Architect</designationCategory><uiOrder>1801</uiOrder>
+    <graphicData><texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <researchPrerequisites><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites>
+    <statBases><MaxHitPoints>620</MaxHitPoints><WorkToBuild>390</WorkToBuild><Flammability>0.12</Flammability></statBases>
+    <costStuffCount>0</costStuffCount><costList><WNG_Biomass>10</WNG_Biomass></costList>
+    <building><isAirtight>true</isAirtight><paintable>false</paintable></building>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><useStuffTerrainAffordance>false</useStuffTerrainAffordance><stuffCategories Inherit="False"/><comps Inherit="False"/>
+  </ThingDef>
+
+  <ThingDef ParentName="Wall">
+    <defName>WNG_PrecursorGravshipHull</defName>
+    <label>Asuran gravship hull</label>
+    <description>An airtight full-sized gravship wall built from layered Asuran composite plates with luminous recessed seams. The structure is stronger and lighter in concept than conventional colonial gravship hulls.</description>
+    <designationCategory>WNG_Architect</designationCategory><uiOrder>1802</uiOrder>
+    <graphicData><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <researchPrerequisites><li>WNG_SkimmerSystems</li><li>BasicGravtech</li></researchPrerequisites>
+    <statBases><MaxHitPoints>720</MaxHitPoints><WorkToBuild>420</WorkToBuild><Flammability>0</Flammability></statBases>
+    <costStuffCount>0</costStuffCount><costList><Plasteel>7</Plasteel><GravlitePanel>1</GravlitePanel></costList>
+    <building><isAirtight>true</isAirtight><paintable>false</paintable></building>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><useStuffTerrainAffordance>false</useStuffTerrainAffordance><stuffCategories Inherit="False"/><comps Inherit="False"/>
+  </ThingDef>
+
+  <ThingDef ParentName="GravshipComponentBase">
+    <defName>WNG_OrganicPilotNode</defName>
+    <label>wraith gravship pilot node</label>
+    <description>A responsive neural control organ for a full-sized Wraith gravship, interpreting touch, posture and bioelectrical impulses.</description>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_OrganicPilotNode</texPath><drawSize>(2.5,2)</drawSize></graphicData>
+    <statBases><MaxHitPoints>320</MaxHitPoints><Mass>30</Mass><Beauty>2</Beauty><WorkToBuild>2400</WorkToBuild></statBases>
+    <size>(2,2)</size><rotatable>true</rotatable><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>14</pathCost><canOverlapZones>false</canOverlapZones>
+    <costList><WNG_Biomass>60</WNG_Biomass></costList><designationCategory>WNG_Architect</designationCategory><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <researchPrerequisites><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <comps><li Class="CompProperties_GravshipFacility"><compClass>CompPilotConsole</compClass><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>260</maxDistance></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="GravshipComponentBase">
+    <defName>WNG_PrecursorPilotConsole</defName>
+    <label>Asuran gravship pilot console</label>
+    <description>A high-density Asuran control surface for a full-sized gravship, using touch-sensitive composite layers and projected geometric indicators.</description>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath><drawSize>(2.6,2)</drawSize></graphicData>
+    <statBases><MaxHitPoints>360</MaxHitPoints><Mass>26</Mass><Beauty>10</Beauty><WorkToBuild>2900</WorkToBuild></statBases>
+    <size>(2,2)</size><rotatable>true</rotatable><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><pathCost>14</pathCost><canOverlapZones>false</canOverlapZones>
+    <costList><Plasteel>50</Plasteel><ComponentSpacer>2</ComponentSpacer></costList><designationCategory>WNG_Architect</designationCategory><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <researchPrerequisites><li>WNG_SkimmerSystems</li><li>BasicGravtech</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <comps><li Class="CompProperties_GravshipFacility"><compClass>CompPilotConsole</compClass><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>300</maxDistance></li></comps>
+  </ThingDef>
+</Defs>

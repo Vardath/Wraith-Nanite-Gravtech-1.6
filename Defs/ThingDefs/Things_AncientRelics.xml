@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_AncientShieldHarmonicRelic</defName>
+    <label>Ancient shield harmonic prism</label>
+    <description>An inert precursor calibration prism recovered from a mature shield system. Its field vanes no longer project a usable barrier, and archaeological specimens are usually physically damaged, but the surviving phase geometry preserves a reference for Ancient shield harmonics. It must be analyzed at a research bench before the colony can attempt to reconstruct the high-energy emitter architecture.</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/Precursor/WNG_AncientShieldHarmonicRelic</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(0.82,0.82)</drawSize>
+    </graphicData>
+    <thingCategories><li>Manufactured</li></thingCategories>
+    <stackLimit>1</stackLimit>
+    <statBases>
+      <MaxHitPoints>110</MaxHitPoints>
+      <MarketValue>4200</MarketValue>
+      <Mass>5.5</Mass>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+    </statBases>
+    <tradeability>None</tradeability>
+    <alwaysHaulable>true</alwaysHaulable>
+    <drawGUIOverlay>false</drawGUIOverlay>
+    <comps>
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>860106</analysisID>
+        <analysisRequiredRange>1~1</analysisRequiredRange>
+        <analysisDurationHours>5</analysisDurationHours>
+        <destroyedOnAnalyzed>false</destroyedOnAnalyzed>
+        <allowRepeatAnalysis>false</allowRepeatAnalysis>
+        <canStudyInPlace>false</canStudyInPlace>
+        <activateTexPath>UI/WNG/AncientShieldRelic</activateTexPath>
+        <activateLabelString>Analyze Ancient shield prism</activateLabelString>
+        <activateDescString>Assign a researcher to map the surviving phase geometry in this recovered precursor shield-calibration prism.</activateDescString>
+        <jobString>analyzing Ancient shield harmonics</jobString>
+        <completedLetterLabel>Ancient shield harmonics mapped</completedLetterLabel>
+        <completedLetter>The recovered prism's nested phase relationships and field-return geometry have been mapped. The original remains inert, but the colony now has a genuine Ancient reference from which high-energy shield harmonics can be investigated.</completedLetter>
+        <completedLetterDef>PositiveEvent</completedLetterDef>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>

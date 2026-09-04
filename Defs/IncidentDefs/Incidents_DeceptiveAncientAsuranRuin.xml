@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_DeceptiveAncientAsuranRuinDiscovery</defName>
+    <label>ancient survey annex discovered</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_DeceptiveAncientAsuranRuinDiscovery</workerClass>
+    <baseChance>0.006</baseChance>
+    <earliestDay>72</earliestDay>
+    <letterLabel>Ancient survey annex detected</letterLabel>
+    <letterText>Long-range scans have found a fractured precursor survey annex. Its outer architecture and dead laboratory hardware match known Ancient sites, and no active faction signature is present. A central survey matrix remains unusually intact among the ruins. By this stage, intact precursor systems deserve caution: inspect the site, heed any warning generated near the matrix, and withdraw or destroy it if the signal changes before committing to the inner ruin.</letterText>
+    <letterDef>NeutralEvent</letterDef>
+  </IncidentDef>
+</Defs>

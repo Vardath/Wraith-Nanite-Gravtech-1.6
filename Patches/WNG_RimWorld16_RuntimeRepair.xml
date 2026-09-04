@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- RimWorld 1.6 runtime repairs discovered from the 2026-09-04 Player.log.
+       PatchOperations run before XML inheritance/cross-reference resolution, so these replacements
+       keep the source Def intent while avoiding invalid 1.6 parents/fields. -->
+
+  <!-- AbilityBase is not present in the user's RimWorld 1.6 load. These five abilities are
+       standalone AbilityDefs, so remove only the invalid inheritance edge. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/AbilityDef[defName='WNG_AsuranLatticeIntrusion']</xpath>
+    <value>
+      <AbilityDef>
+        <defName>WNG_AsuranLatticeIntrusion</defName>
+        <label>lattice intrusion</label>
+        <description>Project an Asuran collective control pattern into one hostile block Replicator. Drones and Hunters can be temporarily overwritten and commanded by the caster's faction. Larger forms resist allegiance replacement but suffer temporary replication and coordination suppression instead; Controllers lose their coordination function and a Siege Mass can only be disrupted briefly. Collective peers strengthen the intrusion, while shield-adapted Replicators resist it. This is a temporary contest of machine control, not a permanent swarm conversion.</description>
+        <iconPath>UI/WNG/AsuranLatticeIntrusion</iconPath>
+        <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+        <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+        <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+        <cooldownTicksRange>15000~15000</cooldownTicksRange>
+        <verbProperties>
+          <verbClass>Verb_CastAbility</verbClass>
+          <range>20</range>
+          <warmupTime>2.5</warmupTime>
+          <targetParams>
+            <canTargetPawns>true</canTargetPawns>
+            <canTargetSelf>false</canTargetSelf>
+            <canTargetBuildings>false</canTargetBuildings>
+            <canTargetMechs>true</canTargetMechs>
+          </targetParams>
+        </verbProperties>
+        <comps>
+          <li Class="WraithNaniteGravtech.CompProperties_AbilityAsuranLatticeIntrusion">
+            <droneOverrideTicks>15000</droneOverrideTicks>
+            <hunterOverrideTicks>9000</hunterOverrideTicks>
+            <bulwarkSuppressionTicks>6000</bulwarkSuppressionTicks>
+            <titanSuppressionTicks>4500</titanSuppressionTicks>
+            <controllerSuppressionTicks>7500</controllerSuppressionTicks>
+            <siegeSuppressionTicks>3000</siegeSuppressionTicks>
+            <peerDurationBonus>0.08</peerDurationBonus>
+            <maxPeerBonusCount>3</maxPeerBonusCount>
+            <shieldResistanceFactor>0.75</shieldResistanceFactor>
+          </li>
+        </comps>
+      </AbilityDef>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/AbilityDef[defName='WNG_SovereignLatticeDirective']</xpath>
+    <value>
+      <AbilityDef>
+        <defName>WNG_SovereignLatticeDirective</defName>
+        <label>sovereign lattice directive</label>
+        <description>Use an implanted Sovereign Neural Lattice to override the allegiance of one WNG Replicator. This deliberately narrow command is slower and shorter-ranged than a true Queen's directive and grants no passive Queen coordination.</description>
+        <iconPath>Things/Item/Implant/WNG_SovereignNeuralLattice</iconPath>
+        <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+        <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+        <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+        <cooldownTicksRange>90000~90000</cooldownTicksRange>
+        <verbProperties>
+          <verbClass>Verb_CastAbility</verbClass>
+          <range>24</range>
+          <warmupTime>2.5</warmupTime>
+          <targetParams>
+            <canTargetPawns>true</canTargetPawns>
+            <canTargetSelf>false</canTargetSelf>
+            <canTargetBuildings>false</canTargetBuildings>
+            <canTargetMechs>true</canTargetMechs>
+          </targetParams>
+        </verbProperties>
+        <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityReplicatorDirective" /></comps>
+      </AbilityDef>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/AbilityDef[defName='WNG_ReplicatorDirective']</xpath>
+    <value>
+      <AbilityDef>
+        <defName>WNG_ReplicatorDirective</defName>
+        <label>sovereign directive</label>
+        <description>Transmit the Queen's unique coordination pattern to one WNG Replicator, overriding its current allegiance. This works on both modular block forms and human-form Replicators, but only one target can be brought under direct command at a time.</description>
+        <iconPath>UI/WNG/ReplicatorQueen</iconPath>
+        <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+        <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+        <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+        <cooldownTicksRange>60000~60000</cooldownTicksRange>
+        <verbProperties>
+          <verbClass>Verb_CastAbility</verbClass>
+          <range>32</range>
+          <warmupTime>2</warmupTime>
+          <targetParams>
+            <canTargetPawns>true</canTargetPawns>
+            <canTargetSelf>false</canTargetSelf>
+            <canTargetBuildings>false</canTargetBuildings>
+            <canTargetMechs>true</canTargetMechs>
+          </targetParams>
+        </verbProperties>
+        <comps><li Class="WraithNaniteGravtech.CompProperties_AbilityReplicatorDirective" /></comps>
+      </AbilityDef>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/AbilityDef[defName='WNG_Hibernate']</xpath>
+    <value>
+      <AbilityDef>
+        <defName>WNG_Hibernate</defName>
+        <label>enter hibernation</label>
+        <description>Collapse into a three-day metabolic hibernation. Life-force drain falls to two percent of normal, but movement, manipulation and awareness are nearly eliminated. Dedicated hibernation pods extend and manage this state automatically.</description>
+        <iconPath>UI/WNG/Hibernation</iconPath>
+        <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+        <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+        <cooldownTicksRange>180000~180000</cooldownTicksRange>
+        <verbProperties>
+          <verbClass>Verb_CastAbility</verbClass>
+          <range>0</range>
+          <warmupTime>1</warmupTime>
+          <targetParams>
+            <canTargetSelf>true</canTargetSelf>
+            <canTargetPawns>false</canTargetPawns>
+            <canTargetBuildings>false</canTargetBuildings>
+          </targetParams>
+        </verbProperties>
+        <comps>
+          <li Class="WraithNaniteGravtech.CompProperties_AbilityCasterHediff">
+            <hediffDef>WNG_WraithHibernating</hediffDef>
+            <severity>1</severity>
+            <refreshExisting>true</refreshExisting>
+            <sound>WNG_WraithHibernate</sound>
+          </li>
+        </comps>
+      </AbilityDef>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/AbilityDef[defName='WNG_HiveSense']</xpath>
+    <value>
+      <AbilityDef>
+        <defName>WNG_HiveSense</defName>
+        <label>focus hive sense</label>
+        <description>Briefly intensify the Wraith's telepathic awareness, sharpening sight, hearing and conscious processing for six in-game hours.</description>
+        <iconPath>UI/WNG/HiveSense</iconPath>
+        <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+        <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+        <cooldownTicksRange>30000~30000</cooldownTicksRange>
+        <verbProperties>
+          <verbClass>Verb_CastAbility</verbClass>
+          <range>0</range>
+          <warmupTime>0.5</warmupTime>
+          <targetParams>
+            <canTargetSelf>true</canTargetSelf>
+            <canTargetPawns>false</canTargetPawns>
+            <canTargetBuildings>false</canTargetBuildings>
+          </targetParams>
+        </verbProperties>
+        <comps>
+          <li Class="WraithNaniteGravtech.CompProperties_AbilityCasterHediff">
+            <hediffDef>WNG_HiveSenseFocused</hediffDef>
+            <severity>1</severity>
+            <refreshExisting>true</refreshExisting>
+            <sound>WNG_WraithHiveSense</sound>
+          </li>
+        </comps>
+      </AbilityDef>
+    </value>
+  </Operation>
+
+  <!-- BodyPartBionicBase brings a recipeMaker contract that these WNG implants do not use;
+       explicit WNG implant recipes already own fabrication. Keep them as body-part items. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[@Name='WNG_ImplantBase']</xpath>
+    <value>
+      <ThingDef Name="WNG_ImplantBase" ParentName="BodyPartBase" Abstract="True">
+        <thingCategories><li>BodyPartsBionic</li></thingCategories>
+        <stackLimit>1</stackLimit>
+        <statBases><Mass>0.15</Mass></statBases>
+      </ThingDef>
+    </value>
+  </Operation>
+
+  <!-- These are recovered/integrated equipment, not normally craftable vanilla guns. Using
+       BaseGun prevents an inherited recipeMaker without costs; smelting is explicitly disabled. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_RecoveredPrecursorPulseRifle']</xpath>
+    <value>
+      <ThingDef ParentName="BaseGun">
+        <defName>WNG_RecoveredPrecursorPulseRifle</defName>
+        <label>recovered precursor pulse rifle</label>
+        <description>An original Asuran field rifle recovered from a dormant installation. Its emitter still functions, but centuries of lattice drift have left the self-aligning geometry unstable. Each specimen retains its own field-alignment state: poorer alignment and physical damage increase the chance that a discharge collapses harmlessly instead of firing. A recovered specimen can be analyzed before the colony reconstructs stable Asuran field technology.</description>
+        <techLevel>Spacer</techLevel>
+        <graphicData><texPath>Things/Item/Weapon/Precursor/WNG_PrecursorPulseRifle</texPath><graphicClass>Graphic_Single</graphicClass><color>(0.68,0.76,0.78)</color></graphicData>
+        <statBases><MaxHitPoints>220</MaxHitPoints><MarketValue>1100</MarketValue><Mass>4.1</Mass><AccuracyTouch>0.62</AccuracyTouch><AccuracyShort>0.80</AccuracyShort><AccuracyMedium>0.76</AccuracyMedium><AccuracyLong>0.66</AccuracyLong><RangedWeapon_Cooldown>1.9</RangedWeapon_Cooldown></statBases>
+        <tradeability>Sellable</tradeability>
+        <smeltable>false</smeltable>
+        <weaponClasses><li>RangedLight</li></weaponClasses>
+        <comps>
+          <li Class="CompProperties_CompAnalyzableUnlockResearch">
+            <analysisID>860102</analysisID><analysisRequiredRange>1~1</analysisRequiredRange><analysisDurationHours>3</analysisDurationHours><destroyedOnAnalyzed>false</destroyedOnAnalyzed><allowRepeatAnalysis>false</allowRepeatAnalysis><canStudyInPlace>false</canStudyInPlace>
+            <activateTexPath>UI/WNG/Nanite</activateTexPath><activateLabelString>Analyze recovered Asuran field rifle</activateLabelString><activateDescString>Assign a researcher to map the surviving field geometry and degraded self-alignment lattice at a research bench.</activateDescString><jobString>analyzing recovered Asuran field rifle</jobString>
+            <completedLetterLabel>Recovered Asuran field technology analyzed</completedLetterLabel><completedLetter>The recovered rifle's surviving emitter geometry and nanite-maintained control lattice have yielded enough information to begin systematic nanite analysis. Its original field alignment remains too unstable to reproduce directly without later reconstruction.</completedLetter><completedLetterDef>PositiveEvent</completedLetterDef>
+          </li>
+          <li Class="WraithNaniteGravtech.CompProperties_RecoveredPrecursorEquipment">
+            <fieldAlignmentRange>0.58~0.88</fieldAlignmentRange>
+            <baseFaultChance>0.025</baseFaultChance>
+            <alignmentFaultScale>0.25</alignmentFaultScale>
+            <damageFaultScale>0.12</damageFaultScale>
+            <maximumFaultChance>0.28</maximumFaultChance>
+            <wearPerFault>3</wearPerFault>
+          </li>
+        </comps>
+        <verbs><li><verbClass>WraithNaniteGravtech.Verb_Shoot_RecoveredPrecursor</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ProjectilePrecursorPulse</defaultProjectile><warmupTime>0.85</warmupTime><range>30.9</range><ticksBetweenBurstShots>10</ticksBetweenBurstShots><burstShotCount>3</burstShotCount><soundCast>WNG_PrecursorPulseRifle_Fire</soundCast><soundCastTail>GunTail_Medium</soundCastTail></li></verbs>
+      </ThingDef>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_ReplicatorPulseCaster']</xpath>
+    <value>
+      <ThingDef ParentName="BaseGun">
+        <defName>WNG_ReplicatorPulseCaster</defName>
+        <label>integrated Replicator pulse caster</label>
+        <description>A compact ranged emitter reproduced as part of a Replicator specialist body after its lineage has assimilated sufficient turret technology. It is an integrated machine organ rather than normal salvageable equipment.</description>
+        <techLevel>Spacer</techLevel>
+        <graphicData><texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorPulseCaster</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.8,0.8)</drawSize></graphicData>
+        <statBases><MarketValue>1</MarketValue><Mass>0.35</Mass><AccuracyTouch>0.62</AccuracyTouch><AccuracyShort>0.72</AccuracyShort><AccuracyMedium>0.58</AccuracyMedium><AccuracyLong>0.34</AccuracyLong><RangedWeapon_Cooldown>2.15</RangedWeapon_Cooldown></statBases>
+        <tradeability>None</tradeability>
+        <smeltable>false</smeltable>
+        <weaponTags><li>WNG_ReplicatorIntegrated</li></weaponTags>
+        <verbs><li><verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ReplicatorPulseProjectile</defaultProjectile><warmupTime>0.9</warmupTime><range>19.9</range><ticksBetweenBurstShots>13</ticksBetweenBurstShots><burstShotCount>3</burstShotCount><soundCast>WNG_ReplicatorPulseCaster_Fire</soundCast><soundCastTail>GunTail_Medium</soundCastTail></li></verbs>
+      </ThingDef>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_ReplicatorShieldDisruptor']</xpath>
+    <value>
+      <ThingDef ParentName="BaseGun">
+        <defName>WNG_ReplicatorShieldDisruptor</defName>
+        <label>integrated Replicator phase disruptor</label>
+        <description>A phase-tuned emitter grown only by rare shield-specialist Replicators after their lineage has both assimilated shield technology and spent prolonged time under active defensive fields. Its low-damage focused EMP harmonics are specialized for collapsing barriers, not replacing the swarm's normal weapons or granting universal shield immunity.</description>
+        <techLevel>Ultra</techLevel>
+        <graphicData><texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorShieldDisruptor</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.82,0.82)</drawSize></graphicData>
+        <statBases><MarketValue>1</MarketValue><Mass>0.45</Mass><AccuracyTouch>0.70</AccuracyTouch><AccuracyShort>0.78</AccuracyShort><AccuracyMedium>0.56</AccuracyMedium><AccuracyLong>0.18</AccuracyLong><RangedWeapon_Cooldown>3.4</RangedWeapon_Cooldown></statBases>
+        <tradeability>None</tradeability>
+        <smeltable>false</smeltable>
+        <weaponTags><li>WNG_ReplicatorIntegrated</li></weaponTags>
+        <verbs><li><verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ReplicatorShieldDisruptorProjectile</defaultProjectile><warmupTime>1.15</warmupTime><range>17.9</range><burstShotCount>1</burstShotCount><soundCast>WNG_ReplicatorPulseCaster_Fire</soundCast><soundCastTail>GunTail_Medium</soundCastTail></li></verbs>
+      </ThingDef>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_ReplicatorArtilleryCaster']</xpath>
+    <value>
+      <ThingDef ParentName="BaseGun">
+        <defName>WNG_ReplicatorArtilleryCaster</defName>
+        <label>integrated Replicator artillery caster</label>
+        <description>A long-range pulse array grown as part of a dedicated Replicator artillery body. It is used only by the swarm's bounded defensive/retaliation logic and is not ordinary trade equipment.</description>
+        <techLevel>Spacer</techLevel>
+        <graphicData><texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorArtilleryCaster</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1.05,1.05)</drawSize></graphicData>
+        <statBases><MarketValue>1</MarketValue><Mass>0.8</Mass><AccuracyTouch>0.46</AccuracyTouch><AccuracyShort>0.72</AccuracyShort><AccuracyMedium>0.82</AccuracyMedium><AccuracyLong>0.74</AccuracyLong><RangedWeapon_Cooldown>4.8</RangedWeapon_Cooldown></statBases>
+        <tradeability>None</tradeability>
+        <smeltable>false</smeltable>
+        <weaponTags><li>WNG_ReplicatorIntegrated</li></weaponTags>
+        <verbs><li><verbClass>Verb_Shoot</verbClass><hasStandardCommand>true</hasStandardCommand><defaultProjectile>WNG_ReplicatorArtilleryProjectile</defaultProjectile><warmupTime>2.4</warmupTime><range>43.9</range><ticksBetweenBurstShots>18</ticksBetweenBurstShots><burstShotCount>2</burstShotCount><soundCast>WNG_ReplicatorPulseCaster_Fire</soundCast><soundCastTail>GunTail_Heavy</soundCastTail></li></verbs>
+      </ThingDef>
+    </value>
+  </Operation>
+
+  <!-- FactionDef.startingGoodwill is rejected by the user's 1.6 runtime. Remove the invalid field;
+       WNG's existing diplomacy component still owns subsequent negotiated goodwill changes. -->
+  <Operation Class="PatchOperationRemove">
+    <xpath>/Defs/FactionDef[defName='WNG_WraithCinderCourt' or defName='WNG_WraithVeiledHive' or defName='WNG_WraithExiles']/startingGoodwill</xpath>
+  </Operation>
+
+  <!-- Cinder Court is mutable rather than permanently hostile, so Hospitality requires a peaceful
+       pawn group for guest generation. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/FactionDef[defName='WNG_WraithCinderCourt']/pawnGroupMakers</xpath>
+    <value>
+      <li>
+        <kindDef>Peaceful</kindDef>
+        <commonality>45</commonality>
+        <options>
+          <WNG_WraithHunter>4</WNG_WraithHunter>
+          <WNG_WraithWarrior>7</WNG_WraithWarrior>
+          <WNG_WraithKeeper>1.5</WNG_WraithKeeper>
+          <WNG_WraithCommander>0.5</WNG_WraithCommander>
+        </options>
+      </li>
+    </value>
+  </Operation>
+
+  <!-- Quest is not an IncidentCategoryDef in the user's 1.6 database. These custom workers already
+       control their own discovery behavior; Misc is the valid neutral incident bucket. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/IncidentDef[starts-with(defName,'WNG_') and category='Quest']/category</xpath>
+    <value><category>Misc</category></value>
+  </Operation>
+
+  <!-- Fabrication is not an EffecterDef in this runtime. Use the standard Smith working effect. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/RecipeDef[starts-with(defName,'WNG_') and effectWorking='Fabrication']/effectWorking</xpath>
+    <value><effectWorking>Smith</effectWorking></value>
+  </Operation>
+
+  <!-- Hediffs that declare comps must use HediffWithComps. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/HediffDef[defName='WNG_VitalFeedbackBacklash']</xpath>
+    <value><hediffClass>HediffWithComps</hediffClass></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/HediffDef[defName='WNG_VitalFeedbackShock']</xpath>
+    <value><hediffClass>HediffWithComps</hediffClass></value>
+  </Operation>
+
+  <!-- 1.6 uses the HediffStage hunger-rate field rather than a HungerRateMultiplier StatDef. -->
+  <Operation Class="PatchOperationRemove">
+    <xpath>/Defs/HediffDef[defName='WNG_MetabolicReserveNode']/stages/li/statFactors/HungerRateMultiplier</xpath>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/HediffDef[defName='WNG_MetabolicReserveNode']/stages/li</xpath>
+    <value><hungerRateFactor>0.72</hungerRateFactor></value>
+  </Operation>
+  <Operation Class="PatchOperationRemove">
+    <xpath>/Defs/HediffDef[defName='WNG_AutonomicEfficiencyLattice']/stages/li/statFactors/HungerRateMultiplier</xpath>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/HediffDef[defName='WNG_AutonomicEfficiencyLattice']/stages/li</xpath>
+    <value><hungerRateFactor>0.80</hungerRateFactor></value>
+  </Operation>
+
+  <!-- Correct 1.6 work-speed stat name. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/HediffDef[defName='WNG_NaniteEMPDisruption']/stages/li/statFactors/GlobalWorkSpeed</xpath>
+    <value><WorkSpeedGlobal>0.50</WorkSpeedGlobal></value>
+  </Operation>
+
+  <!-- Vacuum-energy modules are unit-count fuel in CompRefuelable; no FuelValue StatDef is needed. -->
+  <Operation Class="PatchOperationRemove">
+    <xpath>/Defs/ThingDef[defName='WNG_VacuumEnergyModule']/statBases/FuelValue</xpath>
+  </Operation>
+
+  <!-- RimWorld 1.6 SkillDef is Medicine, not Medical. Preserve each backstory's intended gain. -->
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_WraithOrigin_FeedingCourtWard']/skillGains/Medical</xpath><value><Medicine>2</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_WraithAdult_DormancyKeeper']/skillGains/Medical</xpath><value><Medicine>4</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_WraithAdult_FeedingSteward']/skillGains/Medical</xpath><value><Medicine>3</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_WraithAdult_BroodMatriarch']/skillGains/Medical</xpath><value><Medicine>2</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_WraithAdult_HiveDefector']/skillGains/Medical</xpath><value><Medicine>1</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_WraithAdult_StrandedCultivator']/skillGains/Medical</xpath><value><Medicine>1</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_AsuranOrigin_RecoveredBiologicalImprint']/skillGains/Medical</xpath><value><Medicine>1</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_AsuranAdult_FieldSuppressor']/skillGains/Medical</xpath><value><Medicine>2</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_AsuranAdult_ReconstructionOperative']/skillGains/Medical</xpath><value><Medicine>2</Medicine></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/BackstoryDef[defName='WNG_AsuranAdult_ReconstructionPilgrim']/skillGains/Medical</xpath><value><Medicine>3</Medicine></value></Operation>
+
+  <!-- Cheapest WNG precursor-tagged gun is 1005; keep generator floors safely above it. -->
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/PawnKindDef[defName='WNG_PrecursorEngineer']/weaponMoney</xpath><value><weaponMoney>1050~1400</weaponMoney></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/PawnKindDef[defName='WNG_PrecursorSoldier']/weaponMoney</xpath><value><weaponMoney>1050~2200</weaponMoney></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/PawnKindDef[defName='WNG_HumanFormReplicator']/weaponMoney</xpath><value><weaponMoney>1050~1600</weaponMoney></value></Operation>
+  <Operation Class="PatchOperationReplace"><xpath>/Defs/PawnKindDef[defName='WNG_PlayerHumanFormReplicator']/weaponMoney</xpath><value><weaponMoney>1050~1600</weaponMoney></value></Operation>
+
+  <!-- Only a single texture is supplied for the resistance dose, so do not request stack-count variants. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_VitalResistanceDose']/graphicData/graphicClass</xpath>
+    <value><graphicClass>Graphic_Single</graphicClass></value>
+  </Operation>
+</Patch>

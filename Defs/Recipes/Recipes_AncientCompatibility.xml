@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_FabricateAncientNeuralInterface</defName>
+    <label>fabricate Ancient neural interface</label>
+    <description>Fabricate a compact precursor-control translator for surgical integration into an otherwise incompatible humanlike brain. The device reproduces only the Ancient control handshake.</description>
+    <jobString>Fabricating Ancient neural interface.</jobString>
+    <workAmount>6500</workAmount>
+    <workSkill>Crafting</workSkill>
+    <researchPrerequisite>WNG_AncientDroneControl</researchPrerequisite>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Uranium</li></thingDefs></filter><count>10</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>3</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AncientNeuralInterface>1</WNG_AncientNeuralInterface></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef ParentName="WNG_InstallImplantBase">
+    <defName>WNG_InstallAncientNeuralInterface</defName>
+    <label>install Ancient neural interface</label>
+    <description>Perform difficult brain surgery to integrate an Ancient neural interface. Native RimWorld surgery success, medicine quality, surgeon skill and failure consequences remain authoritative.</description>
+    <jobString>Installing Ancient neural interface.</jobString>
+    <workAmount>4200</workAmount>
+    <ingredients><li><filter><thingDefs><li>WNG_AncientNeuralInterface</li></thingDefs></filter><count>1</count></li></ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_AncientNeuralInterface</li></thingDefs></fixedIngredientFilter>
+    <appliedOnFixedBodyParts><li>Brain</li></appliedOnFixedBodyParts>
+    <addsHediff>WNG_AncientNeuralInterface</addsHediff>
+  </RecipeDef>
+
+  <RecipeDef ParentName="WNG_RemoveImplantBase">
+    <defName>WNG_RemoveAncientNeuralInterface</defName>
+    <label>remove Ancient neural interface</label>
+    <description>Remove an Ancient neural interface from the brain.</description>
+    <jobString>Removing Ancient neural interface.</jobString>
+    <workAmount>3000</workAmount>
+    <removesHediff>WNG_AncientNeuralInterface</removesHediff>
+  </RecipeDef>
+</Defs>

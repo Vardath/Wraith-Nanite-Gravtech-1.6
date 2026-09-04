@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_PrecursorPowerCell</defName>
+    <label>precursor power cell</label>
+    <description>A compact high-density energy reservoir built from layered field-stabilising composites.</description>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <thingClass>Building_Battery</thingClass>
+    <graphicData><texPath>Things/Building/Precursor/Power/WNG_PrecursorPowerCell</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <blockWind>true</blockWind>
+    <castEdgeShadows>true</castEdgeShadows>
+    <fillPercent>0.40</fillPercent>
+    <tickerType>Normal</tickerType>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>BuildingsPower</li></thingCategories>
+    <size>(1,1)</size>
+    <costList><Plasteel>55</Plasteel><ComponentSpacer>2</ComponentSpacer></costList>
+    <statBases><MaxHitPoints>220</MaxHitPoints><WorkToBuild>2200</WorkToBuild><Mass>12</Mass><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
+    <comps>
+      <li Class="CompProperties_Battery"><storedEnergyMax>1800</storedEnergyMax><efficiency>0.92</efficiency><shortCircuitInRain>false</shortCircuitInRain><transmitsPower>true</transmitsPower></li>
+      <li Class="CompProperties_Stunnable"><useLargeEMPEffecter>true</useLargeEMPEffecter><affectedDamageDefs><li>EMP</li></affectedDamageDefs></li>
+    </comps>
+    <terrainAffordanceNeeded>Medium</terrainAffordanceNeeded>
+    <designationCategory>Power</designationCategory>
+    <uiOrder>2022</uiOrder>
+    <staticSunShadowHeight>0.2</staticSunShadowHeight>
+    <canOverlapZones>false</canOverlapZones>
+    <researchPrerequisites><li>WNG_PrecursorEnergySystems</li></researchPrerequisites>
+  </ThingDef>
+
+  <ThingDef ParentName="GravshipComponentBase">
+    <defName>WNG_PrecursorGravPowerCore</defName>
+    <label>precursor grav power core</label>
+    <description>An advanced gravitic power core that continuously extracts usable energy from local gravitational gradients.</description>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Power/WNG_PrecursorGravPowerCore</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <tickerType>Normal</tickerType>
+    <statBases><MaxHitPoints>360</MaxHitPoints><Flammability>0</Flammability><Beauty>8</Beauty><WorkToBuild>18000</WorkToBuild><Mass>18</Mass></statBases>
+    <size>(1,1)</size><constructionSkillPrerequisite>8</constructionSkillPrerequisite><resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones><designationCategory>Power</designationCategory>
+    <costList><Gravcore>1</Gravcore><Plasteel>80</Plasteel><ComponentSpacer>4</ComponentSpacer></costList>
+    <researchPrerequisites><li>WNG_PrecursorEnergySystems</li><li>AdvancedGravtech</li></researchPrerequisites>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <comps><li Class="CompProperties_Power"><compClass>CompPowerPlantGravcore</compClass><basePowerConsumption>-1800</basePowerConsumption><transmitsPower>true</transmitsPower></li></comps>
+  </ThingDef>
+</Defs>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName='WNG_PrecursorWall']</xpath>
+        <value><comps><li Class="WraithNaniteGravtech.CompProperties_AsuranSelfRepair"><repairIntervalTicks>1200</repairIntervalTicks><healPerPulse>2</healPerPulse><archiveRadius>45</archiveRadius></li></comps></value>
+      </li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName='WNG_PrecursorDoor']/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_AsuranSelfRepair"><repairIntervalTicks>900</repairIntervalTicks><healPerPulse>3</healPerPulse><archiveRadius>45</archiveRadius></li></value></li>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName='WNG_PrecursorFabricator']</xpath>
+        <value><comps><li Class="WraithNaniteGravtech.CompProperties_AsuranSelfRepair"><repairIntervalTicks>900</repairIntervalTicks><healPerPulse>3</healPerPulse><archiveRadius>45</archiveRadius></li></comps></value>
+      </li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName='WNG_PrecursorPowerCell']/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_AsuranSelfRepair"><repairIntervalTicks>900</repairIntervalTicks><healPerPulse>3</healPerPulse><archiveRadius>45</archiveRadius></li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName='WNG_PrecursorGravPowerCore']/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_AsuranSelfRepair"><repairIntervalTicks>750</repairIntervalTicks><healPerPulse>4</healPerPulse><archiveRadius>55</archiveRadius></li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName='WNG_PrecursorVectorThruster']/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_AsuranSelfRepair"><repairIntervalTicks>750</repairIntervalTicks><healPerPulse>4</healPerPulse><archiveRadius>55</archiveRadius></li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName='WNG_PrecursorShieldEmitter']/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_AsuranSelfRepair"><repairIntervalTicks>750</repairIntervalTicks><healPerPulse>4</healPerPulse><archiveRadius>55</archiveRadius></li></value></li>
+    </operations>
+  </Operation>
+</Patch>

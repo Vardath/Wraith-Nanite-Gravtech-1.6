@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_ReplicatorContaminatedCargo</defName>
+    <label>recovered salvage cargo</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_ReplicatorContaminatedCargo</workerClass>
+    <baseChance>0.055</baseChance>
+    <earliestDay>14</earliestDay>
+    <letterLabel>Recovered salvage cargo</letterLabel>
+    <letterText>An automated recovery beacon has routed a small cargo pod of industrial supplies and sealed machine salvage to the colony.</letterText>
+    <letterDef>PositiveEvent</letterDef>
+  </IncidentDef>
+</Defs>

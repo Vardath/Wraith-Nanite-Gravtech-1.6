@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_AsuranDormantPatternCore</defName>
+    <label>dormant asuran pattern core</label>
+    <description>A sealed Asuran pattern-control core whose external field has fallen almost completely silent. It is not a usable pattern archive and contains no accessible reconstruction records. Residual wake logic can still react to nearby intruders once.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <graphicData><texPath>Things/Building/Precursor/Ruins/WNG_AsuranDormantPatternCore</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(2.3,2.3)</drawSize></graphicData>
+    <size>(2,2)</size><rotatable>false</rotatable><tickerType>Normal</tickerType><passability>PassThroughOnly</passability><fillPercent>0.52</fillPercent>
+    <statBases><MaxHitPoints>520</MaxHitPoints><Mass>62</Mass><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AsuranDormantCore">
+        <triggerRadius>14</triggerRadius><minimumWakeDelayTicks>900</minimumWakeDelayTicks><checkIntervalTicks>120</checkIntervalTicks><hostileFactionDefName>WNG_PrecursorCollective</hostileFactionDefName>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_AsuranDormantRelay</defName>
+    <label>silent asuran relay pylon</label>
+    <description>A powered-down collective relay. Its ceramic shell and lattice channels are intact, but the field hardware is cold and the node has no usable network function.</description>
+    <graphicData><texPath>Things/Building/Precursor/Ruins/WNG_AsuranDormantRelay</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1.5,2.1)</drawSize></graphicData>
+    <size>(1,2)</size><rotatable>false</rotatable><drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><fillPercent>0.35</fillPercent>
+    <statBases><MaxHitPoints>260</MaxHitPoints><Mass>28</Mass><Flammability>0</Flammability><Beauty>5</Beauty></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_AsuranDormantReconstructionPlinth</defName>
+    <label>empty asuran reconstruction plinth</label>
+    <description>A body-reconstruction cradle stripped of active nanite feedstock and pattern data. Its layered field plates remain recognisable, but it cannot rebuild, heal or copy anything.</description>
+    <graphicData><texPath>Things/Building/Precursor/Ruins/WNG_AsuranDormantReconstructionPlinth</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(2.0,1.8)</drawSize></graphicData>
+    <size>(2,1)</size><rotatable>false</rotatable><drawerType>MapMeshOnly</drawerType><altitudeLayer>Building</altitudeLayer><passability>PassThroughOnly</passability><fillPercent>0.30</fillPercent>
+    <statBases><MaxHitPoints>230</MaxHitPoints><Mass>34</Mass><Flammability>0</Flammability><Beauty>6</Beauty></statBases>
+  </ThingDef>
+</Defs>

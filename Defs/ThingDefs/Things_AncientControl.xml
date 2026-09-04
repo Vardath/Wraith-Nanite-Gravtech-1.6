@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_AncientDrone</defName>
+    <label>Ancient drone</label>
+    <description>A stable reconstructed self-guiding precursor weapon stored inert until linked to an Ancient control system. Each launch expends one complete drone, making sustained use dependent on a costly physical ammunition reserve. Archaeological originals are normally recovered as fractured guidance cores rather than safe, ready-to-fire weapons.</description>
+    <graphicData><texPath>Things/Item/Weapon/Precursor/WNG_AncientDrone</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.9,0.9)</drawSize></graphicData>
+    <thingCategories><li>Manufactured</li></thingCategories><stackLimit>12</stackLimit>
+    <statBases><MarketValue>720</MarketValue><Mass>4.5</Mass><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate></statBases>
+    <tradeability>Sellable</tradeability><alwaysHaulable>true</alwaysHaulable><drawGUIOverlay>true</drawGUIOverlay>
+    <comps>
+      <!-- Keep the original analysis ID on the stable Def for old-save compatibility. New archaeology
+           uses WNG_RecoveredAncientDrone with the same 860104 ID, so old completed analysis still
+           satisfies the new damaged-original research requirement through native AnalysisManager data. -->
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>860104</analysisID><analysisRequiredRange>1~1</analysisRequiredRange><analysisDurationHours>4</analysisDurationHours><destroyedOnAnalyzed>false</destroyedOnAnalyzed><allowRepeatAnalysis>false</allowRepeatAnalysis><canStudyInPlace>false</canStudyInPlace>
+        <activateTexPath>UI/WNG/Neural</activateTexPath><activateLabelString>Analyze Ancient drone</activateLabelString><activateDescString>Analyze this unusually intact Ancient drone as a legacy precursor exemplar.</activateDescString><jobString>analyzing Ancient drone</jobString>
+        <completedLetterLabel>Ancient drone analyzed</completedLetterLabel><completedLetter>The drone's neural-link receiver, guidance architecture and control handshake have been mapped well enough to support Ancient drone-control research.</completedLetter><completedLetterDef>PositiveEvent</completedLetterDef>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseBullet">
+    <defName>WNG_AncientDroneProjectile</defName><label>Ancient drone</label>
+    <graphicData><texPath>Things/Item/Weapon/Precursor/WNG_AncientDrone</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.75,0.75)</drawSize></graphicData>
+    <projectile><damageDef>Bomb</damageDef><damageAmountBase>92</damageAmountBase><armorPenetrationBase>1.35</armorPenetrationBase><speed>68</speed><explosionRadius>1.45</explosionRadius><flyOverhead>false</flyOverhead><soundExplode>Explosion_Bomb</soundExplode></projectile>
+  </ThingDef>
+
+  <ThingDef ParentName="FurnitureBase">
+    <defName>WNG_AncientControlChair</defName><label>Ancient control chair</label><description>A reconstructed precursor neural command seat. A compatible operator must remain physically linked at the chair. While occupied, it can launch a finite magazine of costly reconstructed Ancient drones, coordinate nearby Puddle Jumpers, and remotely engage allied Asuran gravship shield emitters.</description>
+    <graphicData><texPath>Things/Building/Precursor/Control/WNG_AncientControlChair</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(2.2,2.2)</drawSize></graphicData>
+    <size>(2,2)</size><rotatable>true</rotatable><defaultPlacingRot>South</defaultPlacingRot><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset><tickerType>Normal</tickerType>
+    <designationCategory>WNG_Architect</designationCategory><uiOrder>2575</uiOrder><constructionSkillPrerequisite>10</constructionSkillPrerequisite><researchPrerequisites><li>WNG_AncientDroneControl</li></researchPrerequisites>
+    <statBases><MaxHitPoints>520</MaxHitPoints><WorkToBuild>18000</WorkToBuild><Mass>42</Mass><Flammability>0</Flammability><Beauty>14</Beauty></statBases>
+    <costList><Plasteel>170</Plasteel><Uranium>35</Uranium><ComponentSpacer>8</ComponentSpacer><GravlitePanel>30</GravlitePanel></costList>
+    <comps>
+      <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>850</basePowerConsumption></li>
+      <li Class="CompProperties_Refuelable"><fuelCapacity>12</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>6</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>WNG_AncientDrone</li></thingDefs></fuelFilter><fuelLabel>Ancient drones</fuelLabel><fuelGizmoLabel>Ancient drones</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay><showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle><canEjectFuel>true</canEjectFuel></li>
+      <li Class="WraithNaniteGravtech.CompProperties_AncientControlChair"><networkRadius>72</networkRadius><droneRange>82</droneRange><droneFuelCost>1</droneFuelCost></li>
+    </comps>
+  </ThingDef>
+</Defs>

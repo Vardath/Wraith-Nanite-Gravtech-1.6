@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="Wall">
+    <defName>WNG_WraithLivingWall</defName>
+    <label>living wall</label>
+    <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms and can support roofs like an ordinary wall.</description>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_LivingWall</texPath><graphicClass>Graphic_Appearances</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><WNG_Biomass>5</WNG_Biomass></costList>
+    <statBases><MaxHitPoints>420</MaxHitPoints><WorkToBuild>180</WorkToBuild><Flammability>0.25</Flammability><Beauty>2</Beauty></statBases>
+    <researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
+    <building><paintable>false</paintable></building>
+  </ThingDef>
+
+  <ThingDef ParentName="DoorBase">
+    <defName>WNG_WraithMembraneDoor</defName>
+    <label>living membrane door</label>
+    <description>A muscular living partition that contracts aside for authorised passage and seals itself afterwards.</description>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData></graphicData>
+    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><WNG_Biomass>18</WNG_Biomass></costList>
+    <statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.25</Flammability></statBases>
+    <researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
+    <building><paintable>false</paintable></building>
+  </ThingDef>
+
+  <ThingDef ParentName="Wall">
+    <defName>WNG_PrecursorWall</defName>
+    <label>precursor wall</label>
+    <description>A seamless composite wall with recessed geometric seams and embedded service channels.</description>
+    <graphicData><texPath>Things/Building/Precursor/Structure/WNG_PrecursorWall</texPath><graphicClass>Graphic_Appearances</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><Plasteel>4</Plasteel><ComponentIndustrial>1</ComponentIndustrial></costList>
+    <statBases><MaxHitPoints>520</MaxHitPoints><WorkToBuild>260</WorkToBuild><Flammability>0</Flammability><Beauty>5</Beauty></statBases>
+    <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
+    <building><paintable>false</paintable></building>
+  </ThingDef>
+
+  <ThingDef ParentName="DoorBase">
+    <defName>WNG_PrecursorDoor</defName>
+    <label>precursor iris door</label>
+    <description>A fast, nearly seamless powered door built from layered precursor composites.</description>
+    <graphicData><texPath>Things/Building/Precursor/Structure/WNG_PrecursorDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData></graphicData>
+    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><Plasteel>28</Plasteel><ComponentSpacer>1</ComponentSpacer></costList>
+    <statBases><MaxHitPoints>350</MaxHitPoints><WorkToBuild>1500</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
+    <comps>
+      <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>35</basePowerConsumption></li>
+      <li Class="CompProperties_Breakdownable"/>
+    </comps>
+    <researchPrerequisites><li>WNG_PrecursorFabrication</li><li>Autodoors</li></researchPrerequisites>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <building><paintable>false</paintable></building>
+  </ThingDef>
+</Defs>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>WNG_VacuumEnergyContainment</defName><label>vacuum-energy containment</label><description>Reconstruct precursor methods for isolating and safely drawing down metastable vacuum-energy pockets. Requires analysis of a degraded original containment shell; archaeological shells have already lost their usable energy pocket. Unlocks construction of fresh sealed containment modules and the high-output vacuum-energy tap.</description>
+    <baseCost>7600</baseCost><techLevel>Ultra</techLevel><researchViewX>19</researchViewX><researchViewY>10.4</researchViewY>
+    <prerequisites><li>WNG_AncientDroneControl</li><li>WNG_PrecursorEnergySystems</li></prerequisites>
+    <requiredAnalyzed><li>WNG_RecoveredVacuumEnergyModule</li></requiredAnalyzed>
+  </ResearchProjectDef>
+</Defs>

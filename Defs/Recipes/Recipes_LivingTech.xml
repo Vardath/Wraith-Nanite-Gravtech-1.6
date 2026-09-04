@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_CultureBiomass</defName>
+    <label>culture biomass</label>
+    <description>Digest raw biological tissue into dense engineered biomass suitable for living technology.</description>
+    <jobString>Culturing biomass.</jobString>
+    <workAmount>900</workAmount>
+    <workSkill>Intellectual</workSkill>
+    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <ingredients><li><filter><categories><li>MeatRaw</li></categories></filter><count>20</count></li></ingredients>
+    <fixedIngredientFilter><categories><li>MeatRaw</li></categories></fixedIngredientFilter>
+    <products><WNG_Biomass>16</WNG_Biomass></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_RecoverBiomass</defName>
+    <label>recover biomass</label>
+    <description>Use an advanced growth chamber to recover a reserve of living feedstock from raw biological tissue after the colony's living-forge network has been lost. This emergency process is slower and less efficient than ordinary forge cultivation.</description>
+    <jobString>Recovering emergency biomass.</jobString>
+    <workAmount>1500</workAmount>
+    <workSkill>Intellectual</workSkill>
+    <recipeUsers><li>WNG_GrowthChamber</li></recipeUsers>
+    <ingredients><li><filter><categories><li>MeatRaw</li></categories></filter><count>20</count></li></ingredients>
+    <fixedIngredientFilter><categories><li>MeatRaw</li></categories></fixedIngredientFilter>
+    <products><WNG_Biomass>12</WNG_Biomass></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_GrowLivingForgeSeed</defName>
+    <label>grow living forge seed</label>
+    <description>Grow a replacement living forge seed in an advanced growth chamber. The first forge must still be obtained through host incubation.</description>
+    <jobString>Growing a living forge seed.</jobString>
+    <workAmount>3500</workAmount><workSkill>Intellectual</workSkill>
+    <recipeUsers><li>WNG_GrowthChamber</li></recipeUsers>
+    <ingredients><li><filter><thingDefs><li>WNG_Biomass</li></thingDefs></filter><count>60</count></li></ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_Biomass</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_LivingForgeSeed>1</WNG_LivingForgeSeed></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_GrowGrowthChamberSeed</defName>
+    <label>grow growth chamber seed</label>
+    <description>Grow the first advanced growth-chamber organ-seed at a living forge, establishing the next tier of biological industry.</description>
+    <jobString>Growing a growth chamber seed.</jobString>
+    <workAmount>6500</workAmount><workSkill>Intellectual</workSkill>
+    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <ingredients><li><filter><thingDefs><li>WNG_Biomass</li></thingDefs></filter><count>100</count></li></ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_Biomass</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_GrowthChamberSeed>1</WNG_GrowthChamberSeed></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_GrowWraithGravcoreSeed</defName>
+    <label>grow wraith gravcore seed</label>
+    <description>Grow a gravitic organ-seed in an advanced growth chamber. Implant it into a living biological prisoner or slave, or a biological humanlike corpse. After one day, a usable gravcore forms.</description>
+    <jobString>Growing a wraith gravcore seed.</jobString>
+    <workAmount>7000</workAmount>
+    <workSkill>Intellectual</workSkill>
+    <recipeUsers><li>WNG_GrowthChamber</li></recipeUsers>
+    <ingredients><li><filter><thingDefs><li>WNG_Biomass</li></thingDefs></filter><count>120</count></li></ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_Biomass</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_WraithGravcoreSeed>1</WNG_WraithGravcoreSeed></products>
+  </RecipeDef>
+</Defs>

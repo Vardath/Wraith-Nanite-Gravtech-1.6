@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_NaniteBody</defName><label>nanite body</label>
+    <description>The body is maintained by coordinated microscopic machines rather than ordinary biological repair alone. Human-form Replicators and Asurans still consume ordinary food as raw material for their nanite reserve, but their synthetic physiology cannot suffer food poisoning. Sleep, recreation, beauty and physical comfort remain unnecessary.</description>
+    <iconPath>UI/WNG/NaniteBody</iconPath><displayCategory>Ability</displayCategory><geneClass>WraithNaniteGravtech.Gene_NaniteBody</geneClass><biostatCpx>4</biostatCpx><biostatMet>-4</biostatMet>
+    <foodPoisoningChanceFactor>0</foodPoisoningChanceFactor>
+    <disablesNeeds><li>Rest</li><li>Joy</li><li>Beauty</li><li>Comfort</li></disablesNeeds>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_NaniteReserve</defName>
+    <label>nanite reserve</label>
+    <description>A reserve of feedstock and active nanomachines replenished whenever the bearer eats ordinary food. The reserve is consumed by accelerated self-repair, missing-part reconstruction and fabrication of human-form copies through the neural interface.</description>
+    <iconPath>UI/WNG/NaniteBody</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
+    <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_NaniteReserve</resourceGizmoType>
+    <resourceLabel>nanite reserve</resourceLabel>
+    <resourceDescription>{PAWN_nameDef} converts ordinary nutrition into nanite feedstock. Reserve powers accelerated injury repair, missing-part reconstruction and human-form copy fabrication. When depleted, emergency reconstruction continues at the older slower rate.</resourceDescription>
+    <resourceLossPerDay>0</resourceLossPerDay>
+    <resourceGizmoThresholds><li>0.1</li><li>0.25</li><li>0.6</li></resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView>
+    <biostatCpx>2</biostatCpx><biostatMet>-2</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_NaniteReconstruction</defName><label>nanite reconstruction</label>
+    <description>Coordinated repair swarms restore damaged tissue and reconstruct lost body parts. With nanite reserve available, healing runs roughly four times faster and spends reserve on each repair pulse; depleted units fall back to slower emergency reconstruction. Collective coordination can further improve repair efficiency.</description>
+    <iconPath>UI/WNG/NaniteReconstruction</iconPath><displayCategory>Ability</displayCategory><geneClass>WraithNaniteGravtech.Gene_NaniteReconstruction</geneClass><biostatCpx>3</biostatCpx><biostatMet>-3</biostatMet>
+  </GeneDef>
+  <GeneDef>
+    <defName>WNG_EMPSensitiveNanites</defName><label>EMP-sensitive nanites</label>
+    <description>The body's repair swarms are vulnerable to electromagnetic disruption. EMP exposure can suppress reconstruction, sever collective coordination and severely impair distributed control.</description>
+    <iconPath>UI/WNG/EMP</iconPath><displayCategory>Ability</displayCategory><geneClass>WraithNaniteGravtech.Gene_EMPSensitiveNanites</geneClass><biostatCpx>1</biostatCpx><biostatMet>2</biostatMet>
+  </GeneDef>
+  <GeneDef>
+    <defName>WNG_NeuralInterface</defName><label>neural nanite interface</label>
+    <description>Specialized nanites can form a touch-range interface with another humanlike mind for controlled capture, allegiance changes, skill-pattern acquisition, or construction of a synthetic human-form copy. Fabricating a complete pawn consumes 60% of the caster's nanite reserve.</description>
+    <iconPath>UI/WNG/NaniteInterface</iconPath><displayCategory>Ability</displayCategory><biostatCpx>4</biostatCpx><biostatMet>-3</biostatMet><abilities><li>WNG_NeuralInterface</li></abilities>
+  </GeneDef>
+  <GeneDef>
+    <defName>WNG_AsuranCollectiveLink</defName><label>Asuran collective link</label>
+    <description>A distributed identity-and-coordination layer that links compatible nanite minds. Nearby peers reinforce reconstruction and strengthen bounded lattice intrusions against block Replicators; a powered pattern archive acts as a map-wide relay and continuity store. Small block forms can be temporarily overwritten while larger machine bodies can only be command-suppressed. EMP disruption temporarily cuts the link and prevents these collective operations.</description>
+    <iconPath>UI/WNG/AsuranCollective</iconPath><displayCategory>Ability</displayCategory><geneClass>WraithNaniteGravtech.Gene_AsuranCollectiveLink</geneClass><biostatCpx>3</biostatCpx><biostatMet>-2</biostatMet><abilities><li>WNG_AsuranLatticeIntrusion</li></abilities>
+  </GeneDef>
+</Defs>

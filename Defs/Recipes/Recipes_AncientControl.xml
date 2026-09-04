@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_FabricateAncientDrone</defName>
+    <label>fabricate Ancient drone</label>
+    <description>Fabricate one expendable Ancient guided drone using ultra-precise Asuran tooling and dense high-energy materials.</description>
+    <jobString>Fabricating Ancient drone.</jobString>
+    <workAmount>5200</workAmount>
+    <workSkill>Crafting</workSkill>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <researchPrerequisite>WNG_AncientDroneControl</researchPrerequisite>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>12</count></li>
+      <li><filter><thingDefs><li>Uranium</li></thingDefs></filter><count>5</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>1</count></li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li></thingDefs>
+    </fixedIngredientFilter>
+    <products><WNG_AncientDrone>1</WNG_AncientDrone></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+</Defs>

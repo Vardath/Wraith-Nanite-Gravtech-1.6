@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_WraithHiveRetaliation</defName>
+    <label>Wraith Hive retaliation</label>
+    <category>ThreatBig</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_WraithHiveRetaliation</workerClass>
+    <baseChance>0</baseChance>
+    <letterLabel>Wraith retaliation</letterLabel>
+    <letterText>Surviving Wraith forces have regrouped after the destruction of a mature Hive and are striking back at your colony.</letterText>
+    <letterDef>ThreatBig</letterDef>
+  </IncidentDef>
+
+  <IncidentDef>
+    <defName>WNG_WraithAsuranExtermination</defName>
+    <label>Wraith anti-Asuran extermination strike</label>
+    <category>ThreatBig</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_WraithAsuranExtermination</workerClass>
+    <baseChance>0</baseChance>
+    <letterLabel>Wraith extermination strike</letterLabel>
+    <letterText>The hostile Wraith Brood has identified synthetic nanite humanoids in your colony as an existential replication threat and committed combat forces to destroy them.</letterText>
+    <letterDef>ThreatBig</letterDef>
+  </IncidentDef>
+</Defs>

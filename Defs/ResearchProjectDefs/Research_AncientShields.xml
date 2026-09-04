@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>WNG_AncientShieldHarmonics</defName>
+    <label>Ancient shield harmonics</label>
+    <description>Reconstruct the high-energy field harmonics used by mature precursor defensive systems from an analyzed Ancient shield harmonic prism. The resulting emitter remains an Odyssey gravship shield rather than an invulnerable custom barrier, but projects a larger and substantially tougher field at an extreme continuous power cost.</description>
+    <baseCost>9200</baseCost>
+    <techLevel>Ultra</techLevel>
+    <researchViewX>21</researchViewX>
+    <researchViewY>10.4</researchViewY>
+    <prerequisites>
+      <li>WNG_PrecursorShields</li>
+      <li>WNG_VacuumEnergyContainment</li>
+      <li>AdvancedGravtech</li>
+    </prerequisites>
+    <requiredAnalyzed>
+      <li>WNG_AncientShieldHarmonicRelic</li>
+    </requiredAnalyzed>
+  </ResearchProjectDef>
+</Defs>

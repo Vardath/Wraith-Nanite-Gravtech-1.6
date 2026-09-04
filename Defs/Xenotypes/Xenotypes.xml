@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <XenotypeDef>
+    <defName>WNG_Wraith</defName>
+    <label>wraith</label>
+    <description>A predatory regenerative xenotype adapted to survive extreme injury, endure vacuum exposure longer than ordinary humans, drain living prey, communicate telepathically and cultivate biological technology. Wraith vacuum resistance is substantial but incomplete, so prolonged unprotected exposure remains dangerous.</description>
+    <iconPath>UI/WNG/WraithXenotype</iconPath>
+    <genes><li>WNG_WraithRegeneration</li><li>WNG_LifeForceMetabolism</li><li>WNG_WraithTelepathy</li><li>WNG_HostCultivator</li><li>VacuumResistant</li></genes>
+  </XenotypeDef>
+
+  <XenotypeDef>
+    <defName>WNG_UnstableWraithHybrid</defName>
+    <label>unstable Wraith hybrid</label>
+    <description>A forbidden human/Wraith graft rather than a true Wraith caste. The subject retains ordinary human nutritional needs and identity while carrying an incomplete Wraith-derived life-force reserve, limited injury regeneration and attenuated telepathy. The graft cannot perform full Drain Life, cannot regrow missing limbs and suffers recurring genomic instability.</description>
+    <iconPath>UI/WNG/HybridXenotype</iconPath>
+    <genes><li>WNG_HybridRegeneration</li><li>WNG_HybridLifeForce</li><li>WNG_HybridTelepathy</li><li>WNG_HybridInstability</li></genes>
+  </XenotypeDef>
+
+  <XenotypeDef>
+    <defName>WNG_NanitePrecursor</defName>
+    <label>nanite precursor</label>
+    <description>A synthetic humanoid maintained by coordinated nanomachines. It consumes ordinary food as nanite feedstock, storing the converted material in a reserve used for rapid reconstruction and neural-interface fabrication. It is immune to food poisoning but vulnerable to electromagnetic disruption.</description>
+    <iconPath>UI/WNG/NaniteXenotype</iconPath>
+    <genes><li>WNG_NaniteBody</li><li>WNG_NaniteReserve</li><li>WNG_NaniteReconstruction</li><li>WNG_EMPSensitiveNanites</li><li>WNG_NeuralInterface</li><li>WNG_AsuranCollectiveLink</li></genes>
+  </XenotypeDef>
+
+  <XenotypeDef>
+    <defName>WNG_HumanFormReplicator</defName>
+    <label>human-form replicator</label>
+    <description>A synthetic human-form Replicator built from coordinated nanomachines. It eats ordinary food as raw nanite feedstock and stores the converted material in a reserve that drives accelerated healing, missing-part reconstruction and human-form copy fabrication. It cannot suffer food poisoning. Linked units can participate in an Asuran-style collective and pattern archive, while EMP disruption remains a major weakness.</description>
+    <iconPath>UI/WNG/NaniteXenotype</iconPath>
+    <genes><li>WNG_NaniteBody</li><li>WNG_NaniteReserve</li><li>WNG_NaniteReconstruction</li><li>WNG_EMPSensitiveNanites</li><li>WNG_NeuralInterface</li><li>WNG_AsuranCollectiveLink</li><li>Deathless</li><li>VacuumResistant</li></genes>
+  </XenotypeDef>
+</Defs>

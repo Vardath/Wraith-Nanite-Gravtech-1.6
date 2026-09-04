@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>WNG_StrikeCraftBiology</defName><label>wraith strike-craft biology</label><description>Scale Dart organs into a larger assault organism with deeper biomass reserves, expanded transport tissue and deliberate living-hull regeneration.</description><baseCost>3400</baseCost><techLevel>Spacer</techLevel><researchViewX>21</researchViewX><researchViewY>6.8</researchViewY><prerequisites><li>WNG_OrganicFlight</li><li>WNG_HiveArchitecture</li></prerequisites>
+  </ResearchProjectDef>
+  <ResearchProjectDef>
+    <defName>WNG_CruiserBiology</defName><label>wraith cruiser biology</label><description>Grow medium Wraith cruiser organisms able to carry major strike forces across long distances while metabolising cultured biomass for propulsion and hull regeneration.</description><baseCost>4800</baseCost><techLevel>Ultra</techLevel><researchViewX>23</researchViewX><researchViewY>7.2</researchViewY><prerequisites><li>WNG_StrikeCraftBiology</li><li>AdvancedGravtech</li></prerequisites>
+  </ResearchProjectDef>
+</Defs>

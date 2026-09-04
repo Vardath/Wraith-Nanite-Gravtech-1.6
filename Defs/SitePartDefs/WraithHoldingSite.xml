@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_WraithHoldingSite</defName>
+    <label>wraith holding site</label>
+    <description>A temporary Wraith feeding outpost used to hold people taken by culling Darts. A Keeper maintains the captives while hunters and warriors guard the site.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_WraithHoldingSite</workerClass>
+    <siteTexture>World/WNG_WraithHoldingSite</siteTexture>
+    <expandingIconTexture>World/WNG_WraithHoldingSite</expandingIconTexture>
+    <applyFactionColorToSiteTexture>false</applyFactionColorToSiteTexture>
+    <showFactionInInspectString>true</showFactionInInspectString>
+    <requiresFaction>true</requiresFaction>
+    <approachOrderString>Approach {0}</approachOrderString>
+    <approachingReportString>Approaching {0}</approachingReportString>
+    <arrivedLetterLabelPart>Wraith holding site</arrivedLetterLabelPart>
+    <arrivedLetter>You have reached a Wraith holding site. The abducted colonists are alive and being held as prisoners. Defeat the Wraith guards to release them.</arrivedLetter>
+    <arrivedLetterDef>ThreatBig</arrivedLetterDef>
+    <wantsThreatPoints>true</wantsThreatPoints>
+    <badEvenIfNoMap>true</badEvenIfNoMap>
+    <forceExitAndRemoveMapCountdownDurationDays>4</forceExitAndRemoveMapCountdownDurationDays>
+    <considerEnteringAsAttack>true</considerEnteringAsAttack>
+    <mainPartAllThreatsLabel>wraith guards</mainPartAllThreatsLabel>
+    <minMapSize>(200,1,200)</minMapSize>
+    <gravShipsCanLandOn>true</gravShipsCanLandOn>
+  </SitePartDef>
+</Defs>

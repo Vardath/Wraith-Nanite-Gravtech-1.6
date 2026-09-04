@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="GravshipComponentBase">
+    <defName>WNG_OrganicThruster</defName>
+    <label>wraith gravship drive organ</label>
+    <description>A grown propulsion organ for a full-sized Wraith gravship. It couples gravitic lift to a focused living-drive pulse and provides greater range than conventional colonial thrusters.</description>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_OrganicThruster</texPath><drawSize>(1.2,2.4)</drawSize></graphicData>
+    <statBases><MaxHitPoints>430</MaxHitPoints><Flammability>0.12</Flammability><Beauty>2</Beauty><WorkToBuild>9800</WorkToBuild><Mass>16</Mass></statBases>
+    <size>(1,2)</size><constructionSkillPrerequisite>5</constructionSkillPrerequisite><fillPercent>0.5</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones><designationCategory>WNG_Architect</designationCategory><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <costList><WNG_Biomass>90</WNG_Biomass><GravlitePanel>22</GravlitePanel><ComponentIndustrial>2</ComponentIndustrial></costList>
+    <researchPrerequisites><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites>
+    <comps><li Class="CompProperties_GravshipThruster"><statOffsets><GravshipRange>14</GravshipRange></statOffsets><componentTypeDef>Thruster</componentTypeDef><exclusionAreaSize>(1,0,5)</exclusionAreaSize><exclusionAreaOffset>(0,0,-5)</exclusionAreaOffset><directionInfluence>24</directionInfluence><flameSize>4.0</flameSize><requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>600</maxDistance></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="GravshipComponentBase">
+    <defName>WNG_PrecursorVectorThruster</defName>
+    <label>Asuran gravship vector drive</label>
+    <description>An advanced Asuran field-vectoring drive for full-sized gravships. Its compact emitter geometry provides exceptionally efficient thrust and long-range gravship travel.</description>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorVectorThruster</texPath><drawSize>(1.2,2.4)</drawSize></graphicData>
+    <statBases><MaxHitPoints>500</MaxHitPoints><Flammability>0</Flammability><Beauty>7</Beauty><WorkToBuild>12500</WorkToBuild><Mass>14</Mass></statBases>
+    <size>(1,2)</size><constructionSkillPrerequisite>7</constructionSkillPrerequisite><fillPercent>0.45</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones><designationCategory>WNG_Architect</designationCategory><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <costList><Plasteel>100</Plasteel><GravlitePanel>28</GravlitePanel><ComponentSpacer>2</ComponentSpacer></costList>
+    <researchPrerequisites><li>WNG_SkimmerSystems</li><li>StandardGravtech</li></researchPrerequisites>
+    <comps><li Class="CompProperties_GravshipThruster"><statOffsets><GravshipRange>18</GravshipRange></statOffsets><componentTypeDef>Thruster</componentTypeDef><exclusionAreaSize>(1,0,5)</exclusionAreaSize><exclusionAreaOffset>(0,0,-5)</exclusionAreaOffset><directionInfluence>30</directionInfluence><flameSize>3.5</flameSize><requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>650</maxDistance></li></comps>
+  </ThingDef>
+
+  <ThingDef ParentName="GravshipComponentBase">
+    <defName>WNG_PrecursorShieldEmitter</defName>
+    <label>Asuran gravship shield emitter</label>
+    <description>The standard ship-scale member of the Asuran shield family. It protects a full-sized gravship with a 27.9-cell, 900-strength projectile barrier and draws 3.6 kilowatts continuously while energized. It is broader and tougher than a fixed settlement field, but substantially below the recovered Ancient vacuum-harmonic tier.</description>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorShieldEmitter</texPath><drawSize>(3,3)</drawSize></graphicData>
+    <drawerType>MapMeshAndRealTime</drawerType><drawOffscreen>true</drawOffscreen><tickerType>Normal</tickerType>
+    <statBases><MaxHitPoints>430</MaxHitPoints><Flammability>0</Flammability><Mass>62</Mass><Beauty>8</Beauty></statBases>
+    <size>(3,3)</size><fillPercent>0.6</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><specialDisplayRadius>27.9</specialDisplayRadius><designationCategory>WNG_Architect</designationCategory>
+    <costList><Plasteel>240</Plasteel><GravlitePanel>100</GravlitePanel><ComponentSpacer>8</ComponentSpacer></costList>
+    <researchPrerequisites><li>WNG_PrecursorShields</li><li>AdvancedGravtech</li></researchPrerequisites>
+    <comps>
+      <li Class="CompProperties_GravshipFacility"><requiresLOS>false</requiresLOS><maxSimultaneous>2</maxSimultaneous><maxDistance>600</maxDistance></li>
+      <li Class="CompProperties_Flickable"/>
+      <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>3600</basePowerConsumption></li>
+      <li Class="CompProperties_Interactable"><compClass>CompInteractable_GravshipShieldGenerator</compClass><ticksToActivate>120</ticksToActivate><jobString>activate</jobString><activateTexPath>UI/Commands/ActivateGravshipShield</activateTexPath><soundActivate>GravshipShieldGenerator_Activate</soundActivate><requiresPower>true</requiresPower><targetingParameters><canTargetBuildings>false</canTargetBuildings><canTargetAnimals>false</canTargetAnimals><canTargetMechs>false</canTargetMechs><onlyTargetControlledPawns>true</onlyTargetControlledPawns></targetingParameters></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorShieldEngagementMonitor"><radius>27.9</radius><sampleIntervalTicks>300</sampleIntervalTicks></li>
+      <li Class="CompProperties_ProjectileInterceptor"><compClass>CompGravshipShieldGenerator</compClass><radius>27.9</radius><interceptGroundProjectiles>true</interceptGroundProjectiles><interceptAirProjectiles>true</interceptAirProjectiles><color>(0.45,0.82,0.95)</color><reactivateEffect>BulletShieldGenerator_Reactivate</reactivateEffect><activeSound>BulletShield_Ambience</activeSound><hitPoints>900</hitPoints><hitPointsRestoreInstantlyAfterCharge>false</hitPointsRestoreInstantlyAfterCharge><startWithMaxHitPoints>false</startWithMaxHitPoints><chargeDurationTicks>8000</chargeDurationTicks><minIdleAlpha>0.2</minIdleAlpha><drawWithNoSelection>true</drawWithNoSelection><disarmedByEmpForTicks>1500</disarmedByEmpForTicks><gizmoTipKey>GravshipShieldTip</gizmoTipKey><alwaysShowHitpointsGizmo>true</alwaysShowHitpointsGizmo><rechargeHitPointsIntervalTicks>60</rechargeHitPointsIntervalTicks><activated>true</activated><activeDuration>6500</activeDuration></li>
+    </comps>
+  </ThingDef>
+</Defs>

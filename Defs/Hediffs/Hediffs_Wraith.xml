@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_HostSeedIncubation</defName>
+    <label>living seed incubation</label>
+    <description>A living technological seed is maturing inside this host. The implant is committed to the host and cannot be recovered. If the host survives the full one-day gestation, the host is consumed and a minified living forge emerges; if the host dies early, the immature seed tissue is lost.</description>
+    <hediffClass>WraithNaniteGravtech.Hediff_HostSeedIncubation</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <label>incubating</label>
+        <capMods>
+          <li><capacity>Moving</capacity><setMax>0.05</setMax></li>
+          <li><capacity>Consciousness</capacity><setMax>0.35</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_GravcoreSeedIncubation</defName>
+    <label>wraith gravcore incubation</label>
+    <description>A workshop-grown gravcore seed has been implanted in this host. The implant is committed to the host and cannot be recovered. After one full day it consumes and reorganizes the host into a functional gravcore; if the host dies before gestation completes, the immature seed tissue is lost.</description>
+    <hediffClass>WraithNaniteGravtech.Hediff_GravcoreSeedIncubation</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+        <label>incubating gravcore</label>
+        <capMods>
+          <li><capacity>Moving</capacity><setMax>0.05</setMax></li>
+          <li><capacity>Consciousness</capacity><setMax>0.35</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+</Defs>

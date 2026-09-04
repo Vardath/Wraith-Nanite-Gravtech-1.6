@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_AncientPrecursorLaboratoryDiscovery</defName>
+    <label>precursor laboratory discovered</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_AncientPrecursorLaboratoryDiscovery</workerClass>
+    <baseChance>0.011</baseChance>
+    <earliestDay>36</earliestDay>
+    <letterLabel>Ancient precursor laboratory located</letterLabel>
+    <letterText>A fragmented geometric survey return has exposed an abandoned precursor research installation. Its main systems appear dead, though ancient automated security and damaged analysis material may remain. This is an evidence site rather than a cache of functioning Ancient machinery: recover what survived, study it, and reconstruct stable technology later.</letterText>
+    <letterDef>NeutralEvent</letterDef>
+  </IncidentDef>
+</Defs>

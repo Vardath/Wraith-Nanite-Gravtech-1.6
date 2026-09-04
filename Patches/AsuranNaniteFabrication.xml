@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- #80: Asuran equipment is reconstructed around consumed nanite feedstock rather than
+       fabricated entirely from conventional colony materials. WNG_ReplicatorMatter remains
+       hazardous until consumed, so this is a real material sink rather than free matter. -->
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <!-- Ordinary Asuran / human-form equipment generated from ThingDef recipeMaker. -->
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_PrecursorPulseRifle"]/costList</xpath><value><WNG_ReplicatorMatter>16</WNG_ReplicatorMatter></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_PrecursorPhaseBlade"]/costList</xpath><value><WNG_ReplicatorMatter>14</WNG_ReplicatorMatter></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_PrecursorFieldLance"]/costList</xpath><value><WNG_ReplicatorMatter>20</WNG_ReplicatorMatter></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_PrecursorFieldArmor"]/costList</xpath><value><WNG_ReplicatorMatter>24</WNG_ReplicatorMatter></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_HumanFormUniform"]/costList</xpath><value><WNG_ReplicatorMatter>8</WNG_ReplicatorMatter></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_HumanFormCombatArmor"]/costList</xpath><value><WNG_ReplicatorMatter>24</WNG_ReplicatorMatter></value></li>
+
+      <!-- Early Asuran augmentation recipes now use the same feedstock model as the existing
+           Reconstruction Microforge, EMP Shunt and Sovereign Neural Lattice recipes. -->
+      <li Class="PatchOperationAdd"><xpath>Defs/RecipeDef[defName="WNG_FabricateNaniteMotorLattice"]/ingredients</xpath><value><li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>10</count></li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/RecipeDef[defName="WNG_FabricateNaniteMotorLattice"]/fixedIngredientFilter/thingDefs</xpath><value><li>WNG_ReplicatorMatter</li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/RecipeDef[defName="WNG_FabricateAutonomicEfficiencyLattice"]/ingredients</xpath><value><li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>8</count></li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/RecipeDef[defName="WNG_FabricateAutonomicEfficiencyLattice"]/fixedIngredientFilter/thingDefs</xpath><value><li>WNG_ReplicatorMatter</li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/RecipeDef[defName="WNG_FabricateAdaptiveSensorMesh"]/ingredients</xpath><value><li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>10</count></li></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/RecipeDef[defName="WNG_FabricateAdaptiveSensorMesh"]/fixedIngredientFilter/thingDefs</xpath><value><li>WNG_ReplicatorMatter</li></value></li>
+
+      <!-- Make the player-facing doctrine explicit without redefining a separate currency. -->
+      <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_PrecursorFabricator"]/description</xpath><value><description>A compact high-precision Asuran reconstruction platform. It consumes standardized nanite feedstock recovered as Replicator matter alongside the structural materials, components and gravitic substrates required by each pattern.</description></value></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/ResearchProjectDef[defName="WNG_PrecursorFabrication"]/description</xpath><value><description>Construct stable high-precision Asuran reconstruction systems. Asuran equipment patterns consume recovered Replicator matter as standardized nanite feedstock alongside appropriate structural materials; the process rearranges finite matter rather than creating it.</description></value></li>
+    </operations>
+  </Operation>
+</Patch>

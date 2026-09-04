@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="WNG_PuddleJumper"]/comps</xpath>
+    <value>
+      <li Class="WraithNaniteGravtech.CompProperties_PuddleJumperSystems">
+        <cloakFuelPerRareTick>0.75</cloakFuelPerRareTick>
+        <cloakCooldownTicks>1200</cloakCooldownTicks>
+        <hostileCloakTicks>900</hostileCloakTicks>
+        <sensorCooldownTicks>2500</sensorCooldownTicks>
+        <sabotageRange>42</sabotageRange>
+        <sabotageFirstDelayTicks>1200</sabotageFirstDelayTicks>
+        <sabotageIntervalTicks>750</sabotageIntervalTicks>
+        <sabotagePulseCount>4</sabotagePulseCount>
+        <sabotageEmpDamage>34</sabotageEmpDamage>
+        <sabotagePhysicalDamage>16</sabotagePhysicalDamage>
+        <withdrawalDelayTicks>600</withdrawalDelayTicks>
+        <noTargetWithdrawalTicks>3600</noTargetWithdrawalTicks>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_PuddleJumperDroneArmament">
+        <droneRange>72</droneRange>
+        <droneCooldownTicks>900</droneCooldownTicks>
+        <researchDefName>WNG_AncientDroneControl</researchDefName>
+        <ammoDefName>WNG_AncientDrone</ammoDefName>
+        <projectileDefName>WNG_AncientDroneProjectile</projectileDefName>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_AsuranStrikeTeam">
+        <recruitmentWindowTicks>2400</recruitmentWindowTicks>
+        <recruitmentRadius>24</recruitmentRadius>
+        <maxTeamSize>8</maxTeamSize>
+        <missionOrderIntervalTicks>500</missionOrderIntervalTicks>
+        <extractionStartTicks>3600</extractionStartTicks>
+        <extractionCellRadius>2.5</extractionCellRadius>
+      </li>
+    </value>
+  </Operation>
+</Patch>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_AncientAffinity</defName>
+    <label>Ancient interface affinity</label>
+    <description>A rare inherited neural topology happens to match the control handshake used by precursor command systems. The bearer can operate WNG Ancient control technology without becoming Asuran or gaining any nanite, collective, research, power or ammunition benefit. The trait is uncommon among ordinary humanlikes and can pass through normal endogene inheritance.</description>
+    <iconPath>UI/WNG/AncientAffinity</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+</Defs>

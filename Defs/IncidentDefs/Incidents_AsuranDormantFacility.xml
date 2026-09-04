@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_AsuranDormantFacilityDiscovery</defName>
+    <label>dormant asuran facility discovered</label>
+    <category>Misc</category>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_AsuranDormantFacilityDiscovery</workerClass>
+    <baseChance>0.008</baseChance>
+    <earliestDay>60</earliestDay>
+    <letterLabel>Dormant Asuran facility detected</letterLabel>
+    <letterText>Sensors have isolated an Asuran-pattern installation whose systems are almost completely silent. The structure appears abandoned rather than destroyed. Its pattern core may still contain dormant security routines, so approaching intact machinery could wake whatever remains linked to it. Treat the site as an advanced nanite-architecture encounter, not a ready-made Pattern Archive or fabrication facility.</letterText>
+    <letterDef>NeutralEvent</letterDef>
+  </IncidentDef>
+</Defs>

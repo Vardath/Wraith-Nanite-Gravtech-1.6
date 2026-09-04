@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>WNG_AncientDroneControl</defName><label>Ancient drone control</label><description>Reconstruct the neural command architecture, targeting logic and expendable guided drones used by precursor control systems. Requires analysis of a fractured original Ancient drone core; recovered originals are not safe ammunition. Unlocks the Ancient control chair, costly stable reconstructed drones, and the armed-command upgrade that lets a player Puddle Jumper launch real reconstructed drones carried in its cargo.</description>
+    <baseCost>5200</baseCost><techLevel>Ultra</techLevel><researchViewX>17.5</researchViewX><researchViewY>10.4</researchViewY>
+    <prerequisites><li>WNG_PrecursorShields</li><li>WNG_SkimmerSystems</li><li>WNG_AsuranCollectiveSystems</li></prerequisites>
+    <requiredAnalyzed><li>WNG_RecoveredAncientDrone</li></requiredAnalyzed>
+  </ResearchProjectDef>
+</Defs>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef>
+    <defName>WNG_ReplicatorQueenChild</defName>
+    <label>replicator child</label>
+    <race>Human</race>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet>
+    <fixedGender>Female</fixedGender>
+    <minGenerationAge>13</minGenerationAge>
+    <maxGenerationAge>13</maxGenerationAge>
+    <allowOldAgeInjuries>false</allowOldAgeInjuries>
+    <combatPower>55</combatPower>
+    <isFighter>false</isFighter>
+    <apparelMoney>0</apparelMoney>
+    <weaponMoney>0</weaponMoney>
+    <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <initialWillRange>0~4</initialWillRange>
+    <initialResistanceRange>0~6</initialResistanceRange>
+  </PawnKindDef>
+</Defs>
