@@ -1,0 +1,73 @@
+name: Import audited WNG 1.6 release candidate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-release-candidate.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import-playable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out public mirror
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download exact audited private CI artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            'https://sdmntpraustraliaeast.oaiusercontent.com/files/00000000-eb30-81fa-9a43-bbd7738c4b49/raw?se=2026-09-04T22%3A39%3A16Z&sp=r&sv=2026-02-06&sr=b&scid=9838ad30-f9d8-5e95-8daf-e78beaddf54f&skoid=b7fc319f-b93c-4fac-ba5f-14fdc3f9209f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-04T21%3A24%3A38Z&ske=2026-09-05T21%3A24%3A38Z&sks=b&skv=2026-02-06&sig=84OOcOBTT0N5goDMZanZCeS4LgkxkiGBgG9YyIyZikE%3D' \
+            --output /tmp/wng-actions-artifact.zip
+          unzip -q /tmp/wng-actions-artifact.zip -d /tmp/wng-artifact
+          test -f /tmp/wng-artifact/Wraith-Nanite-Gravtech-playable.zip
+          unzip -q /tmp/wng-artifact/Wraith-Nanite-Gravtech-playable.zip -d /tmp/wng-playable
+          test -f /tmp/wng-playable/Wraith-Nanite-Gravtech/About/About.xml
+          test -f /tmp/wng-playable/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
+
+      - name: Mirror playable folder into repository root
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp README.md /tmp/PUBLIC_README.md
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='README.md' \
+            /tmp/wng-playable/Wraith-Nanite-Gravtech/ ./
+          cp /tmp/PUBLIC_README.md README.md
+
+      - name: Verify public mirror shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f About/About.xml
+          test -f Assemblies/WraithNaniteGravtech.dll
+          test -d Defs
+          test -d Languages
+          test -d Patches
+          test -d Sounds
+          test -d Textures
+          test ! -e AGENTS.md
+          test ! -d Source
+          test ! -d Tools
+          test ! -e Docs/WNG_PASS_HANDOFF_LOG.md
+
+      - name: Commit exact playable release candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Vardath Release Mirror'
+          git config user.email '59270526+Vardath@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Public mirror already matches the audited playable artifact.'
+            exit 0
+          fi
+          git commit -m 'Mirror audited WNG 1.6 release candidate'
+          git push origin HEAD:main
