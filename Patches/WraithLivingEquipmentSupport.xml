@@ -6,8 +6,10 @@
       <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithStunner"]/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></value></li>
       <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithCarbine"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
       <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithHeavyBioWeapon"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
-      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithBoneBlade"]/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></value></li>
-      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithWarGlaive"]/comps</xpath><value><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></value></li>
+      <!-- Boneblade and war glaive have no explicit pre-inheritance <comps> node. Add the node at
+           ThingDef level instead of targeting /comps, which RimWorld correctly reports as absent. -->
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithBoneBlade"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithWarGlaive"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
       <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithHunterCoat"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
       <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithQueenRaiment"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
       <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="WNG_WraithWarriorCarapace"]</xpath><value><comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentSupport" /></comps></value></li>
