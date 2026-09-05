@@ -11,24 +11,26 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - name: Verify SDK
+      - name: Verify compiler
         run: dotnet --info
-      - name: Package minimal portable SDK runtime
+      - name: Package Roslyn compiler runtime
         run: |
           DOTNET_BIN="$(readlink -f "$(command -v dotnet)")"
           DOTNET_ROOT="$(dirname "$DOTNET_BIN")"
           SDK_VERSION="$(dotnet --version)"
           RUNTIME_VERSION="$(dotnet --list-runtimes | awk '/Microsoft.NETCore.App/{v=$2} END{print v}')"
-          mkdir -p "$GITHUB_WORKSPACE/ferry/dotnet/sdk" "$GITHUB_WORKSPACE/ferry/dotnet/shared/Microsoft.NETCore.App" "$GITHUB_WORKSPACE/ferry/dotnet/host"
+          FXR_VERSION="$(basename "$(find "$DOTNET_ROOT/host/fxr" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)")"
+          mkdir -p "$GITHUB_WORKSPACE/ferry/dotnet/host/fxr" "$GITHUB_WORKSPACE/ferry/dotnet/shared/Microsoft.NETCore.App" "$GITHUB_WORKSPACE/ferry/dotnet/sdk/$SDK_VERSION/Roslyn"
           cp "$DOTNET_ROOT/dotnet" "$GITHUB_WORKSPACE/ferry/dotnet/dotnet"
-          cp -a "$DOTNET_ROOT/host/." "$GITHUB_WORKSPACE/ferry/dotnet/host/"
-          cp -a "$DOTNET_ROOT/sdk/$SDK_VERSION" "$GITHUB_WORKSPACE/ferry/dotnet/sdk/"
+          cp -a "$DOTNET_ROOT/host/fxr/$FXR_VERSION" "$GITHUB_WORKSPACE/ferry/dotnet/host/fxr/"
           cp -a "$DOTNET_ROOT/shared/Microsoft.NETCore.App/$RUNTIME_VERSION" "$GITHUB_WORKSPACE/ferry/dotnet/shared/Microsoft.NETCore.App/"
-          tar -czf "$GITHUB_WORKSPACE/dotnet-sdk-minimal.tar.gz" -C "$GITHUB_WORKSPACE/ferry" dotnet
-          test -s "$GITHUB_WORKSPACE/dotnet-sdk-minimal.tar.gz"
+          cp -a "$DOTNET_ROOT/sdk/$SDK_VERSION/Roslyn/bincore" "$GITHUB_WORKSPACE/ferry/dotnet/sdk/$SDK_VERSION/Roslyn/"
+          tar -cf "$GITHUB_WORKSPACE/roslyn-runtime.tar" -C "$GITHUB_WORKSPACE/ferry" dotnet
+          test -s "$GITHUB_WORKSPACE/roslyn-runtime.tar"
       - uses: actions/upload-artifact@v4
         with:
-          name: dotnet-sdk-minimal
-          path: dotnet-sdk-minimal.tar.gz
+          name: roslyn-runtime
+          path: roslyn-runtime.tar
+          compression-level: 0
           if-no-files-found: error
           retention-days: 1
