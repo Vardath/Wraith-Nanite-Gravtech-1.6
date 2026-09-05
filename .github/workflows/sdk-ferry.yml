@@ -1,0 +1,28 @@
+name: Temporary SDK Ferry
+
+on:
+  push:
+    branches: [ci-sdk-ferry-20260905]
+
+jobs:
+  package-sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Verify SDK
+        run: dotnet --info
+      - name: Package portable SDK tree
+        run: |
+          DOTNET_BIN="$(readlink -f "$(command -v dotnet)")"
+          DOTNET_ROOT="$(dirname "$DOTNET_BIN")"
+          echo "Packaging $DOTNET_ROOT"
+          tar -czf "$GITHUB_WORKSPACE/dotnet-sdk-portable.tar.gz" -C "$(dirname "$DOTNET_ROOT")" "$(basename "$DOTNET_ROOT")"
+          test -s "$GITHUB_WORKSPACE/dotnet-sdk-portable.tar.gz"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-sdk-portable
+          path: dotnet-sdk-portable.tar.gz
+          if-no-files-found: error
+          retention-days: 1
