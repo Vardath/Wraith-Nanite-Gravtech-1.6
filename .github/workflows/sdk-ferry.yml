@@ -1,24 +1,24 @@
-name: Temporary Apparel Retention Build
+name: Temporary Replicator Death Fix Build
 
 on:
   push:
     branches: [ci-sdk-ferry-20260905]
 
 jobs:
-  build-apparel-retention:
+  build-replicator-death-fix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - name: Build isolated apparel retention assembly
-        run: dotnet build ci/ApparelRetention/WraithNaniteGravtech.ApparelRetention.csproj -c Release
+      - name: Build isolated Replicator death fix assembly
+        run: dotnet build ci/ReplicatorDeathFix/WraithNaniteGravtech.ReplicatorDeathFix.csproj -c Release
       - name: Verify assembly exists
-        run: test -s ci/ApparelRetention/bin/Release/net48/WraithNaniteGravtech.ApparelRetention.dll
+        run: test -s ci/ReplicatorDeathFix/bin/Release/net48/WraithNaniteGravtech.ReplicatorDeathFix.dll
       - uses: actions/upload-artifact@v4
         with:
-          name: wng-apparel-retention-dll
-          path: ci/ApparelRetention/bin/Release/net48/WraithNaniteGravtech.ApparelRetention.dll
+          name: wng-replicator-death-fix-dll
+          path: ci/ReplicatorDeathFix/bin/Release/net48/WraithNaniteGravtech.ReplicatorDeathFix.dll
           if-no-files-found: error
           retention-days: 1
