@@ -22,7 +22,8 @@ namespace WraithNaniteGravtech.DeathFix
 
         private IntVec3 lastKnownPosition = IntVec3.Invalid;
         private int lastDamageTick = -999999;
-        private bool outcomeEmitted;
+        private bool splitResolved;
+        private bool fallbackMatterEmitted;
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
@@ -36,7 +37,7 @@ namespace WraithNaniteGravtech.DeathFix
             CachePosition();
             Pawn pawn = parent as Pawn;
             if (pawn?.Dead == true)
-                TryResolveOutcome(pawn.MapHeld, pawn.PositionHeld);
+                TryResolveSplit(pawn.MapHeld, pawn.PositionHeld);
         }
 
         public override void PostPreApplyDamage(ref DamageInfo dinfo, out bool absorbed)
@@ -52,14 +53,22 @@ namespace WraithNaniteGravtech.DeathFix
             CachePosition();
             Pawn pawn = parent as Pawn;
             if (pawn?.Dead == true)
-                TryResolveOutcome(pawn.MapHeld, pawn.PositionHeld);
+                TryResolveSplit(pawn.MapHeld, pawn.PositionHeld);
         }
 
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
             Pawn pawn = parent as Pawn;
-            if (!outcomeEmitted && IsCombatDeathCleanup(mode, pawn))
-                TryResolveOutcome(previousMap, lastKnownPosition);
+            if (IsCombatDeathCleanup(mode, pawn))
+            {
+                TryResolveSplit(previousMap, lastKnownPosition);
+                IntVec3 oldSalvageCell = parent.Position;
+                bool oldSalvageCanHandle =
+                    (mode == DestroyMode.KillFinalize || (mode == DestroyMode.Vanish && pawn?.Dead == true)) &&
+                    previousMap != null && oldSalvageCell.IsValid && oldSalvageCell.InBounds(previousMap);
+                if (!oldSalvageCanHandle)
+                    TryEmitFallbackMatter(pawn, previousMap, lastKnownPosition);
+            }
             base.PostDestroy(mode, previousMap);
         }
 
@@ -74,36 +83,26 @@ namespace WraithNaniteGravtech.DeathFix
             return delta >= 0 && delta <= DamageDeathGraceTicks;
         }
 
-        private void TryResolveOutcome(Map map, IntVec3 origin)
+        private void TryResolveSplit(Map map, IntVec3 origin)
         {
-            if (outcomeEmitted)
+            if (splitResolved)
                 return;
             Pawn pawn = parent as Pawn;
             if (pawn == null)
                 return;
-            if (map == null)
-                map = pawn.MapHeld;
-            if ((!origin.IsValid || map == null || !origin.InBounds(map)) && map != null && lastKnownPosition.IsValid && lastKnownPosition.InBounds(map))
-                origin = lastKnownPosition;
-            if (map == null || !origin.IsValid || !origin.InBounds(map))
-            {
-                Log.Warning($"[WNG] Replicator death outcome could not recover map context for {pawn.def?.defName}; leaving fallback eligible.");
+            if (!TryRecoverContext(pawn, ref map, ref origin))
                 return;
-            }
-            outcomeEmitted = true;
-            TryInvokeHierarchySplit(pawn, map, origin);
-            TryEmitMatter(pawn, map, origin);
-        }
-
-        private static void TryInvokeHierarchySplit(Pawn pawn, Map map, IntVec3 origin)
-        {
             ThingComp hierarchy = pawn.AllComps?.FirstOrDefault(c => c?.GetType().FullName == HierarchyTypeName);
             if (hierarchy == null)
+            {
+                splitResolved = true;
                 return;
+            }
             try
             {
                 MethodInfo method = hierarchy.GetType().GetMethod("TryEmitDeathSplit", BindingFlags.Instance | BindingFlags.Public);
                 method?.Invoke(hierarchy, new object[] { map, origin });
+                splitResolved = true;
             }
             catch (Exception ex)
             {
@@ -111,8 +110,12 @@ namespace WraithNaniteGravtech.DeathFix
             }
         }
 
-        private static void TryEmitMatter(Pawn pawn, Map map, IntVec3 origin)
+        private void TryEmitFallbackMatter(Pawn pawn, Map map, IntVec3 origin)
         {
+            if (fallbackMatterEmitted || pawn == null)
+                return;
+            if (!TryRecoverContext(pawn, ref map, ref origin))
+                return;
             ThingComp salvage = pawn.AllComps?.FirstOrDefault(c => c?.GetType().FullName == SalvageTypeName);
             if (salvage == null)
                 return;
@@ -142,14 +145,33 @@ namespace WraithNaniteGravtech.DeathFix
                 return;
             }
             int count = Rand.RangeInclusive(min, max);
-            if (count <= 0) return;
+            if (count <= 0)
+            {
+                fallbackMatterEmitted = true;
+                return;
+            }
             Thing matter = ThingMaker.MakeThing(matterDef);
             matter.stackCount = count;
-            if (!GenPlace.TryPlaceThing(matter, origin, map, ThingPlaceMode.Near) && !matter.Destroyed)
+            if (GenPlace.TryPlaceThing(matter, origin, map, ThingPlaceMode.Near))
             {
-                matter.Destroy(DestroyMode.Vanish);
-                Log.Warning($"[WNG] Replicator matter placement failed for {pawn.def?.defName} at {origin}.");
+                fallbackMatterEmitted = true;
+                return;
             }
+            if (!matter.Destroyed)
+                matter.Destroy(DestroyMode.Vanish);
+            Log.Warning($"[WNG] Replicator matter placement failed for {pawn.def?.defName} at {origin}.");
+        }
+
+        private bool TryRecoverContext(Pawn pawn, ref Map map, ref IntVec3 origin)
+        {
+            if (map == null)
+                map = pawn.MapHeld;
+            if ((!origin.IsValid || map == null || !origin.InBounds(map)) && map != null && lastKnownPosition.IsValid && lastKnownPosition.InBounds(map))
+                origin = lastKnownPosition;
+            if (map != null && origin.IsValid && origin.InBounds(map))
+                return true;
+            Log.Warning($"[WNG] Replicator death outcome could not recover map context for {pawn.def?.defName}; leaving fallback eligible.");
+            return false;
         }
 
         private void CachePosition()
@@ -168,7 +190,8 @@ namespace WraithNaniteGravtech.DeathFix
         {
             base.PostExposeData();
             Scribe_Values.Look(ref lastDamageTick, "lastDamageTick", -999999);
-            Scribe_Values.Look(ref outcomeEmitted, "outcomeEmitted", false);
+            Scribe_Values.Look(ref splitResolved, "splitResolved", false);
+            Scribe_Values.Look(ref fallbackMatterEmitted, "fallbackMatterEmitted", false);
         }
     }
 }
