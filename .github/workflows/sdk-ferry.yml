@@ -13,16 +13,22 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Verify SDK
         run: dotnet --info
-      - name: Package portable SDK tree
+      - name: Package minimal portable SDK runtime
         run: |
           DOTNET_BIN="$(readlink -f "$(command -v dotnet)")"
           DOTNET_ROOT="$(dirname "$DOTNET_BIN")"
-          echo "Packaging $DOTNET_ROOT"
-          tar -czf "$GITHUB_WORKSPACE/dotnet-sdk-portable.tar.gz" -C "$(dirname "$DOTNET_ROOT")" "$(basename "$DOTNET_ROOT")"
-          test -s "$GITHUB_WORKSPACE/dotnet-sdk-portable.tar.gz"
+          SDK_VERSION="$(dotnet --version)"
+          RUNTIME_VERSION="$(dotnet --list-runtimes | awk '/Microsoft.NETCore.App/{v=$2} END{print v}')"
+          mkdir -p "$GITHUB_WORKSPACE/ferry/dotnet/sdk" "$GITHUB_WORKSPACE/ferry/dotnet/shared/Microsoft.NETCore.App" "$GITHUB_WORKSPACE/ferry/dotnet/host"
+          cp "$DOTNET_ROOT/dotnet" "$GITHUB_WORKSPACE/ferry/dotnet/dotnet"
+          cp -a "$DOTNET_ROOT/host/." "$GITHUB_WORKSPACE/ferry/dotnet/host/"
+          cp -a "$DOTNET_ROOT/sdk/$SDK_VERSION" "$GITHUB_WORKSPACE/ferry/dotnet/sdk/"
+          cp -a "$DOTNET_ROOT/shared/Microsoft.NETCore.App/$RUNTIME_VERSION" "$GITHUB_WORKSPACE/ferry/dotnet/shared/Microsoft.NETCore.App/"
+          tar -czf "$GITHUB_WORKSPACE/dotnet-sdk-minimal.tar.gz" -C "$GITHUB_WORKSPACE/ferry" dotnet
+          test -s "$GITHUB_WORKSPACE/dotnet-sdk-minimal.tar.gz"
       - uses: actions/upload-artifact@v4
         with:
-          name: dotnet-sdk-portable
-          path: dotnet-sdk-portable.tar.gz
+          name: dotnet-sdk-minimal
+          path: dotnet-sdk-minimal.tar.gz
           if-no-files-found: error
           retention-days: 1
