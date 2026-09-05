@@ -1,36 +1,24 @@
-name: Temporary SDK Ferry
+name: Temporary Apparel Retention Build
 
 on:
   push:
     branches: [ci-sdk-ferry-20260905]
 
 jobs:
-  package-sdk:
+  build-apparel-retention:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - name: Verify compiler
-        run: dotnet --info
-      - name: Package Roslyn compiler runtime
-        run: |
-          DOTNET_BIN="$(readlink -f "$(command -v dotnet)")"
-          DOTNET_ROOT="$(dirname "$DOTNET_BIN")"
-          SDK_VERSION="$(dotnet --version)"
-          RUNTIME_VERSION="$(dotnet --list-runtimes | awk '/Microsoft.NETCore.App/{v=$2} END{print v}')"
-          FXR_VERSION="$(basename "$(find "$DOTNET_ROOT/host/fxr" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)")"
-          mkdir -p "$GITHUB_WORKSPACE/ferry/dotnet/host/fxr" "$GITHUB_WORKSPACE/ferry/dotnet/shared/Microsoft.NETCore.App" "$GITHUB_WORKSPACE/ferry/dotnet/sdk/$SDK_VERSION/Roslyn"
-          cp "$DOTNET_ROOT/dotnet" "$GITHUB_WORKSPACE/ferry/dotnet/dotnet"
-          cp -a "$DOTNET_ROOT/host/fxr/$FXR_VERSION" "$GITHUB_WORKSPACE/ferry/dotnet/host/fxr/"
-          cp -a "$DOTNET_ROOT/shared/Microsoft.NETCore.App/$RUNTIME_VERSION" "$GITHUB_WORKSPACE/ferry/dotnet/shared/Microsoft.NETCore.App/"
-          cp -a "$DOTNET_ROOT/sdk/$SDK_VERSION/Roslyn/bincore" "$GITHUB_WORKSPACE/ferry/dotnet/sdk/$SDK_VERSION/Roslyn/"
-          tar -cf "$GITHUB_WORKSPACE/roslyn-runtime.tar" -C "$GITHUB_WORKSPACE/ferry" dotnet
-          test -s "$GITHUB_WORKSPACE/roslyn-runtime.tar"
+      - name: Build isolated apparel retention assembly
+        run: dotnet build ci/ApparelRetention/WraithNaniteGravtech.ApparelRetention.csproj -c Release
+      - name: Verify assembly exists
+        run: test -s ci/ApparelRetention/bin/Release/net48/WraithNaniteGravtech.ApparelRetention.dll
       - uses: actions/upload-artifact@v4
         with:
-          name: roslyn-runtime
-          path: roslyn-runtime.tar
-          compression-level: 0
+          name: wng-apparel-retention-dll
+          path: ci/ApparelRetention/bin/Release/net48/WraithNaniteGravtech.ApparelRetention.dll
           if-no-files-found: error
           retention-days: 1
