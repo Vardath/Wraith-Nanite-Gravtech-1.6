@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+    RimWorld 1.6 world-creation faction selector only offers non-hidden faction
+    defs that are valid starting/random factions. Keep WNG's six diplomatic/
+    world factions and the hostile machine swarm explicitly selectable.
+
+    These operations are intentionally explicit rather than relying on inherited
+    defaults so stripped-down test profiles and third-party faction UI mods see
+    the same values.
+  -->
+
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/FactionDef[defName="WNG_WraithBrood"]</xpath>
+        <value>
+          <hidden>false</hidden>
+          <maxCountAtGameStart>1</maxCountAtGameStart>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/FactionDef[defName="WNG_WraithCinderCourt"]</xpath>
+        <value>
+          <hidden>false</hidden>
+          <maxCountAtGameStart>1</maxCountAtGameStart>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/FactionDef[defName="WNG_WraithVeiledHive"]</xpath>
+        <value>
+          <hidden>false</hidden>
+          <maxCountAtGameStart>1</maxCountAtGameStart>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/FactionDef[defName="WNG_WraithExiles"]</xpath>
+        <value>
+          <hidden>false</hidden>
+          <maxCountAtGameStart>1</maxCountAtGameStart>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/FactionDef[defName="WNG_PrecursorCollective"]</xpath>
+        <value>
+          <hidden>false</hidden>
+          <maxCountAtGameStart>1</maxCountAtGameStart>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/FactionDef[defName="WNG_HumanFormEnclave"]</xpath>
+        <value>
+          <hidden>false</hidden>
+          <maxCountAtGameStart>1</maxCountAtGameStart>
+        </value>
+      </li>
+
+      <!-- The machine swarm was deliberately hidden in the original Def. It is
+           a real hostile WNG faction and must be available for launch testing
+           and for players who want it represented on the world. -->
+      <li Class="PatchOperationReplace">
+        <xpath>/Defs/FactionDef[defName="WNG_ReplicatorSwarm"]/hidden</xpath>
+        <value><hidden>false</hidden></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>/Defs/FactionDef[defName="WNG_ReplicatorSwarm"]/canMakeRandomly</xpath>
+        <value><canMakeRandomly>true</canMakeRandomly></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>/Defs/FactionDef[defName="WNG_ReplicatorSwarm"]/settlementGenerationWeight</xpath>
+        <value><settlementGenerationWeight>0.10</settlementGenerationWeight></value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>/Defs/FactionDef[defName="WNG_ReplicatorSwarm"]</xpath>
+        <value><maxCountAtGameStart>1</maxCountAtGameStart></value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
