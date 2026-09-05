@@ -16,12 +16,13 @@ namespace WraithNaniteGravtech.DeathFix
 
     public sealed class CompReplicatorDeathOutcomeBridge : ThingComp
     {
-        private const int DamageDeathGraceTicks = 30;
+        private const int DamageDeathGraceTicks = 2;
         private const string HierarchyTypeName = "WraithNaniteGravtech.CompReplicatorHierarchy";
         private const string SalvageTypeName = "WraithNaniteGravtech.CompReplicatorSalvage";
+        private const string DestructionIntentTypeName = "WraithNaniteGravtech.ReplicatorDestructionIntent";
 
         private IntVec3 lastKnownPosition = IntVec3.Invalid;
-        private int lastDamageTick = -999999;
+        private int activeDamageTick = -999999;
         private bool splitResolved;
         private bool fallbackMatterEmitted;
 
@@ -36,7 +37,7 @@ namespace WraithNaniteGravtech.DeathFix
             base.CompTick();
             CachePosition();
             Pawn pawn = parent as Pawn;
-            if (pawn?.Dead == true)
+            if (pawn?.Dead == true && !IsIntentionalHierarchyConsumption(pawn))
                 TryResolveSplit(pawn.MapHeld, pawn.PositionHeld);
         }
 
@@ -44,7 +45,7 @@ namespace WraithNaniteGravtech.DeathFix
         {
             base.PostPreApplyDamage(ref dinfo, out absorbed);
             CachePosition();
-            lastDamageTick = Find.TickManager?.TicksGame ?? 0;
+            activeDamageTick = Find.TickManager?.TicksGame ?? 0;
         }
 
         public override void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
@@ -52,8 +53,10 @@ namespace WraithNaniteGravtech.DeathFix
             base.PostPostApplyDamage(dinfo, totalDamageDealt);
             CachePosition();
             Pawn pawn = parent as Pawn;
-            if (pawn?.Dead == true)
+            if (pawn?.Dead == true && !IsIntentionalHierarchyConsumption(pawn))
                 TryResolveSplit(pawn.MapHeld, pawn.PositionHeld);
+            if (pawn?.Dead != true)
+                activeDamageTick = -999999;
         }
 
         public override void PostDestroy(DestroyMode mode, Map previousMap)
@@ -74,12 +77,14 @@ namespace WraithNaniteGravtech.DeathFix
 
         private bool IsCombatDeathCleanup(DestroyMode mode, Pawn pawn)
         {
-            if (mode == DestroyMode.KillFinalize || pawn?.Dead == true)
+            if (pawn == null || IsIntentionalHierarchyConsumption(pawn))
+                return false;
+            if (mode == DestroyMode.KillFinalize || pawn.Dead)
                 return true;
             if (mode != DestroyMode.Vanish)
                 return false;
-            int now = Find.TickManager?.TicksGame ?? lastDamageTick;
-            int delta = now - lastDamageTick;
+            int now = Find.TickManager?.TicksGame ?? activeDamageTick;
+            int delta = now - activeDamageTick;
             return delta >= 0 && delta <= DamageDeathGraceTicks;
         }
 
@@ -88,7 +93,7 @@ namespace WraithNaniteGravtech.DeathFix
             if (splitResolved)
                 return;
             Pawn pawn = parent as Pawn;
-            if (pawn == null)
+            if (pawn == null || IsIntentionalHierarchyConsumption(pawn))
                 return;
             if (!TryRecoverContext(pawn, ref map, ref origin))
                 return;
@@ -101,7 +106,12 @@ namespace WraithNaniteGravtech.DeathFix
             try
             {
                 MethodInfo method = hierarchy.GetType().GetMethod("TryEmitDeathSplit", BindingFlags.Instance | BindingFlags.Public);
-                method?.Invoke(hierarchy, new object[] { map, origin });
+                if (method == null)
+                {
+                    Log.Error($"[WNG] Replicator hierarchy split method is missing for {pawn.def?.defName}.");
+                    return;
+                }
+                method.Invoke(hierarchy, new object[] { map, origin });
                 splitResolved = true;
             }
             catch (Exception ex)
@@ -112,7 +122,7 @@ namespace WraithNaniteGravtech.DeathFix
 
         private void TryEmitFallbackMatter(Pawn pawn, Map map, IntVec3 origin)
         {
-            if (fallbackMatterEmitted || pawn == null)
+            if (fallbackMatterEmitted || pawn == null || IsIntentionalHierarchyConsumption(pawn))
                 return;
             if (!TryRecoverContext(pawn, ref map, ref origin))
                 return;
@@ -162,6 +172,33 @@ namespace WraithNaniteGravtech.DeathFix
             Log.Warning($"[WNG] Replicator matter placement failed for {pawn.def?.defName} at {origin}.");
         }
 
+        private static bool IsIntentionalHierarchyConsumption(Pawn pawn)
+        {
+            if (pawn == null)
+                return false;
+            try
+            {
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    Type type = assembly.GetType(DestructionIntentTypeName, false);
+                    if (type == null)
+                        continue;
+                    MethodInfo method = type.GetMethod(
+                        "IsIntentionalHierarchyConsumption",
+                        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    if (method == null)
+                        return false;
+                    object result = method.Invoke(null, new object[] { pawn });
+                    return result is bool value && value;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"[WNG] Could not query Replicator destruction intent: {Unwrap(ex).Message}");
+            }
+            return false;
+        }
+
         private bool TryRecoverContext(Pawn pawn, ref Map map, ref IntVec3 origin)
         {
             if (map == null)
@@ -189,7 +226,7 @@ namespace WraithNaniteGravtech.DeathFix
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look(ref lastDamageTick, "lastDamageTick", -999999);
+            Scribe_Values.Look(ref activeDamageTick, "activeDamageTick", -999999);
             Scribe_Values.Look(ref splitResolved, "splitResolved", false);
             Scribe_Values.Look(ref fallbackMatterEmitted, "fallbackMatterEmitted", false);
         }
