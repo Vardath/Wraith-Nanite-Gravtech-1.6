@@ -1,0 +1,44 @@
+name: Promote hardened c9a6b394 build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/promote-c9a6b394.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download exact hardened artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL 'https://sdmntprwestus2.oaiusercontent.com/files/00000000-2bc8-81f8-b675-e344ff8a4e70/raw?se=2026-09-07T13%3A53%3A59Z&sp=r&sv=2026-02-06&sr=b&scid=eed18c1c-dd03-5842-8191-f905efc31cce&skoid=b7fc319f-b93c-4fac-ba5f-14fdc3f9209f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-07T04%3A23%3A38Z&ske=2026-09-08T04%3A23%3A38Z&sks=b&skv=2026-02-06&sig=tc2ClOGkdl6sKYrF/qE3AK/9lZHqTYFcmA02akuHe9Q%3D' -o /tmp/wng-outer.zip
+          mkdir -p /tmp/wng-outer /tmp/wng-inner
+          unzip -q /tmp/wng-outer.zip -d /tmp/wng-outer
+          unzip -q /tmp/wng-outer/Wraith-Nanite-Gravtech-playable.zip -d /tmp/wng-inner
+          test -f /tmp/wng-inner/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
+      - name: Replace public release payload with exact hardened build
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=/tmp/wng-inner/Wraith-Nanite-Gravtech
+          for d in About Assemblies Defs Languages Patches Sounds Textures; do
+            rm -rf "$d"
+            cp -a "$src/$d" "$d"
+          done
+          cp "$src/README.md" README.md
+          cp "$src/CHANGELOG.md" CHANGELOG.md
+          rm -f .github/workflows/promote-c9a6b394.yml
+          git config user.name 'Vardath Release Bot'
+          git config user.email '59270526+Vardath@users.noreply.github.com'
+          git add -A
+          git commit -m 'Promote hardened WNG build c9a6b394' || exit 0
+          git push origin HEAD:main
