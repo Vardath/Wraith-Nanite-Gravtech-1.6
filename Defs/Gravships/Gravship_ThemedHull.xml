@@ -1,52 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <ThingDef ParentName="Wall">
+  <!-- True visual variants of Odyssey GravshipHull. The custom PNGs are 4x4 linked atlases,
+       and linkage is inherited from the concrete vanilla GravshipHull parent. -->
+  <ThingDef ParentName="GravshipHull">
     <defName>WNG_OrganicGravshipHull</defName>
     <label>wraith gravship hull tissue</label>
-    <description>Dense airtight living hull tissue for a full-sized Wraith gravship. Ribbed support tissue and regenerative chitin outperform ordinary gravship hulls while preserving a wholly organic architecture.</description>
+    <description>Dense airtight living pressure hull grown directly into Wraith gravship substructure. Layered chitin, load-bearing ribs and regenerative membrane perform the native Odyssey gravship-hull role while remaining unmistakably biological.</description>
     <designationCategory>WNG_Architect</designationCategory><uiOrder>1801</uiOrder>
     <graphicData><texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
-    <researchPrerequisites><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites>
+    <researchPrerequisites Inherit="False"><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites>
     <statBases><MaxHitPoints>620</MaxHitPoints><WorkToBuild>390</WorkToBuild><Flammability>0.12</Flammability></statBases>
-    <costStuffCount>0</costStuffCount><costList><WNG_Biomass>10</WNG_Biomass></costList>
+    <costStuffCount>0</costStuffCount><costList Inherit="False"><WNG_Biomass>10</WNG_Biomass></costList>
     <building><isAirtight>true</isAirtight><paintable>false</paintable></building>
-    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><useStuffTerrainAffordance>false</useStuffTerrainAffordance><stuffCategories Inherit="False"/><comps Inherit="False"/>
+    <stuffCategories Inherit="False" />
+    <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li></placeWorkers>
   </ThingDef>
 
-  <ThingDef ParentName="Wall">
+  <ThingDef ParentName="GravshipHull">
     <defName>WNG_PrecursorGravshipHull</defName>
     <label>Asuran gravship hull</label>
-    <description>An airtight full-sized gravship wall built from layered Asuran composite plates with luminous recessed seams. The structure is stronger and lighter in concept than conventional colonial gravship hulls.</description>
+    <description>A pristine airtight Asuran pressure hull assembled directly into Asuran gravship substructure. Pale nanite composite, fine bronze structure and restrained cyan field seams perform the native Odyssey gravship-hull role without resembling Wraith tissue.</description>
     <designationCategory>WNG_Architect</designationCategory><uiOrder>1802</uiOrder>
     <graphicData><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
-    <researchPrerequisites><li>WNG_SkimmerSystems</li><li>BasicGravtech</li></researchPrerequisites>
+    <researchPrerequisites Inherit="False"><li>WNG_SkimmerSystems</li><li>BasicGravtech</li></researchPrerequisites>
     <statBases><MaxHitPoints>720</MaxHitPoints><WorkToBuild>420</WorkToBuild><Flammability>0</Flammability></statBases>
-    <costStuffCount>0</costStuffCount><costList><Plasteel>7</Plasteel><GravlitePanel>1</GravlitePanel></costList>
+    <costStuffCount>0</costStuffCount><costList Inherit="False"><Plasteel>7</Plasteel><GravlitePanel>1</GravlitePanel></costList>
     <building><isAirtight>true</isAirtight><paintable>false</paintable></building>
-    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><useStuffTerrainAffordance>false</useStuffTerrainAffordance><stuffCategories Inherit="False"/><comps Inherit="False"/>
+    <stuffCategories Inherit="False" />
+    <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li></placeWorkers>
   </ThingDef>
 
-  <ThingDef ParentName="GravshipComponentBase">
-    <defName>WNG_OrganicPilotNode</defName>
-    <label>wraith gravship pilot node</label>
-    <description>A responsive neural control organ for a full-sized Wraith gravship, interpreting touch, posture and bioelectrical impulses.</description>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_OrganicPilotNode</texPath><drawSize>(2.5,2)</drawSize></graphicData>
-    <statBases><MaxHitPoints>320</MaxHitPoints><Mass>30</Mass><Beauty>2</Beauty><WorkToBuild>2400</WorkToBuild></statBases>
-    <size>(2,2)</size><rotatable>true</rotatable><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>14</pathCost><canOverlapZones>false</canOverlapZones>
-    <costList><WNG_Biomass>60</WNG_Biomass></costList><designationCategory>WNG_Architect</designationCategory><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset>
-    <researchPrerequisites><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
-    <comps><li Class="CompProperties_GravshipFacility"><compClass>CompPilotConsole</compClass><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>260</maxDistance></li></comps>
+  <!-- Native PilotConsole variants. Their inherited CompPilotConsole/Controls facility behavior is
+       unchanged; only construction, art and family placement are themed. -->
+  <ThingDef ParentName="PilotConsole">
+    <defName>WNG_OrganicPilotNode</defName><label>wraith gravship pilot node</label>
+    <description>A living neural flight-control organ performing the native Odyssey pilot-console role for a Wraith gravship.</description>
+    <designationCategory>WNG_Architect</designationCategory><uiOrder>2101</uiOrder>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_OrganicPilotNode</texPath><drawSize>(3.7,2.6)</drawSize></graphicData>
+    <statBases><MaxHitPoints>260</MaxHitPoints><Mass>45</Mass><Flammability>0.1</Flammability><Beauty>3</Beauty><WorkToBuild>2500</WorkToBuild></statBases>
+    <costList Inherit="False"><WNG_Biomass>70</WNG_Biomass><GravlitePanel>8</GravlitePanel></costList>
+    <researchPrerequisites Inherit="False"><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites>
+    <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li></placeWorkers>
   </ThingDef>
 
-  <ThingDef ParentName="GravshipComponentBase">
-    <defName>WNG_PrecursorPilotConsole</defName>
-    <label>Asuran gravship pilot console</label>
-    <description>A high-density Asuran control surface for a full-sized gravship, using touch-sensitive composite layers and projected geometric indicators.</description>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath><drawSize>(2.6,2)</drawSize></graphicData>
-    <statBases><MaxHitPoints>360</MaxHitPoints><Mass>26</Mass><Beauty>10</Beauty><WorkToBuild>2900</WorkToBuild></statBases>
-    <size>(2,2)</size><rotatable>true</rotatable><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><pathCost>14</pathCost><canOverlapZones>false</canOverlapZones>
-    <costList><Plasteel>50</Plasteel><ComponentSpacer>2</ComponentSpacer></costList><designationCategory>WNG_Architect</designationCategory><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset>
-    <researchPrerequisites><li>WNG_SkimmerSystems</li><li>BasicGravtech</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
-    <comps><li Class="CompProperties_GravshipFacility"><compClass>CompPilotConsole</compClass><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>300</maxDistance></li></comps>
+  <ThingDef ParentName="PilotConsole">
+    <defName>WNG_PrecursorPilotConsole</defName><label>Asuran gravship pilot console</label>
+    <description>A precision Asuran flight-control interface performing the native Odyssey pilot-console role for an Asuran gravship.</description>
+    <designationCategory>WNG_Architect</designationCategory><uiOrder>2102</uiOrder>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath><drawSize>(3.7,2.6)</drawSize></graphicData>
+    <statBases><MaxHitPoints>300</MaxHitPoints><Mass>42</Mass><Flammability>0</Flammability><Beauty>10</Beauty><WorkToBuild>2800</WorkToBuild></statBases>
+    <costList Inherit="False"><Plasteel>80</Plasteel><ComponentIndustrial>3</ComponentIndustrial><GravlitePanel>8</GravlitePanel></costList>
+    <researchPrerequisites Inherit="False"><li>WNG_SkimmerSystems</li><li>BasicGravtech</li></researchPrerequisites>
+    <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li></placeWorkers>
   </ThingDef>
 </Defs>

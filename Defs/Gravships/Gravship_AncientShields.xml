@@ -38,6 +38,9 @@
     <researchPrerequisites>
       <li>WNG_AncientShieldHarmonics</li>
     </researchPrerequisites>
+    <placeWorkers>
+      <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
+    </placeWorkers>
     <comps>
       <li Class="CompProperties_GravshipFacility">
         <requiresLOS>false</requiresLOS>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- True themed Odyssey GravEngine variants. Do not replace the parent's comp registry: the
+       vanilla GravEngine component stack is authoritative for launch, linking and gravship state. -->
+  <ThingDef ParentName="GravEngine">
+    <defName>WNG_WraithGravEngine</defName>
+    <label>wraith grav engine</label>
+    <description>A fully grown Wraith grav engine: the living gravitic heart of a Wraith gravship. It performs the complete native Odyssey grav-engine role while accepting matching Wraith ship systems.</description>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithGravEngine</texPath><drawSize>(3,3)</drawSize></graphicData>
+    <statBases><MaxHitPoints>900</MaxHitPoints><Mass>32</Mass><GravshipRange>0</GravshipRange><SubstructureSupport>500</SubstructureSupport><MarketValue>2600</MarketValue><Beauty>4</Beauty></statBases>
+    <building>
+      <ai_neverTrashThis>true</ai_neverTrashThis><deconstructible>false</deconstructible>
+      <relatedBuildCommands><li>WNG_OrganicGravshipHull</li><li>WNG_WraithGravshipDoor</li></relatedBuildCommands>
+      <relatedTerrain><li>WNG_WraithGravshipSubstructure</li></relatedTerrain>
+    </building>
+  </ThingDef>
+
+  <ThingDef ParentName="GravEngine">
+    <defName>WNG_PrecursorGravEngine</defName>
+    <label>Asuran grav engine</label>
+    <description>An Asuran-built grav engine synthesized from Replicator matter and Ancient-derived field control. It performs the complete native Odyssey grav-engine role while accepting matching Asuran ship systems. The legacy defName is retained for save compatibility.</description>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorGravEngine</texPath><drawSize>(3,3)</drawSize></graphicData>
+    <statBases><MaxHitPoints>1000</MaxHitPoints><Mass>28</Mass><GravshipRange>0</GravshipRange><SubstructureSupport>550</SubstructureSupport><MarketValue>3200</MarketValue><Beauty>9</Beauty></statBases>
+    <building>
+      <ai_neverTrashThis>true</ai_neverTrashThis><deconstructible>false</deconstructible>
+      <relatedBuildCommands><li>WNG_PrecursorGravshipHull</li><li>WNG_AsuranGravshipDoor</li></relatedBuildCommands>
+      <relatedTerrain><li>WNG_AsuranGravshipSubstructure</li></relatedTerrain>
+    </building>
+  </ThingDef>
+</Defs>

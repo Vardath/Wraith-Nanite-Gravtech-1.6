@@ -48,6 +48,9 @@
     <workerClass>WraithNaniteGravtech.IncidentWorker_QuietLatticeStargateVisit</workerClass>
     <baseChance>0.032</baseChance>
     <earliestDay>16</earliestDay>
+    <letterLabel>Quiet Lattice delegation</letterLabel>
+    <letterText>A neutral Quiet Lattice delegation has arrived through the Stargate under peaceful intent. Their party will behave as visitors rather than raiders, and their accompanying courier craft is temporary.</letterText>
+    <letterDef>PositiveEvent</letterDef>
   </IncidentDef>
 
   <IncidentDef>
@@ -58,6 +61,9 @@
     <workerClass>WraithNaniteGravtech.IncidentWorker_WraithStargateDiplomaticEnvoy</workerClass>
     <baseChance>0.026</baseChance>
     <earliestDay>20</earliestDay>
+    <letterLabel>Wraith diplomatic envoy</letterLabel>
+    <letterText>A non-hostile Wraith envoy has arrived through the Stargate seeking contact rather than culling. Treat the delegation according to its current faction relationship; this is a diplomatic visit, not a raid.</letterText>
+    <letterDef>PositiveEvent</letterDef>
   </IncidentDef>
 
   <IncidentDef>

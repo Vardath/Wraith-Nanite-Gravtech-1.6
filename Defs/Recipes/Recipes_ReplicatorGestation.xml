@@ -4,6 +4,7 @@
     <defName>WNG_ChildsToy</defName>
     <label>Child's Toy</label>
     <description>Gestate an innocuous-looking modular mechanical toy. Once released from the gestator, the assembly identifies itself only as a Replicator.</description>
+    <jobString>Gestating a dormant Replicator toy.</jobString>
     <researchPrerequisite>WNG_ReplicatorGestation</researchPrerequisite>
     <ingredients Inherit="False">
       <li>

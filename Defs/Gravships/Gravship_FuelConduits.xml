@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_WraithFuelConduit</defName>
+    <label>wraith bio-fluid conduit</label>
+    <description>A living gravship fuel vessel grown through the deck. It carries Wraith bio-fluid from linked fuel bladders to Wraith gravship drive organs. Wraith thrusters must have a continuous same-family conduit path to a fuel bladder before they can contribute range.</description>
+    <thingClass>WraithNaniteGravtech.Building_WNGFuelConduit</thingClass>
+    <designationCategory>WNG_Architect</designationCategory>
+    <uiOrder>2011</uiOrder>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath>
+      <drawSize>(1,1)</drawSize>
+    </graphicData>
+    <size>(1,1)</size>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <passability>Standable</passability>
+    <fillPercent>0</fillPercent>
+    <pathCost>0</pathCost>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <drawerType>RealtimeOnly</drawerType>
+    <tickerType>Never</tickerType>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <WorkToBuild>45</WorkToBuild>
+      <Mass>0.4</Mass>
+      <Flammability>0.12</Flammability>
+      <Beauty>0</Beauty>
+    </statBases>
+    <costList>
+      <WNG_Biomass>1</WNG_Biomass>
+    </costList>
+    <researchPrerequisites>
+      <li>WNG_OrganicFlight</li>
+    </researchPrerequisites>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <placeWorkers>
+      <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
+    </placeWorkers>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_AsuranNaniteFuelConduit</defName>
+    <label>Asuran nanite-slurry conduit</label>
+    <description>A sealed nanite-composite gravship fuel line. It carries Asuran nanite slurry from linked fuel cells to Asuran vector drives. Asuran thrusters must have a continuous same-family conduit path to a fuel cell before they can contribute range.</description>
+    <thingClass>WraithNaniteGravtech.Building_WNGFuelConduit</thingClass>
+    <designationCategory>WNG_Architect</designationCategory>
+    <uiOrder>2012</uiOrder>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
+      <drawSize>(1,1)</drawSize>
+    </graphicData>
+    <size>(1,1)</size>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
+    <passability>Standable</passability>
+    <fillPercent>0</fillPercent>
+    <pathCost>0</pathCost>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <drawerType>RealtimeOnly</drawerType>
+    <tickerType>Never</tickerType>
+    <statBases>
+      <MaxHitPoints>125</MaxHitPoints>
+      <WorkToBuild>55</WorkToBuild>
+      <Mass>0.35</Mass>
+      <Flammability>0</Flammability>
+      <Beauty>1</Beauty>
+    </statBases>
+    <costList>
+      <Plasteel>1</Plasteel>
+    </costList>
+    <researchPrerequisites>
+      <li>WNG_SkimmerSystems</li>
+    </researchPrerequisites>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <placeWorkers>
+      <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
+    </placeWorkers>
+  </ThingDef>
+</Defs>

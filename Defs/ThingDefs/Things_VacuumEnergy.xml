@@ -4,7 +4,7 @@
     <defName>WNG_VacuumEnergyModule</defName><label>vacuum-energy containment module</label><description>A freshly reconstructed sealed precursor field lattice holding a metastable pocket of vacuum energy. It is not a perpetual battery: once coupled to a tap, the containment geometry is gradually exhausted and the module becomes useless. Archaeological originals are normally recovered as degraded, discharged containment shells rather than plug-and-play power sources; exceptionally rare intact modules can still circulate through exotic artifact traders.</description>
     <graphicData><texPath>Things/Item/Resource/Precursor/WNG_VacuumEnergyModule</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(0.85,0.85)</drawSize></graphicData>
     <thingCategories><li>Manufactured</li></thingCategories><stackLimit>4</stackLimit>
-    <statBases><MarketValue>9800</MarketValue><Mass>8</Mass><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate><FuelValue>1</FuelValue></statBases>
+    <statBases><MarketValue>9800</MarketValue><Mass>8</Mass><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate></statBases>
     <tradeability>All</tradeability><alwaysHaulable>true</alwaysHaulable><drawGUIOverlay>true</drawGUIOverlay>
     <comps>
       <!-- Legacy compatibility: old saves may already have analysis progress keyed to 860105 on

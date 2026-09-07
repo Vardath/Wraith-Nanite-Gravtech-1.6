@@ -3,12 +3,13 @@
   <HediffDef>
     <defName>WNG_ReplicatorHierarchyMarker</defName>
     <label>replicator assembly lattice</label>
-    <description>The machine is assembled from smaller autonomous Replicator forms. If this body is destroyed, surviving subassemblies can separate and continue operating.</description>
+    <description>The machine is assembled from autonomous Replicator blocks and subassemblies. On destruction, surviving subassemblies can separate into smaller operational forms while loose Replicator Blocks are shed as salvage.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <isBad>false</isBad>
     <scenarioCanAdd>false</scenarioCanAdd>
     <comps>
       <li Class="WraithNaniteGravtech.HediffCompProperties_ReplicatorDeathSplit" />
+      <li Class="WraithNaniteGravtech.HediffCompProperties_ReplicatorSalvageOnDeath" />
     </comps>
   </HediffDef>
 </Defs>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <TerrainDef ParentName="Substructure">
+    <defName>WNG_WraithGravshipSubstructure</defName>
+    <label>wraith gravship substructure</label>
+    <description>A living load-bearing deck grown through a Wraith grav engine's levitation field. It is a true Odyssey gravship substructure variant, so anything connected through it participates in native gravship lift and launch logic.</description>
+    <texturePath>Terrain/WNG/WraithGravshipSubstructure</texturePath>
+    <isPaintable>false</isPaintable><designationCategory>WNG_Architect</designationCategory>
+    <statBases><WorkToBuild>520</WorkToBuild><Flammability>0.12</Flammability><CleaningTimeFactor>0.9</CleaningTimeFactor></statBases>
+    <costList Inherit="False"><WNG_Biomass>4</WNG_Biomass><GravlitePanel>1</GravlitePanel></costList>
+    <researchPrerequisites Inherit="False"><li>WNG_OrganicFlight</li><li>BasicGravtech</li></researchPrerequisites>
+    <uiOrder>1780</uiOrder>
+    <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_WraithGravshipSubstructure</li><li>PlaceWorker_BuildingsValidOverSubstructure</li></placeWorkers>
+  </TerrainDef>
+
+  <TerrainDef ParentName="Substructure">
+    <defName>WNG_AsuranGravshipSubstructure</defName>
+    <label>Asuran gravship substructure</label>
+    <description>A precision nanite-composite deck synchronized to an Asuran grav engine. It is a true Odyssey gravship substructure variant, so connected components participate in native gravship lift and launch logic.</description>
+    <texturePath>Terrain/WNG/AsuranGravshipSubstructure</texturePath>
+    <isPaintable>false</isPaintable><designationCategory>WNG_Architect</designationCategory>
+    <statBases><WorkToBuild>650</WorkToBuild><Flammability>0</Flammability><CleaningTimeFactor>0.75</CleaningTimeFactor></statBases>
+    <costList Inherit="False"><Plasteel>4</Plasteel><GravlitePanel>1</GravlitePanel></costList>
+    <researchPrerequisites Inherit="False"><li>WNG_SkimmerSystems</li><li>BasicGravtech</li></researchPrerequisites>
+    <uiOrder>1781</uiOrder>
+    <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_AsuranGravshipSubstructure</li><li>PlaceWorker_BuildingsValidOverSubstructure</li></placeWorkers>
+  </TerrainDef>
+</Defs>

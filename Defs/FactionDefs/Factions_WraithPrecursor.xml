@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <FactionDef ParentName="FactionBase">
-    <defName>WNG_WraithBrood</defName><label>hostile wraith brood</label><fixedName>The Sable Brood</fixedName>
+    <defName>WNG_WraithBrood</defName><categoryTag>Outlander</categoryTag><listOrderPriority>40</listOrderPriority><maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation><configurationListOrderPriority>60</configurationListOrderPriority><label>hostile wraith brood</label><fixedName>The Sable Brood</fixedName>
     <description>An uncompromising predatory Hive lineage that regards other peoples as feeding stock and rival Wraith lineages as competitors for territory, captives and living technology.</description>
     <basicMemberKind>WNG_WraithWarrior</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>queen</leaderTitle>
     <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.36</settlementGenerationWeight>
@@ -21,7 +21,7 @@
   </FactionDef>
 
   <FactionDef ParentName="FactionBase">
-    <defName>WNG_WraithCinderCourt</defName><label>militant wraith court</label><fixedName>The Cinder Court</fixedName>
+    <defName>WNG_WraithCinderCourt</defName><categoryTag>Outlander</categoryTag><listOrderPriority>40</listOrderPriority><maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation><configurationListOrderPriority>59</configurationListOrderPriority><label>militant wraith court</label><fixedName>The Cinder Court</fixedName>
     <description>A Queen-led militant Hive that raids aggressively and contests other Wraith territories, but unlike the Sable Brood its hostility is political rather than absolute. Sufficient leverage can change its relationship with outsiders, at least temporarily.</description>
     <basicMemberKind>WNG_WraithWarrior</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>queen</leaderTitle>
     <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.24</settlementGenerationWeight>
@@ -42,7 +42,7 @@
   </FactionDef>
 
   <FactionDef ParentName="FactionBase">
-    <defName>WNG_WraithVeiledHive</defName><label>wary wraith hive</label><fixedName>The Veiled Hive</fixedName>
+    <defName>WNG_WraithVeiledHive</defName><categoryTag>Outlander</categoryTag><listOrderPriority>40</listOrderPriority><maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation><configurationListOrderPriority>58</configurationListOrderPriority><label>wary wraith hive</label><fixedName>The Veiled Hive</fixedName>
     <description>A cautious Wraith Hive that prefers selective feeding, concealment and negotiated access over open territorial war. It is still biologically predatory and can become a dangerous enemy, but does not begin by treating every outsider as prey.</description>
     <basicMemberKind>WNG_WraithHunter</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>queen</leaderTitle>
     <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.16</settlementGenerationWeight>
@@ -62,7 +62,7 @@
   </FactionDef>
 
   <FactionDef ParentName="FactionBase">
-    <defName>WNG_WraithExiles</defName><label>wraith exiles</label><fixedName>The Pale Covenant</fixedName>
+    <defName>WNG_WraithExiles</defName><categoryTag>Outlander</categoryTag><listOrderPriority>40</listOrderPriority><maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation><configurationListOrderPriority>57</configurationListOrderPriority><label>wraith exiles</label><fixedName>The Pale Covenant</fixedName>
     <description>A small Wraith offshoot that has abandoned indiscriminate predation. They remain dangerous and biologically dependent on life-force harvesting, but can trade, negotiate and coexist when supplied by less destructive means.</description>
     <basicMemberKind>WNG_WraithWarrior</basicMemberKind><pawnSingular>wraith</pawnSingular><pawnsPlural>wraith</pawnsPlural><leaderTitle>elder</leaderTitle>
     <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.16</settlementGenerationWeight>
@@ -74,14 +74,14 @@
     <raidCommonalityFromPointsCurve><points><li>(0,0.045)</li></points></raidCommonalityFromPointsCurve>
     <maxPawnCostPerTotalPointsCurve><points><li>(0,95)</li><li>(500,145)</li><li>(1400,230)</li><li>(3000,320)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
     <pawnGroupMakers>
-      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_WraithHunter>8</WNG_WraithHunter><WNG_WraithWarrior>12</WNG_WraithWarrior><WNG_WraithCommander>1.2</WNG_WraithCommander></options></li>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_WraithHunter>8</WNG_WraithHunter><WNG_WraithWarrior>12</WNG_WraithWarrior><WNG_WraithCommander>1.2</WNG_WraithCommander><WNG_WraithQueen>0.18</WNG_WraithQueen></options></li>
       <li><kindDef>Peaceful</kindDef><commonality>80</commonality><options><WNG_WraithHunter>3</WNG_WraithHunter><WNG_WraithWarrior>6</WNG_WraithWarrior><WNG_WraithKeeper>1.5</WNG_WraithKeeper><WNG_WraithCommander>0.4</WNG_WraithCommander></options></li>
       <li><kindDef>Settlement</kindDef><options><WNG_WraithHunter>5</WNG_WraithHunter><WNG_WraithWarrior>8</WNG_WraithWarrior><WNG_WraithKeeper>2</WNG_WraithKeeper><WNG_WraithCommander>1.5</WNG_WraithCommander></options></li>
     </pawnGroupMakers>
   </FactionDef>
 
   <FactionDef ParentName="FactionBase">
-    <defName>WNG_PrecursorCollective</defName><label>hostile human-form collective</label><fixedName>The Lattice Collective</fixedName>
+    <defName>WNG_PrecursorCollective</defName><categoryTag>Outlander</categoryTag><listOrderPriority>40</listOrderPriority><maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation><configurationListOrderPriority>56</configurationListOrderPriority><label>hostile human-form collective</label><fixedName>The Lattice Collective</fixedName>
     <description>A hostile society of human-form synthetic beings built from self-organising nanite systems and inherited precursor technology.</description>
     <basicMemberKind>WNG_HumanFormReplicator</basicMemberKind><pawnSingular>human-form replicator</pawnSingular><pawnsPlural>human-form replicators</pawnsPlural><leaderTitle>coordinator</leaderTitle>
     <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.35</settlementGenerationWeight>
@@ -101,7 +101,7 @@
   </FactionDef>
 
   <FactionDef ParentName="FactionBase">
-    <defName>WNG_HumanFormEnclave</defName><label>human-form enclave</label><fixedName>The Quiet Lattice</fixedName>
+    <defName>WNG_HumanFormEnclave</defName><categoryTag>Outlander</categoryTag><listOrderPriority>40</listOrderPriority><maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation><configurationListOrderPriority>55</configurationListOrderPriority><label>human-form enclave</label><fixedName>The Quiet Lattice</fixedName>
     <description>A non-hostile human-form Replicator enclave that has chosen controlled replication and negotiated coexistence over unrestricted expansion.</description>
     <basicMemberKind>WNG_HumanFormReplicator</basicMemberKind><pawnSingular>human-form replicator</pawnSingular><pawnsPlural>human-form replicators</pawnsPlural><leaderTitle>coordinator</leaderTitle>
     <requiredCountAtGameStart>1</requiredCountAtGameStart><canMakeRandomly>true</canMakeRandomly><settlementGenerationWeight>0.22</settlementGenerationWeight>
@@ -113,7 +113,7 @@
     <raidCommonalityFromPointsCurve><points><li>(0,0.06)</li></points></raidCommonalityFromPointsCurve>
     <maxPawnCostPerTotalPointsCurve><points><li>(0,110)</li><li>(500,220)</li><li>(1800,300)</li><li>(100000,10000)</li></points></maxPawnCostPerTotalPointsCurve>
     <pawnGroupMakers>
-      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_HumanFormReplicator>12</WNG_HumanFormReplicator><WNG_PrecursorSoldier>4</WNG_PrecursorSoldier></options></li>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options><WNG_HumanFormReplicator>12</WNG_HumanFormReplicator><WNG_PrecursorSoldier>4</WNG_PrecursorSoldier><WNG_PrecursorCommander>0.8</WNG_PrecursorCommander></options></li>
       <li><kindDef>Peaceful</kindDef><commonality>80</commonality><options><WNG_HumanFormReplicator>8</WNG_HumanFormReplicator><WNG_PrecursorEngineer>4</WNG_PrecursorEngineer></options></li>
       <li><kindDef>Settlement</kindDef><options><WNG_HumanFormReplicator>9</WNG_HumanFormReplicator><WNG_PrecursorEngineer>5</WNG_PrecursorEngineer><WNG_PrecursorCommander>1</WNG_PrecursorCommander></options></li>
     </pawnGroupMakers>

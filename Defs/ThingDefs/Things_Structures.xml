@@ -1,51 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <ThingDef ParentName="Wall">
-    <defName>WNG_WraithLivingWall</defName>
-    <label>living wall</label>
-    <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms and can support roofs like an ordinary wall.</description>
-    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_LivingWall</texPath><graphicClass>Graphic_Appearances</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
-    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><WNG_Biomass>5</WNG_Biomass></costList>
-    <statBases><MaxHitPoints>420</MaxHitPoints><WorkToBuild>180</WorkToBuild><Flammability>0.25</Flammability><Beauty>2</Beauty></statBases>
-    <researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
-    <building><paintable>false</paintable></building>
+    <defName>WNG_WraithWall</defName><label>wraith chitin wall</label>
+    <description>A dry load-bearing Wraith barrier grown from dense chitin and structural cartilage. It behaves like a normal RimWorld wall while retaining a distinct Wraith architectural identity.</description>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_WraithWall_Atlas</texPath><graphicClass>Graphic_Single</graphicClass><linkType>Basic</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><WNG_Biomass>4</WNG_Biomass></costList>
+    <statBases><MaxHitPoints>380</MaxHitPoints><WorkToBuild>155</WorkToBuild><Flammability>0.22</Flammability><Beauty>1</Beauty></statBases><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites><building><paintable>false</paintable></building>
   </ThingDef>
-
-  <ThingDef ParentName="DoorBase">
-    <defName>WNG_WraithMembraneDoor</defName>
-    <label>living membrane door</label>
-    <description>A muscular living partition that contracts aside for authorised passage and seals itself afterwards.</description>
-    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData></graphicData>
-    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><WNG_Biomass>18</WNG_Biomass></costList>
-    <statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.25</Flammability></statBases>
-    <researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
-    <building><paintable>false</paintable></building>
-  </ThingDef>
-
   <ThingDef ParentName="Wall">
-    <defName>WNG_PrecursorWall</defName>
-    <label>precursor wall</label>
-    <description>A seamless composite wall with recessed geometric seams and embedded service channels.</description>
-    <graphicData><texPath>Things/Building/Precursor/Structure/WNG_PrecursorWall</texPath><graphicClass>Graphic_Appearances</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
-    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><Plasteel>4</Plasteel><ComponentIndustrial>1</ComponentIndustrial></costList>
-    <statBases><MaxHitPoints>520</MaxHitPoints><WorkToBuild>260</WorkToBuild><Flammability>0</Flammability><Beauty>5</Beauty></statBases>
-    <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
-    <building><paintable>false</paintable></building>
+    <defName>WNG_WraithLivingWall</defName><label>living wall</label>
+    <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms and can support roofs like an ordinary wall.</description>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_LivingWall_Atlas</texPath><graphicClass>Graphic_Single</graphicClass><linkType>Basic</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><WNG_Biomass>5</WNG_Biomass></costList>
+    <statBases><MaxHitPoints>420</MaxHitPoints><WorkToBuild>180</WorkToBuild><Flammability>0.25</Flammability><Beauty>2</Beauty></statBases><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites><building><paintable>false</paintable></building>
   </ThingDef>
-
   <ThingDef ParentName="DoorBase">
-    <defName>WNG_PrecursorDoor</defName>
-    <label>precursor iris door</label>
-    <description>A fast, nearly seamless powered door built from layered precursor composites.</description>
+    <defName>WNG_WraithMembraneDoor</defName><label>living membrane door</label><description>A muscular living partition that contracts aside for authorised passage and seals itself afterwards.</description>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData></graphicData>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><WNG_Biomass>18</WNG_Biomass></costList><statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.25</Flammability></statBases><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites><building><paintable>false</paintable></building>
+  </ThingDef>
+  <ThingDef ParentName="Wall">
+    <defName>WNG_PrecursorWall</defName><label>precursor wall</label><description>A seamless composite wall with recessed geometric seams and embedded service channels.</description>
+    <graphicData><texPath>Things/Building/Precursor/Structure/WNG_PrecursorWall_Atlas</texPath><graphicClass>Graphic_Single</graphicClass><linkType>Basic</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><Plasteel>4</Plasteel><ComponentIndustrial>1</ComponentIndustrial></costList><statBases><MaxHitPoints>520</MaxHitPoints><WorkToBuild>260</WorkToBuild><Flammability>0</Flammability><Beauty>5</Beauty></statBases><researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites><building><paintable>false</paintable></building>
+  </ThingDef>
+  <ThingDef ParentName="Wall">
+    <defName>WNG_AsuranNaniteWall</defName><label>Asuran nanite wall</label><description>A precision nanite-lattice wall whose dark composite cells hold geometric alignment around restrained luminous service channels. It uses ordinary wall rules for rooms, cover, roofs and pathing.</description>
+    <graphicData><texPath>Things/Building/Precursor/Structure/WNG_AsuranNaniteWall_Atlas</texPath><graphicClass>Graphic_Single</graphicClass><linkType>Basic</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><Plasteel>5</Plasteel><ComponentIndustrial>1</ComponentIndustrial></costList><statBases><MaxHitPoints>560</MaxHitPoints><WorkToBuild>285</WorkToBuild><Flammability>0</Flammability><Beauty>6</Beauty></statBases><researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites><building><paintable>false</paintable></building>
+  </ThingDef>
+  <ThingDef ParentName="DoorBase">
+    <defName>WNG_PrecursorDoor</defName><label>precursor iris door</label><description>A fast, nearly seamless powered door built from layered precursor composites.</description>
     <graphicData><texPath>Things/Building/Precursor/Structure/WNG_PrecursorDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData></graphicData>
-    <stuffCategories Inherit="False" /><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><Plasteel>28</Plasteel><ComponentSpacer>1</ComponentSpacer></costList>
-    <statBases><MaxHitPoints>350</MaxHitPoints><WorkToBuild>1500</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
-    <comps>
-      <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>35</basePowerConsumption></li>
-      <li Class="CompProperties_Breakdownable"/>
-    </comps>
-    <researchPrerequisites><li>WNG_PrecursorFabrication</li><li>Autodoors</li></researchPrerequisites>
-    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
-    <building><paintable>false</paintable></building>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance><costList><Plasteel>28</Plasteel><ComponentSpacer>1</ComponentSpacer></costList><statBases><MaxHitPoints>350</MaxHitPoints><WorkToBuild>1500</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases><comps><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>35</basePowerConsumption></li><li Class="CompProperties_Breakdownable"/></comps><researchPrerequisites><li>WNG_PrecursorFabrication</li><li>Autodoors</li></researchPrerequisites><constructionSkillPrerequisite>6</constructionSkillPrerequisite><building><paintable>false</paintable></building>
   </ThingDef>
 </Defs>

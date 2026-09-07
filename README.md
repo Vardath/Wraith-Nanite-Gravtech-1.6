@@ -1,104 +1,119 @@
-# Wraith & Nanite Gravtech — RimWorld 1.6
+# Wraith & Nanite Gravtech
 
-Public RimWorld 1.6 release mirror for **Wraith & Nanite Gravtech** by Vardath.
+Unofficial, non-commercial RimWorld 1.6 fan mod inspired by Stargate Atlantis themes. Built around Biotech genetics and Odyssey-native shuttle/gravship systems, with original project-created runtime art and procedural audio.
 
-> **Release status:** release-candidate validation. The current public mirror now matches the latest audited post-live-log-fix playable state from the private development repository. Final Steam publication remains gated on live in-game testing and fresh Player.log/RimDoctor review.
+Requires **Biotech** and **Odyssey**. **Ideology is optional** and is only required for the Neural Interface Enslave operation.
 
-## Repository roles
+This project is not affiliated with, endorsed by, or sponsored by the Stargate rights holders, Ludeon Studios, or any associated rights holder.
 
-- **Private repository — `Vardath/Wraith-Nanite-Gravtech`:** development authority. All new work, fixes, experiments and release candidates are made and audited there first.
-- **This public repository — `Vardath/Wraith-Nanite-Gravtech-1.6`:** release mirror. It should match the current released Steam Workshop build and should not receive unreleased development work.
-- When a private build is fully audited and accepted for release, the exact playable state is promoted here and to Steam together.
-- If a released build develops a confirmed error, the fix is made privately, audited there, then promoted to both this repository and Steam so the public GitHub state and Workshop state remain aligned.
+## Development status
 
-## Quick links
+WNG is in **active development and integration**, not final-release sign-off. The current branch contains substantial playable Wraith, block-Replicator, human-form Replicator/Asuran, Ancient/precursor, Odyssey and optional Stargate systems. Static/runtime-contract cleanup is increasingly mature, but broad real-game validation, demonstrated-fault repair, balance and live audio/VFX judgement still remain.
 
-- **Manual install:** [`INSTALL.md`](INSTALL.md)
-- **Current release notes:** [`RELEASE_NOTES.md`](RELEASE_NOTES.md)
-- **Full changelog:** [`CHANGELOG.md`](CHANGELOG.md)
-- **Asset provenance:** [`ASSET_PROVENANCE.md`](ASSET_PROVENANCE.md)
-- **Project/fan notice:** [`NOTICE.md`](NOTICE.md)
+Automated green status means the exact source head compiles, passes its regression contracts and packages successfully. It does not replace in-game verification or mean the content design is complete.
 
-Steam Workshop will be the recommended installation route once the public Workshop item is live. This repository exists for manual installers, archival use, source inspection and people who prefer GitHub distribution.
+## Core pillars
 
-## Requirements
+### Wraith xenotype
+A regenerative, life-draining Biotech xenotype with a Life Force resource, Drain Life, Enthrall, Host Seed Gestation and limb regeneration. The earlier separate Wither concept is folded into Drain Life rather than exposed as a second feeding ability.
 
-- RimWorld **1.6**
-- **Biotech** DLC
-- **Odyssey** DLC
-- **Ideology** is optional and is only required for the Neural Interface **Enslave** operation.
+Drain Life and Enthrall are combat abilities and can target standing biological pawns. Host Seed Gestation accepts a downed/stunned biological enemy, prisoner, slave, or biological corpse.
 
-CatCraft's **Stargates!** is supported as an optional integration and is not a hard dependency. RimGate and ONAC are also intended as optional/recommended companion mods where compatible.
+The first Drain Life use on a victim adds 50 biological years and applies the temporary `Life Drained` marker. A second Drain Life while that marker is still present kills the victim through complete life-force depletion. Every successful feeding reverses 5 biological years from the Wraith, never reducing the Wraith below biological age 18, restores Life Force and starts the fed-regeneration effect.
 
-## Manual installation
+Wraith physiology is driven by Life Force rather than ordinary food. The reserve is tuned around roughly one quadrum from full to empty. Wraiths retain sleep/rest but do not use ordinary food, beauty or comfort needs. Low Life Force causes progressive weakness and zero reserve is nonlethal.
 
-Use GitHub's **Code → Download ZIP**, extract it, and rename the resulting folder to:
+A Wraith can implant workshop tissue into an incapacitated biological host or biological corpse. Either route matures in one day and produces a minified Living Forge; the corpse route consumes the corpse immediately into a visible incubating mass. The Living Forge cultures ordinary biomass and grows the first Growth Chamber Seed. The Growth Chamber owns advanced Wraith production: replacement Living Forge Seeds, Wraith gravcore seeds, Wraith weapons and Wraith armour/clothing. It also has a slower, less efficient emergency biomass-recovery recipe so losing the last Living Forge does not permanently strand an established Wraith colony. A Wraith gravcore seed likewise accepts either a living biological prisoner/slave or a biological humanlike corpse and produces an Odyssey-compatible vanilla Gravcore after one day.
 
-`Wraith-Nanite-Gravtech`
+Wraith equipment includes a stun staff, capture stunner, line carbine, heavy bio-weapon, Hunter Coat, Queen Raiment, Warrior Carapace and Commander Carapace. Living colony technology includes Living Forge and Growth Chamber production organs, furniture, lighting, walls, membrane doors, bioelectric generation, living power storage and storage fixtures.
 
-Place that folder directly inside RimWorld's local `Mods` directory. It must directly contain:
+Wraith attack behavior is increasingly mission-specific rather than generic raiding. Roof-breached Wraith Dart passes perform actual culling/abduction runs, persistent abductees can feed later Wraith rescue content, and mature Hive/craft systems support a broader predatory-civilisation layer.
 
-- `About/`
-- `Assemblies/`
-- `Defs/`
-- `Languages/`
-- `Patches/`
-- `Sounds/`
-- `Textures/`
+### Human-form nanites / precursor technology
+Human-form synthetic beings use a Biotech xenotype with nanite reconstruction and EMP-vulnerability foundations. Their technology family includes precursor weapons, armor, fabrication, power systems, furniture/architecture and themed Odyssey gravship components.
 
-The important sanity check is:
+The **Neural Interface** is faction-agnostic and can target any other living flesh-and-blood humanlike pawn whether friendly, neutral, prisoner, slave or hostile. Activating it automatically pauses the game and opens a dedicated centered popup with five operations:
 
-`Wraith-Nanite-Gravtech/About/About.xml`
+- Recruit / rewrite allegiance
+- Imprison
+- Enslave when Ideology is active
+- Copy skills and passions into the operator
+- Build a fresh human-form Replicator copy
 
-Do not merge a new release over an old WNG folder; replace the old folder so stale XML/assets cannot survive between versions. Full instructions are in [`INSTALL.md`](INSTALL.md).
+The popup owns the temporary pause; closing it releases that pause instead of leaving the game manually paused. The Neural Interface cooldown is exactly **2 RimWorld hours** (5,000 ticks).
 
-## Major systems
+Human-form copy creation generates a fresh pawn rather than cloning the original pawn object. It copies visible appearance, source xenotype/endogenes, custom xenotype presentation, childhood/adulthood backstory and exact skills/passions, then layers the WNG nanite gene package on top. The assembled copy begins without generated apparel.
 
-### Wraith
-- Wraith Biotech xenotype with Life Force, regeneration and life-draining abilities.
-- Distinct Wraith societies and doctrine.
-- Living biotechnology, host/corpse incubation routes, weapons, armor, structures and furniture.
-- Wraith Dart shuttlecraft and Wraith-themed Odyssey gravship technology.
+Asuran precision-strike behavior can recognize WNG vacuum-energy/ZPM-equivalent objectives and assign a recovery operative to steal a module before extracting through an available Stargate.
 
-### Human-form Replicators / Asurans
-- Human-form nanite bodies with ordinary Food need and food-poisoning immunity.
-- Eating restores a visible **Nanite Reserve**.
-- Nanite Reserve powers accelerated self-repair, missing-part reconstruction and Neural Interface copy fabrication.
-- Neural Interface operations for allegiance rewrite, imprisonment, enslavement, skill/passion copying and human-form copy fabrication.
-- Pattern Archive, precursor fabrication, recovered precursor equipment and precursor Odyssey technology.
+### Small Replicators
+Small Replicators are mechanoid-class mechanical pawns, distinct from human-form nanite people.
 
-### Block Replicators
-- Matter-consuming mechanical swarms with material inheritance.
-- Passive consume-first behavior, bounded retaliation, specialist adaptation and encounter memory.
-- EMP and powered containment counterplay.
-- Dangerous Replicator Matter and a player-buildable Child's Toy Replicator with feral-risk behavior.
+Hostile or feral small Replicators defend themselves, then seek reachable matter. They can consume loose items and resources, artificial structures, ruins/wreckage and natural mineable resource deposits. They ignore player Forbidden designations because those are colony work controls, not protections against an enemy swarm. Ordinary mountain mass is excluded.
 
-## Discovery progression
+A completed assimilation destroys its target exactly once, keeps the parent alive and produces two new Replicators, limited by the configurable per-map emergency cap. Player-controlled Replicators do not autonomously eat the colony.
 
-WNG's major archaeology is deliberately staged instead of presenting unrelated advanced systems at once:
+Offspring inherit the matter used to produce them. The consumed source material supplies their visible tint and a persistent material signature. Stuff durability/flammability factors determine a fragile, standard, hardened or ultra-dense stat profile, allowing modded StuffDefs to participate without a vanilla-only hard-coded list.
 
-**mystery → encounter → evidence → understanding → reconstruction → mastery**
+The machine ecology also includes learned technology adaptation, hierarchy/recombination, a Controller side-form, a late Siege Mass, powered containment, EMP suppression, changing matter priorities and dangerous Replicator Matter salvage.
 
-The release sequence begins with Wraith and Replicator aftermath, progresses through damaged Ancient evidence and deeper Wraith archaeology, then reaches dormant Asuran architecture, a warned deceptive precursor site and the rare Replicator Queen vault.
+Replicator Matter becomes self-assembly-capable after **30,000 ticks / half a RimWorld day** when not contained. A storyteller meteor-shower incident can seed 3–4 separated clusters of dormant Replicator Matter before a live outbreak, giving the player a salvage/custody problem rather than immediately spawning attackers.
 
-## Compatibility philosophy
+Replicators can also be created as the deliberately innocuous **Child's Toy** colony mech. A controlled toy remains friendly; prolonged loss of active player control lets its feral replication routines reassert themselves. The hidden **Replication Swarm** faction can field both block-form and human-form Replicators.
 
-WNG primarily uses RimWorld genes, Hediffs, abilities, comps, custom jobs and Odyssey-native systems. It avoids Humanoid Alien Races as a dependency and avoids broad global Harmony takeover. Optional integrations are designed to leave the external mod authoritative for its own systems.
+### Ancient / precursor technology
+Ancient-oriented content includes recovered control-chair/drone systems, high-energy shields, vacuum-energy modules/taps, precursor vaults and other rare technology intended to feel like archaeological access to an extraordinary lost technological layer rather than merely ordinary industrial research with larger numbers.
 
-## Public mirror boundary
+### Shuttlecraft, gravships and optional Stargates
+The **Wraith Dart** and **Puddle Jumper** are independent shuttlecraft, not modular gravship structures. They use Odyssey passenger-shuttle machinery for loading, launching and world travel while preserving dedicated WNG identities and art through the full travel cycle.
 
-This repository contains the **released/playable 1.6 payload**: About metadata, compiled WNG assembly, Defs, translations, patches, sounds and textures. Internal development/audit continuity material is intentionally not published here.
+Full-sized Odyssey gravships receive themed technology families:
 
-Development changes are prepared and audited privately. Only an accepted release state is mirrored here. Once Steam is live, this repository and the Steam Workshop copy are intended to be the same public release state.
+- Wraith: regenerative organic hull tissue, neural pilot node, living gravitic drive and living power technology
+- Precursor: high-strength composite hull, advanced pilot console, vector drive, gravitic power core and stronger shield emitter
 
-## Fan-project notice
+When the external Stargates mod is present, WNG uses a dependency-light optional integration for faction assaults, iris-aware arrival, bounded redials and WNG-owned support-craft ingress. WNG does not manipulate another mod's receive buffer or require Stargates to load. Reflective state reads tolerate compatible field/property API refactors without creating a compile dependency.
 
-This is an unofficial, non-commercial fan-made project inspired by Stargate Atlantis themes. It is not affiliated with, endorsed by, or sponsored by the Stargate rights holders, Ludeon Studios, or any associated rights holder. No official logos, ripped models, screenshots, dialogue, music or sound recordings are intentionally included.
+## Architect organization
+Buildable content is grouped under the dedicated **Wraith & Nanite** Architect category. CI generates and validates distinct command icons, dedicated shuttle sprites, weapons, directional armor bodytype graphics, Replicator facings and production structures.
 
-## Current release-candidate provenance
+## Four scenarios
 
-- Private development release head: `13d437b36bc0db313881e585fc76dbf16ae2b851`
-- Static Def Audit: **#2492 / run `33927936424` — SUCCESS**
-- Automated gate includes the full WNG audit suite, RimWorld 1.6 C# compilation, compiled-payload verification, playable-folder assembly and ZIP packaging.
-- Fresh live-log fixes included removal of the obsolete `WNG_RimWorld16_RuntimeRepair.xml` shim and corrected living-equipment support patching for the Wraith Boneblade and War Glaive.
-- Live RimWorld testing remains the final separate proof layer before the Steam release.
+- Wraith: Landfall
+- Wraith: In Orbit
+- Human-form Replicators: Landfall
+- Human-form Replicators: In Orbit
+
+The orbital starts use Odyssey native orbit/gravship systems.
+
+## Settings
+Current settings expose Wraith regeneration, human-form nanite regeneration, maximum hostile block Replicators per map, storyteller Replicator outbreaks, Replicator feral delay and Stargate-incursion frequency where relevant. The core rule of two offspring per successful hostile assimilation is intentionally fixed.
+
+## Audio identity
+
+The current runtime suite contains **30 original procedural cues**. Wraith heavy bio-weapons, Replicator integrated pulse weapons and Ancient drone launches have separate faction-specific sounds rather than borrowing vanilla or another WNG technology family's cue. The full manifest and remaining live-audition requirements are documented in `Docs/SOUND_ASSET_MANIFEST.md` and `Docs/SOUND_DESIGN.md`.
+
+## Automated validation
+
+The development branch has a strict build pipeline. CI regenerates runtime art and the 30-cue audio suite, validates XML/custom references, checks RimWorld 1.6 gameplay contracts, compiles `WraithNaniteGravtech.dll`, verifies language/assets/payload contents and uploads a playable mod artifact.
+
+The local/manual `Tools/BuildPlayable.ps1` path is kept in parity with CI. A dedicated parity audit rejects drift in critical generators, audits, audio ordering, language packaging and signature assets. The optional Stargate bridge also has a resilience audit that preserves dependency-free field/property reflection without receive-buffer ownership.
+
+Runtime testing remains defined in `Docs/TESTING.md`. Current cross-session state and the continuing development sequence are maintained in `Docs/CURRENT_CHECKPOINT.md`. Original-asset/provenance guidance is maintained in `Docs/ASSET_PROVENANCE.md` and `Docs/LEGAL_AND_NAMING.md`.
+
+## Stability principles
+
+- No Humanoid Alien Races dependency
+- Prefer genes, Hediffs, abilities, comps, custom jobs and Odyssey-native systems
+- Avoid broad global Harmony patches
+- No per-pawn full-map scan every tick
+- Interrupted incubation/assimilation terminates safely
+- Player-controlled small Replicators do not auto-assimilate
+- Copy pawns are freshly generated; no deep-object cloning
+- Persistent custom state is save/load serialized
+- Compatibility and error containment take priority over cleverness
+- Exact-head green is required for code/config changes, but live RimWorld evidence outranks static confidence
+
+## Current next phase
+
+The fresh five-pass repository/runtime/gameplay/presentation/release audit is complete at static/compile/package level. The next genuine proof point is the broad **live RimWorld test matrix**, followed by demonstrated-fault repair and evidence-led balance/audio/VFX/visual polish.

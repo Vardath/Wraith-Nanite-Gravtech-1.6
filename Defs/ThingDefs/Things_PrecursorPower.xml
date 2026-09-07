@@ -34,12 +34,12 @@
   <ThingDef ParentName="GravshipComponentBase">
     <defName>WNG_PrecursorGravPowerCore</defName>
     <label>precursor grav power core</label>
-    <description>An advanced gravitic power core that continuously extracts usable energy from local gravitational gradients.</description>
+    <description>An advanced gravitic power core that continuously extracts usable energy from local gravitational gradients using a synthetic precursor field lattice.</description>
     <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Power/WNG_PrecursorGravPowerCore</texPath><drawSize>(1,1)</drawSize></graphicData>
     <tickerType>Normal</tickerType>
     <statBases><MaxHitPoints>360</MaxHitPoints><Flammability>0</Flammability><Beauty>8</Beauty><WorkToBuild>18000</WorkToBuild><Mass>18</Mass></statBases>
     <size>(1,1)</size><constructionSkillPrerequisite>8</constructionSkillPrerequisite><resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones><designationCategory>Power</designationCategory>
-    <costList><Gravcore>1</Gravcore><Plasteel>80</Plasteel><ComponentSpacer>4</ComponentSpacer></costList>
+    <costList><Plasteel>80</Plasteel><ComponentSpacer>4</ComponentSpacer><Uranium>15</Uranium><GravlitePanel>12</GravlitePanel><WNG_ReplicatorMatter>8</WNG_ReplicatorMatter></costList>
     <researchPrerequisites><li>WNG_PrecursorEnergySystems</li><li>AdvancedGravtech</li></researchPrerequisites>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <comps><li Class="CompProperties_Power"><compClass>CompPowerPlantGravcore</compClass><basePowerConsumption>-1800</basePowerConsumption><transmitsPower>true</transmitsPower></li></comps>

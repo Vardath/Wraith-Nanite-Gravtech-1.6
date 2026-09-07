@@ -13,9 +13,63 @@
     </value>
   </Operation>
   <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranFuelCell'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranFuelCell</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranFuelOptimizer'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranFuelOptimizer</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranGravFieldExtender'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranGravFieldExtender</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranGravshipDoor'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranGravshipDoor</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranHeavyVectorDrive'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranHeavyVectorDrive</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranLargeFuelCell'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranLargeFuelCell</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranNaniteFuelConduit'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranNaniteFuelConduit</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
     <xpath>/Defs/ThingDef[defName='WNG_AsuranPatternArchive'][not(uiIconPath)]</xpath>
     <value>
       <uiIconPath>UI/WNG/Build/WNG_AsuranPatternArchive</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranPowerConduit'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranPowerConduit</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_AsuranSignalJammer'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_AsuranSignalJammer</uiIconPath>
     </value>
   </Operation>
   <Operation Class="PatchOperationAdd">
@@ -175,9 +229,69 @@
     </value>
   </Operation>
   <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithFuelBladder'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithFuelBladder</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithFuelConduit'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithFuelConduit</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithFuelOptimizer'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithFuelOptimizer</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithGravFieldExtender'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithGravFieldExtender</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithGravshipDoor'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithGravshipDoor</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithGravshipShield'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithGravshipShield</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithHeavyDriveOrgan'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithHeavyDriveOrgan</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithLargeFuelBladder'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithLargeFuelBladder</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithNeuralConduit'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithNeuralConduit</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
     <xpath>/Defs/ThingDef[defName='WNG_WraithNutrientNiche'][not(uiIconPath)]</xpath>
     <value>
       <uiIconPath>UI/WNG/Build/WNG_WraithNutrientNiche</uiIconPath>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName='WNG_WraithSignalVeil'][not(uiIconPath)]</xpath>
+    <value>
+      <uiIconPath>UI/WNG/Build/WNG_WraithSignalVeil</uiIconPath>
     </value>
   </Operation>
   <Operation Class="PatchOperationAdd">

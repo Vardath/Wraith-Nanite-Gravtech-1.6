@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_ExpressWraithBiofluidFuel</defName>
+    <label>express wraith bio-fluid propellant</label>
+    <description>Process cultured biomass into dense biochemical gravship propellant. The process conserves the Wraith biological production chain rather than substituting ordinary chemfuel.</description>
+    <jobString>Expressing Wraith bio-fluid propellant.</jobString>
+    <workAmount>1200</workAmount><workSkill>Intellectual</workSkill><researchPrerequisite>WNG_OrganicFlight</researchPrerequisite>
+    <ingredients><li><filter><thingDefs><li>WNG_Biomass</li></thingDefs></filter><count>8</count></li></ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_Biomass</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_WraithBiofluidFuel>20</WNG_WraithBiofluidFuel></products>
+    <recipeUsers><li>WNG_LivingForge</li><li>WNG_GrowthChamber</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_StabilizeAsuranNaniteSlurry</defName>
+    <label>stabilize Asuran nanite slurry</label>
+    <description>Disperse a finite quantity of recovered Replicator matter through a refined chemfuel carrier and lock it into an Asuran gravitic suspension. Replicator matter is consumed; this process does not duplicate the nanite feedstock.</description>
+    <jobString>Stabilizing Asuran nanite slurry.</jobString>
+    <workAmount>1800</workAmount><workSkill>Crafting</workSkill><researchPrerequisite>WNG_SkimmerSystems</researchPrerequisite>
+    <ingredients>
+      <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>4</count></li>
+      <li><filter><thingDefs><li>Chemfuel</li></thingDefs></filter><count>20</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li><li>Chemfuel</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AsuranNaniteSlurry>40</WNG_AsuranNaniteSlurry></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+</Defs>

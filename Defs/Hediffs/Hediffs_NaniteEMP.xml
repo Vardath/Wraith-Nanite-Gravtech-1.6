@@ -24,7 +24,7 @@
       <li>
         <statFactors>
           <MoveSpeed>0.55</MoveSpeed>
-          <GlobalWorkSpeed>0.50</GlobalWorkSpeed>
+          <WorkSpeedGlobal>0.50</WorkSpeedGlobal>
           <MedicalTendSpeed>0.65</MedicalTendSpeed>
         </statFactors>
       </li>

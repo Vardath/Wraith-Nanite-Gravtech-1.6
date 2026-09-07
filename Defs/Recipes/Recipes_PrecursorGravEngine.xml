@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_SynthesizePrecursorGravEngine</defName>
+    <label>synthesize precursor grav engine</label>
+    <description>Human-form Replicator nanites assemble a complete precursor grav engine using Asuran field-control technology. The finished engine is minified for transport and installs as a fully functional Odyssey grav engine.</description>
+    <jobString>Synthesizing a precursor grav engine.</jobString>
+    <workAmount>12000</workAmount><workSkill>Intellectual</workSkill>
+    <researchPrerequisites><li>WNG_PrecursorEnergySystems</li><li>AdvancedGravtech</li></researchPrerequisites>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <ingredients>
+      <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>120</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>180</count></li>
+      <li><filter><thingDefs><li>GravlitePanel</li></thingDefs></filter><count>60</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>8</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li><li>Plasteel</li><li>GravlitePanel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_MinifiedPrecursorGravEngine>1</WNG_MinifiedPrecursorGravEngine></products>
+  </RecipeDef>
+
+  <ThingDef ParentName="MinifiedThing">
+    <defName>WNG_MinifiedPrecursorGravEngine</defName>
+    <label>minified precursor grav engine</label>
+    <thingClass>WraithNaniteGravtech.MinifiedPrecursorGravEngine</thingClass>
+    <statBases><MarketValue>3200</MarketValue><Mass>28</Mass></statBases>
+  </ThingDef>
+</Defs>

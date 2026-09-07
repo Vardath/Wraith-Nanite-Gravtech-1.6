@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_GravEngineSeedIncubation</defName>
+    <label>grav engine gestation</label>
+    <description>The host is being consumed and reorganized into a Wraith grav engine. Completion destroys the host and leaves a minified engine ready for installation.</description>
+    <hediffClass>WraithNaniteGravtech.Hediff_GravEngineSeedIncubation</hediffClass>
+    <isBad>true</isBad>
+  </HediffDef>
+</Defs>

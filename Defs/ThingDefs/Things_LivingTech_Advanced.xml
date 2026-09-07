@@ -27,7 +27,7 @@
   <ThingDef ParentName="BenchBase">
     <defName>WNG_GrowthChamber</defName>
     <label>growth chamber (advanced vat)</label>
-    <description>The large advanced Wraith production vat. It matures complex weapons, armour, power organs and ship tissues; after cloning infrastructure is understood, the same organ can gestate Hunters, Warriors and Keepers by consuming cultured biomass and a measured life-force contribution from an existing Wraith. Forbidden hybridisation research adds an optional living-subject graft that preserves the exact humanlike pawn while layering unstable Wraith-derived xenogenes onto them. A functional gravcore can amplify either process without replacing the required biological life-force donation.</description>
+    <description>The large advanced Wraith production vat. It matures complex weapons, armour, power organs and ship tissues; after cloning infrastructure is understood, the same organ can gestate Hunters, Warriors and Keepers by consuming cultured biomass and a measured life-force contribution from an existing Wraith. Forbidden hybridisation research adds an optional living-subject graft that preserves the exact humanlike pawn while layering unstable Wraith-derived xenogenes onto them. A nearby functional Wraith grav engine can amplify either process without replacing the required biological life-force donation.</description>
     <thingClass>Building_WorkTable</thingClass>
     <graphicData><texPath>Things/Building/Production/WNG_GrowthChamber</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(4,3)</drawSize></graphicData>
     <size>(4,3)</size><designationCategory>WNG_Architect</designationCategory><uiOrder>111</uiOrder>
@@ -44,7 +44,7 @@
         <donorLifeForceCost>0.25</donorLifeForceCost>
         <minimumDonorLifeForce>0.55</minimumDonorLifeForce>
         <newbornLifeForce>0.35</newbornLifeForce>
-        <efficiencyCoreDefName>Gravcore</efficiencyCoreDefName>
+        <efficiencyCoreDefName>WNG_WraithGravEngine</efficiencyCoreDefName>
         <gravcoreBiomassFactor>0.70</gravcoreBiomassFactor>
         <gravcoreDurationFactor>0.65</gravcoreDurationFactor>
       </li>
@@ -56,7 +56,7 @@
         <minimumDonorLifeForce>0.70</minimumDonorLifeForce>
         <initialHybridLifeForce>0.45</initialHybridLifeForce>
         <subjectRadius>12</subjectRadius>
-        <efficiencyCoreDefName>Gravcore</efficiencyCoreDefName>
+        <efficiencyCoreDefName>WNG_WraithGravEngine</efficiencyCoreDefName>
         <gravcoreBiomassFactor>0.80</gravcoreBiomassFactor>
         <gravcoreDurationFactor>0.70</gravcoreDurationFactor>
       </li>

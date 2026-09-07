@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Each playerShuttle registration is independent. A later optional fuel-label patch may fail
+       after an upstream Def change without disabling vanilla loading/launch for every WNG shuttle. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/TransportShipDef[defName='WNG_Ship_WraithDart' and not(playerShuttle)]</xpath>
+    <value><playerShuttle>true</playerShuttle></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/TransportShipDef[defName='WNG_Ship_PuddleJumper' and not(playerShuttle)]</xpath>
+    <value><playerShuttle>true</playerShuttle></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/TransportShipDef[defName='WNG_Ship_WraithStrikeCraft' and not(playerShuttle)]</xpath>
+    <value><playerShuttle>true</playerShuttle></value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/TransportShipDef[defName='WNG_Ship_WraithCruiser' and not(playerShuttle)]</xpath>
+    <value><playerShuttle>true</playerShuttle></value>
+  </Operation>
+
+  <!-- Puddle Jumper retains Odyssey's native CompLaunchable/CompTransporter flow while using the
+       Asuran fuel family in its inherited refuelable reservoir. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_PuddleJumper']/comps/li[@Class='CompProperties_Refuelable']/fuelFilter/thingDefs/li</xpath>
+    <value><li>WNG_AsuranNaniteSlurry</li></value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_PuddleJumper']/comps/li[@Class='CompProperties_Refuelable']/fuelLabel</xpath>
+    <value><fuelLabel>Asuran nanite slurry</fuelLabel></value>
+  </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName='WNG_PuddleJumper']/comps/li[@Class='CompProperties_Refuelable']/fuelGizmoLabel</xpath>
+    <value><fuelGizmoLabel>Asuran nanite slurry</fuelGizmoLabel></value>
+  </Operation>
+</Patch>
