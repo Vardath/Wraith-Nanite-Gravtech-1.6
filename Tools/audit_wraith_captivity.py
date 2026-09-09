@@ -42,6 +42,13 @@ for needle, description in [
     ("Enthralled = 3", "Enthrallment treatment stage is missing"),
     ("RemoveStageHediffsExcept(pawn, \"WNG_WraithEnthralled\")", "Enthrallment must survive release"),
     ("Scribe_Collections.Look(ref records", "Captivity ledger must survive save/load"),
+    ("FirstRescueTraceDelayTicks = 60000", "First rescue trace must be scheduled after 60000 ticks"),
+    ("RescueRetryDelayTicks = 120000", "Missed rescue retry must be scheduled after 120000 ticks"),
+    ("RescueSiteLifetimeTicks = 720000", "Rescue site lifetime must be 720000 ticks"),
+    ("DueForRescueTrace(int now)", "Registry must expose due exact-captive rescue traces"),
+    ("MarkRescueSiteOpened(Pawn pawn, int now)", "Registry must mark a rescue window on the exact captive"),
+    ("MarkRescueSiteMissed(Pawn pawn, int now)", "Registry must escalate and reschedule the exact captive after a missed rescue"),
+    ("record.nextRescueTraceTick = SafeFutureTick(now, RescueRetryDelayTicks)", "Missed rescue must reschedule rather than delete the captive"),
 ]:
     require(source, needle, description)
 
