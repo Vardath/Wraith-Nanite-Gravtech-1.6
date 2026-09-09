@@ -1,13 +1,14 @@
 using System;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace WraithNaniteGravtech
 {
     /// <summary>
     /// Shared eligibility and hand-off boundary for Wraith abductions.
-    /// Transport systems are responsible for physically moving the pawn; this utility only decides
-    /// whether that exact pawn is valid prey and commits its identity to the captivity registry.
+    /// Registration records the exact pawn without moving it. Transport systems call
+    /// TryCompleteAbduction only when the physical capture has actually succeeded.
     /// </summary>
     public static class WraithCaptureUtility
     {
@@ -38,6 +39,39 @@ namespace WraithNaniteGravtech
 
             WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
             return registry != null && registry.RegisterCapturedPawn(pawn, captor) != null;
+        }
+
+        /// <summary>
+        /// Commits a completed physical abduction. This is intentionally separate from registration:
+        /// callers must only invoke it after the Dart/raid transport has genuinely secured the pawn.
+        /// The exact pawn is despawned and retained in WorldPawns forever so rescue can recover the
+        /// same object later. No replacement pawn is generated.
+        /// </summary>
+        public static bool TryCompleteAbduction(Pawn pawn, Faction captor)
+        {
+            if (!IsValidAbductionTarget(pawn) || !IsWraithCaptor(captor) || Find.WorldPawns == null)
+                return false;
+
+            WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
+            if (registry == null)
+                return false;
+
+            WraithCaptivityRecord record = registry.RegisterCapturedPawn(pawn, captor);
+            if (record == null)
+                return false;
+
+            try
+            {
+                if (pawn.Spawned)
+                    pawn.DeSpawn();
+                Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.KeepForever);
+                return !pawn.Spawned && registry.FindRecord(pawn) == record;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("[WNG] Failed to complete exact-pawn Wraith abduction for " + pawn + ": " + ex);
+                return false;
+            }
         }
 
         public static bool IsWraithCaptor(Faction faction)
