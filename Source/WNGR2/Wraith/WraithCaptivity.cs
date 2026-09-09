@@ -21,6 +21,8 @@ namespace WraithNaniteGravtech
         public int capturedTick;
         public int rescueFailures;
         public WraithCaptiveTreatmentStage stage;
+        public int nextRescueTraceTick;
+        public int activeRescueSiteExpiryTick;
 
         public void ExposeData()
         {
@@ -29,6 +31,8 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref capturedTick, "capturedTick", -1);
             Scribe_Values.Look(ref rescueFailures, "rescueFailures", 0);
             Scribe_Values.Look(ref stage, "stage", WraithCaptiveTreatmentStage.FeedingStock);
+            Scribe_Values.Look(ref nextRescueTraceTick, "nextRescueTraceTick", -1);
+            Scribe_Values.Look(ref activeRescueSiteExpiryTick, "activeRescueSiteExpiryTick", -1);
         }
     }
 
@@ -39,6 +43,10 @@ namespace WraithNaniteGravtech
     /// </summary>
     public sealed class WraithCaptivityRegistry : GameComponent
     {
+        public const int FirstRescueTraceDelayTicks = 60000;
+        public const int RescueRetryDelayTicks = 120000;
+        public const int RescueSiteLifetimeTicks = 720000;
+
         private List<WraithCaptivityRecord> records = new List<WraithCaptivityRecord>();
 
         private static readonly string[] StageHediffs =
@@ -64,13 +72,16 @@ namespace WraithNaniteGravtech
             if (existing != null)
                 return existing;
 
+            int now = Find.TickManager?.TicksGame ?? 0;
             WraithCaptivityRecord record = new WraithCaptivityRecord
             {
                 pawn = pawn,
                 captorFactionDefName = captor.def.defName,
-                capturedTick = Find.TickManager?.TicksGame ?? -1,
+                capturedTick = now,
                 rescueFailures = 0,
-                stage = WraithCaptiveTreatmentStage.FeedingStock
+                stage = WraithCaptiveTreatmentStage.FeedingStock,
+                nextRescueTraceTick = SafeFutureTick(now, FirstRescueTraceDelayTicks),
+                activeRescueSiteExpiryTick = -1
             };
             records.Add(record);
             ApplyStageHediff(record);
@@ -82,6 +93,53 @@ namespace WraithNaniteGravtech
             if (pawn == null || records == null)
                 return null;
             return records.FirstOrDefault(r => r != null && r.pawn == pawn);
+        }
+
+        public IEnumerable<WraithCaptivityRecord> DueForRescueTrace(int now)
+        {
+            if (records == null)
+                return Enumerable.Empty<WraithCaptivityRecord>();
+
+            return records.Where(r =>
+                r != null
+                && r.pawn != null
+                && !r.pawn.Dead
+                && r.activeRescueSiteExpiryTick < 0
+                && r.nextRescueTraceTick >= 0
+                && now >= r.nextRescueTraceTick);
+        }
+
+        public bool MarkRescueSiteOpened(Pawn pawn, int now)
+        {
+            WraithCaptivityRecord record = FindRecord(pawn);
+            if (record == null)
+                return false;
+
+            record.nextRescueTraceTick = -1;
+            record.activeRescueSiteExpiryTick = SafeFutureTick(now, RescueSiteLifetimeTicks);
+            return true;
+        }
+
+        public bool MarkRescueSiteMissed(Pawn pawn, int now)
+        {
+            WraithCaptivityRecord record = FindRecord(pawn);
+            if (record == null)
+                return false;
+
+            if (!RecordRescueFailure(pawn))
+                return false;
+
+            record.activeRescueSiteExpiryTick = -1;
+            record.nextRescueTraceTick = SafeFutureTick(now, RescueRetryDelayTicks);
+            return true;
+        }
+
+        public bool IsRescueSiteExpired(Pawn pawn, int now)
+        {
+            WraithCaptivityRecord record = FindRecord(pawn);
+            return record != null
+                && record.activeRescueSiteExpiryTick >= 0
+                && now >= record.activeRescueSiteExpiryTick;
         }
 
         public bool RecordRescueFailure(Pawn pawn)
@@ -111,6 +169,12 @@ namespace WraithNaniteGravtech
                 RemoveStageHediffsExcept(pawn, "WNG_WraithEnthralled");
 
             return records.Remove(record);
+        }
+
+        private static int SafeFutureTick(int now, int delay)
+        {
+            long value = (long)Math.Max(0, now) + Math.Max(0, delay);
+            return value >= int.MaxValue ? int.MaxValue : (int)value;
         }
 
         private static void ApplyStageHediff(WraithCaptivityRecord record)
