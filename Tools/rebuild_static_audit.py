@@ -30,6 +30,13 @@ for required in (
     "About/About.xml",
     "Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj",
     "Source/WraithNaniteGravtech/Core/WNGMod.cs",
+    "Source/WraithNaniteGravtech/Replicators/ReplicatorConstants.cs",
+    "Source/WraithNaniteGravtech/Replicators/CompReplicatorState.cs",
+    "Source/WraithNaniteGravtech/Replicators/CompReplicatorHierarchy.cs",
+    "Source/WraithNaniteGravtech/Replicators/CompReplicatorMatterDormancy.cs",
+    "Source/WraithNaniteGravtech/Replicators/CompReplicatorSuppression.cs",
+    "Source/WraithNaniteGravtech/Replicators/CompReplicatorToyGestation.cs",
+    "Source/WraithNaniteGravtech/Replicators/ReplicatorConsumptionUtility.cs",
 ):
     if not (ROOT / required).is_file():
         fail(f"missing rebuild contract file: {required}")
@@ -92,26 +99,82 @@ for base in implementation_paths:
         if re.search(r"grav\s*core|gravcore", text, re.IGNORECASE):
             fail(f"obsolete Gravcore implementation token in {path.relative_to(ROOT)}")
 
-# Exact Replicator hierarchy contract once the subsystem exists.
-hierarchy_path = ROOT / "Source/WraithNaniteGravtech/Replicators/CompReplicatorHierarchy.cs"
-if hierarchy_path.is_file():
-    hierarchy = hierarchy_path.read_text(encoding="utf-8")
-    required_tokens = (
-        "SplitBornRecombinationLockTicks = 2500",
-        "splitChildPawnKind",
-        "splitCount",
-        "upgradePawnKind",
-        "unitsRequired",
-        "DestroyMode.Vanish",
-        "deathSplitEmitted",
-        "recombinationBlockedUntilTick",
-        "PostExposeData",
-    )
-    for token in required_tokens:
-        if token not in hierarchy:
-            fail(f"Replicator hierarchy lost required contract token: {token}")
-    if "SplitBornRecombinationLockTicks = 60000" in hierarchy:
-        fail("Replicator split-born recombination lock regressed to one day")
+# Exact Replicator hierarchy contract.
+hierarchy = read("Source/WraithNaniteGravtech/Replicators/CompReplicatorHierarchy.cs")
+for token in (
+    "SplitBornRecombinationLockTicks = 2500",
+    "splitChildPawnKind",
+    "splitCount",
+    "upgradePawnKind",
+    "unitsRequired",
+    "DestroyMode.Vanish",
+    "deathSplitEmitted",
+    "recombinationBlockedUntilTick",
+    "PostExposeData",
+):
+    if token not in hierarchy:
+        fail(f"Replicator hierarchy lost required contract token: {token}")
+if "SplitBornRecombinationLockTicks = 60000" in hierarchy:
+    fail("Replicator split-born recombination lock regressed to one day")
+
+# Exact Replicator matter/toy timing contract.
+constants = read("Source/WraithNaniteGravtech/Replicators/ReplicatorConstants.cs")
+for token in (
+    "DangerousMatterMinimumStack = 10",
+    "DormancyTicks = 30000",
+    "ToyGestationTicks = 90000",
+):
+    if token not in constants:
+        fail(f"Replicator canonical constant missing or changed: {token}")
+
+matter = read("Source/WraithNaniteGravtech/Replicators/CompReplicatorMatterDormancy.cs")
+for token in (
+    "ReplicatorConstants.DangerousMatterMinimumStack",
+    "ReplicatorConstants.DormancyTicks",
+    "parent.stackCount -= consumed",
+    "PawnGenerator.GeneratePawn",
+    "PostExposeData",
+):
+    if token not in matter:
+        fail(f"Replicator Matter lost required behavior token: {token}")
+
+# Spawn-before-consume is intentional: a failed assembly must never delete the matter stack.
+if matter.find("GenSpawn.Spawn") > matter.find("parent.stackCount -= consumed"):
+    fail("Replicator Matter transaction order regressed: matter can be consumed before successful spawn")
+
+toy = read("Source/WraithNaniteGravtech/Replicators/CompReplicatorToyGestation.cs")
+for token in (
+    "ReplicatorConstants.ToyGestationTicks",
+    "PawnGenerator.GeneratePawn",
+    "Faction.OfPlayer",
+    "gestationCompleted",
+    "PostExposeData",
+):
+    if token not in toy:
+        fail(f"Child's Toy gestation lost required behavior token: {token}")
+if toy.find("GenSpawn.Spawn") > toy.find("gestationCompleted = true"):
+    fail("Child's Toy transaction order regressed: completion can latch before successful spawn")
+
+suppression = read("Source/WraithNaniteGravtech/Replicators/CompReplicatorSuppression.cs")
+for token in (
+    "PostPreApplyDamage",
+    "DamageDefOf.EMP",
+    "suppressedUntilTick",
+    "BlockRecombinationForTicks",
+    "PostExposeData",
+):
+    if token not in suppression:
+        fail(f"Replicator EMP suppression lost required behavior token: {token}")
+
+consumption = read("Source/WraithNaniteGravtech/Replicators/ReplicatorConsumptionUtility.cs")
+for token in (
+    "replicator.Faction == Faction.OfPlayer",
+    "target.Map?.IsPlayerHome == true",
+    "reachableMaterialExists",
+    "BiologicalFallbackAllowed",
+):
+    if token not in consumption:
+        fail(f"Replicator autonomous-consumption safety lost required token: {token}")
 
 # Never re-import an old source dump/decompiler tree into the clean rebuild.
 for forbidden_dir in ("Decompiled", "LegacySource", "OldSource", "RecoveredSource"):
