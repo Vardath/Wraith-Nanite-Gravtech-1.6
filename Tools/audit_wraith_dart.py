@@ -34,19 +34,27 @@ for needle, description in [
     ("faction.HostileTo(Faction.OfPlayer)", "Dart mission must only run for hostile Wraith craft"),
     ("WraithCaptureUtility.IsValidAbductionTarget(p)", "Dart target selection must use the shared biological prey boundary"),
     ("OrderByDescending(p => p.Downed)", "Dart must prioritize already-downed prey"),
-    ("target.stances.stunner.StunFor", "Dart must stun standing prey during absorption"),
-    ("WraithCaptureUtility.TryCompleteAbduction(target, parent.Faction)", "Dart must hand off the exact selected pawn to captivity"),
+    ("private CompTransporter Transporter", "Dart must require a real CompTransporter"),
+    ("transporter.MassUsage + targetMass > transporter.MassCapacity", "Dart must respect transporter mass capacity"),
+    ("WraithCaptureUtility.TryRegisterAbduction(target, parent.Faction)", "Dart must register the exact selected pawn before loading"),
+    ("target.stances.stunner.StunFor", "Dart must stun prey during absorption"),
+    ("target.DeSpawn()", "Dart must remove the exact pawn from the map before transporter loading"),
+    ("transporter.innerContainer.TryAdd(target)", "Dart must place the exact captive into its transporter"),
+    ("registry.ReleaseExactPawn(target)", "Failed transporter loading must roll back the captivity record"),
+    ("GenSpawn.Spawn(target, originalPosition, originalMap)", "Failed transporter loading must restore the same pawn to the map"),
     ("capturedCount >= Math.Max(1, Props.maxCaptives)", "Dart must stop taking pawns at its bounded quota"),
-    ("parent.Destroy(DestroyMode.Vanish)", "Dart mission must withdraw after its retreat delay"),
+    ("transporter.innerContainer.OfType<Pawn>().ToList()", "Withdrawal must enumerate the exact pawns carried by the transporter"),
+    ("transporter.innerContainer.Remove(captive)", "Withdrawal must remove exact captives before the craft vanishes"),
+    ("Find.WorldPawns.PassToWorld(captive, PawnDiscardDecideMode.KeepForever)", "Withdrawal must preserve exact captives in WorldPawns"),
+    ("parent.Destroy(DestroyMode.Vanish)", "Dart mission must withdraw only after captive handoff"),
     ("Scribe_Values.Look(ref capturedCount", "Dart captured count must persist across save/load"),
     ("Scribe_Values.Look(ref retreatTick", "Dart retreat state must persist across save/load"),
 ]:
     require(dart, needle, description)
 
 for needle, description in [
-    ("TryCompleteAbduction(Pawn pawn, Faction captor)", "Physical abduction completion boundary is missing"),
-    ("pawn.DeSpawn()", "Completed abduction must despawn the exact pawn from the map"),
-    ("Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.KeepForever)", "Completed abduction must retain the same pawn in WorldPawns"),
+    ("TryCompleteAbduction(Pawn pawn, Faction captor)", "Shared non-transporter physical abduction completion boundary is missing"),
+    ("Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.KeepForever)", "Shared completion boundary must retain the same pawn in WorldPawns"),
 ]:
     require(capture, needle, description)
 
