@@ -1,6 +1,6 @@
 name: WNG rebuild compile gate
 
-# compile gate revision 2
+# compile gate revision 3
 on:
   push:
     paths:
@@ -18,6 +18,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - name: Structural and gameplay contract audit
+        run: python3 Tools/audit_rebuild.py
 
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
