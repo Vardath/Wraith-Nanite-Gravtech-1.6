@@ -31,6 +31,9 @@ jobs:
       - name: Wraith captivity identity audit
         run: python3 Tools/audit_wraith_captivity.py
 
+      - name: Wraith Dart abduction audit
+        run: python3 Tools/audit_wraith_dart.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
