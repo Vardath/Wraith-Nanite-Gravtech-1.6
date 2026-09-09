@@ -5,7 +5,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "Source" / "WNGR2" / "Wraith" / "WraithCaptivity.cs"
 CAPTURE = ROOT / "Source" / "WNGR2" / "Wraith" / "WraithCaptureUtility.cs"
+RESCUE = ROOT / "Source" / "WNGR2" / "Wraith" / "WraithRescueSites.cs"
+WORKER = ROOT / "Source" / "WNGR2" / "Wraith" / "SitePartWorker_WraithHoldingSite.cs"
 DEFS = ROOT / "Defs" / "HediffDefs" / "Hediffs_WraithCaptivity.xml"
+SITE_DEFS = ROOT / "Defs" / "SitePartDefs" / "WraithHoldingSite.xml"
 
 errors = []
 
@@ -13,23 +16,18 @@ def require(text: str, needle: str, description: str) -> None:
     if needle not in text:
         errors.append(description)
 
-if not SOURCE.exists():
-    errors.append("Missing WraithCaptivity.cs")
-    source = ""
-else:
-    source = SOURCE.read_text(encoding="utf-8", errors="replace")
+def read_required(path: Path, description: str) -> str:
+    if not path.exists():
+        errors.append(description)
+        return ""
+    return path.read_text(encoding="utf-8", errors="replace")
 
-if not CAPTURE.exists():
-    errors.append("Missing WraithCaptureUtility.cs")
-    capture = ""
-else:
-    capture = CAPTURE.read_text(encoding="utf-8", errors="replace")
-
-if not DEFS.exists():
-    errors.append("Missing Wraith captivity Hediff defs")
-    defs = ""
-else:
-    defs = DEFS.read_text(encoding="utf-8", errors="replace")
+source = read_required(SOURCE, "Missing WraithCaptivity.cs")
+capture = read_required(CAPTURE, "Missing WraithCaptureUtility.cs")
+rescue = read_required(RESCUE, "Missing WraithRescueSites.cs")
+worker = read_required(WORKER, "Missing Wraith holding-site worker")
+defs = read_required(DEFS, "Missing Wraith captivity Hediff defs")
+site_defs = read_required(SITE_DEFS, "Missing Wraith holding-site Def")
 
 for needle, description in [
     ("Scribe_References.Look(ref pawn", "Captivity record must persist the exact Pawn reference"),
@@ -66,6 +64,42 @@ for needle, description in [
 ]:
     require(capture, needle, description)
 
+for needle, description in [
+    ("SiteMinDistance = 6", "Holding sites must start at least 6 world tiles away"),
+    ("SiteMaxDistance = 18", "Holding sites must be bounded to 18 world tiles away"),
+    ("new ThingOwner<Pawn>(part, oneStackOnly: true)", "Holding site must own the exact captive before map generation"),
+    ("part.things.TryAdd(record.pawn)", "Holding site must transfer the exact captured pawn"),
+    ("registry.MarkRescueSiteOpened(record.pawn, site.ID, now)", "Holding site must bind the exact captive to the exact site ID"),
+    ("if (site.HasMap)", "An actively opened rescue-site map must defer expiry"),
+    ("ActiveMapExpiryDeferralTicks = 2500", "Active rescue-site expiry deferral must remain bounded"),
+    ("registry.MarkRescueSiteMissed(record.pawn, now)", "Expired rescue site must escalate the same exact captive"),
+    ("registry.ReleaseExactPawn(record.pawn)", "Recovery must release the exact captured pawn"),
+]:
+    require(rescue, needle, description)
+
+for needle, description in [
+    ("MinDefenders = 3", "Holding-site defender minimum must be 3"),
+    ("MaxDefenders = 10", "Holding-site defender maximum must be 10"),
+    ("WNG_WraithKeeper", "Holding-site detail must include a Keeper custodian"),
+    ("WNG_WraithHunter", "Holding-site detail must include Hunters"),
+    ("WNG_WraithWarrior", "Holding-site detail must include Warriors"),
+    ("WNG_WraithCommander", "Harder holding-site attempts must support a Commander"),
+    ("record.stage >= WraithCaptiveTreatmentStage.Conditioning || record.rescueFailures >= 2", "Commander must be restricted to later/repeated rescue attempts"),
+    ("Math.Min(MaxDefenders", "Holding-site guard count must be capped"),
+]:
+    require(worker, needle, description)
+
+if "WNG_WraithQueen" in worker:
+    errors.append("Wraith Queens must never be generated as holding-site guards")
+
+for needle, description in [
+    ("<defName>WNG_WraithHoldingSite</defName>", "Missing Wraith holding-site SitePartDef"),
+    ("<workerClass>WraithNaniteGravtech.SitePartWorker_WraithHoldingSite</workerClass>", "Holding site must use the bounded Wraith defender worker"),
+    ("<wantsThreatPoints>true</wantsThreatPoints>", "Holding site must receive its threat budget"),
+    ("<genStep Class=\"GenStep_PrisonerWillingToJoin\">", "Holding site must use the exact-pawn-aware prisoner-cell gen step"),
+]:
+    require(site_defs, needle, description)
+
 for def_name in [
     "WNG_WraithFeedingStock",
     "WNG_WraithExperimentation",
@@ -74,10 +108,11 @@ for def_name in [
 ]:
     require(defs, f"<defName>{def_name}</defName>", f"Missing captivity HediffDef {def_name}")
 
-# Neither the registry nor capture boundary may fabricate a substitute captive.
+# The identity ledger, capture boundary and rescue manager must never fabricate a substitute captive.
+# Pawn generation is permitted only in the dedicated defender worker, where it creates hostile guards.
 for forbidden in ["PawnGenerator.GeneratePawn", "PawnGenerator.TryGenerateNewPawnInternal"]:
-    if forbidden in source or forbidden in capture:
-        errors.append("Wraith captivity/capture code must never generate a replacement pawn")
+    if forbidden in source or forbidden in capture or forbidden in rescue:
+        errors.append("Wraith captivity/capture/rescue identity code must never generate a replacement captive")
 
 if errors:
     print("Wraith captivity audit FAILED")
