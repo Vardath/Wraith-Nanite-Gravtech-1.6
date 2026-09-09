@@ -4,11 +4,12 @@
     <defName>WNG_WraithHoldingSite</defName>
     <label>Wraith holding site</label>
     <description>A traced Wraith holding site containing an abducted pawn. The captive at this site is the exact pawn taken from the colony, not a generated substitute.</description>
-    <workerClass>SitePartWorker</workerClass>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_WraithHoldingSite</workerClass>
     <siteTexture>World/WorldObjects/Sites/GenericSite</siteTexture>
     <expandingIconTexture>World/WorldObjects/Expanding/Sites/Prisoner</expandingIconTexture>
     <forceExitAndRemoveMapCountdownDurationDays>6</forceExitAndRemoveMapCountdownDurationDays>
     <requiresFaction>true</requiresFaction>
+    <wantsThreatPoints>true</wantsThreatPoints>
     <handlesWorldObjectTimeoutInspectString>false</handlesWorldObjectTimeoutInspectString>
     <tags>
       <li>WNG_WraithHoldingSite</li>
