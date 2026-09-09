@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <XenotypeDef>
+    <defName>WNG_Wraith</defName>
+    <label>wraith</label>
+    <description>A predatory regenerative Wraith phenotype whose survival is tied to a visible reserve of stolen Life Force. Wraith can feed from downed biological prey, age the victim, rejuvenate themselves and recover from injuries far faster after feeding.</description>
+    <genes>
+      <li>WNG_LifeForce</li>
+      <li>WNG_WraithRegeneration</li>
+      <li>WNG_LifeDrainGene</li>
+      <li>VacuumResistant</li>
+    </genes>
+  </XenotypeDef>
+</Defs>
