@@ -96,7 +96,7 @@ namespace WraithNaniteGravtech
                 return false;
 
             if (!TileFinder.TryFindNewSiteTile(
-                    out int tile,
+                    out PlanetTile tile,
                     SiteMinDistance,
                     SiteMaxDistance,
                     allowCaravans: false,
