@@ -4,11 +4,17 @@ This file is the active repository contract for the clean RimWorld 1.6 rebuild. 
 
 ## Repository and evidence rules
 
-- `Vardath/Wraith-Nanite-Gravtech-1.6` `main` is the active working branch for this rebuild.
+- `Vardath/Wraith-Nanite-Gravtech-1.6` `main` is the active public working branch for this rebuild.
 - The original WNG source tree is **not** a reconstruction dependency and is not to be imported.
-- Private WNG builds, branches, screenshots, logs and historical audits are comparison evidence only: use them to detect features, roles, art categories and behaviors that must not be omitted. Do not copy their old implementation into this rebuild.
+- The current reconstructed private-repo work is the project state to move into this public repo; older private builds remain feature/reference evidence only and must not be blindly copied as implementation.
 - The user's entire WNG project chat history and this requirements file are the design authority. Newer explicit corrections win over earlier code/tests.
 - Live RimWorld behavior, Player.log and RimDoctor evidence outrank a static green check.
+- Preserve working Replicator graphics, splitting/behavior, faction structure, and other already-established working systems while reconstructing the broken/missing remainder around them.
+
+## Locked recent corrections
+
+- Replicator split-born recombination cooldown is **2,500 ticks — one in-game hour**.
+- A Child's Toy that goes feral must **turn into a Replicator**, not merely become an inert hostile toy.
 
 ## Platform and compatibility
 
@@ -35,15 +41,12 @@ This file is the active repository contract for the clean RimWorld 1.6 rebuild. 
 ## Replicators
 
 - Technological infestation with material/technology assimilation, bounded growth and delayed adaptation.
-- Preserve the proven modular Replicator gameplay identity and the specifically approved Replicator graphics; implementation in this rebuild is fresh.
+- Preserve the proven modular Replicator gameplay identity and the specifically approved Replicator graphics.
 - Hostile Replicators prefer reachable material; biological/nanite predation is a starvation fallback. Player-owned Replicators do not consume the player's colony autonomously.
 - A completed relevant assimilation is what teaches the lineage. Merely seeing technology or being attacked by it teaches nothing.
 - Adaptation must require successful assimilation, material and time; it must not be an instant combat reaction.
 - Lineage unlock thresholds are: ranged 3 completed relevant assimilations; armour 4; power/construction 4; gravtech 5; shields 8.
-- Mundane technology contributes less adaptation value than Ancient/Asuran/Precursor-grade technology. No older implementation-specific multiplier is canonical unless the user explicitly locks one later.
 - Learned material signatures and adaptation state propagate through reproduction, recombination and death-splitting.
-- Map-local hostile block-Replicator lineage memory persists across recurring encounters, then clears after the map has remained free of hostile block Replicators for about one in-game day; a genuinely fresh outbreak starts primitive.
-- Specialists have one specialist role per body. Established roles include ranged, armour/Bulwark, power/construction, grav and shield adaptations; ranged remains modest/retaliatory rather than turning the swarm into colonist-hunting gun platforms, grav is low-hover mobility rather than wall-crossing flight, and shield technology remains EMP-vulnerable.
 - Exact split chain: Siege Mass -> 2 Titans -> 2 Bulwarks -> 2 Hunters -> 2 Drones. Drone is irreducible.
 - Split children inherit relevant material signature, specialization/adaptation and temporary lattice state.
 - Intentional recombination/destruction must not invoke death breakup.
@@ -51,6 +54,7 @@ This file is the active repository contract for the clean RimWorld 1.6 rebuild. 
 - Dangerous Replicator Matter minimum stack: 10.
 - Dormancy/self-assembly timing: 30,000 ticks where applicable.
 - Child's Toy gestation: exactly 90,000 ticks.
+- If the Child's Toy goes feral, it transforms into a Replicator and enters the Replicator threat loop.
 - EMP suppression, containment, specialists, Controller/Siege Mass, crisis pressure and retaliation remain part of the swarm design.
 
 ## Human-form Replicators / Asurans
@@ -90,9 +94,7 @@ Each must be genuinely boardable, loadable, correctly fueled, launchable, world/
 ## Gravships
 
 - Two complete, mechanically isolated Odyssey-compatible families: Wraith organic and Asuran/Precursor clean geometric.
-- Canonical fuels:
-  - `WNG_WraithBiofluidFuel`
-  - `WNG_AsuranNaniteSlurry`
+- Canonical fuels: `WNG_WraithBiofluidFuel` and `WNG_AsuranNaniteSlurry`.
 - No cultured-biomass or Gravcore fuel path.
 - Both families require real grav engines, pilot control, field extenders, small/large fuel storage, small/large thrust/drive, optimizer, jammer/veil, shield and any other native-equivalent support required for parity.
 - Opposite-family facilities must not cross-connect.
@@ -106,10 +108,10 @@ Each must be genuinely boardable, loadable, correctly fueled, launchable, world/
 - Asuran/Precursor visual language: precise, clean, geometric, Ancient-derived/nanite-engineered.
 - Replicators remain visibly modular/mechanical with recognizable silhouettes.
 - Do not generate new images unless the user explicitly asks. Approved existing Replicator graphics are the stated preservation exception.
-- Canonical requirements target **30 distinct functional audio cues**. Historical private builds with 32 cues are feature evidence only and do not override the 30-cue requirement.
+- Canonical requirements target 30 distinct functional audio cues. Historical private builds with 32 cues are feature evidence only and do not override the 30-cue requirement.
 
 ## Validation and acceptance
 
-Before completion, audit XML/class links, acquisition paths, research reachability, structures/resources, jobs/abilities/gizmos, weapons/apparel/genes/implants, PawnKinds/factions/raids, all 30 backstories, discovery progression, Wraith feeding/living tech, Replicator split/recombine/matter economy, human-form reconstruction, optional integrations, all four craft, both gravship families, graphics, 30 audio cues and save/load transactions.
+Before completion, audit XML/class links, acquisition paths, research reachability, structures/resources, jobs/abilities/gizmos, weapons/apparel/genes/implants, PawnKinds/factions/raids, all 30 backstories, discovery progression, Wraith feeding/living tech, Replicator split/recombine/matter economy, human-form reconstruction, optional integrations, all four craft, both gravship families, graphics, audio and save/load transactions.
 
 A real RimWorld 1.6 compile and packaged DLL are required. A green CI result is not completion: the exact candidate must survive live startup/gameplay, visual inspection and Player.log/RimDoctor review.
