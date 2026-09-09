@@ -165,6 +165,33 @@ for needle, description in [
     if needle not in combined_xml:
         err(f"Missing locked Wraith contract: {description}")
 
+# Wraith faction hunger is a strategic faction system, never a side effect of ordinary Drain Life.
+hunger_path = SOURCE / "WNGR2" / "Wraith" / "WraithFactionHunger.cs"
+if not hunger_path.exists():
+    err("Missing fresh Wraith faction hunger system")
+else:
+    hunger_source = hunger_path.read_text(encoding="utf-8", errors="replace")
+    for needle, description in [
+        ("RequestThreshold = 0.65f", "feeding requests require genuine strategic hunger"),
+        ("RaidThreshold = 0.80f", "high hunger increases Wraith raid pressure"),
+        ("RefuseRequest", "refusing an actual feeding request triggers attack handling"),
+        ("ScheduleForcedRaid", "refused feeding requests persistently schedule a raid"),
+        ("WNG_WraithBrood", "Sable Brood participates in strategic hunger"),
+        ("WNG_WraithCinderCourt", "Cinder Court participates in strategic hunger"),
+        ("WNG_WraithVeiledHive", "Veiled Hive participates in strategic hunger"),
+        ("WNG_WraithExiles", "Pale Covenant participates in strategic hunger"),
+        ("guest?.IsPrisoner", "controlled faction feeding uses prisoners rather than arbitrary pawns"),
+        ("LooksSynthetic", "synthetic/nanite humanoids are excluded from feeding stock"),
+    ]:
+        if needle not in hunger_source:
+            err(f"Missing locked Wraith faction-hunger contract: {description}")
+
+    drain_path = SOURCE / "WNGR2" / "Wraith" / "WraithLifeDrain.cs"
+    if drain_path.exists():
+        drain_source = drain_path.read_text(encoding="utf-8", errors="replace")
+        if "Dialog_MessageBox" in drain_source or "feeding request" in drain_source.lower():
+            err("Ordinary Drain Life must not open Wraith faction feeding-request UI")
+
 # 9. Required core Replicator split ladder must be present in code as an operational death mapping.
 for parent, child in [
     ("WNG_ReplicatorSiegeMass", "WNG_ReplicatorTitan"),
