@@ -1,10 +1,13 @@
 name: WNG rebuild compile gate
 
-# compile gate revision 4
 on:
   push:
-    paths:
-      - '.github/workflows/wng-rebuild-compile.yml'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   compile:
