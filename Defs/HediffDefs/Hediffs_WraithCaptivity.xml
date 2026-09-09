@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_WraithFeedingStock</defName>
+    <label>wraith feeding stock</label>
+    <description>This pawn is being held by Wraith as a managed source of life force. The condition marks captivity status rather than a specific injury.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithExperimentation</defName>
+    <label>wraith experimentation</label>
+    <description>After a failed rescue opportunity, the captors have escalated this pawn from feeding stock into biological experimentation.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithConditioning</defName>
+    <label>wraith conditioning</label>
+    <description>Repeated captivity has progressed into deliberate Wraith conditioning intended to break resistance and reshape loyalties.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithEnthralled</defName>
+    <label>wraith enthrallment</label>
+    <description>The Wraith have completed a deep conditioning process on this pawn. Unlike earlier captivity markers, this outcome persists after rescue and will be handled by later recovery gameplay rather than disappearing automatically.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+  </HediffDef>
+</Defs>
