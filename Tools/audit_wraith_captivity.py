@@ -46,7 +46,9 @@ for needle, description in [
     ("RescueRetryDelayTicks = 120000", "Missed rescue retry must be scheduled after 120000 ticks"),
     ("RescueSiteLifetimeTicks = 720000", "Rescue site lifetime must be 720000 ticks"),
     ("DueForRescueTrace(int now)", "Registry must expose due exact-captive rescue traces"),
-    ("MarkRescueSiteOpened(Pawn pawn, int now)", "Registry must mark a rescue window on the exact captive"),
+    ("MarkRescueSiteOpened(Pawn pawn, int siteId, int now)", "Registry must bind a rescue window to the exact captive and exact site"),
+    ("Scribe_Values.Look(ref activeRescueSiteId", "Active rescue site identity must survive save/load"),
+    ("record.activeRescueSiteId = siteId", "Exact rescue site ID must be recorded on the captive record"),
     ("MarkRescueSiteMissed(Pawn pawn, int now)", "Registry must escalate and reschedule the exact captive after a missed rescue"),
     ("record.nextRescueTraceTick = SafeFutureTick(now, RescueRetryDelayTicks)", "Missed rescue must reschedule rather than delete the captive"),
 ]:
