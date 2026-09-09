@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_ReplicatorMatter</defName>
+    <label>replicator matter</label>
+    <description>Dense standardized machine matter recovered from self-replicating constructs. It can be reprocessed at an electric smelter, but sufficiently large stacks remain dangerous: after a dormant period the blocks may begin assembling themselves back into hostile Replicators. A small recovered sample can be analyzed to reveal the swarm's modular replication logic.</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stackLimit>250</stackLimit>
+    <alwaysHaulable>true</alwaysHaulable>
+    <thingCategories><li>ResourcesRaw</li></thingCategories>
+    <tickerType>Rare</tickerType>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorMatterReassembly">
+        <minimumStack>10</minimumStack><consumePerReplicator>10</consumePerReplicator><dormantTicks>30000</dormantTicks><baseChancePerRareTick>0.0007</baseChancePerRareTick>
+      </li>
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>860103</analysisID><analysisRequiredRange>1~1</analysisRequiredRange><analysisDurationHours>3</analysisDurationHours><destroyedOnAnalyzed>false</destroyedOnAnalyzed><allowRepeatAnalysis>false</allowRepeatAnalysis><canStudyInPlace>false</canStudyInPlace>
+        <activateTexPath>UI/WNG/EMP</activateTexPath><activateLabelString>Analyze Replicator matter</activateLabelString><activateDescString>Assign a researcher to analyze this recovered machine matter at a research bench. Large stacks remain capable of self-assembly while dormant.</activateDescString><jobString>analyzing Replicator matter</jobString>
+        <completedLetterLabel>Replicator matter analyzed</completedLetterLabel><completedLetter>The recovered blocks reveal a standardized modular architecture and enough of their local replication rules to begin formal Replicator study.</completedLetter><completedLetterDef>PositiveEvent</completedLetterDef>
+      </li>
+    </comps>
+    <statBases><MarketValue>3</MarketValue><Mass>0.08</Mass><Flammability>0</Flammability></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_ReplicatorCoreFragment</defName>
+    <label>replicator core fragment</label>
+    <description>A partially intact control lattice from a self-replicating machine. It is useful for research and advanced anti-replicator technology, or can be deliberately destroyed and reclaimed at an electric smelter.</description>
+    <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>25</stackLimit>
+    <statBases><MarketValue>90</MarketValue><Mass>0.35</Mass><Flammability>0</Flammability></statBases>
+  </ThingDef>
+</Defs>

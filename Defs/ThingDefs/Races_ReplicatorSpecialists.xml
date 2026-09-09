@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="WNG_ReplicatorRaceBase">
+    <defName>WNG_ReplicatorRepairer</defName>
+    <label>replicator repairer</label>
+    <description>A Hunter-mass support body reconfigured around fine manipulators and distributed repair nodes. It repairs damaged allied block Replicators before returning to assimilation, and breaks back into base Replicators when destroyed.</description>
+    <statBases>
+      <MarketValue>1650</MarketValue><MoveSpeed>4.7</MoveSpeed>
+      <ArmorRating_Blunt>0.20</ArmorRating_Blunt><ArmorRating_Sharp>0.31</ArmorRating_Sharp><ArmorRating_Heat>0.22</ArmorRating_Heat>
+      <MechEnergyLossPerHP>0.68</MechEnergyLossPerHP>
+    </statBases>
+    <race><baseBodySize>0.92</baseBodySize></race>
+    <tools Inherit="False"><li><label>repair manipulators</label><capacities><li>Blunt</li><li>Cut</li></capacities><power>10</power><cooldownTime>1.55</cooldownTime></li></tools>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSpecialistBody"><role>Repair</role></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorDrone</splitChildPawnKind><splitCount>2</splitCount></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>4</minMatter><maxMatter>7</maxMatter></li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="WNG_ReplicatorRaceBase">
+    <defName>WNG_ReplicatorBurrower</defName>
+    <label>replicator burrower</label>
+    <description>A Hunter-mass breaching body with reinforced forward cutting assemblies. It remains matter-first but strongly favors walls, doors and powered structures, dismantling buildings much faster than ordinary Replicators.</description>
+    <statBases>
+      <MarketValue>1900</MarketValue><MoveSpeed>4.0</MoveSpeed>
+      <ArmorRating_Blunt>0.28</ArmorRating_Blunt><ArmorRating_Sharp>0.38</ArmorRating_Sharp><ArmorRating_Heat>0.26</ArmorRating_Heat>
+      <MechEnergyLossPerHP>0.63</MechEnergyLossPerHP>
+    </statBases>
+    <race><baseBodySize>1.02</baseBodySize></race>
+    <tools Inherit="False"><li><label>breaching mandibles</label><capacities><li>Cut</li><li>Blunt</li></capacities><power>17</power><cooldownTime>1.45</cooldownTime></li></tools>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSpecialistBody">
+        <role>Burrower</role><buildingAssimilationFactor>0.45</buildingAssimilationFactor><itemAssimilationFactor>1.00</itemAssimilationFactor><buildingTargetScoreOffset>-30</buildingTargetScoreOffset>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorDrone</splitChildPawnKind><splitCount>2</splitCount></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>5</minMatter><maxMatter>8</maxMatter></li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="WNG_ReplicatorRaceBase">
+    <defName>WNG_ReplicatorArtillery</defName>
+    <label>replicator artillery</label>
+    <description>A Bulwark-mass support body carrying a long-range integrated pulse array. It does not become an ordinary raider: the weapon is used through bounded self-defense and retaliation logic, while the body otherwise continues the swarm's assimilation ecology.</description>
+    <statBases>
+      <MarketValue>4400</MarketValue><MoveSpeed>2.95</MoveSpeed>
+      <ArmorRating_Blunt>0.40</ArmorRating_Blunt><ArmorRating_Sharp>0.54</ArmorRating_Sharp><ArmorRating_Heat>0.36</ArmorRating_Heat>
+      <MechEnergyLossPerHP>0.50</MechEnergyLossPerHP>
+    </statBases>
+    <race><baseBodySize>1.55</baseBodySize><mechWeightClass>Medium</mechWeightClass></race>
+    <tools Inherit="False"><li><label>stabilizer ram</label><capacities><li>Blunt</li></capacities><power>18</power><cooldownTime>2.0</cooldownTime></li></tools>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSpecialistBody"><role>Artillery</role><buildingAssimilationFactor>1.15</buildingAssimilationFactor><itemAssimilationFactor>1.15</itemAssimilationFactor><integratedWeaponDefName>WNG_ReplicatorArtilleryCaster</integratedWeaponDefName></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorHunter</splitChildPawnKind><splitCount>2</splitCount></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>9</minMatter><maxMatter>14</maxMatter></li>
+    </comps>
+  </ThingDef>
+
+  <PawnKindDef ParentName="WNG_ReplicatorKindBase">
+    <defName>WNG_ReplicatorRepairer</defName><label>replicator repairer</label><race>WNG_ReplicatorRepairer</race><combatPower>82</combatPower>
+    <lifeStages>
+      <li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorRepairer</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.28</drawSize></bodyGraphicData></li>
+      <li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorRepairer</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.28</drawSize></bodyGraphicData></li>
+    </lifeStages>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_ReplicatorKindBase">
+    <defName>WNG_ReplicatorBurrower</defName><label>replicator burrower</label><race>WNG_ReplicatorBurrower</race><combatPower>118</combatPower>
+    <lifeStages>
+      <li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorBurrower</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.38</drawSize></bodyGraphicData></li>
+      <li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorBurrower</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.38</drawSize></bodyGraphicData></li>
+    </lifeStages>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_ReplicatorKindBase">
+    <defName>WNG_ReplicatorArtillery</defName><label>replicator artillery</label><race>WNG_ReplicatorArtillery</race><combatPower>245</combatPower>
+    <lifeStages>
+      <li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorArtillery</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.95</drawSize></bodyGraphicData></li>
+      <li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorArtillery</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.95</drawSize></bodyGraphicData></li>
+    </lifeStages>
+  </PawnKindDef>
+</Defs>

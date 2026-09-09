@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Wraith &amp; Nanite Gravtech</name>
+  <author>Vardath</author>
+  <packageId>vardath.wraithnanitegravtech</packageId>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>ludeon.rimworld.biotech</packageId>
+      <displayName>Biotech</displayName>
+    </li>
+    <li>
+      <packageId>ludeon.rimworld.odyssey</packageId>
+      <displayName>Odyssey</displayName>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>ccyt.stargatesmod</li>
+    <li>idolord.onac</li>
+  </loadAfter>
+  <description>Unofficial, non-commercial fan-made RimWorld 1.6 mod inspired by Stargate Atlantis themes. Adds regenerative life-draining Wraith xenotypes, host-grown biotechnology, small and human-form Replicators, original Wraith and precursor equipment, independent shuttlecraft, and Odyssey-native gravship technology families.
+
+Requires Biotech and Odyssey. Ideology is optional and only required for the Neural Interface Enslave operation. CatCraft's Stargates! is optional; when present, WNG hostile factions can use its existing Stargate raid arrival system rather than adding or replacing Stargates. ONAC is also optional; when ONAC and its RimGate Jaffa requirement are present, WNG can recognise their externally owned factions and pawn state through a dependency-free compatibility surface. WNG does not add or duplicate Goa'uld, Tok'ra or Jaffa systems and does not require ONAC, RimGate or Harmony.
+
+All shipped WNG code, runtime art and procedural audio are project-created for this mod. No official logos, ripped models, screenshots, dialogue, music or sound recordings are included.
+
+This project is not affiliated with, endorsed by, or sponsored by the Stargate rights holders, Ludeon Studios, or any associated rights holder.</description>
+</ModMetaData>
