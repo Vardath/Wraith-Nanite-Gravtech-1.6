@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="LightMechanoid">
+    <defName>WNG_ChildsToy</defName>
+    <label>Child's Toy</label>
+    <description>A deliberately harmless-looking modular toy gestated from controlled Replicator substrate. While properly controlled it behaves as a colony mech rather than a feeding swarm unit. If control is lost for too long, the concealed lattice unfolds and physically transforms into a hostile Replicator.</description>
+    <statBases>
+      <MarketValue>360</MarketValue>
+      <MoveSpeed>3.8</MoveSpeed>
+      <ArmorRating_Blunt>0.08</ArmorRating_Blunt>
+      <ArmorRating_Sharp>0.12</ArmorRating_Sharp>
+      <ArmorRating_Heat>0.10</ArmorRating_Heat>
+      <MechEnergyLossPerHP>0.9</MechEnergyLossPerHP>
+    </statBases>
+    <race>
+      <body>Mech_Light</body>
+      <intelligence>ToolUser</intelligence>
+      <mechWeightClass>Light</mechWeightClass>
+      <baseBodySize>0.35</baseBodySize>
+      <hasCorpse>false</hasCorpse>
+      <hasMeat>false</hasMeat>
+      <lifeStageAges>
+        <li><def>MechanoidFullyFormed</def><minAge>0</minAge></li>
+        <li><def>MechanoidFullyFormed</def><minAge>100</minAge></li>
+      </lifeStageAges>
+    </race>
+    <tools Inherit="False">
+      <li>
+        <label>toy manipulators</label>
+        <capacities><li>Blunt</li></capacities>
+        <power>2.5</power>
+        <cooldownTime>2.4</cooldownTime>
+      </li>
+    </tools>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorMaterial" />
+      <li Class="WraithNaniteGravtech.CompProperties_ChildsToyFeralTransformation" />
+    </comps>
+  </ThingDef>
+
+  <PawnKindDef ParentName="LightMechanoidKind">
+    <defName>WNG_ChildsToy</defName>
+    <label>Child's Toy</label>
+    <race>WNG_ChildsToy</race>
+    <combatPower>8</combatPower>
+    <weaponTags Inherit="False" />
+    <lifeStages>
+      <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Replicator/WNG_ReplicatorDrone</texPath>
+          <shaderType>Cutout</shaderType>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <drawSize>0.65</drawSize>
+        </bodyGraphicData>
+      </li>
+      <li>
+        <bodyGraphicData>
+          <texPath>Things/Pawn/Replicator/WNG_ReplicatorDrone</texPath>
+          <shaderType>Cutout</shaderType>
+          <graphicClass>Graphic_Multi</graphicClass>
+          <drawSize>0.65</drawSize>
+        </bodyGraphicData>
+      </li>
+    </lifeStages>
+  </PawnKindDef>
+</Defs>
