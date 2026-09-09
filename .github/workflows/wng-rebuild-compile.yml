@@ -25,6 +25,9 @@ jobs:
       - name: Structural and gameplay contract audit
         run: python3 Tools/audit_rebuild.py
 
+      - name: Wraith lineage politics audit
+        run: python3 Tools/audit_wraith_politics.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
