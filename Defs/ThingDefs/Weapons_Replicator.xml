@@ -5,7 +5,8 @@
     The weapon is not a player-craftable item: CompReplicatorSpecialistBody installs it directly
     on the Artillery pawn. The existing Replicator artillery graphic is reused only under the
     explicit Replicator-graphics exception, at negligible equipment draw size so the integrated
-    array does not render as a second body sprite.
+    array does not render as a second body sprite. No firing sound is assigned until new WNGR2
+    audio is authored from scratch.
   -->
   <ThingDef ParentName="BaseWeapon">
     <defName>WNG_ReplicatorArtilleryCaster</defName>
@@ -32,7 +33,6 @@
         <range>42</range>
         <minRange>8</minRange>
         <burstShotCount>1</burstShotCount>
-        <soundCast>Shot_ChargeRifle</soundCast>
       </li>
     </verbs>
   </ThingDef>
