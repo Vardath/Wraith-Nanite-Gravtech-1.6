@@ -23,8 +23,9 @@ namespace WraithNaniteGravtech
 
     /// <summary>
     /// Hostile Wraith Dart capture mission. The Dart scans a bounded area, targets only valid
-    /// biological colony prey, stuns the selected pawn, and hands the exact pawn to the persistent
-    /// Wraith captivity registry/world-pawn pool. It never fabricates replacement captives.
+    /// biological colony prey, stuns the selected pawn, stores that exact pawn in its transporter,
+    /// then transfers the same pawn to the persistent world-pawn pool when the Dart withdraws.
+    /// It never fabricates replacement captives.
     /// </summary>
     public sealed class CompWraithDartAbduction : ThingComp
     {
@@ -34,6 +35,7 @@ namespace WraithNaniteGravtech
         private int consecutiveEmptyScans;
 
         private CompProperties_WraithDartAbduction Props => (CompProperties_WraithDartAbduction)props;
+        private CompTransporter Transporter => parent?.GetComp<CompTransporter>();
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
@@ -50,6 +52,9 @@ namespace WraithNaniteGravtech
 
             Faction faction = parent.Faction;
             if (!WraithCaptureUtility.IsWraithCaptor(faction) || !faction.HostileTo(Faction.OfPlayer))
+                return;
+
+            if (Transporter == null)
                 return;
 
             int now = Find.TickManager.TicksGame;
@@ -103,14 +108,34 @@ namespace WraithNaniteGravtech
 
         private void TryAbsorb(Pawn target, int now)
         {
-            if (target == null || !WraithCaptureUtility.IsValidAbductionTarget(target))
+            CompTransporter transporter = Transporter;
+            if (target == null || transporter == null || !WraithCaptureUtility.IsValidAbductionTarget(target))
+                return;
+
+            float targetMass = target.GetStatValue(StatDefOf.Mass);
+            if (transporter.MassUsage + targetMass > transporter.MassCapacity)
+            {
+                ScheduleRetreat(now);
+                return;
+            }
+
+            Map originalMap = target.Map;
+            IntVec3 originalPosition = target.Position;
+            WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
+            if (registry == null || !WraithCaptureUtility.TryRegisterAbduction(target, parent.Faction))
                 return;
 
             if (target.stances?.stunner != null)
                 target.stances.stunner.StunFor(Math.Max(1, Props.stunTicks), parent);
 
-            if (!WraithCaptureUtility.TryCompleteAbduction(target, parent.Faction))
+            target.DeSpawn();
+            if (!transporter.innerContainer.TryAdd(target))
+            {
+                registry.ReleaseExactPawn(target);
+                if (originalMap != null)
+                    GenSpawn.Spawn(target, originalPosition, originalMap);
                 return;
+            }
 
             capturedCount++;
             if (capturedCount >= Math.Max(1, Props.maxCaptives))
@@ -128,6 +153,21 @@ namespace WraithNaniteGravtech
         {
             if (parent == null || parent.Destroyed)
                 return;
+
+            CompTransporter transporter = Transporter;
+            if (transporter != null)
+            {
+                List<Pawn> captives = transporter.innerContainer.OfType<Pawn>().ToList();
+                foreach (Pawn captive in captives)
+                {
+                    if (captive == null)
+                        continue;
+                    transporter.innerContainer.Remove(captive);
+                    if (!captive.IsWorldPawn())
+                        Find.WorldPawns.PassToWorld(captive, PawnDiscardDecideMode.KeepForever);
+                }
+            }
+
             parent.Destroy(DestroyMode.Vanish);
         }
 
