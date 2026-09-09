@@ -23,6 +23,7 @@ namespace WraithNaniteGravtech
         public WraithCaptiveTreatmentStage stage;
         public int nextRescueTraceTick;
         public int activeRescueSiteExpiryTick;
+        public int activeRescueSiteId;
 
         public void ExposeData()
         {
@@ -33,6 +34,7 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref stage, "stage", WraithCaptiveTreatmentStage.FeedingStock);
             Scribe_Values.Look(ref nextRescueTraceTick, "nextRescueTraceTick", -1);
             Scribe_Values.Look(ref activeRescueSiteExpiryTick, "activeRescueSiteExpiryTick", -1);
+            Scribe_Values.Look(ref activeRescueSiteId, "activeRescueSiteId", -1);
         }
     }
 
@@ -81,7 +83,8 @@ namespace WraithNaniteGravtech
                 rescueFailures = 0,
                 stage = WraithCaptiveTreatmentStage.FeedingStock,
                 nextRescueTraceTick = SafeFutureTick(now, FirstRescueTraceDelayTicks),
-                activeRescueSiteExpiryTick = -1
+                activeRescueSiteExpiryTick = -1,
+                activeRescueSiteId = -1
             };
             records.Add(record);
             ApplyStageHediff(record);
@@ -104,18 +107,20 @@ namespace WraithNaniteGravtech
                 r != null
                 && r.pawn != null
                 && !r.pawn.Dead
+                && r.activeRescueSiteId < 0
                 && r.activeRescueSiteExpiryTick < 0
                 && r.nextRescueTraceTick >= 0
                 && now >= r.nextRescueTraceTick);
         }
 
-        public bool MarkRescueSiteOpened(Pawn pawn, int now)
+        public bool MarkRescueSiteOpened(Pawn pawn, int siteId, int now)
         {
             WraithCaptivityRecord record = FindRecord(pawn);
-            if (record == null)
+            if (record == null || siteId < 0)
                 return false;
 
             record.nextRescueTraceTick = -1;
+            record.activeRescueSiteId = siteId;
             record.activeRescueSiteExpiryTick = SafeFutureTick(now, RescueSiteLifetimeTicks);
             return true;
         }
@@ -129,8 +134,20 @@ namespace WraithNaniteGravtech
             if (!RecordRescueFailure(pawn))
                 return false;
 
+            record.activeRescueSiteId = -1;
             record.activeRescueSiteExpiryTick = -1;
             record.nextRescueTraceTick = SafeFutureTick(now, RescueRetryDelayTicks);
+            return true;
+        }
+
+        public bool ClearRescueSite(Pawn pawn)
+        {
+            WraithCaptivityRecord record = FindRecord(pawn);
+            if (record == null)
+                return false;
+
+            record.activeRescueSiteId = -1;
+            record.activeRescueSiteExpiryTick = -1;
             return true;
         }
 
@@ -138,6 +155,7 @@ namespace WraithNaniteGravtech
         {
             WraithCaptivityRecord record = FindRecord(pawn);
             return record != null
+                && record.activeRescueSiteId >= 0
                 && record.activeRescueSiteExpiryTick >= 0
                 && now >= record.activeRescueSiteExpiryTick;
         }
@@ -161,8 +179,6 @@ namespace WraithNaniteGravtech
             if (record == null)
                 return false;
 
-            // Enthrallment represents a durable treatment outcome and is intentionally not stripped
-            // merely because the captive reached safety. Earlier captivity-status markers are removed.
             if (record.stage != WraithCaptiveTreatmentStage.Enthralled)
                 RemoveStageHediffs(pawn);
             else
