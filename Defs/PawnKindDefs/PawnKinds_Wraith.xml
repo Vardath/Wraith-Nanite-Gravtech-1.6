@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef Name="WNG_WraithPawnBase" Abstract="True">
+    <race>Human</race>
+    <defaultFactionDef>WNG_WraithBrood</defaultFactionDef>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet>
+      <xenotypeChances><WNG_Wraith>1</WNG_Wraith></xenotypeChances>
+    </xenotypeSet>
+    <minGenerationAge>20</minGenerationAge>
+    <maxGenerationAge>180</maxGenerationAge>
+    <allowOldAgeInjuries>false</allowOldAgeInjuries>
+    <isFighter>true</isFighter>
+    <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
+    <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <gearHealthRange>0.75~1</gearHealthRange>
+    <itemQuality>Normal</itemQuality>
+    <initialWillRange>8~18</initialWillRange>
+    <initialResistanceRange>12~28</initialResistanceRange>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithHunter</defName>
+    <label>wraith hunter</label>
+    <combatPower>95</combatPower>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithWarrior</defName>
+    <label>wraith warrior</label>
+    <combatPower>145</combatPower>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithCommander</defName>
+    <label>wraith commander</label>
+    <combatPower>230</combatPower>
+    <itemQuality>Good</itemQuality>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithKeeper</defName>
+    <label>wraith keeper</label>
+    <description>A senior Wraith caretaker responsible for dormant hive populations, feeding reserves and the biological systems that sustain long hibernation cycles.</description>
+    <combatPower>185</combatPower>
+    <minGenerationAge>45</minGenerationAge>
+    <maxGenerationAge>240</maxGenerationAge>
+    <itemQuality>Good</itemQuality>
+    <initialWillRange>16~28</initialWillRange>
+    <initialResistanceRange>22~38</initialResistanceRange>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_WraithQueen</defName>
+    <label>wraith queen</label>
+    <combatPower>320</combatPower>
+    <factionLeader>true</factionLeader>
+    <fixedGender>Female</fixedGender>
+    <minGenerationAge>35</minGenerationAge>
+    <itemQuality>Excellent</itemQuality>
+    <initialWillRange>18~30</initialWillRange>
+    <initialResistanceRange>25~40</initialResistanceRange>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_WraithPawnBase">
+    <defName>WNG_PlayerWraith</defName>
+    <label>player wraith</label>
+    <defaultFactionDef>PlayerColony</defaultFactionDef>
+    <combatPower>145</combatPower>
+    <initialWillRange>0~0</initialWillRange>
+    <initialResistanceRange>0~0</initialResistanceRange>
+  </PawnKindDef>
+</Defs>
