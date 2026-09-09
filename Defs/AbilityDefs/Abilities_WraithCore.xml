@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_DrainLife</defName>
+    <label>drain life</label>
+    <description>Feed from a downed living biological pawn at touch range. The victim gains 50 biological years and is left temporarily life-drained. The Wraith regains its Life Force reserve and becomes five biological years younger, but can never be rejuvenated below age 18.</description>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>2500~2500</cooldownTicksRange>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <drawAimPie>false</drawAimPie>
+      <range>-1</range>
+      <warmupTime>2</warmupTime>
+      <stunTargetOnCastStart>true</stunTargetOnCastStart>
+      <targetParams>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityDrainLife">
+        <victimAgeYears>50</victimAgeYears>
+        <casterRejuvenationYears>5</casterRejuvenationYears>
+        <minimumCasterAgeYears>18</minimumCasterAgeYears>
+        <lifeForceGain>1</lifeForceGain>
+        <victimHediff>WNG_LifeDrained</victimHediff>
+        <casterHediff>WNG_FedRecently</casterHediff>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>
