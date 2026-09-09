@@ -99,6 +99,7 @@ namespace WraithNaniteGravtech.Replicators
             IntVec3 spawnCell = pawn.Position;
             Faction faction = pawn.Faction;
             CompReplicatorState donorState = SelectStateDonor(consumed);
+            CompReplicatorAdaptation donorAdaptation = SelectAdaptationDonor(consumed);
             Pawn upgraded = null;
 
             try
@@ -106,6 +107,7 @@ namespace WraithNaniteGravtech.Replicators
                 assemblyTransactionActive = true;
                 upgraded = PawnGenerator.GeneratePawn(upgradeKind, faction);
                 upgraded.TryGetComp<CompReplicatorState>()?.CopyFrom(donorState);
+                upgraded.TryGetComp<CompReplicatorAdaptation>()?.CopyFrom(donorAdaptation);
                 GenSpawn.Spawn(upgraded, spawnCell, map);
 
                 foreach (Pawn source in consumed)
@@ -188,6 +190,7 @@ namespace WraithNaniteGravtech.Replicators
             }
 
             CompReplicatorState parentState = parentPawn.TryGetComp<CompReplicatorState>();
+            CompReplicatorAdaptation parentAdaptation = parentPawn.TryGetComp<CompReplicatorAdaptation>();
             int spawned = 0;
 
             for (int i = 0; i < Props.splitCount; i++)
@@ -197,6 +200,7 @@ namespace WraithNaniteGravtech.Replicators
                 {
                     child = PawnGenerator.GeneratePawn(childKind, parentPawn.Faction);
                     child.TryGetComp<CompReplicatorState>()?.CopyFrom(parentState);
+                    child.TryGetComp<CompReplicatorAdaptation>()?.CopyFrom(parentAdaptation);
                     child.TryGetComp<CompReplicatorHierarchy>()?.BlockRecombinationForTicks(SplitBornRecombinationLockTicks);
 
                     IntVec3 cell = CellFinder.RandomClosewalkCellNear(origin, map, 2);
@@ -252,6 +256,13 @@ namespace WraithNaniteGravtech.Replicators
             return pawns
                 .Select(pawn => pawn?.TryGetComp<CompReplicatorState>())
                 .FirstOrDefault(state => state != null);
+        }
+
+        private static CompReplicatorAdaptation SelectAdaptationDonor(IEnumerable<Pawn> pawns)
+        {
+            return pawns
+                .Select(pawn => pawn?.TryGetComp<CompReplicatorAdaptation>())
+                .FirstOrDefault(adaptation => adaptation != null);
         }
 
         private static bool IsRecombinationLocked(Pawn pawn)

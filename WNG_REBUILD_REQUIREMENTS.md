@@ -37,6 +37,13 @@ This file is the active repository contract for the clean RimWorld 1.6 rebuild. 
 - Technological infestation with material/technology assimilation, bounded growth and delayed adaptation.
 - Preserve the proven modular Replicator gameplay identity and the specifically approved Replicator graphics; implementation in this rebuild is fresh.
 - Hostile Replicators prefer reachable material; biological/nanite predation is a starvation fallback. Player-owned Replicators do not consume the player's colony autonomously.
+- A completed relevant assimilation is what teaches the lineage. Merely seeing technology or being attacked by it teaches nothing.
+- Adaptation must require successful assimilation, material and time; it must not be an instant combat reaction.
+- Lineage unlock thresholds are: ranged 3 completed relevant assimilations; armour 4; power/construction 4; gravtech 5; shields 8.
+- Mundane technology contributes less adaptation value than Ancient/Asuran/Precursor-grade technology. No older implementation-specific multiplier is canonical unless the user explicitly locks one later.
+- Learned material signatures and adaptation state propagate through reproduction, recombination and death-splitting.
+- Map-local hostile block-Replicator lineage memory persists across recurring encounters, then clears after the map has remained free of hostile block Replicators for about one in-game day; a genuinely fresh outbreak starts primitive.
+- Specialists have one specialist role per body. Established roles include ranged, armour/Bulwark, power/construction, grav and shield adaptations; ranged remains modest/retaliatory rather than turning the swarm into colonist-hunting gun platforms, grav is low-hover mobility rather than wall-crossing flight, and shield technology remains EMP-vulnerable.
 - Exact split chain: Siege Mass -> 2 Titans -> 2 Bulwarks -> 2 Hunters -> 2 Drones. Drone is irreducible.
 - Split children inherit relevant material signature, specialization/adaptation and temporary lattice state.
 - Intentional recombination/destruction must not invoke death breakup.

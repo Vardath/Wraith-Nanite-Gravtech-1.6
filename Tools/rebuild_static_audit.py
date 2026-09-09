@@ -37,6 +37,8 @@ for required in (
     "Source/WraithNaniteGravtech/Replicators/CompReplicatorSuppression.cs",
     "Source/WraithNaniteGravtech/Replicators/CompReplicatorToyGestation.cs",
     "Source/WraithNaniteGravtech/Replicators/ReplicatorConsumptionUtility.cs",
+    "Source/WraithNaniteGravtech/Replicators/CompReplicatorAdaptation.cs",
+    "Source/WraithNaniteGravtech/Replicators/MapComponent_ReplicatorLineageMemory.cs",
 ):
     if not (ROOT / required).is_file():
         fail(f"missing rebuild contract file: {required}")
@@ -110,6 +112,7 @@ for token in (
     "DestroyMode.Vanish",
     "deathSplitEmitted",
     "recombinationBlockedUntilTick",
+    "CompReplicatorAdaptation",
     "PostExposeData",
 ):
     if token not in hierarchy:
@@ -175,6 +178,48 @@ for token in (
 ):
     if token not in consumption:
         fail(f"Replicator autonomous-consumption safety lost required token: {token}")
+
+# Learned adaptation: only completed assimilation may award lineage credit; exact thresholds are locked.
+adaptation = read("Source/WraithNaniteGravtech/Replicators/CompReplicatorAdaptation.cs")
+for token in (
+    "RangedAssimilationsRequired = 3",
+    "ArmorAssimilationsRequired = 4",
+    "PowerConstructionAssimilationsRequired = 4",
+    "GravtechAssimilationsRequired = 5",
+    "ShieldAssimilationsRequired = 8",
+    "NotifySuccessfulAssimilation",
+    "ancientAsuranOrPrecursorGrade",
+    "adaptationDelayTicks",
+    "TryAssignSpecialization",
+    "HasSpecialization",
+    "CopyFrom",
+    "PostExposeData",
+):
+    if token not in adaptation:
+        fail(f"Replicator adaptation lost required behavior token: {token}")
+
+lineage = read("Source/WraithNaniteGravtech/Replicators/MapComponent_ReplicatorLineageMemory.cs")
+for token in (
+    "ClearMapRetentionTicks = 60000",
+    "RegisterAssimilation",
+    "pawn.HostileTo(Faction.OfPlayer)",
+    "ClearKnowledge",
+    "ExposeData",
+):
+    if token not in lineage:
+        fail(f"Replicator lineage memory lost required behavior token: {token}")
+
+requirements = read("WNG_REBUILD_REQUIREMENTS.md")
+for token in (
+    "ranged 3 completed relevant assimilations",
+    "armour 4",
+    "power/construction 4",
+    "gravtech 5",
+    "shields 8",
+    "Merely seeing technology or being attacked by it teaches nothing",
+):
+    if token not in requirements:
+        fail(f"Replicator adaptation requirement dropped from rebuild contract: {token}")
 
 # Never re-import an old source dump/decompiler tree into the clean rebuild.
 for forbidden_dir in ("Decompiled", "LegacySource", "OldSource", "RecoveredSource"):
