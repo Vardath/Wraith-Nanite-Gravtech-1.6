@@ -1,6 +1,6 @@
 name: WNG rebuild compile gate
 
-# compile gate revision 3
+# compile gate revision 4
 on:
   push:
     paths:
