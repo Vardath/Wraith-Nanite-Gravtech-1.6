@@ -1,0 +1,28 @@
+name: WNG rebuild compile gate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/wng-rebuild-compile.yml'
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout rebuild
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore Source/WNGR2/WNGR2.csproj
+
+      - name: Compile RimWorld 1.6 assembly
+        run: dotnet build Source/WNGR2/WNGR2.csproj -c Release --no-restore
+
+      - name: Verify assembly output
+        run: test -f Assemblies/WNGR2.dll
