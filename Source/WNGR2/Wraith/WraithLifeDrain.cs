@@ -1,6 +1,7 @@
 using System;
 using RimWorld;
 using Verse;
+using Verse.Sound;
 
 namespace WraithNaniteGravtech
 {
@@ -12,7 +13,6 @@ namespace WraithNaniteGravtech
         public float lifeForceGain = 1f;
         public HediffDef victimHediff;
         public HediffDef casterHediff;
-        public SoundDef sound;
 
         public CompProperties_AbilityDrainLife()
         {
@@ -21,15 +21,15 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// The single full Wraith feeding/withering path.  It only works at touch range against a
-    /// downed biological pawn.  A successful feed ages the victim by fifty biological years,
+    /// The single full Wraith feeding/withering path. It only works at touch range against a
+    /// downed biological pawn. A successful feed ages the victim by fifty biological years,
     /// rejuvenates the Wraith by five years without ever crossing age eighteen, refreshes the
     /// temporary victim/caster states, and replenishes the visible Life Force resource.
     /// </summary>
     public sealed class CompAbilityEffect_DrainLife : CompAbilityEffect
     {
         private const long TicksPerYear = 3600000L;
-        private CompProperties_AbilityDrainLife Props => (CompProperties_AbilityDrainLife)props;
+        private CompProperties_AbilityDrainLife DrainProps => (CompProperties_AbilityDrainLife)props;
 
         public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
         {
@@ -64,15 +64,15 @@ namespace WraithNaniteGravtech
             if (caster == null || victim == null || victim.Dead || !victim.Downed)
                 return;
 
-            ShiftBiologicalAge(victim, Math.Max(0, Props.victimAgeYears), 0);
-            ShiftBiologicalAge(caster, -Math.Max(0, Props.casterRejuvenationYears), Math.Max(0, Props.minimumCasterAgeYears));
+            ShiftBiologicalAge(victim, Math.Max(0, DrainProps.victimAgeYears), 0);
+            ShiftBiologicalAge(caster, -Math.Max(0, DrainProps.casterRejuvenationYears), Math.Max(0, DrainProps.minimumCasterAgeYears));
 
-            RefreshHediff(victim, Props.victimHediff);
-            RefreshHediff(caster, Props.casterHediff);
-            WraithLifeForceUtility.Offset(caster, Math.Max(0f, Props.lifeForceGain));
+            RefreshHediff(victim, DrainProps.victimHediff);
+            RefreshHediff(caster, DrainProps.casterHediff);
+            WraithLifeForceUtility.Offset(caster, Math.Max(0f, DrainProps.lifeForceGain));
 
-            if (Props.sound != null && caster.Spawned && caster.Map != null)
-                Props.sound.PlayOneShot(new TargetInfo(caster.Position, caster.Map));
+            if (DrainProps.sound != null && caster.Spawned && caster.Map != null)
+                DrainProps.sound.PlayOneShot(new TargetInfo(caster.Position, caster.Map));
         }
 
         private static bool IsSynthetic(Pawn pawn)
