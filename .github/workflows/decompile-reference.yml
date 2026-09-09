@@ -1,0 +1,32 @@
+name: Decompile WNG reference
+
+on:
+  push:
+    branches:
+      - rebuild/wngr2-clean-20260909
+    paths:
+      - .github/workflows/decompile-reference.yml
+
+permissions:
+  contents: read
+
+jobs:
+  decompile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install ILSpy command line
+        run: dotnet tool install --global ilspycmd
+      - name: Decompile current public reference assembly
+        run: |
+          mkdir -p decompiled
+          ilspycmd -p -o decompiled Assemblies/WraithNaniteGravtech.dll
+      - name: Upload decompiled source
+        uses: actions/upload-artifact@v4
+        with:
+          name: wng-public-reference-decompiled
+          path: decompiled
+          retention-days: 1
