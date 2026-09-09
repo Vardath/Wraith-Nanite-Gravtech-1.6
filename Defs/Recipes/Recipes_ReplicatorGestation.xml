@@ -3,7 +3,7 @@
   <RecipeDef ParentName="LightMechanoidRecipe">
     <defName>WNG_ChildsToy</defName>
     <label>Child's Toy</label>
-    <description>Gestate an innocuous-looking modular mechanical toy. Once released from the gestator, the assembly identifies itself only as a Replicator.</description>
+    <description>Gestate a controlled modular mechanical toy from dormant Replicator substrate. The toy is not an active Replicator while controlled; if control is lost for too long, its concealed lattice unfolds into a hostile Replicator.</description>
     <researchPrerequisite>WNG_ReplicatorGestation</researchPrerequisite>
     <ingredients Inherit="False">
       <li>
@@ -20,7 +20,7 @@
       </li>
     </ingredients>
     <formingTicks>90000</formingTicks>
-    <products><WNG_ReplicatorDrone>1</WNG_ReplicatorDrone></products>
-    <descriptionHyperlinks><ThingDef>WNG_ReplicatorDrone</ThingDef></descriptionHyperlinks>
+    <products><WNG_ChildsToy>1</WNG_ChildsToy></products>
+    <descriptionHyperlinks><ThingDef>WNG_ChildsToy</ThingDef></descriptionHyperlinks>
   </RecipeDef>
 </Defs>
