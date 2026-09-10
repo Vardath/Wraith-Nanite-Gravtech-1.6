@@ -120,7 +120,9 @@ namespace WraithNaniteGravtech
         {
             if (!parent.Spawned || parent.Map == null || parent.Faction == null)
                 return "Growth Chamber is not on an active faction map.";
-            if (!ResearchFinished(ChamberProps.requiredResearchDefName))
+            // Player/manual gestation is research-gated. A generated NPC mature Hive already owns
+            // this biological technology and must not depend on the player's research manager.
+            if (parent.Faction == Faction.OfPlayer && !ResearchFinished(ChamberProps.requiredResearchDefName))
                 return "Requires Wraith cloning infrastructure research.";
             if (!SupervisorPresent(parent.Map, parent.Faction))
                 return "Requires a Wraith Keeper or Queen on this map.";
