@@ -1,22 +1,39 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
 
 namespace WraithNaniteGravtech
 {
+    [Flags]
     public enum ReplicatorAdaptation
     {
-        None,
-        Material,
-        Armor,
-        Ranged,
-        Power,
-        Shield,
-        Grav
+        None = 0,
+        Material = 1 << 0,
+        Armor = 1 << 1,
+        Ranged = 1 << 2,
+        Power = 1 << 3,
+        Shield = 1 << 4,
+        Grav = 1 << 5,
+        AntiShield = 1 << 6
+    }
+
+    internal enum LegacyReplicatorAdaptation
+    {
+        None = 0,
+        Material = 1,
+        Armor = 2,
+        Ranged = 3,
+        Power = 4,
+        Shield = 5,
+        Grav = 6
     }
 
     /// <summary>
-    /// Small save-safe state packet that can pass through split/recombine transactions.
-    /// It deliberately stores identity/state, not balance constants.
+    /// Save-safe Replicator state that survives split/recombine transactions.
+    /// Learned adaptations are cumulative: assimilating a new technology does not erase
+    /// adaptations learned earlier.
     /// </summary>
     public sealed class CompProperties_ReplicatorState : CompProperties
     {
@@ -26,18 +43,30 @@ namespace WraithNaniteGravtech
     public sealed class CompReplicatorState : ThingComp
     {
         private string materialDefName;
-        private ReplicatorAdaptation adaptation;
+        private int adaptationMask;
 
         public ThingDef MaterialDef => string.IsNullOrEmpty(materialDefName)
             ? null
             : DefDatabase<ThingDef>.GetNamedSilentFail(materialDefName);
-        public ReplicatorAdaptation Adaptation => adaptation;
+
+        public ReplicatorAdaptation Adaptations => (ReplicatorAdaptation)adaptationMask;
+
+        public bool HasAdaptation(ReplicatorAdaptation adaptation)
+            => adaptation != ReplicatorAdaptation.None && (Adaptations & adaptation) == adaptation;
+
+        public bool AddAdaptation(ReplicatorAdaptation adaptation)
+        {
+            if (adaptation == ReplicatorAdaptation.None) return false;
+            int before = adaptationMask;
+            adaptationMask |= (int)adaptation;
+            return before != adaptationMask;
+        }
 
         public void CopyFrom(CompReplicatorState other)
         {
             if (other == null) return;
             materialDefName = other.materialDefName;
-            adaptation = other.adaptation;
+            adaptationMask = other.adaptationMask;
         }
 
         public void MergeFrom(CompReplicatorState other)
@@ -45,8 +74,7 @@ namespace WraithNaniteGravtech
             if (other == null) return;
             if (string.IsNullOrEmpty(materialDefName) && !string.IsNullOrEmpty(other.materialDefName))
                 materialDefName = other.materialDefName;
-            if (adaptation == ReplicatorAdaptation.None && other.adaptation != ReplicatorAdaptation.None)
-                adaptation = other.adaptation;
+            adaptationMask |= other.adaptationMask;
         }
 
         public void RecordAssimilation(Thing target)
@@ -57,38 +85,80 @@ namespace WraithNaniteGravtech
             if (material != null)
             {
                 materialDefName = material.defName;
-                adaptation = ReplicatorAdaptation.Material;
+                AddAdaptation(ReplicatorAdaptation.Material);
             }
 
-            if (target.def.IsWeapon)
-            {
-                adaptation = target.def.IsRangedWeapon ? ReplicatorAdaptation.Ranged : ReplicatorAdaptation.Armor;
-                return;
-            }
+            if (target.def.IsWeapon && target.def.IsRangedWeapon)
+                AddAdaptation(ReplicatorAdaptation.Ranged);
 
             if (target.TryGetComp<CompPowerTrader>() != null || target.TryGetComp<CompPowerBattery>() != null)
+                AddAdaptation(ReplicatorAdaptation.Power);
+
+            if (target.def.category == ThingCategory.Apparel || (target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500))
+                AddAdaptation(ReplicatorAdaptation.Armor);
+
+            string identity = ((target.def.defName ?? string.Empty) + " " + (target.def.label ?? string.Empty)).ToLowerInvariant();
+            if (identity.Contains("shield") || identity.Contains("barrier"))
             {
-                adaptation = ReplicatorAdaptation.Power;
-                return;
+                AddAdaptation(ReplicatorAdaptation.Shield);
+                AddAdaptation(ReplicatorAdaptation.AntiShield);
             }
 
-            if (target.def.category == ThingCategory.Apparel || target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500)
-                adaptation = ReplicatorAdaptation.Armor;
+            if (identity.Contains("grav") || identity.Contains("gravity"))
+                AddAdaptation(ReplicatorAdaptation.Grav);
+        }
+
+        private IEnumerable<ReplicatorAdaptation> LearnedAdaptations()
+        {
+            ReplicatorAdaptation[] values =
+            {
+                ReplicatorAdaptation.Material,
+                ReplicatorAdaptation.Armor,
+                ReplicatorAdaptation.Ranged,
+                ReplicatorAdaptation.Power,
+                ReplicatorAdaptation.Shield,
+                ReplicatorAdaptation.Grav,
+                ReplicatorAdaptation.AntiShield
+            };
+            return values.Where(HasAdaptation);
         }
 
         public override string CompInspectStringExtra()
         {
             string material = MaterialDef?.LabelCap;
-            if (adaptation == ReplicatorAdaptation.None && string.IsNullOrEmpty(material)) return null;
-            if (string.IsNullOrEmpty(material)) return $"Learned adaptation: {adaptation}";
-            return $"Replication material: {material}\nLearned adaptation: {adaptation}";
+            List<string> learned = LearnedAdaptations().Select(a => a == ReplicatorAdaptation.AntiShield ? "Anti-shield" : a.ToString()).ToList();
+            if (learned.Count == 0 && string.IsNullOrEmpty(material)) return null;
+
+            string adaptationText = learned.Count == 0 ? null : $"Learned adaptations: {string.Join(", ", learned)}";
+            if (string.IsNullOrEmpty(material)) return adaptationText;
+            if (string.IsNullOrEmpty(adaptationText)) return $"Replication material: {material}";
+            return $"Replication material: {material}\n{adaptationText}";
         }
 
         public override void PostExposeData()
         {
             base.PostExposeData();
             Scribe_Values.Look(ref materialDefName, "wngReplicatorMaterial");
-            Scribe_Values.Look(ref adaptation, "wngReplicatorAdaptation", ReplicatorAdaptation.None);
+            Scribe_Values.Look(ref adaptationMask, "wngReplicatorAdaptationMask", 0);
+
+            LegacyReplicatorAdaptation legacy = LegacyReplicatorAdaptation.None;
+            Scribe_Values.Look(ref legacy, "wngReplicatorAdaptation", LegacyReplicatorAdaptation.None);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && adaptationMask == 0 && legacy != LegacyReplicatorAdaptation.None)
+                adaptationMask = (int)ConvertLegacy(legacy);
+        }
+
+        private static ReplicatorAdaptation ConvertLegacy(LegacyReplicatorAdaptation legacy)
+        {
+            switch (legacy)
+            {
+                case LegacyReplicatorAdaptation.Material: return ReplicatorAdaptation.Material;
+                case LegacyReplicatorAdaptation.Armor: return ReplicatorAdaptation.Armor;
+                case LegacyReplicatorAdaptation.Ranged: return ReplicatorAdaptation.Ranged;
+                case LegacyReplicatorAdaptation.Power: return ReplicatorAdaptation.Power;
+                case LegacyReplicatorAdaptation.Shield: return ReplicatorAdaptation.Shield;
+                case LegacyReplicatorAdaptation.Grav: return ReplicatorAdaptation.Grav;
+                default: return ReplicatorAdaptation.None;
+            }
         }
     }
 }
