@@ -4,19 +4,27 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MASTER = ROOT / "Docs" / "WNG_REBUILD_MASTER_PLAN.md"
+QUEEN = ROOT / "Docs" / "WNG_REBUILD_REPLICATOR_QUEEN_CONTRACT.md"
 CONTINUE = ROOT / "CONTINUE_WNG_REBUILD.md"
 README = ROOT / "README.md"
-
 errors = []
+
 
 def fail(message):
     errors.append(message)
 
-for path, label in [(MASTER, "master plan"), (CONTINUE, "continue-here file"), (README, "README")]:
+
+for path, label in [
+    (MASTER, "master plan"),
+    (QUEEN, "Replicator Queen detailed contract"),
+    (CONTINUE, "continue-here file"),
+    (README, "README"),
+]:
     if not path.exists():
         fail(f"Missing rebuild continuity {label}: {path.relative_to(ROOT)}")
 
 master = MASTER.read_text(encoding="utf-8") if MASTER.exists() else ""
+queen = QUEEN.read_text(encoding="utf-8") if QUEEN.exists() else ""
 cont = CONTINUE.read_text(encoding="utf-8") if CONTINUE.exists() else ""
 readme = README.read_text(encoding="utf-8") if README.exists() else ""
 
@@ -47,12 +55,28 @@ for phrase in required_master_phrases:
     if phrase not in master:
         fail(f"Master plan lost required continuity phrase: {phrase}")
 
+required_queen_phrases = [
+    "Exactly **four hostile human-form Replicator recovery operatives**",
+    "Abduction commits only when the carrier actually exits the map while carrying the exact Queen pawn.",
+    "Merely picking her up does not commit hostile recovery.",
+    "The current public rebuild explicitly supersedes it:",
+    "remove the old `HostileOutbreakBonus` shortcut",
+    "modify appropriate future Lattice threat composition whenever those threats occur",
+    "do not invent an unrelated recurring raid cadence",
+    "Differently bound Replicators must not silently recombine into a single command domain.",
+]
+for phrase in required_queen_phrases:
+    if phrase not in queen:
+        fail(f"Queen contract lost required continuity phrase: {phrase}")
+
 if "Docs/WNG_REBUILD_MASTER_PLAN.md" not in cont:
     fail("CONTINUE_WNG_REBUILD.md no longer points to the master plan")
+if "Docs/WNG_REBUILD_REPLICATOR_QUEEN_CONTRACT.md" not in cont:
+    fail("CONTINUE_WNG_REBUILD.md no longer points to active Queen contract")
 if "refresh memory and continue" not in cont.lower():
     fail("CONTINUE_WNG_REBUILD.md lost the refresh-memory trigger wording")
 if "CONTINUE_WNG_REBUILD.md" not in readme or "Docs/WNG_REBUILD_MASTER_PLAN.md" not in readme:
-    fail("README no longer references both rebuild continuity documents")
+    fail("README no longer references both root rebuild continuity documents")
 
 if errors:
     print("WNG rebuild continuity audit FAILED")
