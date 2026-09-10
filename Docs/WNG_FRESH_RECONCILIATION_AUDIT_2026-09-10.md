@@ -156,9 +156,9 @@ This feature is strongly Stargate-derived rather than arbitrary: Reese canonical
 
 ## Verification performed
 
-A temporary GitHub Actions compile workflow built `Source/WNG/WNG.csproj` against `Krafs.Rimworld.Ref` 1.6.4871 / .NET Framework 4.8. The `Build WNG` step completed successfully after the Replicator reconciliation corrections present in the tree used by the workflow.
+A temporary GitHub Actions workflow compiled `Source/WNG/WNG.csproj` against `Krafs.Rimworld.Ref` 1.6.4871 / .NET Framework 4.8 after the reconciliation corrections. The final audit-triggered run completed with **Build WNG: SUCCESS**.
 
-The temporary workflow is not part of the permanent mod architecture and should be removed after this checkpoint.
+The temporary workflow was then removed. No permanent reconciliation/release-gate workflow was left in the repository.
 
 ## Reconciliation verdict
 
