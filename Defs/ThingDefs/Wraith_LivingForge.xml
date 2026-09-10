@@ -38,6 +38,7 @@
     <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
     <recipes>
       <li>WNG_CultureBiomass</li>
+      <li>WNG_GrowWraithStunner</li>
     </recipes>
     <inspectorTabs>
       <li>ITab_Bills</li>
@@ -88,5 +89,45 @@
       <WNG_Biomass>16</WNG_Biomass>
     </products>
     <researchPrerequisite>WNG_BiologicalCultivation</researchPrerequisite>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_GrowWraithStunner</defName>
+    <label>grow wraith stunner</label>
+    <jobString>Growing a Wraith stunner.</jobString>
+    <description>Grow a replacement Wraith stunner from cultured biomass around a small conventional control assembly. This becomes possible only after Living Weapons research; the first stunner must still be recovered and analyzed.</description>
+    <workAmount>2200</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements>
+      <Crafting>7</Crafting>
+    </skillRequirements>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>WNG_Biomass</li>
+          </thingDefs>
+        </filter>
+        <count>28</count>
+      </li>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>ComponentIndustrial</li>
+          </thingDefs>
+        </filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>WNG_Biomass</li>
+        <li>ComponentIndustrial</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <products>
+      <WNG_WraithStunner>1</WNG_WraithStunner>
+    </products>
+    <researchPrerequisite>WNG_LivingWeapons</researchPrerequisite>
   </RecipeDef>
 </Defs>
