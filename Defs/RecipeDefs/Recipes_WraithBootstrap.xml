@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_CraftLivingForgeImplant</defName>
+    <label>prepare living forge growth implant</label>
+    <description>Prepare a compact Wraith tissue culture that can be implanted into a living humanlike host or corpse to grow a living forge.</description>
+    <jobString>Preparing a living forge growth implant.</jobString>
+    <workAmount>1600</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>5</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><categories><li>MeatRaw</li></categories></filter><count>20</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>10</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>1</count></li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <categories><li>MeatRaw</li></categories>
+      <thingDefs><li>Plasteel</li><li>ComponentIndustrial</li></thingDefs>
+    </fixedIngredientFilter>
+    <products><WNG_WraithLivingForgeImplant>1</WNG_WraithLivingForgeImplant></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+    <researchPrerequisite>WNG_WraithLivingTechnology</researchPrerequisite>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_CultureWraithBioSludge</defName>
+    <label>culture Wraith bio sludge</label>
+    <description>Break down biological feedstock and regrow it into a stable Wraith organic propulsion and construction slurry.</description>
+    <jobString>Culturing Wraith bio sludge.</jobString>
+    <workAmount>900</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>4</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><categories><li>MeatRaw</li></categories></filter><count>25</count></li>
+    </ingredients>
+    <fixedIngredientFilter><categories><li>MeatRaw</li></categories></fixedIngredientFilter>
+    <products><WNG_WraithBioSludge>20</WNG_WraithBioSludge></products>
+    <researchPrerequisite>WNG_WraithLivingTechnology</researchPrerequisite>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_CraftWraithGravEngineImplant</defName>
+    <label>prepare Wraith grav engine growth implant</label>
+    <description>Prepare a mature Wraith propulsion culture that can use a living humanlike host or corpse as the biological scaffold for a true grav engine heart.</description>
+    <jobString>Preparing a Wraith grav engine growth implant.</jobString>
+    <workAmount>4800</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>8</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>WNG_WraithBioSludge</li></thingDefs></filter><count>50</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>30</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>3</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_WraithBioSludge</li><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_WraithGravEngineImplant>1</WNG_WraithGravEngineImplant></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+    <researchPrerequisite>WNG_WraithGravships</researchPrerequisite>
+  </RecipeDef>
+
+  <!-- These recipes intentionally have no recipeUsers. WNG settings dynamically attach/detach them from the vanilla fabrication bench. -->
+  <RecipeDef>
+    <defName>WNG_CraftDeployableLivingForge</defName>
+    <label>fabricate deployable Wraith living forge</label>
+    <description>Fabricate a self-contained Wraith living-forge growth core, bypassing the normal requirement for a living host or corpse.</description>
+    <jobString>Fabricating a deployable Wraith living forge.</jobString>
+    <workAmount>4200</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>7</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><categories><li>MeatRaw</li></categories></filter><count>50</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>80</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>4</count></li>
+    </ingredients>
+    <fixedIngredientFilter><categories><li>MeatRaw</li></categories><thingDefs><li>Plasteel</li><li>ComponentIndustrial</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_DeployableLivingForgeCore>1</WNG_DeployableLivingForgeCore></products>
+    <researchPrerequisite>WNG_WraithLivingTechnology</researchPrerequisite>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_CraftDeployableWraithGravEngine</defName>
+    <label>fabricate deployable Wraith grav engine</label>
+    <description>Fabricate a self-contained Wraith grav-engine growth core, bypassing the normal host/corpse implantation step while still producing Odyssey's real GravEngine.</description>
+    <jobString>Fabricating a deployable Wraith grav engine.</jobString>
+    <workAmount>12000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>10</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>WNG_WraithBioSludge</li></thingDefs></filter><count>120</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>160</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>8</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_WraithBioSludge</li><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_DeployableWraithGravEngineCore>1</WNG_DeployableWraithGravEngineCore></products>
+    <researchPrerequisite>WNG_WraithGravships</researchPrerequisite>
+  </RecipeDef>
+</Defs>
