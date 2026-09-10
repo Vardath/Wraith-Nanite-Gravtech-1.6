@@ -95,6 +95,31 @@ namespace WraithNaniteGravtech
                 lord.AddPawn(founders[i]);
         }
 
+        public override void SitePartWorkerTick(SitePart sitePart)
+        {
+            base.SitePartWorkerTick(sitePart);
+            Site site = sitePart?.site;
+            if (site == null || !site.HasMap || !site.IsHashIntervalTick(250))
+                return;
+
+            Faction faction = site.Faction;
+            if (faction == null || faction == Faction.OfPlayer || !WraithCaptureUtility.IsWraithCaptor(faction))
+                return;
+
+            // Discovery may expose a lineage that is not currently hostile. Merely opening that
+            // sovereign site must not schedule a retaliation. The consequence arms only after the
+            // exact lineage is hostile, then fires once its active defenders/reserves are cleared.
+            if (Faction.OfPlayer == null || !faction.HostileTo(Faction.OfPlayer))
+                return;
+
+            Map map = site.Map;
+            if (map == null || GenHostility.AnyHostileActiveThreatToPlayer(map, countDormantPawnsAsHostile: true))
+                return;
+
+            WraithMatureHiveRetaliationRegistry registry = Current.Game?.GetComponent<WraithMatureHiveRetaliationRegistry>();
+            registry?.ScheduleHiveRetaliation(site.ID, faction.def?.defName);
+        }
+
         private static bool TryResolveRequiredDefs(out HiveDefs defs)
         {
             defs = new HiveDefs
