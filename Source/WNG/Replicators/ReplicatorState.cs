@@ -19,6 +19,14 @@ namespace WraithNaniteGravtech
         AntiShield = 1 << 6
     }
 
+    public enum ReplicatorMaterialPhenotype
+    {
+        OrganicWeak,
+        Baseline,
+        Reinforced,
+        Advanced
+    }
+
     internal enum LegacyReplicatorAdaptation
     {
         None = 0,
@@ -33,6 +41,11 @@ namespace WraithNaniteGravtech
     public sealed class CompProperties_ReplicatorState : CompProperties
     {
         public int antiShieldEvidenceRequired = 3;
+        public float reinforcedMarketValueThreshold = 5f;
+        public float advancedMarketValueThreshold = 10f;
+        public float organicWeakAverageThreshold = -0.35f;
+        public float reinforcedAverageThreshold = 0.35f;
+        public float advancedAverageThreshold = 1.15f;
         public CompProperties_ReplicatorState() => compClass = typeof(CompReplicatorState);
     }
 
@@ -41,12 +54,28 @@ namespace WraithNaniteGravtech
         private string materialDefName;
         private int adaptationMask;
         private int shieldEvidence;
+        private float materialQualityTotal;
+        private int materialSamples;
         private CompProperties_ReplicatorState Props => (CompProperties_ReplicatorState)props;
 
         public ThingDef MaterialDef => string.IsNullOrEmpty(materialDefName) ? null : DefDatabase<ThingDef>.GetNamedSilentFail(materialDefName);
         public ReplicatorAdaptation Adaptations => (ReplicatorAdaptation)adaptationMask;
         public int ShieldEvidence => shieldEvidence;
         public int AntiShieldEvidenceRequired => Math.Max(1, Props.antiShieldEvidenceRequired);
+        public float AverageMaterialQuality => materialSamples <= 0 ? 0f : materialQualityTotal / materialSamples;
+        public int MaterialSamples => Math.Max(0, materialSamples);
+
+        public ReplicatorMaterialPhenotype MaterialPhenotype
+        {
+            get
+            {
+                float avg = AverageMaterialQuality;
+                if (avg <= Props.organicWeakAverageThreshold) return ReplicatorMaterialPhenotype.OrganicWeak;
+                if (avg >= Props.advancedAverageThreshold) return ReplicatorMaterialPhenotype.Advanced;
+                if (avg >= Props.reinforcedAverageThreshold) return ReplicatorMaterialPhenotype.Reinforced;
+                return ReplicatorMaterialPhenotype.Baseline;
+            }
+        }
 
         public bool HasAdaptation(ReplicatorAdaptation adaptation)
             => adaptation != ReplicatorAdaptation.None && (Adaptations & adaptation) == adaptation;
@@ -65,6 +94,8 @@ namespace WraithNaniteGravtech
             materialDefName = other.materialDefName;
             adaptationMask = other.adaptationMask;
             shieldEvidence = other.shieldEvidence;
+            materialQualityTotal = other.materialQualityTotal;
+            materialSamples = other.materialSamples;
         }
 
         public void MergeFrom(CompReplicatorState other)
@@ -73,6 +104,8 @@ namespace WraithNaniteGravtech
             if (string.IsNullOrEmpty(materialDefName) && !string.IsNullOrEmpty(other.materialDefName)) materialDefName = other.materialDefName;
             adaptationMask |= other.adaptationMask;
             shieldEvidence = Math.Min(int.MaxValue, shieldEvidence + Math.Max(0, other.shieldEvidence));
+            materialQualityTotal += other.materialQualityTotal;
+            materialSamples = Math.Min(int.MaxValue, materialSamples + Math.Max(0, other.materialSamples));
             UnlockAntiShieldIfReady();
         }
 
@@ -81,10 +114,10 @@ namespace WraithNaniteGravtech
             if (target?.def == null) return;
             ThingDef material = target.Stuff ?? (target.def.IsStuff ? target.def : null);
             if (material != null)
-            {
                 materialDefName = material.defName;
-                AddAdaptation(ReplicatorAdaptation.Material);
-            }
+
+            RecordMaterialQuality(target, material);
+            if (material != null || target is Plant) AddAdaptation(ReplicatorAdaptation.Material);
             if (target.def.IsWeapon && target.def.IsRangedWeapon) AddAdaptation(ReplicatorAdaptation.Ranged);
             if (target.TryGetComp<CompPowerTrader>() != null || target.TryGetComp<CompPowerBattery>() != null) AddAdaptation(ReplicatorAdaptation.Power);
             if (target.def.apparel != null || (target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500)) AddAdaptation(ReplicatorAdaptation.Armor);
@@ -97,6 +130,28 @@ namespace WraithNaniteGravtech
                 UnlockAntiShieldIfReady();
             }
             if (identity.Contains("grav") || identity.Contains("gravity")) AddAdaptation(ReplicatorAdaptation.Grav);
+        }
+
+        private void RecordMaterialQuality(Thing target, ThingDef material)
+        {
+            float score = 0f;
+            string identity = (((material ?? target.def).defName ?? string.Empty) + " " + ((material ?? target.def).label ?? string.Empty)).ToLowerInvariant();
+
+            if (target is Plant || identity.Contains("wood") || identity.Contains("log") || identity.Contains("tree"))
+            {
+                score = -1f;
+            }
+            else
+            {
+                float value = material?.BaseMarketValue ?? target.def.BaseMarketValue;
+                if (identity.Contains("plasteel") || identity.Contains("uranium") || identity.Contains("bioferrite") || value >= Math.Max(0f, Props.advancedMarketValueThreshold))
+                    score = 2f;
+                else if (value >= Math.Max(0f, Props.reinforcedMarketValueThreshold))
+                    score = 1f;
+            }
+
+            materialQualityTotal += score;
+            if (materialSamples < int.MaxValue) materialSamples++;
         }
 
         private void UnlockAntiShieldIfReady()
@@ -114,7 +169,8 @@ namespace WraithNaniteGravtech
         {
             string material = MaterialDef?.LabelCap;
             List<string> lines = new List<string>();
-            if (!string.IsNullOrEmpty(material)) lines.Add($"Replication material: {material}");
+            if (!string.IsNullOrEmpty(material)) lines.Add($"Recent replication material: {material}");
+            if (materialSamples > 0) lines.Add($"Material phenotype: {MaterialPhenotype} ({AverageMaterialQuality:0.00} feedstock quality)");
             List<string> learned = LearnedAdaptations().Select(a => a == ReplicatorAdaptation.AntiShield ? "Anti-shield" : a.ToString()).ToList();
             if (learned.Count > 0) lines.Add($"Learned adaptations: {string.Join(", ", learned)}");
             if (HasAdaptation(ReplicatorAdaptation.Shield) && !HasAdaptation(ReplicatorAdaptation.AntiShield)) lines.Add($"Shield countermeasure evidence: {Math.Min(shieldEvidence, AntiShieldEvidenceRequired)}/{AntiShieldEvidenceRequired}");
@@ -127,6 +183,8 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref materialDefName, "wngReplicatorMaterial");
             Scribe_Values.Look(ref adaptationMask, "wngReplicatorAdaptationMask", 0);
             Scribe_Values.Look(ref shieldEvidence, "wngReplicatorShieldEvidence", 0);
+            Scribe_Values.Look(ref materialQualityTotal, "wngReplicatorMaterialQualityTotal", 0f);
+            Scribe_Values.Look(ref materialSamples, "wngReplicatorMaterialSamples", 0);
             LegacyReplicatorAdaptation legacy = LegacyReplicatorAdaptation.None;
             Scribe_Values.Look(ref legacy, "wngReplicatorAdaptation", LegacyReplicatorAdaptation.None);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
