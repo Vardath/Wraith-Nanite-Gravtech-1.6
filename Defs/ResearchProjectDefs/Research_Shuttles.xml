@@ -47,6 +47,21 @@
     <researchViewY>10.5</researchViewY>
   </ResearchProjectDef>
 
+  <ResearchProjectDef>
+    <defName>WNG_AsuranGravships</defName>
+    <label>Asuran gravship systems</label>
+    <description>Reconstruct an Ancient-derived gravship architecture through programmable Asuran nanites: precise control interfaces, nanite-sludge propulsion, field systems, jamming and true energy shielding, all carried by RimWorld Odyssey's native gravship framework.</description>
+    <baseCost>6000</baseCost>
+    <techLevel>Ultra</techLevel>
+    <prerequisites>
+      <li>WNG_AsuranFabrication</li>
+      <li>WNG_AncientShuttles</li>
+      <li>BasicGravtech</li>
+    </prerequisites>
+    <researchViewX>21</researchViewX>
+    <researchViewY>15.0</researchViewY>
+  </ResearchProjectDef>
+
   <ResearchProjectDef MayRequire="idolord.ONAC">
     <defName>WNG_GoauldShuttles</defName>
     <label>Goa'uld shuttle integration</label>
