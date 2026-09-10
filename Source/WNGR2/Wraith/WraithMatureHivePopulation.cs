@@ -20,11 +20,11 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Demographic controller for a generated mature NPC Hive only. It never discovers or adopts
-    /// pawns from the map. The generator must explicitly provide the exact founding Wraith and the
-    /// exact Growth Chamber. That living founder count becomes a fixed population ceiling.
-    /// Ordinary hibernating founders remain exact demographic members but are tracked separately
-    /// from the sealed finite combat reserve.
+    /// Controller for a generated mature NPC Hive only. The generator explicitly supplies exact
+    /// Wraith founders, exact ordinary hibernators, exact finite biological feeding stock, exact beds,
+    /// and the exact Growth Chamber. Wraith founders alone define the fixed demographic ceiling.
+    /// Feeding stock never enters that ceiling and has no replenishment path. Sealed Dormancy Vault
+    /// reserve remains completely outside this component.
     /// </summary>
     public sealed class CompMatureWraithHivePopulation : ThingComp
     {
@@ -37,6 +37,8 @@ namespace WraithNaniteGravtech
         private List<Pawn> demographicMembers = new List<Pawn>();
         private List<Pawn> dormantMembers = new List<Pawn>();
         private List<Building_Bed> dormantBeds = new List<Building_Bed>();
+        private List<Pawn> feedingStock = new List<Pawn>();
+        private List<Building_Bed> feedingBeds = new List<Building_Bed>();
         private Building generatedGrowthChamber;
 
         private CompProperties_MatureWraithHivePopulation PopulationProps =>
@@ -45,17 +47,32 @@ namespace WraithNaniteGravtech
         public bool InitializedByMatureHiveGenerator => initializedByMatureHiveGenerator;
         public int FoundingPopulationCap => foundingPopulationCap;
 
-        // Backward-compatible initializer used by the already-green generator until its separate
-        // hibernator-spawn pass is activated. No dormant pawn is inferred or scanned here.
         public bool InitializeGeneratedHive(IEnumerable<Pawn> foundingMembers, Building exactGeneratedGrowthChamber)
         {
-            return InitializeGeneratedHive(foundingMembers, null, null, exactGeneratedGrowthChamber);
+            return InitializeGeneratedHive(foundingMembers, null, null, null, null, exactGeneratedGrowthChamber);
         }
 
         public bool InitializeGeneratedHive(
             IEnumerable<Pawn> activeFoundingMembers,
             IEnumerable<Pawn> hibernatingFounders,
             IEnumerable<Building_Bed> exactHibernationPods,
+            Building exactGeneratedGrowthChamber)
+        {
+            return InitializeGeneratedHive(
+                activeFoundingMembers,
+                hibernatingFounders,
+                exactHibernationPods,
+                null,
+                null,
+                exactGeneratedGrowthChamber);
+        }
+
+        public bool InitializeGeneratedHive(
+            IEnumerable<Pawn> activeFoundingMembers,
+            IEnumerable<Pawn> hibernatingFounders,
+            IEnumerable<Building_Bed> exactHibernationPods,
+            IEnumerable<Pawn> finiteFeedingStock,
+            IEnumerable<Building_Bed> exactFeedingNiches,
             Building exactGeneratedGrowthChamber)
         {
             if (initializedByMatureHiveGenerator || parent == null || parent.Faction == null || parent.Faction == Faction.OfPlayer)
@@ -70,9 +87,14 @@ namespace WraithNaniteGravtech
             List<Pawn> activeFounders = CollectExactWraiths(activeFoundingMembers, null);
             List<Pawn> sleepingFounders = CollectExactWraiths(hibernatingFounders, activeFounders);
             List<Building_Bed> sleepingPods = CollectExactPods(exactHibernationPods);
+            List<Pawn> exactFeedingStock = CollectExactFeedingStock(finiteFeedingStock);
+            List<Building_Bed> exactNiches = CollectExactFeedingNiches(exactFeedingNiches);
+
             if (activeFounders.Count == 0)
                 return false;
             if (sleepingFounders.Count != sleepingPods.Count)
+                return false;
+            if (exactFeedingStock.Count != exactNiches.Count)
                 return false;
 
             List<Pawn> exactFounders = new List<Pawn>(activeFounders.Count + sleepingFounders.Count);
@@ -85,6 +107,11 @@ namespace WraithNaniteGravtech
             dormantMembers.AddRange(sleepingFounders);
             dormantBeds.Clear();
             dormantBeds.AddRange(sleepingPods);
+            feedingStock.Clear();
+            feedingStock.AddRange(exactFeedingStock);
+            feedingBeds.Clear();
+            feedingBeds.AddRange(exactNiches);
+
             foundingPopulationCap = exactFounders.Count;
             initialActiveFounderCount = activeFounders.Count;
             dormantCohortReleased = dormantMembers.Count == 0;
@@ -94,6 +121,7 @@ namespace WraithNaniteGravtech
 
             if (!dormantCohortReleased)
                 MaintainDormantCohort();
+            MaintainFeedingStock();
             return true;
         }
 
@@ -133,6 +161,38 @@ namespace WraithNaniteGravtech
             return result;
         }
 
+        private List<Pawn> CollectExactFeedingStock(IEnumerable<Pawn> pawns)
+        {
+            List<Pawn> result = new List<Pawn>();
+            if (pawns == null)
+                return result;
+
+            foreach (Pawn pawn in pawns)
+            {
+                if (!IsValidFeedingStock(pawn) || result.Contains(pawn))
+                    continue;
+                result.Add(pawn);
+            }
+            return result;
+        }
+
+        private List<Building_Bed> CollectExactFeedingNiches(IEnumerable<Building_Bed> beds)
+        {
+            List<Building_Bed> result = new List<Building_Bed>();
+            if (beds == null)
+                return result;
+
+            foreach (Building_Bed bed in beds)
+            {
+                if (bed == null || bed.Destroyed || !bed.Spawned || bed.Map != parent.Map || bed.Faction != parent.Faction)
+                    continue;
+                if (bed.GetComp<CompWraithFeedingNiche>() == null || result.Contains(bed))
+                    continue;
+                result.Add(bed);
+            }
+            return result;
+        }
+
         public override void CompTick()
         {
             base.CompTick();
@@ -147,6 +207,8 @@ namespace WraithNaniteGravtech
                 if (ShouldWakeDormantCohort())
                     WakeDormantCohort();
             }
+
+            MaintainFeedingStock();
 
             CompWraithGrowthChamber chamber = ValidGeneratedGrowthChamber();
             if (chamber == null)
@@ -194,16 +256,51 @@ namespace WraithNaniteGravtech
                 if (hibernatingDef != null && pawn.health?.hediffSet?.GetFirstHediffOfDef(hibernatingDef) == null)
                     pawn.health.AddHediff(hibernatingDef);
 
-                if (pawn.jobs == null)
+                EnsureLayDownJob(pawn, bed);
+            }
+        }
+
+        private void MaintainFeedingStock()
+        {
+            int pairs = Math.Min(feedingStock.Count, feedingBeds.Count);
+            for (int i = 0; i < pairs; i++)
+            {
+                Pawn pawn = feedingStock[i];
+                Building_Bed bed = feedingBeds[i];
+                if (!IsValidFeedingStock(pawn))
                     continue;
-                if (pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.LayDown && pawn.jobs.curJob.targetA.Thing == bed)
+                if (bed == null || bed.Destroyed || !bed.Spawned || bed.Map != parent.Map || bed.Faction != parent.Faction)
+                    continue;
+                if (bed.GetComp<CompWraithFeedingNiche>() == null)
                     continue;
 
-                Job job = JobMaker.MakeJob(JobDefOf.LayDown, bed);
-                job.expiryInterval = 60000;
-                job.checkOverrideOnExpire = false;
-                pawn.jobs.StartJob(job, JobCondition.InterruptForced, null, false, true, null, JobTag.Misc);
+                bed.ForOwnerType = BedOwnerType.Prisoner;
+                EnsureLayDownJob(pawn, bed);
             }
+        }
+
+        private static void EnsureLayDownJob(Pawn pawn, Building_Bed bed)
+        {
+            if (pawn?.jobs == null || bed == null)
+                return;
+            if (pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.LayDown && pawn.jobs.curJob.targetA.Thing == bed)
+                return;
+
+            Job job = JobMaker.MakeJob(JobDefOf.LayDown, bed);
+            job.expiryInterval = 60000;
+            job.checkOverrideOnExpire = false;
+            pawn.jobs.StartJob(job, JobCondition.InterruptForced, null, false, true, null, JobTag.Misc);
+        }
+
+        private bool IsValidFeedingStock(Pawn pawn)
+        {
+            return pawn != null
+                && !pawn.Dead
+                && pawn.Spawned
+                && pawn.Map == parent.Map
+                && WraithCaptureUtility.IsValidCaptiveIdentity(pawn)
+                && pawn.guest?.IsPrisoner == true
+                && pawn.guest.HostFaction == parent.Faction;
         }
 
         private bool ShouldWakeDormantCohort()
@@ -288,8 +385,6 @@ namespace WraithNaniteGravtech
             if (kind != "WNG_WraithHunter" && kind != "WNG_WraithWarrior" && kind != "WNG_WraithKeeper")
                 return;
 
-            // Only this exact chamber's completed handoff may add a replacement. Dead demographic
-            // references are retired here; no other map pawn is searched for or adopted.
             for (int i = demographicMembers.Count - 1; i >= 0; i--)
             {
                 Pawn member = demographicMembers[i];
@@ -335,6 +430,17 @@ namespace WraithNaniteGravtech
             return Math.Max(0, LivingDemographicCount() - LivingDormantCount());
         }
 
+        private int LivingFeedingStockCount()
+        {
+            int count = 0;
+            for (int i = 0; i < feedingStock.Count; i++)
+            {
+                if (IsValidFeedingStock(feedingStock[i]))
+                    count++;
+            }
+            return count;
+        }
+
         private bool HasLivingKind(string pawnKindDefName)
         {
             for (int i = 0; i < demographicMembers.Count; i++)
@@ -361,7 +467,8 @@ namespace WraithNaniteGravtech
             if (!initializedByMatureHiveGenerator)
                 return null;
             return "Mature Hive population: " + LivingActiveDemographicCount() + " active / "
-                + LivingDormantCount() + " ordinary dormant / " + foundingPopulationCap + " cap";
+                + LivingDormantCount() + " ordinary dormant / " + LivingFeedingStockCount()
+                + " finite feeding stock / " + foundingPopulationCap + " Wraith cap";
         }
 
         public override void PostExposeData()
@@ -376,6 +483,8 @@ namespace WraithNaniteGravtech
             Scribe_Collections.Look(ref demographicMembers, "wngMatureHiveDemographicMembers", LookMode.Reference);
             Scribe_Collections.Look(ref dormantMembers, "wngMatureHiveDormantMembers", LookMode.Reference);
             Scribe_Collections.Look(ref dormantBeds, "wngMatureHiveDormantBeds", LookMode.Reference);
+            Scribe_Collections.Look(ref feedingStock, "wngMatureHiveFeedingStock", LookMode.Reference);
+            Scribe_Collections.Look(ref feedingBeds, "wngMatureHiveFeedingBeds", LookMode.Reference);
             Scribe_References.Look(ref generatedGrowthChamber, "wngMatureHiveGeneratedGrowthChamber");
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
@@ -383,6 +492,8 @@ namespace WraithNaniteGravtech
                 demographicMembers = demographicMembers ?? new List<Pawn>();
                 dormantMembers = dormantMembers ?? new List<Pawn>();
                 dormantBeds = dormantBeds ?? new List<Building_Bed>();
+                feedingStock = feedingStock ?? new List<Pawn>();
+                feedingBeds = feedingBeds ?? new List<Building_Bed>();
             }
         }
     }
