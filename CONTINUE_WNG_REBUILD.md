@@ -25,7 +25,9 @@ This is the first file to read when the user says **“refresh memory and contin
 - Replicator death split ladder is `Siege Mass -> 2 Titans -> 2 Bulwarks -> 2 Hunters -> 2 Drones`.
 - Human-form + block mixed raid composition is intentional where the design calls for it; block recombination itself remains block-machine logic.
 - The Replicator Queen is one exact age-13 female human-form pawn with unique sovereign authority.
-- Her vault recovery team remains dormant until casket release, gives a short warning, then exactly four hostile human-form operatives attempt physical carry-to-map-edge abduction; downing/pickup alone does not commit loss.
+- **Releasing/retrieving her from the Queen-vault cryosleep chamber recruits her to the player immediately on spawning.** There is no neutral recruitment stage.
+- Her vault recovery team remains dormant until casket release, gives a short warning, then exactly four hostile human-form/Asuran operatives attempt physical carry-to-map-edge abduction; downing/pickup alone does not commit loss.
+- If she remains with the player, the hostile Asuran/Lattice collective may launch **occasional later capture raids**, but only against a player home map where the exact Queen is physically present. Those raids again require real kidnapping and map-edge escape to take her.
 - A Sovereign Neural Lattice implant does not make a pawn a Queen; it grants bounded target-specific block-Replicator authority.
 - Temporary Asuran lattice override is separate from genuine sovereign ownership.
 - The old Queen-captured `+1 outbreak` shortcut is obsolete; captured-Queen state instead permits genuine bounded Lattice sovereign use of block Replicators in appropriate future Lattice threats.

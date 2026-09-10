@@ -8,8 +8,8 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Save-persistent identity/outcome state for the single Replicator Queen.  This component stores
     /// the exact pawn reference instead of reducing the quest outcome to an abstract outbreak bonus.
-    /// The future Queen-vault quest registers the same pawn here before either player recovery or
-    /// Lattice capture is committed.
+    /// The Queen-vault lifecycle registers the same pawn before either automatic player recovery or
+    /// a completed Lattice map-edge kidnapping is committed.
     /// </summary>
     public sealed class GameComponent_ReplicatorQueenState : GameComponent
     {
@@ -53,17 +53,24 @@ namespace WraithNaniteGravtech
 
         public void MarkJoined(Pawn queen)
         {
-            if (!RegisterQueen(queen))
+            if (!RegisterQueen(queen) || Faction.OfPlayer == null)
                 return;
+
+            bool firstJoin = !queenJoinedPlayer || queenAbducted;
+            if (queen.Faction != Faction.OfPlayer)
+                queen.SetFaction(Faction.OfPlayer, null);
 
             queenJoinedPlayer = true;
             queenAbducted = false;
             queenCaptorFaction = null;
-            Find.LetterStack.ReceiveLetter(
-                "Replicator Queen sheltered",
-                "The thirteen-year-old human-form Replicator Queen has accepted your protection. Her sovereign lattice can directly bring base Replicators under your faction while she is present to coordinate them.",
-                LetterDefOf.PositiveEvent,
-                queen);
+            if (firstJoin)
+            {
+                Find.LetterStack.ReceiveLetter(
+                    "Replicator Queen recovered",
+                    "As she emerges from the cryosleep chamber, the thirteen-year-old human-form Replicator Queen immediately joins your colony. Her sovereign lattice can directly bring base Replicators under your faction while she is present to coordinate them. The hostile Asuran/Lattice collective may attempt to recover her by force.",
+                    LetterDefOf.PositiveEvent,
+                    queen);
+            }
         }
 
         public void MarkAbducted(Pawn queen, Faction captor = null)
@@ -83,14 +90,18 @@ namespace WraithNaniteGravtech
                 return;
             }
 
+            bool firstCapture = !queenAbducted || queenCaptorFaction != resolvedCaptor;
             queenAbducted = true;
             queenJoinedPlayer = false;
             queenCaptorFaction = resolvedCaptor;
-            Find.LetterStack.ReceiveLetter(
-                "Replicator Queen taken",
-                "The Lattice Collective escaped with the Replicator Queen. They now possess genuine sovereign access to base Replicators rather than a mere temporary lattice intrusion. Their future threat systems may field Replicators directly under Lattice control until that outcome is reversed.",
-                LetterDefOf.ThreatBig,
-                queen);
+            if (firstCapture)
+            {
+                Find.LetterStack.ReceiveLetter(
+                    "Replicator Queen taken",
+                    "The Lattice Collective escaped with the Replicator Queen. They now possess genuine sovereign access to base Replicators rather than a mere temporary lattice intrusion. Their future threat systems may field Replicators directly under Lattice control until that outcome is reversed.",
+                    LetterDefOf.ThreatBig,
+                    queen);
+            }
         }
 
         public bool FactionHasCapturedQueenAuthority(Faction faction)

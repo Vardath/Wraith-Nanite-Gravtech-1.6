@@ -56,13 +56,15 @@ for phrase in required_master_phrases:
         fail(f"Master plan lost required continuity phrase: {phrase}")
 
 required_queen_phrases = [
-    "Exactly **four hostile human-form Replicator recovery operatives**",
+    "recruited to the player immediately",
+    "Exactly **four hostile human-form Replicator/Asuran recovery operatives**",
     "Abduction commits only when the carrier actually exits the map while carrying the exact Queen pawn.",
     "Merely picking her up does not commit hostile recovery.",
+    "occasional later raids specifically to capture her",
+    "player home map on which the exact Queen is physically present",
     "The current public rebuild explicitly supersedes it:",
     "remove the old `HostileOutbreakBonus` shortcut",
-    "modify appropriate future Lattice threat composition whenever those threats occur",
-    "do not invent an unrelated recurring raid cadence",
+    "Queen-capture state should modify appropriate future Lattice threat composition",
     "Differently bound Replicators must not silently recombine into a single command domain.",
 ]
 for phrase in required_queen_phrases:
@@ -75,6 +77,10 @@ if "Docs/WNG_REBUILD_REPLICATOR_QUEEN_CONTRACT.md" not in cont:
     fail("CONTINUE_WNG_REBUILD.md no longer points to active Queen contract")
 if "refresh memory and continue" not in cont.lower():
     fail("CONTINUE_WNG_REBUILD.md lost the refresh-memory trigger wording")
+if "recruits her to the player immediately" not in cont:
+    fail("CONTINUE_WNG_REBUILD.md lost immediate Queen recruitment rule")
+if "occasional later capture raids" not in cont:
+    fail("CONTINUE_WNG_REBUILD.md lost later Queen-capture raid rule")
 if "CONTINUE_WNG_REBUILD.md" not in readme or "Docs/WNG_REBUILD_MASTER_PLAN.md" not in readme:
     fail("README no longer references both root rebuild continuity documents")
 
