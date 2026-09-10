@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh WNG Growth Chamber. Historical WNG XML/code/art/audio is not reused.
+    The Core machining-table graphic is a temporary presentation placeholder only.
+    Construction cost is a fresh rebuild balance choice pending live playtesting.
+  -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_GrowthChamber</defName>
+    <label>wraith growth chamber</label>
+    <description>A living Wraith gestation organ able to grow ordinary Wraith castes from cultured biomass and donated Life Force. A Keeper or Queen must supervise each cycle. Queens cannot be produced by this chamber.</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Production/TableMachining</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(3.5,2.5)</drawSize>
+    </graphicData>
+    <size>(2,3)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <fillPercent>0.55</fillPercent>
+    <useHitPoints>true</useHitPoints>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0,0,-2)</interactionCellOffset>
+    <designationCategory>Production</designationCategory>
+    <uiOrder>2580</uiOrder>
+    <costList>
+      <Steel>160</Steel>
+      <ComponentIndustrial>6</ComponentIndustrial>
+      <WNG_Biomass>100</WNG_Biomass>
+    </costList>
+    <statBases>
+      <WorkToBuild>5200</WorkToBuild>
+      <MaxHitPoints>420</MaxHitPoints>
+      <Flammability>0.2</Flammability>
+    </statBases>
+    <constructionSkillPrerequisite>7</constructionSkillPrerequisite>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <shortCircuitInRain>true</shortCircuitInRain>
+        <basePowerConsumption>450</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Flickable"/>
+      <li Class="CompProperties_Breakdownable"/>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithGrowthChamber">
+        <requiredResearchDefName>WNG_CloningInfrastructure</requiredResearchDefName>
+        <minimumDonorLifeForce>0.55</minimumDonorLifeForce>
+        <donorLifeForceCost>0.25</donorLifeForceCost>
+        <newbornLifeForce>0.35</newbornLifeForce>
+      </li>
+    </comps>
+    <researchPrerequisites>
+      <li>WNG_CloningInfrastructure</li>
+    </researchPrerequisites>
+  </ThingDef>
+</Defs>
