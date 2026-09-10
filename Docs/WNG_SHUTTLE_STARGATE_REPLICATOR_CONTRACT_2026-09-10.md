@@ -1,0 +1,99 @@
+# WNG — Shuttle / Stargate-entry / Replicator behavior contract
+
+Author/final design authority: **Vardath**.
+
+This document records the current first-build contract for the four primary WNG shuttle/craft families, Stargate-entry raids, and autonomous block-Replicator behavior. Newer explicit Vardath instructions override it.
+
+## Four primary shuttle/craft families
+
+Exact craft names retained from the current design history:
+
+1. `WNG_WraithDart`
+2. `WNG_WraithStrikeCraft`
+3. `WNG_WraithCruiser`
+4. `WNG_PuddleJumper`
+
+Family ownership:
+- Wraith: Dart, Strike Craft, Cruiser.
+- Ancient/Asuran/Precursor: Puddle Jumper.
+
+All four must use native RimWorld/Odyssey shuttle transport and boarding systems wherever available. WNG must not replace vanilla/native boarding with a custom pseudo-boarding implementation.
+
+### Wraith-specific craft behavior
+
+`WNG_WraithDart` carries the Wraith ray-of-absorption/culling system. Captured pawns remain exact pawns in the craft's real transport/capture buffer until recovered, the craft is destroyed with an explicitly resolved outcome, or the Wraith successfully escape with the Dart and transfer those exact pawns into WNG captivity.
+
+The Wraith Strike Craft and Cruiser remain Wraith craft variants but are not automatically given Dart absorption unless explicitly specified later.
+
+### Ancient/Asuran/Precursor shuttle behavior
+
+`WNG_PuddleJumper` uses native shuttle boarding/transport behavior and retains the Ancient-style control-chair/drone identity. Its offensive pass behavior uses Ancient chair-controlled drone fire rather than Wraith absorption.
+
+## Stargate-entry raids with shuttle support
+
+Optional Stargate integration remains an enhancement, not a requirement for ordinary raids.
+
+When a Stargate-entry raid includes a Wraith Dart or Puddle Jumper:
+- the shuttle may emerge through the gate as part of the raid;
+- if the gate exit is under an ordinary constructed/light roof, the craft breaks through the roof, takes some damage, remains functional if it survives, then performs its attack-pass sequence;
+- if the gate exit is under a heavy/rock roof, the shuttle cannot safely punch through: it explodes and causes a cave-in/collapse event around the entry area;
+- after successful entry, the craft performs **two real flyby passes**, then lands and participates in the raid/outcome;
+- Wraith Dart passes attempt ray-of-absorption capture of a couple of valid pawns per opportunity, bounded by an absolute craft capacity of **up to 3 exact pawns**;
+- Puddle Jumper passes fire a small number of Ancient drone shots;
+- the landed craft remains governed by native shuttle boarding/transport rules;
+- surviving Wraith may retreat using their Dart; if they abandon it, it remains hackable salvage under the separate Dart salvage contract;
+- surviving Asuran/Ancient users may retreat using the Jumper through native boarding/launch behavior.
+
+The roof interaction must be based on the actual roof over/around the gate emergence cells, not a generic map-wide roof flag.
+
+## Autonomous block-Replicator behavior
+
+Default autonomous block-Replicator priorities are:
+
+**consume -> convert material to replication matter/fuel -> reproduce -> combine into larger forms -> continue consuming**
+
+They are not ordinary kill-on-sight raiders.
+
+### What they consume
+
+Replicators may consume, where reachable/applicable:
+- floors/terrain layers;
+- gravship/substructure terrain or equivalent structural floor layers;
+- roof material, including natural rock roof where mechanically representable;
+- loose items;
+- buildings/structures;
+- trees/plant biomass;
+- other accessible material targets not protected by explicit containment rules.
+
+Burrowers still prioritize genuine access blockers/containment where needed to reach matter, but ordinary swarm members should preferentially consume rather than attack pawns.
+
+### Provocation and retaliation
+
+Replicators attack pawns only when:
+- they are directly provoked/attacked; or
+- they have exhausted usable replication matter/fuel and cannot obtain more through feeding.
+
+When one Replicator is provoked, it sends a local retaliation signal. At most **five nearby Replicators** are recruited into that retaliation response, including/alongside the provoked unit as implementation permits. The larger swarm does not globally switch into combat mode; most Replicators continue consuming, reproducing, and combining.
+
+Retaliation must be bounded in range/time and save-safe. It must not permanently turn the entire faction into a kill-on-sight swarm.
+
+### Material inheritance
+
+What the swarm consumes influences what newly produced Replicators are physically made from.
+
+Required examples:
+- trees/wood/low-grade organic feed -> weaker bodies and increased flammability/fire vulnerability;
+- ordinary industrial material -> baseline phenotype;
+- high-grade/high-tech/strong materials -> stronger bodies and appropriate defensive/performance buffs.
+
+Material phenotype is inherited by newly reproduced Replicators and carried through combine/split transformations in a mass/state-conserving way. Learned technological adaptations remain a separate cumulative system; material phenotype must not overwrite shield/grav/power/etc. adaptation history.
+
+The phenotype should be derived from meaningful recent/accumulated feedstock rather than an arbitrary cosmetic label, and its gameplay effects must be centralized/tunable rather than scattered magic constants.
+
+## Separation rules
+
+- Native shuttle boarding/transport owns boarding for Wraith and Asuran craft.
+- CatCraft owns Stargate network/address/dial/iris/shield/receive-buffer mechanics.
+- WNG owns raid composition, shuttle entry/roof interaction, attack passes, absorption/drone attacks, landing, objectives, retreat outcomes, and WNG captivity.
+- Wraith Dart absorption is distinct from ordinary Drain Life and strategic faction hunger.
+- Replicator material feeding is distinct from Wraith Life Force/biomass systems.
