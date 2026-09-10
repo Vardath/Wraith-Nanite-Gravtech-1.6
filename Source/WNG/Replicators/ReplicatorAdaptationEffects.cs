@@ -19,14 +19,18 @@ namespace WraithNaniteGravtech
         public float rangedArmorPenetration = 0.15f;
         public float antiShieldDamageMultiplier = 1.5f;
         public float overlayScalePerBodySize = 1.05f;
+        public float organicWeakDamageMultiplier = 1.15f;
+        public float organicWeakFireMultiplier = 1.75f;
+        public float reinforcedDamageMultiplier = 0.90f;
+        public float advancedDamageMultiplier = 0.78f;
 
         public CompProperties_ReplicatorAdaptationEffects() => compClass = typeof(CompReplicatorAdaptationEffects);
     }
 
     /// <summary>
-    /// Gameplay effects for adaptations learned by actual assimilation. Values are Def data.
-    /// Grav is visual/state-ready here but its mobility effect remains dependent on the later
-    /// concrete gravtech implementation rather than being faked with an unrelated bonus.
+    /// Gameplay effects for learned adaptations and accumulated material phenotype.
+    /// Values remain Def-driven. Grav is visual/state-ready here but its movement effect
+    /// remains dependent on the later real gravtech layer rather than a substitute bonus.
     /// </summary>
     public sealed class CompReplicatorAdaptationEffects : ThingComp
     {
@@ -36,7 +40,7 @@ namespace WraithNaniteGravtech
 
         private CompProperties_ReplicatorAdaptationEffects Props => (CompProperties_ReplicatorAdaptationEffects)props;
         private Pawn Pawn => parent as Pawn;
-        private CompReplicatorState State => parent?.TryGetComp<CompReplicatorState>();
+        internal CompReplicatorState State => parent?.TryGetComp<CompReplicatorState>();
 
         public float PowerHealingMultiplier => State?.HasAdaptation(ReplicatorAdaptation.Power) == true
             ? Math.Max(1f, Props.powerHealingMultiplier)
@@ -59,6 +63,7 @@ namespace WraithNaniteGravtech
                 shieldEnergy = Math.Min(Math.Max(0f, Props.shieldCapacity), shieldEnergy + Math.Max(0f, Props.shieldRechargePerTick));
 
             if (pawn.Faction == Faction.OfPlayer || pawn.IsColonyMechPlayerControlled || ReplicatorEMP.IsSuppressed(pawn)) return;
+            if (!ReplicatorCombatPermission.CanAttack(pawn)) return;
             if (State?.HasAdaptation(ReplicatorAdaptation.Ranged) != true) return;
 
             int now = Find.TickManager?.TicksGame ?? 0;
@@ -111,6 +116,29 @@ namespace WraithNaniteGravtech
 
             if (State?.HasAdaptation(ReplicatorAdaptation.Armor) == true)
                 dinfo.SetAmount(Math.Max(0f, dinfo.Amount * Math.Max(0.05f, Math.Min(1f, Props.armorDamageMultiplier))));
+
+            ApplyMaterialPhenotype(ref dinfo);
+        }
+
+        private void ApplyMaterialPhenotype(ref DamageInfo dinfo)
+        {
+            if (State == null || State.MaterialSamples <= 0) return;
+            float multiplier = 1f;
+            switch (State.MaterialPhenotype)
+            {
+                case ReplicatorMaterialPhenotype.OrganicWeak:
+                    multiplier = Math.Max(1f, Props.organicWeakDamageMultiplier);
+                    if (dinfo.Def == DamageDefOf.Flame)
+                        multiplier *= Math.Max(1f, Props.organicWeakFireMultiplier);
+                    break;
+                case ReplicatorMaterialPhenotype.Reinforced:
+                    multiplier = Math.Max(0.05f, Math.Min(1f, Props.reinforcedDamageMultiplier));
+                    break;
+                case ReplicatorMaterialPhenotype.Advanced:
+                    multiplier = Math.Max(0.05f, Math.Min(1f, Props.advancedDamageMultiplier));
+                    break;
+            }
+            dinfo.SetAmount(Math.Max(0f, dinfo.Amount * multiplier));
         }
 
         public override void PostDraw()
@@ -149,8 +177,12 @@ namespace WraithNaniteGravtech
 
         public override string CompInspectStringExtra()
         {
-            if (State?.HasAdaptation(ReplicatorAdaptation.Shield) != true) return null;
-            return $"Adaptive shield: {shieldEnergy:0}/{Math.Max(0f, Props.shieldCapacity):0}";
+            List<string> lines = new List<string>();
+            if (State?.HasAdaptation(ReplicatorAdaptation.Shield) == true)
+                lines.Add($"Adaptive shield: {shieldEnergy:0}/{Math.Max(0f, Props.shieldCapacity):0}");
+            if (State?.MaterialSamples > 0)
+                lines.Add($"Body stock: {State.MaterialPhenotype}");
+            return lines.Count == 0 ? null : string.Join("\n", lines);
         }
 
         public override void PostExposeData()
