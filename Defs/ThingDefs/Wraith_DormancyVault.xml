@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_WraithDormancyVault</defName>
+    <label>wraith dormancy vault</label>
+    <description>A sealed reservoir containing a finite reserve of dormant Wraith defenders. Damage or nearby intruders can wake the reserve in small waves. Once emptied, the vault never refills and its occupants are not part of the Hive demographic population.</description>
+    <thingClass>Building</thingClass>
+    <tickerType>Normal</tickerType>
+    <size>(2,2)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <fillPercent>0.8</fillPercent>
+    <useHitPoints>true</useHitPoints>
+    <passability>Impassable</passability>
+    <graphicData>
+      <texPath>Things/Building/Production/TableMachining</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(3,3)</drawSize>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>700</MaxHitPoints>
+      <Flammability>0.08</Flammability>
+      <WorkToBuild>5200</WorkToBuild>
+    </statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithDormancyVault">
+        <dormantCount>4</dormantCount>
+        <triggerRadius>18</triggerRadius>
+        <awakenIntervalTicks>180</awakenIntervalTicks>
+        <awakenPerWave>2</awakenPerWave>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>
