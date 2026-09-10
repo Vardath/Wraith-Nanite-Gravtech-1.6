@@ -8,7 +8,7 @@
   <ThingDef ParentName="ShuttleBase">
     <defName>WNG_WraithDart</defName>
     <label>Wraith Dart</label>
-    <description>A fast Wraith scout and culling craft. Hostile Darts can stun biological prey, hold the exact captured pawns in their onboard transport buffer, and carry them away into Wraith captivity if the craft escapes.</description>
+    <description>A fast Wraith scout and culling craft. Hostile Darts can stun biological prey and hold the exact captured pawns in their onboard transport buffer. A skilled colonist can hack the Dart before it escapes to open that buffer and recover the captives.</description>
     <size>(3,2)</size>
     <rotatable>false</rotatable>
     <selectable>true</selectable>
@@ -33,6 +33,14 @@
         <stunTicks>1200</stunTicks>
         <retreatDelayTicks>600</retreatDelayTicks>
         <emptyScansBeforeRetreat>3</emptyScansBeforeRetreat>
+      </li>
+      <li Class="CompProperties_Hackable">
+        <defence>400</defence>
+        <intellectualSkillPrerequisite>6</intellectualSkillPrerequisite>
+        <showProgressAfterHackCompletion>false</showProgressAfterHackCompletion>
+        <notHackedInspectString>Capture buffer secured by Wraith control systems.</notHackedInspectString>
+        <hackedInspectString>Capture buffer unlocked.</hackedInspectString>
+        <hackedMessage>{HACKER} has breached the Wraith Dart capture buffer and released its captives.</hackedMessage>
       </li>
     </comps>
   </ThingDef>
