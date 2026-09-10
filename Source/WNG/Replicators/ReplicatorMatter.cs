@@ -75,9 +75,11 @@ namespace WraithNaniteGravtech
         public string pawnKindDefName = "WNG_ReplicatorDrone";
         public int minimumStack = 10;
         public int consumePerPawn = 10;
-        public int dormantTicks = 30000;
+        public int dormantTicks = 60000;
         public int retryTicks = 2500;
-        public float chancePerCheck = 0.15f;
+        public float chancePerCheck = 0.05f;
+        public float chanceGrowthPerDay = 0.10f;
+        public float maxChancePerCheck = 0.85f;
         public int maxPawnsPerWake = 2;
         public int maxHostileReplicatorsPerMap = 120;
         public CompProperties_ReplicatorMatterReassembly() => compClass = typeof(CompReplicatorMatterReassembly);
@@ -86,13 +88,14 @@ namespace WraithNaniteGravtech
     public sealed class CompReplicatorMatterReassembly : ThingComp
     {
         private int nextAttemptTick;
+        private int exposureStartTick = -1;
         private CompProperties_ReplicatorMatterReassembly Props => (CompProperties_ReplicatorMatterReassembly)props;
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
-            if (!respawningAfterLoad && nextAttemptTick <= 0)
-                nextAttemptTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(250, Props.dormantTicks);
+            if (!respawningAfterLoad && Find.TickManager != null)
+                ResetDangerClock(Find.TickManager.TicksGame);
         }
 
         public override void CompTickRare()
@@ -101,17 +104,34 @@ namespace WraithNaniteGravtech
             if (parent == null || parent.Destroyed || !parent.Spawned || parent.stackCount < Math.Max(1, Props.minimumStack)) return;
             int now = Find.TickManager.TicksGame;
 
-            // Powered containment freezes the danger clock. If the field later fails, the stack
-            // must remain exposed for a full configured dormant interval before trying to wake.
+            // Powered containment freezes and resets the reformation danger clock. Once containment
+            // fails or the blocks are removed, they must spend a full configured dormancy interval
+            // exposed again before the first chance to reform.
             if (ReplicatorContainmentUtility.IsContained(parent.Map, parent.Position))
             {
-                nextAttemptTick = now + Math.Max(250, Props.dormantTicks);
+                ResetDangerClock(now);
                 return;
             }
 
+            if (exposureStartTick < 0)
+                ResetDangerClock(now);
             if (now < nextAttemptTick) return;
+
+            int dormancy = Math.Max(250, Props.dormantTicks);
+            int eligibleSince = exposureStartTick + dormancy;
+            if (now < eligibleSince)
+            {
+                nextAttemptTick = eligibleSince;
+                return;
+            }
+
             nextAttemptTick = now + Math.Max(250, Props.retryTicks);
-            if (!Rand.Chance(Math.Max(0f, Math.Min(1f, Props.chancePerCheck)))) return;
+            float exposedEligibleDays = Math.Max(0f, now - eligibleSince) / (float)GenDate.TicksPerDay;
+            float chance = Math.Max(0f, Props.chancePerCheck)
+                + exposedEligibleDays * Math.Max(0f, Props.chanceGrowthPerDay);
+            chance = Math.Min(Math.Max(0f, Props.maxChancePerCheck), chance);
+            chance = Math.Min(1f, chance);
+            if (!Rand.Chance(chance)) return;
 
             PawnKindDef kind = DefDatabase<PawnKindDef>.GetNamedSilentFail(Props.pawnKindDefName);
             FactionDef factionDef = DefDatabase<FactionDef>.GetNamedSilentFail(Props.factionDefName);
@@ -140,20 +160,42 @@ namespace WraithNaniteGravtech
                     break;
                 }
             }
+
+            // Any blocks left after a successful reformation begin a fresh one-day dormancy cycle.
+            if (parent != null && !parent.Destroyed && parent.stackCount >= Math.Max(1, Props.minimumStack))
+                ResetDangerClock(now);
+        }
+
+        private void ResetDangerClock(int now)
+        {
+            exposureStartTick = now;
+            nextAttemptTick = now + Math.Max(250, Props.dormantTicks);
         }
 
         public override string CompInspectStringExtra()
         {
             if (parent == null || parent.stackCount < Math.Max(1, Props.minimumStack)) return null;
             if (parent.Spawned && ReplicatorContainmentUtility.IsContained(parent.Map, parent.Position))
-                return "Contained Replicator Matter: powered suppression field prevents self-assembly.";
-            return "Dangerous Replicator Matter: sufficient mass remains capable of hostile self-assembly.";
+                return "Contained Replicator blocks: powered suppression has reset the reformation clock.";
+
+            int now = Find.TickManager?.TicksGame ?? 0;
+            int dormancy = Math.Max(250, Props.dormantTicks);
+            int eligibleTick = exposureStartTick < 0 ? now + dormancy : exposureStartTick + dormancy;
+            if (now < eligibleTick)
+                return $"Dormant Replicator blocks: reformation risk begins in {(eligibleTick - now) / (float)GenDate.TicksPerDay:0.0} day(s).";
+
+            float days = Math.Max(0f, now - eligibleTick) / (float)GenDate.TicksPerDay;
+            float chance = Math.Min(1f, Math.Min(Math.Max(0f, Props.maxChancePerCheck), Math.Max(0f, Props.chancePerCheck) + days * Math.Max(0f, Props.chanceGrowthPerDay)));
+            return $"Active Replicator blocks: reformation chance is rising ({chance:P0} per check).";
         }
 
         public override void PostExposeData()
         {
             base.PostExposeData();
             Scribe_Values.Look(ref nextAttemptTick, "wngReplicatorMatterNextAttempt", 0);
+            Scribe_Values.Look(ref exposureStartTick, "wngReplicatorMatterExposureStart", -1);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && exposureStartTick < 0 && Find.TickManager != null)
+                ResetDangerClock(Find.TickManager.TicksGame);
         }
     }
 }
