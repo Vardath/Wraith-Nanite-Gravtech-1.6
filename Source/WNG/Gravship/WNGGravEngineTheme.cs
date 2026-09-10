@@ -52,7 +52,7 @@ namespace WraithNaniteGravtech
                 EnforceFamilyLinks();
         }
 
-        private void EnforceFamilyLinks()
+        public void EnforceFamilyLinks()
         {
             Building_GravEngine engine = parent as Building_GravEngine;
             if (engine?.Spawned != true || theme == WNGGravshipTheme.None)
@@ -112,10 +112,9 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Construction-only bridge. A researched WNG engine seed is a normal Architect buildable, but
-    /// on completion it becomes the real vanilla Odyssey GravEngine and is silently inspected.
-    /// This preserves every native gravship lookup and launch path without Harmony or a replacement
-    /// gravship framework.
+    /// Construction-only bridge. A researched WNG engine seed can produce the real vanilla Odyssey
+    /// GravEngine and silently inspect it. Wraith normally reaches this seed through biological
+    /// growth; other technology families may expose their seed through their own progression.
     /// </summary>
     public sealed class CompWNGGravEngineSeed : ThingComp
     {
@@ -141,9 +140,6 @@ namespace WraithNaniteGravtech
 
             if (existing != null)
             {
-                // Do not destroy paid construction if another engine appeared after the blueprint
-                // was placed. Leave the seed as a recoverable inert structure rather than creating
-                // the unsupported multi-engine state vanilla itself is not designed around.
                 converted = true;
                 Messages.Message("A grav engine already exists on this map. This WNG engine seed will remain inert until deconstructed.", parent, MessageTypeDefOf.RejectInput, historical: false);
                 return;
@@ -168,7 +164,6 @@ namespace WraithNaniteGravtech
             if (!string.IsNullOrWhiteSpace(Props.engineName))
                 engine.RenamableLabel = Props.engineName;
 
-            // Constructed WNG engines are researched technology, not the Odyssey discovery quest.
             engine.Inspect(silent: true);
         }
 
