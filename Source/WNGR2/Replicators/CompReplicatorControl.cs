@@ -13,11 +13,11 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Player-built Replicators are harmless colony mechs while actively overseen.
-    /// A living same-faction Replicator Queen can also provide sovereign coordination.
-    /// Short Asuran lattice intrusions count as valid temporary control only for the lifetime
-    /// of that save-safe override; once it expires the original faction is restored by the
-    /// override comp rather than being silently converted into permanent player ownership.
+    /// Player-built Replicators are harmless colony mechs while actively overseen.  A living
+    /// same-faction Replicator Queen passively coordinates all local base Replicators.  A non-Queen
+    /// Sovereign Neural Lattice bearer can instead establish a save-persistent target-specific
+    /// binding; that binding remains valid only while the exact controller is alive, present and
+    /// still possesses sovereign authority.  Temporary Asuran lattice intrusion remains separate.
     /// </summary>
     public sealed class CompReplicatorControl : ThingComp
     {
@@ -35,8 +35,60 @@ namespace WraithNaniteGravtech
         private int selfDefenseUntilTick;
         private int lastThreatBroadcastTick = -999999;
         private Pawn recentAggressor;
+        private Pawn sovereignController;
 
         private Pawn Pawn => parent as Pawn;
+
+        public Pawn ActiveSovereignController
+        {
+            get
+            {
+                return HasActiveSovereignBinding() ? sovereignController : null;
+            }
+        }
+
+        public bool BindToSovereign(Pawn controller)
+        {
+            Pawn pawn = Pawn;
+            if (pawn == null || pawn.Dead || controller == null || controller.Dead || controller.Faction == null
+                || !ReplicatorQueenUtility.HasSovereignDirectiveAuthority(controller))
+                return false;
+
+            if (ReplicatorQueenUtility.IsQueen(controller))
+            {
+                sovereignController = null;
+                pawn.SetFaction(controller.Faction, null);
+                uncontrolledTicks = 0;
+                return true;
+            }
+
+            sovereignController = controller;
+            pawn.SetFaction(controller.Faction, null);
+            uncontrolledTicks = 0;
+            return HasActiveSovereignBinding();
+        }
+
+        public void ClearSovereignBinding()
+        {
+            sovereignController = null;
+        }
+
+        public void CopySovereignBindingTo(Pawn child)
+        {
+            if (child == null || ActiveSovereignController == null)
+                return;
+            child.TryGetComp<CompReplicatorControl>()?.BindToSovereign(sovereignController);
+        }
+
+        public bool HasActiveSovereignBinding()
+        {
+            Pawn pawn = Pawn;
+            if (pawn == null || pawn.Dead || !pawn.Spawned || sovereignController == null || sovereignController.Dead
+                || !sovereignController.Spawned || sovereignController.Map != pawn.Map
+                || sovereignController.Faction == null || pawn.Faction != sovereignController.Faction)
+                return false;
+            return ReplicatorQueenUtility.HasSovereignDirectiveAuthority(sovereignController);
+        }
 
         public override void CompTick()
         {
@@ -51,6 +103,9 @@ namespace WraithNaniteGravtech
             if ((Find.TickManager.TicksGame + pawn.thingIDNumber) % CheckIntervalTicks != 0)
                 return;
 
+            if (sovereignController != null && !HasActiveSovereignBinding())
+                sovereignController = null;
+
             if (pawn.Faction != Faction.OfPlayer)
             {
                 uncontrolledTicks = 0;
@@ -59,6 +114,7 @@ namespace WraithNaniteGravtech
 
             if (pawn.IsColonyMechPlayerControlled
                 || ReplicatorQueenUtility.HasSovereignForFaction(pawn.Map, pawn.Faction)
+                || HasActiveSovereignBinding()
                 || ReplicatorLatticeOverrideUtility.IsTemporarilyOverridden(pawn))
             {
                 uncontrolledTicks = 0;
@@ -75,6 +131,7 @@ namespace WraithNaniteGravtech
                 return;
 
             uncontrolledTicks = 0;
+            sovereignController = null;
             pawn.SetFaction(swarm, null);
             Messages.Message("WNG_ReplicatorGoneFeral".Translate(pawn.LabelShort), pawn, MessageTypeDefOf.ThreatSmall, historical: true);
         }
@@ -165,6 +222,7 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref selfDefenseUntilTick, "wngReplicatorSelfDefenseUntilTick", 0);
             Scribe_Values.Look(ref lastThreatBroadcastTick, "wngReplicatorLastThreatBroadcastTick", -999999);
             Scribe_References.Look(ref recentAggressor, "wngReplicatorRecentAggressor");
+            Scribe_References.Look(ref sovereignController, "wngReplicatorSovereignController");
         }
     }
 }

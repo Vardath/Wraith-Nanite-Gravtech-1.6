@@ -79,6 +79,9 @@ jobs:
       - name: Mature Wraith Hive retaliation audit
         run: python3 Tools/audit_wraith_mature_hive_retaliation.py
 
+      - name: Nanite and human-form identity audit
+        run: python3 Tools/audit_nanite_humanform_identity.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 

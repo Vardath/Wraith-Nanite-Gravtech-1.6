@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_NaniteBody</defName>
+    <label>nanite body</label>
+    <description>A synthetic humanoid body maintained by coordinated nanomachines. It keeps an ordinary Food need as feedstock intake while rapidly clearing food poisoning and supporting WNG nanite reconstruction.</description>
+    <geneClass>WraithNaniteGravtech.Gene_NaniteBody</geneClass>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_NaniteReserve</defName>
+    <label>nanite reserve</label>
+    <description>A visible reserve of converted feedstock used by accelerated nanite repair and high-cost reconstruction. Eating replenishes the reserve; ordinary passage of time does not consume it.</description>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
+    <resourceLabel>Nanite reserve</resourceLabel>
+    <resourceDescription>Stored nanite feedstock. Reserve-powered injury repair spends 1.5% per successful pulse and missing-part reconstruction spends 25% per restored part.</resourceDescription>
+    <resourceGizmoThresholds><li>0.10</li><li>0.25</li><li>0.60</li></resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView>
+    <showGizmoWhenDrafted>true</showGizmoWhenDrafted>
+    <showGizmoOnMultiSelect>false</showGizmoOnMultiSelect>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_NaniteReconstruction</defName>
+    <label>nanite reconstruction</label>
+    <description>Coordinated repair nanites heal ordinary injuries rapidly while reserve remains, fall back to slower emergency repair when depleted, and can reconstruct missing anatomy on a much longer cycle.</description>
+    <geneClass>WraithNaniteGravtech.Gene_NaniteReconstruction</geneClass>
+    <biostatCpx>4</biostatCpx>
+    <biostatMet>-2</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_EMPSensitiveNanites</defName>
+    <label>EMP-sensitive nanites</label>
+    <description>The body's distributed nanite coordination is vulnerable to EMP. A successful EMP hit temporarily pauses nanite reconstruction instead of being ignored by a human-shaped synthetic.</description>
+    <geneClass>WraithNaniteGravtech.Gene_EMPSensitiveNanites</geneClass>
+    <biostatCpx>-1</biostatCpx>
+    <biostatMet>1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_NeuralInterface</defName>
+    <label>nanite neural interface</label>
+    <description>A structured synthetic neural interface used by WNG human-form Replicator copy, reconstruction and pattern-transfer systems.</description>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_AsuranCollectiveLink</defName>
+    <label>collective lattice link</label>
+    <description>A persistent identity link used by Asuran and human-form Replicator collective systems. It marks a unit as part of the synthetic lattice without making it a Replicator Queen.</description>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_ReplicatorQueenLink</defName>
+    <label>sovereign replicator lattice</label>
+    <description>The unique sovereign coordination lattice of the Replicator Queen. This marker is never part of the ordinary human-form Replicator xenotype and grants direct command authority over base/block Replicators.</description>
+    <geneClass>WraithNaniteGravtech.Gene_ReplicatorQueenLink</geneClass>
+    <abilities><li>WNG_SovereignLatticeDirective</li></abilities>
+    <biostatCpx>6</biostatCpx>
+    <biostatMet>-2</biostatMet>
+  </GeneDef>
+</Defs>

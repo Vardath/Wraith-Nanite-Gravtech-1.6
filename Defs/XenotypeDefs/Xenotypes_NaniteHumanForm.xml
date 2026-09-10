@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <XenotypeDef>
+    <defName>WNG_NanitePrecursor</defName>
+    <label>nanite precursor</label>
+    <description>A synthetic precursor humanoid maintained by coordinated nanomachines. It eats ordinary food as feedstock, stores converted material in a visible reserve, reconstructs damage, carries a neural interface and collective link, and is vulnerable to EMP disruption.</description>
+    <genes>
+      <li>WNG_NaniteBody</li>
+      <li>WNG_NaniteReserve</li>
+      <li>WNG_NaniteReconstruction</li>
+      <li>WNG_EMPSensitiveNanites</li>
+      <li>WNG_NeuralInterface</li>
+      <li>WNG_AsuranCollectiveLink</li>
+    </genes>
+  </XenotypeDef>
+
+  <XenotypeDef>
+    <defName>WNG_HumanFormReplicator</defName>
+    <label>human-form replicator</label>
+    <description>A human-shaped Replicator assembled from coordinated nanomachines. It remains a Human pawn for social and pawn-generation systems while its nanite package provides feedstock reserve, reconstruction, neural-interface compatibility, collective identity and EMP vulnerability.</description>
+    <genes>
+      <li>WNG_NaniteBody</li>
+      <li>WNG_NaniteReserve</li>
+      <li>WNG_NaniteReconstruction</li>
+      <li>WNG_EMPSensitiveNanites</li>
+      <li>WNG_NeuralInterface</li>
+      <li>WNG_AsuranCollectiveLink</li>
+      <li>Deathless</li>
+      <li>VacuumResistant</li>
+    </genes>
+  </XenotypeDef>
+</Defs>
