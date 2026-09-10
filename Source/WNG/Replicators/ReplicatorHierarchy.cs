@@ -51,6 +51,11 @@ namespace WraithNaniteGravtech
             if (pawn?.Spawned == true) lastPosition = pawn.Position;
             if (pawn == null || pawn.Dead || !pawn.Spawned || !CanUpgrade || assembling || ReplicatorEMP.IsSuppressed(pawn)) return;
 
+            // Player Replicators never silently reorganize themselves. A future explicit player/Queen
+            // command may invoke a controlled transaction, but autonomous recombination is hostile-swarm behavior.
+            if (pawn.Faction == Faction.OfPlayer || pawn.IsColonyMechPlayerControlled) return;
+            if (ReplicatorContainmentUtility.IsContained(pawn.Map, pawn.Position)) return;
+
             int now = Find.TickManager.TicksGame;
             if (now < nextAssemblyTick || now < recombineBlockedUntil) return;
             nextAssemblyTick = now + Math.Max(1, Props.assemblyCheckTicks);
@@ -62,6 +67,7 @@ namespace WraithNaniteGravtech
                 .Where(p => p != null && !p.Dead && p.Spawned && p.def == pawn.def && p.Faction == pawn.Faction
                     && p.Position.DistanceToSquared(pawn.Position) <= radiusSq
                     && !ReplicatorEMP.IsSuppressed(p)
+                    && !ReplicatorContainmentUtility.IsContained(map, p.Position)
                     && (p.TryGetComp<CompReplicatorHierarchy>()?.CanParticipate(now) ?? true))
                 .OrderBy(p => p.thingIDNumber)
                 .ToList();
@@ -77,8 +83,14 @@ namespace WraithNaniteGravtech
                 assembling = true;
                 upgraded = PawnGenerator.GeneratePawn(upgradeKind, pawn.Faction);
                 CompReplicatorState upgradedState = upgraded.TryGetComp<CompReplicatorState>();
+                CompReplicatorAssimilation upgradedMatter = upgraded.TryGetComp<CompReplicatorAssimilation>();
+                float carriedMatter = 0f;
                 foreach (Pawn source in sources)
+                {
                     upgradedState?.MergeFrom(source.TryGetComp<CompReplicatorState>());
+                    carriedMatter += source.TryGetComp<CompReplicatorAssimilation>()?.StoredMatter ?? 0f;
+                }
+                upgradedMatter?.SetStoredMatter(carriedMatter);
                 GenSpawn.Spawn(upgraded, pawn.Position, map);
 
                 foreach (Pawn source in sources)
@@ -130,12 +142,15 @@ namespace WraithNaniteGravtech
             if (!origin.IsValid || !origin.InBounds(map)) return;
 
             deathSplitHandled = true;
+            float sourceMatter = source.TryGetComp<CompReplicatorAssimilation>()?.StoredMatter ?? 0f;
+            float matterPerChild = Props.splitCount > 0 ? sourceMatter / Props.splitCount : 0f;
             for (int i = 0; i < Props.splitCount; i++)
             {
                 try
                 {
                     Pawn child = PawnGenerator.GeneratePawn(childKind, source.Faction);
                     child.TryGetComp<CompReplicatorState>()?.CopyFrom(source.TryGetComp<CompReplicatorState>());
+                    child.TryGetComp<CompReplicatorAssimilation>()?.SetStoredMatter(matterPerChild);
                     child.TryGetComp<CompReplicatorHierarchy>()?.DelayRecombination(Props.splitRecombineDelayTicks);
                     IntVec3 cell = CellFinder.RandomClosewalkCellNear(origin, map, 2);
                     GenSpawn.Spawn(child, cell, map);
