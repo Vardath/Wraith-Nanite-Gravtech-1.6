@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Wraith childhood/origin pool -->
+  <BackstoryDef>
+    <defName>WNG_BS_WraithCrecheBroodling</defName><slot>Childhood</slot><title>Hive creche broodling</title><titleShort>Creche broodling</titleShort>
+    <baseDesc>[PAWN_nameDef] was raised in a communal Wraith creche where feeding discipline, silence and obedience to older castes shaped every early lesson.</baseDesc>
+    <spawnCategories><li>WNG_WraithOrigin</li></spawnCategories>
+    <skillGains><Social>1</Social><Medicine>1</Medicine></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_WraithLivingShipBroodling</defName><slot>Childhood</slot><title>Living-ship broodling</title><titleShort>Ship broodling</titleShort>
+    <baseDesc>[PAWN_nameDef] spent [PAWN_possessive] childhood inside a living vessel, learning its moods, passages and organic machinery almost as naturally as walking.</baseDesc>
+    <spawnCategories><li>WNG_WraithOrigin</li></spawnCategories>
+    <skillGains><Construction>1</Construction><Crafting>1</Crafting></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_WraithFeedingCourtWard</defName><slot>Childhood</slot><title>Feeding-court ward</title><titleShort>Court ward</titleShort>
+    <baseDesc>[PAWN_nameDef] grew up among feeding courts and guarded holding chambers, learning early how hierarchy, restraint and hunger shaped Wraith society.</baseDesc>
+    <spawnCategories><li>WNG_WraithOrigin</li></spawnCategories>
+    <skillGains><Social>2</Social><Melee>1</Melee></skillGains>
+  </BackstoryDef>
+
+  <!-- Synthetic childhood/origin pool -->
+  <BackstoryDef>
+    <defName>WNG_BS_SynthArchiveBorn</defName><slot>Childhood</slot><title>Archive-born template</title><titleShort>Archive-born</titleShort>
+    <baseDesc>[PAWN_nameDef]'s earliest memories were assembled from archived developmental patterns, with education arriving as carefully curated experiences rather than an ordinary childhood.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticOrigin</li></spawnCategories>
+    <skillGains><Intellectual>2</Intellectual><Social>1</Social></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_SynthConstructedServicePattern</defName><slot>Childhood</slot><title>Constructed service pattern</title><titleShort>Service pattern</titleShort>
+    <baseDesc>[PAWN_nameDef] was initialized around a practical service template, learning maintenance, observation and cooperation through repeated simulated assignments.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticOrigin</li></spawnCategories>
+    <skillGains><Crafting>1</Crafting><Construction>1</Construction><Social>1</Social></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_SynthRecoveredImprint</defName><slot>Childhood</slot><title>Recovered biological imprint</title><titleShort>Recovered imprint</titleShort>
+    <baseDesc>[PAWN_nameDef]'s formative identity was reconstructed from a damaged biological pattern archive. Some memories are vivid, others only impressions retained by the nanite lattice.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticOrigin</li></spawnCategories>
+    <skillGains><Medicine>1</Medicine><Intellectual>1</Intellectual><Social>1</Social></skillGains>
+  </BackstoryDef>
+
+  <!-- Wraith Hunter -->
+  <BackstoryDef>
+    <defName>WNG_BS_WraithHunterTrail</defName><slot>Adulthood</slot><title>Prey trail hunter</title><titleShort>Trail hunter</titleShort>
+    <baseDesc>[PAWN_nameDef] learned to follow frightened prey through broken terrain, reading movement and hesitation before closing for capture.</baseDesc>
+    <spawnCategories><li>WNG_WraithHunterStory</li></spawnCategories><skillGains><Shooting>3</Shooting><Melee>2</Melee></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_WraithHunterCuller</defName><slot>Adulthood</slot><title>Culling runner</title><titleShort>Culling runner</titleShort>
+    <baseDesc>[PAWN_nameDef] served in fast-moving culling parties, learning to isolate useful captives without wasting the feeding stock a Hive needed.</baseDesc>
+    <spawnCategories><li>WNG_WraithHunterStory</li></spawnCategories><skillGains><Shooting>2</Shooting><Animals>2</Animals><Social>1</Social></skillGains>
+  </BackstoryDef>
+
+  <!-- Wraith Warrior -->
+  <BackstoryDef>
+    <defName>WNG_BS_WraithWarriorBoarder</defName><slot>Adulthood</slot><title>Hive boarder</title><titleShort>Boarder</titleShort>
+    <baseDesc>[PAWN_nameDef] fought in close corridors and breached settlements where hesitation meant starvation for the warriors behind [PAWN_objective].</baseDesc>
+    <spawnCategories><li>WNG_WraithWarriorStory</li></spawnCategories><skillGains><Melee>4</Melee><Shooting>1</Shooting></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_WraithWarriorLine</defName><slot>Adulthood</slot><title>Brood line warrior</title><titleShort>Line warrior</titleShort>
+    <baseDesc>[PAWN_nameDef] spent years holding the hard center of Wraith assaults, protecting commanders and keeping younger hunters from breaking formation.</baseDesc>
+    <spawnCategories><li>WNG_WraithWarriorStory</li></spawnCategories><skillGains><Melee>3</Melee><Shooting>2</Shooting></skillGains>
+  </BackstoryDef>
+
+  <!-- Wraith Commander -->
+  <BackstoryDef>
+    <defName>WNG_BS_WraithCommanderRaid</defName><slot>Adulthood</slot><title>Raid coordinator</title><titleShort>Raid commander</titleShort>
+    <baseDesc>[PAWN_nameDef] coordinated hunters, warriors and craft crews during raids, balancing captives, casualties and the temper of [PAWN_possessive] Queen.</baseDesc>
+    <spawnCategories><li>WNG_WraithCommanderStory</li></spawnCategories><skillGains><Social>3</Social><Shooting>2</Shooting><Intellectual>1</Intellectual></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_WraithCommanderTerritory</defName><slot>Adulthood</slot><title>Territory commander</title><titleShort>Territory commander</titleShort>
+    <baseDesc>[PAWN_nameDef] managed distant hunting grounds and rival-lineage boundaries, learning when intimidation was cheaper than open conflict.</baseDesc>
+    <spawnCategories><li>WNG_WraithCommanderStory</li></spawnCategories><skillGains><Social>4</Social><Intellectual>2</Intellectual></skillGains>
+  </BackstoryDef>
+
+  <!-- Wraith Keeper -->
+  <BackstoryDef>
+    <defName>WNG_BS_WraithKeeperDormancy</defName><slot>Adulthood</slot><title>Dormancy keeper</title><titleShort>Dormancy keeper</titleShort>
+    <baseDesc>[PAWN_nameDef] maintained hibernating Wraith and the living systems around them, waking only those the Hive could feed and sustain.</baseDesc>
+    <spawnCategories><li>WNG_WraithKeeperStory</li></spawnCategories><skillGains><Medicine>4</Medicine><Intellectual>2</Intellectual></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_WraithKeeperFeeding</defName><slot>Adulthood</slot><title>Feeding reserve keeper</title><titleShort>Reserve keeper</titleShort>
+    <baseDesc>[PAWN_nameDef] supervised feeding reserves and biological infrastructure, preserving both captives and Wraith through long shortages.</baseDesc>
+    <spawnCategories><li>WNG_WraithKeeperStory</li></spawnCategories><skillGains><Medicine>3</Medicine><Social>2</Social><Intellectual>1</Intellectual></skillGains>
+  </BackstoryDef>
+
+  <!-- Wraith Queen -->
+  <BackstoryDef>
+    <defName>WNG_BS_WraithQueenBrood</defName><slot>Adulthood</slot><title>Brood matriarch</title><titleShort>Matriarch</titleShort>
+    <baseDesc>[PAWN_nameDef] shaped a Wraith brood through command, bargaining and ruthless decisions over territory, feeding and survival.</baseDesc>
+    <spawnCategories><li>WNG_WraithQueenStory</li></spawnCategories><skillGains><Social>4</Social><Intellectual>2</Intellectual></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_WraithQueenCourt</defName><slot>Adulthood</slot><title>Hive court ruler</title><titleShort>Court ruler</titleShort>
+    <baseDesc>[PAWN_nameDef] ruled through a court of commanders and keepers, learning to turn rivalry into obedience without wasting valuable lives.</baseDesc>
+    <spawnCategories><li>WNG_WraithQueenStory</li></spawnCategories><skillGains><Social>3</Social><Intellectual>3</Intellectual></skillGains>
+  </BackstoryDef>
+
+  <!-- Player Wraith -->
+  <BackstoryDef>
+    <defName>WNG_BS_PlayerWraithDefector</defName><slot>Adulthood</slot><title>Hive defector</title><titleShort>Defector</titleShort>
+    <baseDesc>[PAWN_nameDef] abandoned [PAWN_possessive] former Hive after refusing its demands, carrying Wraith instincts into a life shaped by new loyalties.</baseDesc>
+    <spawnCategories><li>WNG_PlayerWraithStory</li></spawnCategories><skillGains><Social>2</Social><Shooting>2</Shooting><Medicine>1</Medicine></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_PlayerWraithExile</defName><slot>Adulthood</slot><title>Long exile</title><titleShort>Exile</titleShort>
+    <baseDesc>[PAWN_nameDef] survived away from Wraith society long enough to learn restraint, barter and the difficult habits of coexistence.</baseDesc>
+    <spawnCategories><li>WNG_PlayerWraithStory</li></spawnCategories><skillGains><Social>3</Social><Plants>1</Plants><Medicine>1</Medicine></skillGains>
+  </BackstoryDef>
+
+  <!-- Synthetic Engineer -->
+  <BackstoryDef>
+    <defName>WNG_BS_SynthEngineerFabricator</defName><slot>Adulthood</slot><title>Nanite fabricator</title><titleShort>Fabricator</titleShort>
+    <baseDesc>[PAWN_nameDef] maintained fabrication lattices and learned to diagnose failures by watching how matter moved through a machine network.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticEngineerStory</li></spawnCategories><skillGains><Crafting>4</Crafting><Construction>2</Construction></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_SynthEngineerReconstructor</defName><slot>Adulthood</slot><title>Pattern reconstructor</title><titleShort>Reconstructor</titleShort>
+    <baseDesc>[PAWN_nameDef] specialized in rebuilding damaged systems from incomplete patterns, treating missing information as an engineering problem.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticEngineerStory</li></spawnCategories><skillGains><Intellectual>3</Intellectual><Crafting>3</Crafting></skillGains>
+  </BackstoryDef>
+
+  <!-- Synthetic Soldier -->
+  <BackstoryDef>
+    <defName>WNG_BS_SynthSoldierSentinel</defName><slot>Adulthood</slot><title>Lattice sentinel</title><titleShort>Sentinel</titleShort>
+    <baseDesc>[PAWN_nameDef] guarded synthetic facilities against biological raiders and machine incursions, learning disciplined ranged combat.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticSoldierStory</li></spawnCategories><skillGains><Shooting>4</Shooting><Melee>1</Melee></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_SynthSoldierInterdictor</defName><slot>Adulthood</slot><title>Interdiction unit</title><titleShort>Interdictor</titleShort>
+    <baseDesc>[PAWN_nameDef] served in precision strike teams tasked with disabling dangerous targets before they could damage the wider collective.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticSoldierStory</li></spawnCategories><skillGains><Shooting>3</Shooting><Melee>2</Melee><Intellectual>1</Intellectual></skillGains>
+  </BackstoryDef>
+
+  <!-- Synthetic Commander -->
+  <BackstoryDef>
+    <defName>WNG_BS_SynthCommanderConsensus</defName><slot>Adulthood</slot><title>Consensus coordinator</title><titleShort>Coordinator</titleShort>
+    <baseDesc>[PAWN_nameDef] translated collective priorities into orders that individual units could execute without losing local initiative.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticCommanderStory</li></spawnCategories><skillGains><Social>3</Social><Intellectual>3</Intellectual></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_SynthCommanderStrategist</defName><slot>Adulthood</slot><title>Lattice strategist</title><titleShort>Strategist</titleShort>
+    <baseDesc>[PAWN_nameDef] modeled hostile settlements, supply lines and machine behavior, then converted those models into precise collective action.</baseDesc>
+    <spawnCategories><li>WNG_SyntheticCommanderStory</li></spawnCategories><skillGains><Intellectual>4</Intellectual><Social>2</Social></skillGains>
+  </BackstoryDef>
+
+  <!-- General human-form -->
+  <BackstoryDef>
+    <defName>WNG_BS_HumanFormObserver</defName><slot>Adulthood</slot><title>Biological observer</title><titleShort>Observer</titleShort>
+    <baseDesc>[PAWN_nameDef] spent years studying biological societies at close range, learning their routines well enough to move among them without constant direction.</baseDesc>
+    <spawnCategories><li>WNG_HumanFormStory</li></spawnCategories><skillGains><Social>3</Social><Medicine>1</Medicine><Intellectual>1</Intellectual></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_HumanFormMediator</defName><slot>Adulthood</slot><title>Pattern mediator</title><titleShort>Mediator</titleShort>
+    <baseDesc>[PAWN_nameDef] worked between isolated synthetic groups, reconciling divergent memories and priorities before they became open conflict.</baseDesc>
+    <spawnCategories><li>WNG_HumanFormStory</li></spawnCategories><skillGains><Social>4</Social><Intellectual>1</Intellectual></skillGains>
+  </BackstoryDef>
+
+  <!-- Infiltrator -->
+  <BackstoryDef>
+    <defName>WNG_BS_InfiltratorSleeper</defName><slot>Adulthood</slot><title>Sleeper-pattern operative</title><titleShort>Sleeper operative</titleShort>
+    <baseDesc>[PAWN_nameDef] rehearsed ordinary biological habits until conversation, hesitation and error could be performed without conscious calculation.</baseDesc>
+    <spawnCategories><li>WNG_InfiltratorStory</li></spawnCategories><skillGains><Social>4</Social><Intellectual>1</Intellectual></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_InfiltratorMimic</defName><slot>Adulthood</slot><title>Identity mimic</title><titleShort>Identity mimic</titleShort>
+    <baseDesc>[PAWN_nameDef] specialized in reconstructing accents, routines and social expectations from fragments of observed behavior.</baseDesc>
+    <spawnCategories><li>WNG_InfiltratorStory</li></spawnCategories><skillGains><Social>3</Social><Intellectual>2</Intellectual><Shooting>1</Shooting></skillGains>
+  </BackstoryDef>
+
+  <!-- Player synthetic -->
+  <BackstoryDef>
+    <defName>WNG_BS_PlayerSynthIndependent</defName><slot>Adulthood</slot><title>Independent pattern</title><titleShort>Independent</titleShort>
+    <baseDesc>[PAWN_nameDef] separated from collective command and learned to make decisions for a small community rather than a distributed network.</baseDesc>
+    <spawnCategories><li>WNG_PlayerSyntheticStory</li></spawnCategories><skillGains><Social>2</Social><Crafting>2</Crafting><Intellectual>1</Intellectual></skillGains>
+  </BackstoryDef>
+  <BackstoryDef>
+    <defName>WNG_BS_PlayerSynthRecovered</defName><slot>Adulthood</slot><title>Recovered synthetic</title><titleShort>Recovered</titleShort>
+    <baseDesc>[PAWN_nameDef] survived the collapse of a former network and rebuilt [PAWN_possessive] identity around the people who recovered [PAWN_objective].</baseDesc>
+    <spawnCategories><li>WNG_PlayerSyntheticStory</li></spawnCategories><skillGains><Medicine>2</Medicine><Crafting>2</Crafting><Social>1</Social></skillGains>
+  </BackstoryDef>
+</Defs>

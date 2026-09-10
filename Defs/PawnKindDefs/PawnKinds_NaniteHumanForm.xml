@@ -1,111 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <PawnKindDef Name="WNG_NanitePrecursorPawnBase" Abstract="True">
-    <race>Human</race>
-    <defaultFactionDef>WNG_PrecursorCollective</defaultFactionDef>
-    <useFactionXenotypes>false</useFactionXenotypes>
+    <race>Human</race><defaultFactionDef>WNG_PrecursorCollective</defaultFactionDef><useFactionXenotypes>false</useFactionXenotypes>
     <xenotypeSet><xenotypeChances><WNG_NanitePrecursor>1</WNG_NanitePrecursor></xenotypeChances></xenotypeSet>
-    <minGenerationAge>20</minGenerationAge>
-    <maxGenerationAge>100</maxGenerationAge>
-    <allowOldAgeInjuries>false</allowOldAgeInjuries>
-    <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
-    <gearHealthRange>0.9~1</gearHealthRange>
-    <initialWillRange>10~22</initialWillRange>
-    <initialResistanceRange>16~30</initialResistanceRange>
+    <minGenerationAge>20</minGenerationAge><maxGenerationAge>100</maxGenerationAge><allowOldAgeInjuries>false</allowOldAgeInjuries><apparelIgnoreSeasons>true</apparelIgnoreSeasons><gearHealthRange>0.9~1</gearHealthRange><initialWillRange>10~22</initialWillRange><initialResistanceRange>16~30</initialResistanceRange>
   </PawnKindDef>
 
   <PawnKindDef ParentName="WNG_NanitePrecursorPawnBase">
-    <defName>WNG_PrecursorEngineer</defName>
-    <label>precursor engineer</label>
-    <description>A synthetic precursor specialist focused on fabrication, reconstruction and machine systems.</description>
-    <combatPower>110</combatPower>
-    <isFighter>false</isFighter>
+    <defName>WNG_PrecursorEngineer</defName><label>precursor engineer</label><description>A synthetic precursor specialist focused on fabrication, reconstruction and machine systems.</description><combatPower>110</combatPower><isFighter>false</isFighter>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_SyntheticEngineerStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_NanitePrecursorPawnBase">
-    <defName>WNG_PrecursorSoldier</defName>
-    <label>precursor soldier</label>
-    <description>A combat-configured synthetic precursor used by the Lattice Collective and related enclaves.</description>
-    <combatPower>220</combatPower>
-    <isFighter>true</isFighter>
+    <defName>WNG_PrecursorSoldier</defName><label>precursor soldier</label><description>A combat-configured synthetic precursor used by the Lattice Collective and related enclaves.</description><combatPower>220</combatPower><isFighter>true</isFighter>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_SyntheticSoldierStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_NanitePrecursorPawnBase">
-    <defName>WNG_PrecursorCommander</defName>
-    <label>precursor commander</label>
-    <description>A high-order synthetic coordinator responsible for directing precursor strike and settlement groups.</description>
-    <combatPower>300</combatPower>
-    <isFighter>true</isFighter>
-    <factionLeader>true</factionLeader>
-    <itemQuality>Excellent</itemQuality>
+    <defName>WNG_PrecursorCommander</defName><label>precursor commander</label><description>A high-order synthetic coordinator responsible for directing precursor strike and settlement groups.</description><combatPower>300</combatPower><isFighter>true</isFighter><factionLeader>true</factionLeader><itemQuality>Excellent</itemQuality>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_SyntheticCommanderStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
 
   <PawnKindDef Name="WNG_HumanFormReplicatorPawnBase" Abstract="True">
-    <race>Human</race>
-    <defaultFactionDef>WNG_PrecursorCollective</defaultFactionDef>
-    <useFactionXenotypes>false</useFactionXenotypes>
+    <race>Human</race><defaultFactionDef>WNG_PrecursorCollective</defaultFactionDef><useFactionXenotypes>false</useFactionXenotypes>
     <xenotypeSet><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet>
-    <minGenerationAge>18</minGenerationAge>
-    <maxGenerationAge>80</maxGenerationAge>
-    <allowOldAgeInjuries>false</allowOldAgeInjuries>
-    <isFighter>true</isFighter>
-    <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
-    <gearHealthRange>0.9~1</gearHealthRange>
-    <initialWillRange>8~20</initialWillRange>
-    <initialResistanceRange>12~28</initialResistanceRange>
+    <minGenerationAge>18</minGenerationAge><maxGenerationAge>80</maxGenerationAge><allowOldAgeInjuries>false</allowOldAgeInjuries><isFighter>true</isFighter><apparelIgnoreSeasons>true</apparelIgnoreSeasons><gearHealthRange>0.9~1</gearHealthRange><initialWillRange>8~20</initialWillRange><initialResistanceRange>12~28</initialResistanceRange>
   </PawnKindDef>
 
   <PawnKindDef ParentName="WNG_HumanFormReplicatorPawnBase">
-    <defName>WNG_HumanFormReplicator</defName>
-    <label>human-form replicator</label>
-    <description>A general-purpose human-form Replicator able to participate in Lattice forces and mixed Replicator attacks without being treated as a block-machine race.</description>
-    <combatPower>180</combatPower>
+    <defName>WNG_HumanFormReplicator</defName><label>human-form replicator</label><description>A general-purpose human-form Replicator able to participate in Lattice forces and mixed Replicator attacks without being treated as a block-machine race.</description><combatPower>180</combatPower>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_HumanFormStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormReplicatorPawnBase">
-    <defName>WNG_HumanFormReplicatorInfiltrator</defName>
-    <label>human-form replicator infiltrator</label>
-    <description>A human-form Replicator configured for infiltration and later synthetic-reveal systems.</description>
-    <combatPower>150</combatPower>
+    <defName>WNG_HumanFormReplicatorInfiltrator</defName><label>human-form replicator infiltrator</label><description>A human-form Replicator configured for infiltration and later synthetic-reveal systems.</description><combatPower>150</combatPower>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_InfiltratorStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormReplicatorPawnBase">
-    <defName>WNG_HumanFormReplicatorSoldier</defName>
-    <label>human-form replicator soldier</label>
-    <description>A human-form Replicator configured for direct combat.</description>
-    <combatPower>230</combatPower>
+    <defName>WNG_HumanFormReplicatorSoldier</defName><label>human-form replicator soldier</label><description>A human-form Replicator configured for direct combat.</description><combatPower>230</combatPower>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_SyntheticSoldierStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormReplicatorPawnBase">
-    <defName>WNG_HumanFormReplicatorCoordinator</defName>
-    <label>human-form replicator coordinator</label>
-    <description>A human-form Replicator optimized for collective coordination and command roles.</description>
-    <combatPower>260</combatPower>
-    <itemQuality>Excellent</itemQuality>
+    <defName>WNG_HumanFormReplicatorCoordinator</defName><label>human-form replicator coordinator</label><description>A human-form Replicator optimized for collective coordination and command roles.</description><combatPower>260</combatPower><itemQuality>Excellent</itemQuality>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_SyntheticCommanderStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormReplicatorPawnBase">
-    <defName>WNG_PlayerHumanFormReplicator</defName>
-    <label>player human-form replicator</label>
-    <defaultFactionDef>PlayerColony</defaultFactionDef>
-    <combatPower>180</combatPower>
-    <initialWillRange>0~0</initialWillRange>
-    <initialResistanceRange>0~0</initialResistanceRange>
+    <defName>WNG_PlayerHumanFormReplicator</defName><label>player human-form replicator</label><defaultFactionDef>PlayerColony</defaultFactionDef><combatPower>180</combatPower><initialWillRange>0~0</initialWillRange><initialResistanceRange>0~0</initialResistanceRange>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood><categoriesAdulthood><li>WNG_PlayerSyntheticStory</li></categoriesAdulthood></li></backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormReplicatorPawnBase">
-    <defName>WNG_ReplicatorQueenChild</defName>
-    <label>replicator queen</label>
-    <description>The unique child-aged human-form Replicator Queen. Her ordinary body uses the human-form Replicator xenotype; sovereign authority is added separately to the exact quest pawn and is not a race or caste xenotype.</description>
-    <fixedGender>Female</fixedGender>
-    <minGenerationAge>13</minGenerationAge>
-    <maxGenerationAge>13</maxGenerationAge>
-    <allowOldAgeInjuries>false</allowOldAgeInjuries>
-    <combatPower>55</combatPower>
-    <isFighter>false</isFighter>
-    <apparelMoney>0</apparelMoney>
-    <weaponMoney>0</weaponMoney>
-    <initialWillRange>0~4</initialWillRange>
-    <initialResistanceRange>0~6</initialResistanceRange>
+    <defName>WNG_ReplicatorQueenChild</defName><label>replicator queen</label><description>The unique child-aged human-form Replicator Queen. Her ordinary body uses the human-form Replicator xenotype; sovereign authority is added separately to the exact quest pawn and is not a race or caste xenotype.</description>
+    <fixedGender>Female</fixedGender><minGenerationAge>13</minGenerationAge><maxGenerationAge>13</maxGenerationAge><allowOldAgeInjuries>false</allowOldAgeInjuries><combatPower>55</combatPower><isFighter>false</isFighter><apparelMoney>0</apparelMoney><weaponMoney>0</weaponMoney><initialWillRange>0~4</initialWillRange><initialResistanceRange>0~6</initialResistanceRange>
+    <backstoryFiltersOverride><li><categoriesChildhood><li>WNG_SyntheticOrigin</li></categoriesChildhood></li></backstoryFiltersOverride>
   </PawnKindDef>
 </Defs>
