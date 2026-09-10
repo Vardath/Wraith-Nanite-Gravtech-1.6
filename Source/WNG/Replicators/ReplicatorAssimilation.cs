@@ -33,10 +33,7 @@ namespace WraithNaniteGravtech
         public float StoredMatter => Math.Max(0f, storedMatter);
 
         public void SetStoredMatter(float value) => storedMatter = Math.Max(0f, value);
-        public void AddStoredMatter(float value)
-        {
-            if (value > 0f) storedMatter += value;
-        }
+        public void AddStoredMatter(float value) { if (value > 0f) storedMatter += value; }
 
         public bool CanAct
         {
@@ -58,7 +55,6 @@ namespace WraithNaniteGravtech
             if (cachedTarget != null && IsTargetValid(pawn, cachedTarget)) return cachedTarget;
             if (now < nextSearchTick) return null;
             nextSearchTick = now + Math.Max(120, Props.searchIntervalTicks);
-
             float radiusSq = Props.searchRadius * Props.searchRadius;
             cachedTarget = pawn.Map.listerThings.AllThings
                 .Where(t => IsTargetValid(pawn, t) && t.Position.DistanceToSquared(pawn.Position) <= radiusSq)
@@ -78,7 +74,7 @@ namespace WraithNaniteGravtech
             if (identity.Contains("grav") || identity.Contains("gravity")) score += 1100f;
             if (target.def.IsWeapon && target.def.IsRangedWeapon) score += 950f;
             if (target.TryGetComp<CompPowerTrader>() != null || target.TryGetComp<CompPowerBattery>() != null) score += 850f;
-            if (target.def.category == ThingCategory.Apparel) score += 700f;
+            if (target.def.apparel != null) score += 700f;
             if (target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500) score += 600f;
             if (target.def.category == ThingCategory.Building) score += 250f;
             score += Math.Min(250f, Math.Max(0f, target.MarketValue) * 0.05f);
