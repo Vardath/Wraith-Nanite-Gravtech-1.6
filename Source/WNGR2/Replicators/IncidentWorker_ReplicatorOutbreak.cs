@@ -3,6 +3,11 @@ using Verse;
 
 namespace WraithNaniteGravtech
 {
+    /// <summary>
+    /// Autonomous block-swarm outbreak. Replicator Queen capture is deliberately not represented
+    /// here as a flat spawn-count bonus: sovereign Lattice access belongs to the hostile
+    /// human-form/Lattice threat path, while this incident remains the feral block-swarm ecology.
+    /// </summary>
     public sealed class IncidentWorker_ReplicatorOutbreak : IncidentWorker
     {
         private const int InitialReplicators = 3;
@@ -28,11 +33,9 @@ namespace WraithNaniteGravtech
             if (faction == null) return false;
             if (!RCellFinder.TryFindRandomPawnEntryCell(out IntVec3 entryCell, map, 0f))
                 entryCell = CellFinder.RandomEdgeCell(map);
-            GameComponent_ReplicatorQueenState queenState = Current.Game?.GetComponent<GameComponent_ReplicatorQueenState>();
+
             GameComponent_ReplicatorCrisisPressure crisis = Current.Game?.GetComponent<GameComponent_ReplicatorCrisisPressure>();
-            int count = InitialReplicators
-                + (queenState?.HostileOutbreakBonus ?? 0)
-                + (crisis?.HostileOutbreakBonus ?? 0);
+            int count = InitialReplicators + (crisis?.HostileOutbreakBonus ?? 0);
             for (int i = 0; i < count; i++)
             {
                 Pawn pawn = PawnGenerator.GeneratePawn(kind, faction);

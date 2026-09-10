@@ -57,6 +57,7 @@ if kinds is not None:
 source = (ROOT / "Source/WNGR2/Replicators/ReplicatorQueenSystems.cs").read_text(encoding="utf-8")
 control = (ROOT / "Source/WNGR2/Replicators/CompReplicatorControl.cs").read_text(encoding="utf-8")
 nanites = (ROOT / "Source/WNGR2/Replicators/NaniteHumanFormGenes.cs").read_text(encoding="utf-8")
+outbreak = (ROOT / "Source/WNGR2/Replicators/IncidentWorker_ReplicatorOutbreak.cs").read_text(encoding="utf-8")
 
 for needle, description in [
     ('pawn.kindDef?.defName != "WNG_ReplicatorQueenChild"', "Queen authority restricted to exact Queen PawnKind"),
@@ -71,6 +72,8 @@ for needle, description in [
 for forbidden in ['HostileOutbreakBonus => queenAbducted ? 1 : 0', 'Future Replicator outbreaks will begin slightly stronger']:
     if forbidden in source:
         fail("old +1 outbreak-only Queen consequence is still present")
+if "GameComponent_ReplicatorQueenState" in outbreak or "queenState" in outbreak:
+    fail("autonomous block-swarm outbreak must not use Replicator Queen capture as a flat count bonus")
 
 for needle, description in [
     ('private Pawn sovereignController;', "target-specific sovereign controller reference"),
