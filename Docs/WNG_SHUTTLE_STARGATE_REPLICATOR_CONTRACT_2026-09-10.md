@@ -46,13 +46,29 @@ When a Stargate-entry raid includes a Wraith Dart or Puddle Jumper:
 
 The roof interaction must be based on the actual roof over/around the gate emergence cells, not a generic map-wide roof flag.
 
+### Wraith Dart retreat route priority
+
+A hostile Wraith-piloted Dart that survives a raid does not simply despawn.
+
+Retreat order:
+1. **Stargate first when usable.** If hostile Wraith still control/pilot the Dart and an accessible compatible Stargate can be used, the Dart uses its own Stargate-dialing capability to establish an outbound route and physically leaves through the gate.
+2. **Native shuttle escape fallback.** If the Stargate is inaccessible, blocked, unavailable, cannot be redialed, or otherwise cannot provide a safe outbound route, the Dart attempts the normal RimWorld/Odyssey shuttle launch/exit behavior.
+3. **Failure leaves the craft behind.** If the Wraith fail to board/launch the surviving Dart, or neither escape route can actually complete, the craft remains on the map. It must never be silently despawned merely because a raid-retreat state was reached.
+
+Additional rules:
+- the same actual Dart is used for arrival, culling passes, landing, boarding and escape;
+- any exact captives still in its culling/transport buffer leave with it only after a real escape route commits successfully;
+- if Wraith abandon the Dart, its buffered captives remain physically associated with the surviving craft until hacking/destruction/other explicitly resolved outcome;
+- CatCraft remains authoritative for Stargate network/address/dial/iris/shield/receive-buffer mechanics; WNG requests/uses that functionality rather than replacing it;
+- the Dart's own DHD/dialing capability is Stargate-canonical and is represented as the craft initiating the CatCraft-compatible outbound dial, not as WNG taking ownership of the gate network.
+
 ## Autonomous block-Replicator behavior
 
 Default autonomous block-Replicator priorities are:
 
-**consume -> convert material to replication matter/fuel -> reproduce -> combine into larger forms -> continue consuming**
+**consume useful matter -> convert it into replication mass/state -> reproduce -> combine into larger forms -> continue consuming**
 
-They are not ordinary kill-on-sight raiders during the normal feeding phase.
+They are mechanical self-replicators, not biological feeders. They do not starve and do not require consumed matter as survival fuel.
 
 ### What they consume
 
@@ -69,11 +85,11 @@ Burrowers still prioritize genuine access blockers/containment where needed to r
 
 ### Provocation and local retaliation
 
-Before terminal map consumption is reached, Replicators attack pawns only when:
-- they are directly provoked/attacked; or
-- they have exhausted usable replication matter/fuel and cannot obtain more through feeding.
+Before terminal map consumption is reached, Replicators attack pawns only when directly provoked/attacked.
 
-When one Replicator is provoked, it sends a local retaliation signal. At most **five nearby Replicators** are recruited into that retaliation response, including/alongside the provoked unit as implementation permits. The larger swarm does not globally switch into combat mode; most Replicators continue consuming, reproducing, and combining.
+When one Replicator is provoked, it sends a local retaliation signal. The directly provoked unit retaliates and at most **five nearby Replicators** are recruited into that response. The larger swarm does not globally switch into combat mode; most Replicators continue consuming, reproducing, and combining.
+
+Running out of nearby matter does **not** create a combat state. A Replicator with nothing useful nearby may roam/search but does not attack merely because it cannot currently reproduce.
 
 Retaliation must be bounded in range/time and save-safe. It must not permanently turn the entire faction into a kill-on-sight swarm.
 
@@ -84,22 +100,19 @@ Once the swarm has consumed roughly **90–95% of the map's eligible consumable 
 First-build tuning target: **92.5% consumed**, with the trigger centralized/tunable so Vardath can move it anywhere in the 90–95% band without code edits.
 
 Required behavior after the threshold is crossed:
-- the swarm stops preserving living/moving targets as non-food obstacles;
-- Replicators may attack **all remaining attackable entities on the map**, including colonists, prisoners, visitors, hostile pawns, animals, insects/creatures and mechs;
-- this is a swarm-wide terminal state, unlike the ordinary bounded five-unit retaliation response;
+- Replicators may attack **all remaining attackable non-Replicator entities on the map**, including colonists, prisoners, visitors, hostile pawns, animals, insects/creatures and mechs;
+- this is a swarm-wide terminal state, unlike the ordinary bounded retaliation response;
 - surviving Replicators may still consume/reproduce/combine opportunistically, but exterminating remaining entities becomes a valid high-priority behavior;
-- terminal state should be derived from a stable measure of how much eligible map feedstock has actually been consumed, not ordinary raid points or faction hostility;
+- terminal state is derived from a stable measure of how much eligible map matter has actually been consumed, not ordinary raid points, biological hunger, or faction hostility;
 - the baseline/remaining-consumable accounting must be save-safe and should avoid expensive full-map recalculation every tick;
 - newly created/dropped material after terminal state does not automatically make the swarm peaceful again unless a future explicit design says it should. The terminal state is latched for that map encounter once genuinely reached.
-
-The phrase “biological” in the design intent does not exclude mechs here: the terminal behavior target set is deliberately broader and includes mechs as well as organic life.
 
 ### Material inheritance
 
 What the swarm consumes influences what newly produced Replicators are physically made from.
 
 Required examples:
-- trees/wood/low-grade organic feed -> weaker bodies and increased flammability/fire vulnerability;
+- trees/wood/low-grade organic feedstock -> weaker bodies and increased flammability/fire vulnerability;
 - ordinary industrial material -> baseline phenotype;
 - high-grade/high-tech/strong materials -> stronger bodies and appropriate defensive/performance buffs.
 
@@ -109,14 +122,12 @@ The phenotype should be derived from meaningful recent/accumulated feedstock rat
 
 ### Destruction and lower-tier breakup
 
-A genuinely destroyed higher-form Replicator produces **both**:
-- living Replicators of the next tier down; and
-- loose Replicator blocks/material from the destroyed body.
+A genuinely destroyed higher-form Replicator produces **both** living Replicators of the next tier down and loose Replicator blocks/material from the destroyed body.
 
-Current physical ladder remains:
+Current physical ladder:
 **Drone/base -> Hunter -> Bulwark -> Titan -> Siege Mass**.
 
-Therefore genuine destruction reverses that ladder one step while also shedding loose blocks:
+Genuine destruction reverses that ladder one step while shedding blocks:
 - Siege Mass -> Titans + loose blocks;
 - Titan -> Bulwarks + loose blocks;
 - Bulwark -> Hunters + loose blocks;
@@ -155,35 +166,34 @@ The EMP-room system should be based on actual covered cells/room geometry, not j
 
 - Native shuttle boarding/transport owns boarding for Wraith and Asuran craft.
 - CatCraft owns Stargate network/address/dial/iris/shield/receive-buffer mechanics.
-- WNG owns raid composition, shuttle entry/roof interaction, attack passes, absorption/drone attacks, landing, objectives, retreat outcomes, and WNG captivity.
+- WNG owns raid composition, shuttle entry/roof interaction, attack passes, absorption/drone attacks, landing, objectives, retreat decisions/outcomes, and WNG captivity.
 - Wraith Dart absorption is distinct from ordinary Drain Life and strategic faction hunger.
-- Replicator material feeding is distinct from Wraith Life Force/biomass systems.
+- Replicator material consumption is distinct from Wraith Life Force/biomass systems.
 - Replicator block disposal/EMP containment is player counterplay to the Replicator ecology and must remain compatible with normal vanilla hauling, bills, rooms and power behavior.
 
 ## Current implementation checkpoint — 2026-09-10
 
 Implemented on public `main` in the fresh rebuild:
-- local save-persistent Replicator retaliation state;
-- provocation recruits a bounded nearby response rather than globally switching the swarm to ordinary raid combat;
-- adaptive ranged fire now obeys retaliation permission rather than firing opportunistically at any hostile pawn;
-- starvation checks look for usable nearby feedstock before triggering combat;
-- loose Replicator blocks wait one full day before any reformation attempt;
-- post-dormancy reformation chance grows with continued exposure and resets after successful reforming or powered containment;
-- room-wide powered EMP containment uses actual enclosed-room geometry;
-- `WNG_WallEMPContainmentPulser` exposes that room-wide EMP containment as a buildable powered device;
-- `WNG_SmeltReplicatorBlocks` uses a normal electric-smelter bill to permanently destroy blocks;
-- material phenotype is accumulated across feedstock instead of simply replacing the last material label;
-- material phenotype is copied into offspring and through existing combine/split state transfer;
-- organic/wood-heavy phenotype increases ordinary damage taken and strongly increases fire damage, while reinforced/advanced phenotype reduces damage;
-- plant/tree targets are now consumable feedstock and influence the inherited material phenotype.
+- local save-persistent Replicator retaliation state with no starvation trigger;
+- adaptive ranged/specialist combat obeys retaliation/terminal permission rather than opportunistically attacking any hostile;
+- floor/constructed terrain, gravship foundation/substructure, and roof including thick-rock-roof cell consumption;
+- map-level consumable-matter baseline and periodic remaining-matter accounting;
+- latched terminal-consumption state at a centralized ~92.5% first-build threshold;
+- terminal target selection across non-Replicator pawns, animals, creatures and mechs;
+- loose blocks wait one full day before any reformation attempt, then gain increasing reformation chance;
+- room-wide powered EMP containment and wall EMP containment pulser;
+- normal electric-smelter bill for permanent block disposal;
+- accumulated material phenotype inherited through reproduction/combine/split;
+- plant/tree consumption and wood/organic weak/fire-vulnerable phenotype;
+- stronger feedstock produces reinforced/advanced bodies;
+- four shuttle ThingDefs inherit native RimWorld/Odyssey `ShuttleBase`;
+- fresh Wraith Dart culling component uses the inherited native `CompTransporter` for exact-pawn buffering;
+- Dart hack outcome releases exact buffered captives and transfers the surviving craft to player control without replacing native boarding.
 
 Explicitly still unfinished:
-- floor/terrain consumption;
-- gravship/substructure terrain consumption;
-- roof consumption, including natural rock roof;
-- terminal 90–95% map-consumption accounting and latched swarm-wide predation state;
-- those map-consumption features require dedicated cell/map accounting rather than being forced through the existing Thing-target assimilation job;
-- four native-boardable shuttle Defs/behavior layer;
-- Dart absorption/flyby/landing/hacking implementation;
+- two-pass Dart flight/culling controller and landing sequence;
+- successful Wraith boarding/escape commit tied to real native launch completion;
+- CatCraft-compatible gate-first Dart retreat implementation, with native shuttle fallback and leave-behind failure state;
 - Puddle Jumper chair/drone flyby implementation;
-- Stargate roof breakthrough/heavy-roof explosion/cave-in entry behavior.
+- Stargate roof breakthrough/heavy-roof explosion/cave-in entry behavior;
+- final Wraith Strike Craft/Cruiser roles beyond their native-boardable shuttle foundation.
