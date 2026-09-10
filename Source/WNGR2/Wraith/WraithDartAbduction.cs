@@ -27,7 +27,9 @@ namespace WraithNaniteGravtech
     /// biological colony prey, stuns the selected pawn, stores that exact pawn in its transporter,
     /// then transfers the same pawn to the persistent world-pawn pool when the Dart withdraws.
     /// A successful native RimWorld hack opens the capture buffer and returns those exact pawns
-    /// to the map before escape. It never fabricates replacement captives.
+    /// to the map before escape. Destroying/interruption also releases any still-buffered captivity
+    /// records so a pawn dropped by the transporter is never left falsely marked as off-map captive.
+    /// It never fabricates replacement captives.
     /// </summary>
     public sealed class CompWraithDartAbduction : ThingComp
     {
@@ -35,6 +37,8 @@ namespace WraithNaniteGravtech
         private int nextScanTick;
         private int retreatTick = -1;
         private int consecutiveEmptyScans;
+        private List<Pawn> bufferedCaptives = new List<Pawn>();
+        private bool intentionalWithdrawal;
 
         private CompProperties_WraithDartAbduction Props => (CompProperties_WraithDartAbduction)props;
         private CompTransporter Transporter => parent?.GetComp<CompTransporter>();
@@ -43,6 +47,7 @@ namespace WraithNaniteGravtech
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
+            bufferedCaptives ??= new List<Pawn>();
             if (!respawningAfterLoad && Find.TickManager != null)
                 nextScanTick = Find.TickManager.TicksGame + Math.Max(1, Props.scanIntervalTicks);
         }
@@ -143,7 +148,9 @@ namespace WraithNaniteGravtech
                 return;
             }
 
-            capturedCount++;
+            if (!bufferedCaptives.Contains(target))
+                bufferedCaptives.Add(target);
+            capturedCount = bufferedCaptives.Count;
             if (capturedCount >= Math.Max(1, Props.maxCaptives))
                 ScheduleRetreat(now);
         }
@@ -164,23 +171,40 @@ namespace WraithNaniteGravtech
                 return;
 
             WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
-            List<Pawn> captives = transporter.innerContainer.OfType<Pawn>().ToList();
+            List<Pawn> captives = bufferedCaptives.Where(p => p != null).ToList();
             foreach (Pawn captive in captives)
             {
-                if (captive == null)
-                    continue;
-
-                transporter.innerContainer.Remove(captive);
+                if (transporter.innerContainer.Contains(captive))
+                    transporter.innerContainer.Remove(captive);
                 registry?.ReleaseExactPawn(captive);
 
                 if (captive.IsWorldPawn())
                     Find.WorldPawns.RemovePawn(captive);
 
-                IntVec3 releaseCell = CellFinder.RandomClosewalkCellNear(parent.Position, map, 4);
-                GenSpawn.Spawn(captive, releaseCell, map);
+                if (!captive.Spawned)
+                {
+                    IntVec3 releaseCell = CellFinder.RandomClosewalkCellNear(parent.Position, map, 4);
+                    GenSpawn.Spawn(captive, releaseCell, map);
+                }
             }
 
-            capturedCount = Math.Max(0, capturedCount - captives.Count);
+            bufferedCaptives.Clear();
+            capturedCount = 0;
+        }
+
+        public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
+        {
+            base.PostDeSpawn(map, mode);
+            if (intentionalWithdrawal || bufferedCaptives == null || bufferedCaptives.Count == 0)
+                return;
+
+            WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
+            foreach (Pawn captive in bufferedCaptives.Where(p => p != null).ToList())
+                registry?.ReleaseExactPawn(captive);
+
+            bufferedCaptives.Clear();
+            capturedCount = 0;
+            retreatTick = -1;
         }
 
         private void ScheduleRetreat(int now)
@@ -196,19 +220,23 @@ namespace WraithNaniteGravtech
                 return;
 
             CompTransporter transporter = Transporter;
-            if (transporter != null)
+            if (transporter == null)
+                return;
+
+            List<Pawn> captives = bufferedCaptives.Where(p => p != null).ToList();
+            foreach (Pawn captive in captives)
             {
-                List<Pawn> captives = transporter.innerContainer.OfType<Pawn>().ToList();
-                foreach (Pawn captive in captives)
-                {
-                    if (captive == null)
-                        continue;
-                    transporter.innerContainer.Remove(captive);
-                    if (!captive.IsWorldPawn())
-                        Find.WorldPawns.PassToWorld(captive, PawnDiscardDecideMode.KeepForever);
-                }
+                if (!transporter.innerContainer.Contains(captive))
+                    continue;
+
+                transporter.innerContainer.Remove(captive);
+                if (!captive.IsWorldPawn())
+                    Find.WorldPawns.PassToWorld(captive, PawnDiscardDecideMode.KeepForever);
             }
 
+            bufferedCaptives.Clear();
+            capturedCount = 0;
+            intentionalWithdrawal = true;
             parent.Destroy(DestroyMode.Vanish);
         }
 
@@ -225,6 +253,13 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref nextScanTick, "wngDartNextScanTick", 0);
             Scribe_Values.Look(ref retreatTick, "wngDartRetreatTick", -1);
             Scribe_Values.Look(ref consecutiveEmptyScans, "wngDartEmptyScans", 0);
+            Scribe_Collections.Look(ref bufferedCaptives, "wngDartBufferedCaptives", LookMode.Reference);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                bufferedCaptives = bufferedCaptives?.Where(p => p != null).Distinct().ToList() ?? new List<Pawn>();
+                capturedCount = bufferedCaptives.Count;
+                intentionalWithdrawal = false;
+            }
         }
     }
 }
