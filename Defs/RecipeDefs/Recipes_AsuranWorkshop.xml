@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_SynthesizeNaniteSludge</defName>
+    <label>synthesize nanite sludge</label>
+    <description>Reorganize refined metallic feedstock into a stable nanite-rich engineering suspension for Asuran construction and gravship systems.</description>
+    <jobString>Synthesizing nanite sludge.</jobString>
+    <workAmount>900</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>6</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>20</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>2</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Steel</li><li>Plasteel</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_NaniteSludge>20</WNG_NaniteSludge></products>
+    <researchPrerequisite>WNG_AsuranFabrication</researchPrerequisite>
+  </RecipeDef>
+</Defs>
