@@ -1,0 +1,75 @@
+name: Temporary WNG gravship network validation
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Parse Def and patch XML
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+          files = list(pathlib.Path('Defs').rglob('*.xml')) + list(pathlib.Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+      - name: Check network invariants
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+
+          pipes = ET.parse('Defs/ThingDefs/Buildings_WNGFuelPipes.xml').getroot()
+          defs = {n.findtext('defName'): n for n in pipes.findall('ThingDef')}
+          expected = {
+            'WNG_WraithBioSludgePipe': ('Wraith','Custom1'),
+            'WNG_WraithHiddenBioSludgePipe': ('Wraith','Custom1'),
+            'WNG_AsuranNaniteSludgePipe': ('Asuran','Custom2'),
+            'WNG_AsuranHiddenNaniteSludgePipe': ('Asuran','Custom2'),
+          }
+          assert set(expected) <= set(defs)
+          for name, (family, flag) in expected.items():
+              n = defs[name]
+              assert n.findtext('./comps/li/family') == family, name
+              assert flag in [x.text for x in n.findall('./graphicData/linkFlags/li')], name
+              assert n.findtext('terrainAffordanceNeeded') == 'Substructure', name
+
+          power = ET.parse('Defs/ThingDefs/Buildings_WNGPowerConduits.xml').getroot()
+          assert len(power.findall('ThingDef')) == 4
+          assert all(n.attrib.get('ParentName') == 'PowerConduit' for n in power.findall('ThingDef'))
+
+          support = ET.parse('Defs/ThingDefs/Buildings_AsuranOrbitalSupport.xml').getroot()
+          support_names = {n.findtext('defName') for n in support.findall('ThingDef')}
+          assert {'WNG_AsuranVacBarrier','WNG_AsuranOxygenPump','WNG_AsuranOrbitalScanner'} <= support_names
+          barrier = next(n for n in support.findall('ThingDef') if n.findtext('defName') == 'WNG_AsuranVacBarrier')
+          assert barrier.findtext('thingClass') == 'Building_VacBarrier'
+          assert barrier.findtext('./building/isAirtight') == 'true'
+
+          gate_text = pathlib.Path('Patches/WNGFuelTankPipeGate.xml').read_text()
+          for name in ('WNG_WraithBioSludgeTank','WNG_WraithLargeBioSludgeTank','WNG_AsuranNaniteSludgeTank','WNG_AsuranLargeNaniteSludgeTank'):
+              assert name in gate_text
+          assert gate_text.count('CompProperties_WNGFuelTankFacility') == 4
+          assert '<providesFuel>true</providesFuel>' in gate_text
+          assert '<componentTypeDef>FuelStorage</componentTypeDef>' in gate_text
+
+          source = pathlib.Path('Source/WNG/Gravship/WNGFuelNetwork.cs').read_text()
+          for needle in ('class CompWNGFuelTankFacility : CompGravshipFacility','HasPipePath','engine.ValidSubstructureAt(cell)','engineTheme.Theme != family'):
+              assert needle in source, needle
+
+          isolation = pathlib.Path('Source/WNG/Gravship/WNGGravEngineTheme.cs').read_text()
+          assert 'TryGetComp<CompGravshipFacility>()' in isolation
+          assert 'partTheme != null && partTheme.Theme == theme' in isolation
+
+          print('WNG gravship network invariants passed')
+          PY
