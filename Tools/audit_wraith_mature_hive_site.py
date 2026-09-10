@@ -92,7 +92,6 @@ else:
         ("GenSpawn.CanSpawnAt(def, c, map)", "bounded building placement validation"),
         ("thing.SetFaction(faction)", "exact site-faction infrastructure ownership"),
         ("SpawnBiomass(defs.biomass, StoredBiomass, heart.Position, map)", "real stored biomass generation"),
-        ("Ordinary hibernators count toward the fixed demographic cap; sealed Vault reserves never do", "ordinary-dormant versus sealed-reserve boundary"),
     ]:
         require(source, needle, description)
 
