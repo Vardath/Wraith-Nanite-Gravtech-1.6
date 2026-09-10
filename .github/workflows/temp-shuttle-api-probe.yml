@@ -15,10 +15,14 @@ jobs:
         run: dotnet restore Source/WNG/WNG.csproj
       - name: Locate RimWorld reference assembly
         run: |
-          find "$HOME/.nuget/packages/krafs.rimworld.ref/1.6.4871" -type f | sort
           ASM=$(find "$HOME/.nuget/packages/krafs.rimworld.ref/1.6.4871" -type f -name 'Assembly-CSharp.dll' | head -n1)
           echo "ASM=$ASM" >> "$GITHUB_ENV"
-      - name: Inspect shuttle and skyfaller symbols
+      - name: Install ILSpy command line
+        run: dotnet tool install --global ilspycmd
+      - name: Inspect shuttle and skyfaller APIs
         run: |
-          echo "Assembly: $ASM"
-          strings "$ASM" | grep -E 'SkyfallerMaker|Skyfaller|PassengerShuttle|CompShuttle|CompLaunchable|ShuttleIncoming|ShuttleLeaving' | sort -u | head -n 300
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          for TYPE in Verse.Skyfaller Verse.SkyfallerMaker RimWorld.PassengerShuttleIncoming RimWorld.PassengerShuttleLeaving RimWorld.CompLaunchable RimWorld.CompShuttle; do
+            echo "===== $TYPE ====="
+            ilspycmd -t "$TYPE" "$ASM" | sed -n '1,260p'
+          done
