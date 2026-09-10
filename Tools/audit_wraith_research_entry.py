@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import sys
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 WEAPON = ROOT / "Defs" / "ThingDefs" / "Weapons_Wraith.xml"
@@ -50,10 +51,56 @@ for needle, description in [
 ]:
     require(research, needle, description)
 
+# Lock the biological progression as a graph, rather than relying on incidental string presence.
+expected = {
+    "WNG_BiologicalCultivation": (800, "Industrial", {"Electricity"}),
+    "WNG_FeedingEcology": (1300, "Industrial", {"WNG_BiologicalCultivation"}),
+    "WNG_FeedingResistance": (2200, "Industrial", {"WNG_BiologicalCultivation", "DrugProduction"}),
+    "WNG_BioelectricOrgans": (1200, "Industrial", {"WNG_BiologicalCultivation", "Batteries"}),
+    "WNG_LivingWeapons": (1400, "Spacer", {"WNG_BiologicalCultivation", "Machining"}),
+    "WNG_AdvancedCarapace": (1800, "Spacer", {"WNG_LivingWeapons"}),
+    "WNG_CloningInfrastructure": (2600, "Spacer", {"WNG_FeedingEcology", "WNG_AdvancedCarapace"}),
+    "WNG_ForbiddenHybridization": (4200, "Spacer", {"WNG_CloningInfrastructure", "WNG_FeedingResistance"}),
+    "WNG_HiveArchitecture": (3400, "Spacer", {"WNG_CloningInfrastructure", "WNG_BioelectricOrgans"}),
+}
+
+if RESEARCH.exists():
+    try:
+        root = ET.parse(RESEARCH).getroot()
+        by_name = {}
+        for node in root.findall("ResearchProjectDef"):
+            name = node.findtext("defName")
+            if name:
+                by_name[name.strip()] = node
+        for name, (cost, tech, prereqs) in expected.items():
+            node = by_name.get(name)
+            if node is None:
+                errors.append(f"Missing Wraith research node: {name}")
+                continue
+            actual_cost = node.findtext("baseCost")
+            actual_tech = node.findtext("techLevel")
+            actual_prereqs = {
+                li.text.strip()
+                for li in node.findall("./prerequisites/li")
+                if li.text and li.text.strip()
+            }
+            if actual_cost != str(cost):
+                errors.append(f"{name} baseCost drifted: expected {cost}, found {actual_cost}")
+            if actual_tech != tech:
+                errors.append(f"{name} techLevel drifted: expected {tech}, found {actual_tech}")
+            if actual_prereqs != prereqs:
+                errors.append(
+                    f"{name} prerequisite graph drifted: expected {sorted(prereqs)}, found {sorted(actual_prereqs)}"
+                )
+        if "WNG_OrganicFlight" in by_name:
+            errors.append("Organic Flight must not be added until a valid public gravtech prerequisite exists")
+    except ET.ParseError as ex:
+        errors.append(f"Could not parse Wraith research progression: {ex}")
+
 if errors:
-    print("Wraith research entry audit FAILED")
+    print("Wraith research entry/progression audit FAILED")
     for error in errors:
         print("- " + error)
     sys.exit(1)
 
-print("Wraith research entry audit OK")
+print("Wraith research entry/progression audit OK")
