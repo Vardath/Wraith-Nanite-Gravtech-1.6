@@ -49,6 +49,9 @@ jobs:
       - name: Wraith bioelectric organ audit
         run: python3 Tools/audit_wraith_bioelectric.py
 
+      - name: Wraith Living Weapons audit
+        run: python3 Tools/audit_wraith_living_weapons.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
