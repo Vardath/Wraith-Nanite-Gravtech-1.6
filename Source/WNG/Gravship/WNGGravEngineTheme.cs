@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -26,6 +27,11 @@ namespace WraithNaniteGravtech
     /// as ThingDefOf.GravEngine is deliberate: RimWorld 1.6 still hard-codes that exact Def in
     /// player-engine discovery, substructure overlays and several placement checks. WNG therefore
     /// themes the native engine rather than substituting an incompatible parallel engine Def.
+    ///
+    /// Odyssey's facility list itself is Def-based and does not know about WNG technology families.
+    /// This comp therefore removes mismatched WNG facility links from the native engine while
+    /// leaving ordinary vanilla facilities alone. A Wraith engine cannot silently use Asuran or
+    /// Goa'uld fuel/thrusters/controls, and vice versa.
     /// </summary>
     public sealed class CompWNGGravEngineTheme : ThingComp
     {
@@ -36,6 +42,40 @@ namespace WraithNaniteGravtech
         public void SetTheme(WNGGravshipTheme newTheme)
         {
             theme = newTheme;
+            EnforceFamilyLinks();
+        }
+
+        public override void CompTick()
+        {
+            base.CompTick();
+            if (theme != WNGGravshipTheme.None && parent?.Spawned == true && parent.IsHashIntervalTick(60))
+                EnforceFamilyLinks();
+        }
+
+        private void EnforceFamilyLinks()
+        {
+            Building_GravEngine engine = parent as Building_GravEngine;
+            if (engine?.Spawned != true || theme == WNGGravshipTheme.None)
+                return;
+
+            CompAffectedByFacilities affected = engine.AffectedByFacilities;
+            if (affected == null || affected.LinkedFacilitiesListForReading.NullOrEmpty())
+                return;
+
+            List<Thing> linked = affected.LinkedFacilitiesListForReading.ToList();
+            foreach (Thing facilityThing in linked)
+            {
+                CompWNGGravshipPartTheme partTheme = facilityThing?.TryGetComp<CompWNGGravshipPartTheme>();
+                if (partTheme == null || partTheme.Theme == WNGGravshipTheme.None || partTheme.Theme == theme)
+                    continue;
+
+                CompFacility facility = facilityThing.TryGetComp<CompFacility>();
+                if (facility != null && facility.LinkedBuildings.Contains(engine))
+                    facility.Notify_LinkRemoved(engine);
+
+                if (affected.LinkedFacilitiesListForReading.Contains(facilityThing))
+                    affected.Notify_LinkRemoved(facilityThing);
+            }
         }
 
         public override string CompInspectStringExtra()
