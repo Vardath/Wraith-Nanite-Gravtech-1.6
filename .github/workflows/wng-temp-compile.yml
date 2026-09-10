@@ -19,9 +19,4 @@ jobs:
       - name: Compile RimWorld 1.6 assembly
         run: dotnet build Source/WNG/WNG.csproj -c Release --no-restore
       - name: Parse Def XML
-        run: python3 - <<'PY'
-          import pathlib, xml.etree.ElementTree as ET
-          for p in pathlib.Path('Defs').rglob('*.xml'):
-              ET.parse(p)
-          print('Def XML syntax OK')
-          PY
+        run: python3 -c "import pathlib,xml.etree.ElementTree as ET; [ET.parse(p) for p in pathlib.Path('Defs').rglob('*.xml')]; print('Def XML syntax OK')"
