@@ -5,11 +5,10 @@ using Verse;
 namespace WraithNaniteGravtech
 {
     /// <summary>
-    /// Native PassengerShuttleLeaving with one narrow WNG hook. RimWorld's CompLaunchable wraps
-    /// shuttle contents in an ActiveTransporter, then stores the exact shuttle through
-    /// ActiveTransporterInfo.SetShuttle. At the real LeaveMap boundary we recover that same craft
-    /// and finalize WNG Dart captivity only when it is actually performing native fallback escape.
-    /// Boarding, loading, fuel use, destination selection and world-flight behavior remain native.
+    /// Native PassengerShuttleLeaving with one narrow WNG hook. RimWorld's CompLaunchable and
+    /// ShipJob_FlyAway wrap shuttle contents in an ActiveTransporter, then store the exact shuttle
+    /// through ActiveTransporterInfo.SetShuttle. At the real LeaveMap boundary we recover that same
+    /// craft and finalize WNG Dart captivity from the actual transit container.
     /// </summary>
     public sealed class WNGNativeShuttleLeaving : PassengerShuttleLeaving
     {
@@ -20,7 +19,7 @@ namespace WraithNaniteGravtech
             CompWraithDartRaidMission mission = shuttle?.TryGetComp<CompWraithDartRaidMission>();
 
             if (mission?.Phase == WNGShuttleRaidPhase.NativeEscapePending)
-                mission.NotifyNativeEscapeCompleted();
+                mission.NotifyNativeEscapeCompleted(active?.Contents?.innerContainer);
 
             base.LeaveMap();
         }
