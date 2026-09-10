@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Keep the exact vanilla GravEngine/Hull Defs at runtime because Odyssey hard-codes both in
+       critical discovery/placement/corner-rendering paths. WNG only extends their comps/links. -->
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="GravEngine"]/comps</xpath>
+    <value>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravEngineTheme" />
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="GravshipHull"]/comps</xpath>
+    <value>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme" />
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="GravEngine"]/comps/li[@Class="CompProperties_AffectedByFacilities"]/linkableFacilities</xpath>
+    <value>
+      <li>WNG_WraithControlInterface</li>
+      <li>WNG_WraithBioSludgeTank</li>
+      <li>WNG_WraithLargeBioSludgeTank</li>
+      <li>WNG_WraithSmallThruster</li>
+      <li>WNG_WraithLargeThruster</li>
+      <li>WNG_WraithFieldOrgan</li>
+      <li>WNG_WraithTransportJammer</li>
+      <li>WNG_WraithPropulsionCoordinator</li>
+      <li>WNG_WraithHullRegenerator</li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="GravEngine"]/building/relatedBuildCommands</xpath>
+    <value>
+      <li>WNG_WraithLivingHullSeed</li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="GravEngine"]/building/relatedTerrain</xpath>
+    <value>
+      <li>WNG_WraithLivingSubstructure</li>
+    </value>
+  </Operation>
+</Patch>
