@@ -19,10 +19,10 @@ jobs:
           echo "ASM=$ASM" >> "$GITHUB_ENV"
       - name: Install ILSpy command line
         run: dotnet tool install --global ilspycmd
-      - name: Inspect shuttle and skyfaller APIs
+      - name: Inspect exact flight APIs
         run: |
           export PATH="$PATH:$HOME/.dotnet/tools"
-          for TYPE in Verse.Skyfaller Verse.SkyfallerMaker RimWorld.PassengerShuttleIncoming RimWorld.PassengerShuttleLeaving RimWorld.CompLaunchable RimWorld.CompShuttle; do
+          for TYPE in RimWorld.Skyfaller RimWorld.SkyfallerMaker RimWorld.ShuttleIncoming RimWorld.FlyShipLeaving RimWorld.PassengerShuttleIncoming RimWorld.PassengerShuttleLeaving; do
             echo "===== $TYPE ====="
-            ilspycmd -t "$TYPE" "$ASM" | sed -n '1,260p'
+            ilspycmd -t "$TYPE" "$ASM" | sed -n '1,240p'
           done
