@@ -44,7 +44,7 @@ namespace WraithNaniteGravtech
     {
         public static Pawn FindControllerFocus(Pawn pawn)
         {
-            if (!ReplicatorSpecialistUtility.IsAutonomous(pawn)) return null;
+            if (!ReplicatorSpecialistUtility.IsAutonomous(pawn) || !ReplicatorCombatPermission.CanAttack(pawn)) return null;
 
             Pawn controller = pawn.Map.mapPawns.AllPawnsSpawned
                 .Where(p => p != null && p.def?.defName == "WNG_ReplicatorController"
@@ -76,7 +76,7 @@ namespace WraithNaniteGravtech
     {
         protected override Job TryGiveJob(Pawn pawn)
         {
-            if (!ReplicatorSpecialistUtility.IsAutonomous(pawn)) return null;
+            if (!ReplicatorSpecialistUtility.IsAutonomous(pawn) || !ReplicatorCombatPermission.CanAttack(pawn)) return null;
             if (pawn.def?.defName == "WNG_ReplicatorRepairer" || pawn.def?.defName == "WNG_ReplicatorArtillery") return null;
             Pawn target = ReplicatorCoordinationUtility.FindControllerFocus(pawn);
             return target == null ? null : JobMaker.MakeJob(JobDefOf.AttackMelee, target);
@@ -175,21 +175,42 @@ namespace WraithNaniteGravtech
             if (thing.Position.DistanceToSquared(pawn.Position) > rangeSq || !pawn.CanReach(thing, PathEndMode.Touch, Danger.Deadly))
                 return false;
 
-            if (thing.def.defName == "WNG_ReplicatorContainmentProjector")
+            if (thing.def.defName == "WNG_ReplicatorContainmentProjector" || thing.def.defName == "WNG_WallEMPContainmentPulser")
                 return thing.Faction == null || pawn.HostileTo(thing);
 
             string identity = ((thing.def.defName ?? string.Empty) + " " + (thing.def.label ?? string.Empty)).ToLowerInvariant();
             bool accessBlocker = thing is Building_Door || identity.Contains("wall") || identity.Contains("barricade") || identity.Contains("bulkhead") || identity.Contains("gate");
-            if (accessBlocker)
-                return thing.Faction == null || pawn.HostileTo(thing);
+            if (!accessBlocker) return false;
 
-            return thing.Faction != null && pawn.HostileTo(thing);
+            // Outside an active retaliation/terminal-combat state, the Burrower breaches only access
+            // blockers that are preventing the swarm from reaching consumable matter. It does not
+            // treat every hostile structure as a military objective.
+            if (!ReplicatorCombatPermission.CanAttack(pawn))
+                return HasConsumableMatterBeyond(pawn, thing);
+
+            return thing.Faction == null || pawn.HostileTo(thing);
+        }
+
+        private static bool HasConsumableMatterBeyond(Pawn pawn, Thing blocker)
+        {
+            if (pawn?.Map == null || blocker == null) return false;
+            IntVec3 origin = blocker.Position;
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(origin, 8f, true))
+            {
+                if (!cell.InBounds(pawn.Map) || cell == pawn.Position) continue;
+                List<Thing> things = cell.GetThingList(pawn.Map);
+                if (things.Any(t => t != null && t != blocker && !(t is Pawn) && !(t is Corpse)
+                    && (t is Plant || (t.def != null && ((t.def.category == ThingCategory.Item && t.def.EverHaulable)
+                    || (t.def.category == ThingCategory.Building && t.def.useHitPoints))))))
+                    return true;
+            }
+            return false;
         }
 
         private static float BreachPriority(Thing thing)
         {
             if (thing?.def == null) return 0f;
-            if (thing.def.defName == "WNG_ReplicatorContainmentProjector") return 10000f;
+            if (thing.def.defName == "WNG_ReplicatorContainmentProjector" || thing.def.defName == "WNG_WallEMPContainmentPulser") return 10000f;
 
             string identity = ((thing.def.defName ?? string.Empty) + " " + (thing.def.label ?? string.Empty)).ToLowerInvariant();
             if (thing is Building_Door || identity.Contains("gate") || identity.Contains("bulkhead")) return 8000f;
@@ -235,7 +256,8 @@ namespace WraithNaniteGravtech
     {
         protected override Job TryGiveJob(Pawn pawn)
         {
-            if (pawn?.def?.defName != "WNG_ReplicatorArtillery" || !ReplicatorSpecialistUtility.IsAutonomous(pawn)) return null;
+            if (pawn?.def?.defName != "WNG_ReplicatorArtillery" || !ReplicatorSpecialistUtility.IsAutonomous(pawn)
+                || !ReplicatorCombatPermission.CanAttack(pawn)) return null;
             ReplicatorSpecialistExtension ext = ReplicatorSpecialistUtility.Extension(pawn);
             float minRange = Math.Max(0f, ext?.artilleryMinRange ?? 8f);
             float maxRange = Math.Max(minRange + 1f, ext?.artilleryRange ?? 42f);
@@ -266,7 +288,7 @@ namespace WraithNaniteGravtech
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDestroyedNullOrForbidden(Target);
-            this.FailOn(() => ReplicatorEMP.IsSuppressed(pawn));
+            this.FailOn(() => ReplicatorEMP.IsSuppressed(pawn) || !ReplicatorCombatPermission.CanAttack(pawn));
             this.FailOn(() => job.targetA.Pawn == null || !pawn.HostileTo(job.targetA.Pawn));
 
             ReplicatorSpecialistExtension ext = ReplicatorSpecialistUtility.Extension(pawn);
@@ -278,7 +300,8 @@ namespace WraithNaniteGravtech
             fire.initAction = () =>
             {
                 Pawn target = job.targetA.Pawn;
-                if (target == null || target.Dead || !target.Spawned || target.Map != pawn.Map || !pawn.HostileTo(target)) return;
+                if (target == null || target.Dead || !target.Spawned || target.Map != pawn.Map || !pawn.HostileTo(target)
+                    || !ReplicatorCombatPermission.CanAttack(pawn)) return;
                 if (!GenSight.LineOfSight(pawn.Position, target.Position, pawn.Map)) return;
                 ReplicatorSpecialistExtension props = ReplicatorSpecialistUtility.Extension(pawn);
                 float damage = Math.Max(1f, props?.artilleryDamage ?? 18f);
