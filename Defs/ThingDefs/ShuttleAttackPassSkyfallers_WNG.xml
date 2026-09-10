@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Carries the exact WNG shuttle Thing during a real aerial attack pass. The Skyfaller base
+       draws/holds its inner Thing; WNGAttackPassSkyfaller hands that same craft into pass two or
+       spawns it as the final landed native shuttle. -->
+  <ThingDef ParentName="ShuttleSkyfallerBase">
+    <defName>WNG_ShuttleAttackPassIncoming</defName>
+    <label>shuttle attack pass</label>
+    <thingClass>WraithNaniteGravtech.WNGAttackPassSkyfaller</thingClass>
+    <drawOffscreen>true</drawOffscreen>
+    <skyfaller>
+      <ticksToImpactRange>150~190</ticksToImpactRange>
+      <anticipationSoundTicks>-1</anticipationSoundTicks>
+      <rotationCurve>
+        <points>
+          <li>(0,18)</li>
+          <li>(0.45,3)</li>
+          <li>(0.85,-3)</li>
+          <li>(1,0)</li>
+        </points>
+      </rotationCurve>
+      <zPositionCurve>
+        <points>
+          <li>(0,5)</li>
+          <li>(0.85,3)</li>
+          <li>(1,1.5)</li>
+        </points>
+      </zPositionCurve>
+      <speedCurve>
+        <points>
+          <li>(0,1.2)</li>
+          <li>(0.8,0.9)</li>
+          <li>(1,0.7)</li>
+        </points>
+      </speedCurve>
+    </skyfaller>
+  </ThingDef>
+</Defs>
