@@ -12,24 +12,29 @@ namespace WraithNaniteGravtech
     /// </summary>
     public static class WraithCaptureUtility
     {
-        public static bool IsValidAbductionTarget(Pawn pawn)
+        public static bool IsValidCaptiveIdentity(Pawn pawn)
         {
-            if (pawn == null || pawn.Dead || !pawn.Spawned)
+            if (pawn == null || pawn.Dead)
                 return false;
             if (pawn.RaceProps == null || !pawn.RaceProps.Humanlike || !pawn.RaceProps.IsFlesh)
                 return false;
             if (WraithLifeForceUtility.Get(pawn) != null)
                 return false;
 
-            bool colonyPawn = pawn.Faction == Faction.OfPlayer;
-            bool prisoner = pawn.guest?.IsPrisoner == true;
-            if (!colonyPawn && !prisoner)
-                return false;
-
             string race = pawn.def?.defName ?? string.Empty;
             string kind = pawn.kindDef?.defName ?? string.Empty;
             string xenotype = pawn.genes?.Xenotype?.defName ?? string.Empty;
             return !LooksSynthetic(race) && !LooksSynthetic(kind) && !LooksSynthetic(xenotype);
+        }
+
+        public static bool IsValidAbductionTarget(Pawn pawn)
+        {
+            if (!IsValidCaptiveIdentity(pawn) || !pawn.Spawned)
+                return false;
+
+            bool colonyPawn = pawn.Faction == Faction.OfPlayer;
+            bool prisoner = pawn.guest?.IsPrisoner == true;
+            return colonyPawn || prisoner;
         }
 
         public static bool TryRegisterAbduction(Pawn pawn, Faction captor)
