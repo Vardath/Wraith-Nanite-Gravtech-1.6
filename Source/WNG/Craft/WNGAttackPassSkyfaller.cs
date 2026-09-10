@@ -35,17 +35,23 @@ namespace WraithNaniteGravtech
             if (continueFlight)
             {
                 IntVec3 nextCell = WNGShuttleFlightUtility.FindNextPassCell(craft, map, passCell);
-                WNGShuttleFlightUtility.SpawnAttackPass(craft, map, nextCell);
+                if (!WNGShuttleFlightUtility.SpawnAttackPass(craft, map, nextCell))
+                    LandExactCraft(craft, map, passCell);
             }
             else
             {
-                IntVec3 landingCell = WNGShuttleFlightUtility.FindLandingCell(craft, map, passCell);
-                GenSpawn.Spawn(craft, landingCell, map, WipeMode.Vanish);
-                craft.TryGetComp<CompWraithDartRaidMission>()?.NotifyPhysicallyLanded();
-                craft.TryGetComp<CompPuddleJumperRaidMission>()?.NotifyPhysicallyLanded();
+                LandExactCraft(craft, map, passCell);
             }
 
             Destroy(DestroyMode.Vanish);
+        }
+
+        private static void LandExactCraft(Thing craft, Map map, IntVec3 near)
+        {
+            IntVec3 landingCell = WNGShuttleFlightUtility.FindLandingCell(craft, map, near);
+            GenSpawn.Spawn(craft, landingCell, map, WipeMode.Vanish);
+            craft.TryGetComp<CompWraithDartRaidMission>()?.NotifyPhysicallyLanded();
+            craft.TryGetComp<CompPuddleJumperRaidMission>()?.NotifyPhysicallyLanded();
         }
     }
 
@@ -58,10 +64,17 @@ namespace WraithNaniteGravtech
             if (craft == null || map == null || !firstPassCell.IsValid || !firstPassCell.InBounds(map))
                 return false;
 
-            if (craft.Spawned)
+            bool wasSpawned = craft.Spawned;
+            IntVec3 oldCell = wasSpawned ? craft.Position : IntVec3.Invalid;
+            if (wasSpawned)
                 craft.DeSpawn();
 
-            return SpawnAttackPass(craft, map, firstPassCell);
+            if (SpawnAttackPass(craft, map, firstPassCell))
+                return true;
+
+            if (!craft.Spawned && oldCell.IsValid && oldCell.InBounds(map))
+                GenSpawn.Spawn(craft, FindLandingCell(craft, map, oldCell), map, WipeMode.Vanish);
+            return false;
         }
 
         public static bool SpawnAttackPass(Thing craft, Map map, IntVec3 passCell)
@@ -81,16 +94,29 @@ namespace WraithNaniteGravtech
             return true;
         }
 
-        public static IntVec3 FindNextPassCell(Thing craft, Map map, IntVec3 previous)
+        public static IntVec3 FindAttackPassCell(Thing craft, Map map, IntVec3 origin, bool oppositeSide)
         {
             if (map == null)
-                return previous;
+                return origin;
 
-            IntVec3 mirrored = new IntVec3(map.Size.x - 1 - previous.x, 0, map.Size.z - 1 - previous.z);
-            if (mirrored.InBounds(map) && mirrored.Standable(map))
-                return mirrored;
+            IntVec3 preferred;
+            if (oppositeSide)
+            {
+                preferred = new IntVec3(map.Size.x - 1 - origin.x, 0, map.Size.z - 1 - origin.z);
+            }
+            else
+            {
+                int x = origin.x < map.Size.x / 2 ? Math.Min(map.Size.x - 2, Math.Max(1, map.Size.x * 3 / 4)) : Math.Max(1, map.Size.x / 4);
+                int z = origin.z < map.Size.z / 2 ? Math.Min(map.Size.z - 2, Math.Max(1, map.Size.z * 3 / 4)) : Math.Max(1, map.Size.z / 4);
+                preferred = new IntVec3(x, 0, z);
+            }
 
-            return FindLandingCell(craft, map, map.Center);
+            return FindLandingCell(craft, map, preferred);
+        }
+
+        public static IntVec3 FindNextPassCell(Thing craft, Map map, IntVec3 previous)
+        {
+            return FindAttackPassCell(craft, map, previous, oppositeSide: true);
         }
 
         public static IntVec3 FindLandingCell(Thing craft, Map map, IntVec3 near)
@@ -105,7 +131,8 @@ namespace WraithNaniteGravtech
             if (near.IsValid && near.InBounds(map) && validator(near))
                 return near;
 
-            if (CellFinder.TryFindRandomCellNear(near.IsValid && near.InBounds(map) ? near : map.Center, map, 12, validator, out IntVec3 result))
+            IntVec3 center = near.IsValid && near.InBounds(map) ? near : map.Center;
+            if (CellFinder.TryFindRandomCellNear(center, map, 12, validator, out IntVec3 result))
                 return result;
 
             return CellFinder.RandomCell(map);
