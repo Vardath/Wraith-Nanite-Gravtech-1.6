@@ -19,7 +19,7 @@ namespace WraithNaniteGravtech
     public sealed class CompAbilityEffect_DrainLife : CompAbilityEffect
     {
         private const long TicksPerYear = 3600000L;
-        private CompProperties_AbilityDrainLife Props => (CompProperties_AbilityDrainLife)props;
+        private CompProperties_AbilityDrainLife DrainProps => (CompProperties_AbilityDrainLife)props;
 
         public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
         {
@@ -39,14 +39,14 @@ namespace WraithNaniteGravtech
             Pawn victim = target.Pawn;
             if (caster == null || victim == null || victim.Dead || !victim.Downed) return;
 
-            bool lethalRepeat = Props.fatalIfAlreadyLifeDrained && Props.victimHediff != null
-                && victim.health?.hediffSet?.HasHediff(Props.victimHediff) == true;
+            bool lethalRepeat = DrainProps.fatalIfAlreadyLifeDrained && DrainProps.victimHediff != null
+                && victim.health?.hediffSet?.HasHediff(DrainProps.victimHediff) == true;
 
-            ShiftBiologicalAge(victim, Math.Max(0, Props.victimAgeYears), 0);
-            ShiftBiologicalAge(caster, -Math.Max(0, Props.casterRejuvenationYears), Math.Max(0, Props.minimumCasterAgeYears));
-            RefreshHediff(victim, Props.victimHediff);
-            RefreshHediff(caster, Props.casterHediff);
-            WraithLifeForceUtility.Offset(caster, Math.Max(0f, Props.lifeForceGain));
+            ShiftBiologicalAge(victim, Math.Max(0, DrainProps.victimAgeYears), 0);
+            ShiftBiologicalAge(caster, -Math.Max(0, DrainProps.casterRejuvenationYears), Math.Max(0, DrainProps.minimumCasterAgeYears));
+            RefreshHediff(victim, DrainProps.victimHediff);
+            RefreshHediff(caster, DrainProps.casterHediff);
+            WraithLifeForceUtility.Offset(caster, Math.Max(0f, DrainProps.lifeForceGain));
 
             if (lethalRepeat && !victim.Dead) victim.Kill(null);
         }
@@ -85,14 +85,14 @@ namespace WraithNaniteGravtech
 
     public sealed class CompAbilityEffect_WraithHibernate : CompAbilityEffect
     {
-        private CompProperties_AbilityWraithHibernate Props => (CompProperties_AbilityWraithHibernate)props;
+        private CompProperties_AbilityWraithHibernate HibernateProps => (CompProperties_AbilityWraithHibernate)props;
 
         public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
         {
             Pawn caster = parent?.pawn;
             bool valid = caster != null && !caster.Dead && WraithLifeForceUtility.IsWraith(caster)
-                && Props.hibernatingHediff != null && caster.health?.hediffSet != null
-                && !caster.health.hediffSet.HasHediff(Props.hibernatingHediff);
+                && HibernateProps.hibernatingHediff != null && caster.health?.hediffSet != null
+                && !caster.health.hediffSet.HasHediff(HibernateProps.hibernatingHediff);
             if (!valid && throwMessages && caster != null)
                 Messages.Message("Only an active Wraith that is not already hibernating can enter hibernation.", caster, MessageTypeDefOf.RejectInput, false);
             return valid && base.Valid(target, throwMessages);
@@ -102,9 +102,9 @@ namespace WraithNaniteGravtech
         {
             base.Apply(target, dest);
             Pawn caster = parent?.pawn;
-            if (caster == null || caster.Dead || !WraithLifeForceUtility.IsWraith(caster) || Props.hibernatingHediff == null) return;
-            if (caster.health?.hediffSet?.HasHediff(Props.hibernatingHediff) == true) return;
-            caster.health?.AddHediff(Props.hibernatingHediff);
+            if (caster == null || caster.Dead || !WraithLifeForceUtility.IsWraith(caster) || HibernateProps.hibernatingHediff == null) return;
+            if (caster.health?.hediffSet?.HasHediff(HibernateProps.hibernatingHediff) == true) return;
+            caster.health?.AddHediff(HibernateProps.hibernatingHediff);
         }
     }
 }
