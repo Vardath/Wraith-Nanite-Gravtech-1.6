@@ -30,6 +30,7 @@ namespace WraithNaniteGravtech
         private List<Pawn> bufferedCaptives = new List<Pawn>();
         private IntVec3 lastMapPosition = IntVec3.Invalid;
         private bool nativeEscapeCommitted;
+        private bool transitAnnihilated;
 
         private CompProperties_WraithDartCulling Props => (CompProperties_WraithDartCulling)props;
         private CompTransporter Transporter => parent?.GetComp<CompTransporter>();
@@ -89,9 +90,8 @@ namespace WraithNaniteGravtech
         }
 
         /// <summary>
-        /// Called by the future raid/flight controller only when the Wraith have physically
-        /// boarded and are committing the same native shuttle to escape. This does not launch or
-        /// destroy the shuttle; native shuttle code remains responsible for that operation.
+        /// Called only after this exact craft successfully leaves by Stargate or the native shuttle
+        /// route. Captives become off-map Wraith captives; requesting retreat alone is not enough.
         /// </summary>
         public void CommitNativeEscapeWithCaptives()
         {
@@ -112,10 +112,37 @@ namespace WraithNaniteGravtech
             nativeEscapeCommitted = true;
         }
 
+        /// <summary>
+        /// Canon Stargate iris/shield outcome. The incoming Dart and everything transported with it
+        /// are destroyed before successful rematerialization. This is intentionally different from
+        /// an ordinary on-map wreck, which releases surviving buffered captives.
+        /// </summary>
+        public void ResolveTransitAnnihilation()
+        {
+            if (transitAnnihilated)
+                return;
+
+            transitAnnihilated = true;
+            nativeEscapeCommitted = false;
+            CompTransporter transporter = Transporter;
+            WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
+
+            foreach (Pawn captive in bufferedCaptives.Where(p => p != null).Distinct().ToList())
+            {
+                if (transporter?.innerContainer?.Contains(captive) == true)
+                    transporter.innerContainer.Remove(captive);
+                registry?.ReleaseExactPawn(captive);
+                if (!captive.Dead)
+                    captive.Kill(null);
+            }
+            bufferedCaptives.Clear();
+        }
+
         public override void Notify_Hacked(Pawn hacker)
         {
             base.Notify_Hacked(hacker);
             nativeEscapeCommitted = false;
+            transitAnnihilated = false;
             ReleaseBufferedCaptives(parent?.Map, parent?.Position ?? lastMapPosition);
             if (Faction.OfPlayer != null && parent?.Faction != Faction.OfPlayer)
                 parent.SetFaction(Faction.OfPlayer, hacker);
@@ -123,7 +150,7 @@ namespace WraithNaniteGravtech
 
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
-            if (!nativeEscapeCommitted)
+            if (!nativeEscapeCommitted && !transitAnnihilated)
                 ReleaseBufferedCaptives(previousMap, lastMapPosition);
             base.PostDestroy(mode, previousMap);
         }
@@ -169,6 +196,7 @@ namespace WraithNaniteGravtech
             Scribe_Collections.Look(ref bufferedCaptives, "wngDartBufferedCaptives", LookMode.Reference);
             Scribe_Values.Look(ref lastMapPosition, "wngDartLastMapPosition", IntVec3.Invalid);
             Scribe_Values.Look(ref nativeEscapeCommitted, "wngDartNativeEscapeCommitted", false);
+            Scribe_Values.Look(ref transitAnnihilated, "wngDartTransitAnnihilated", false);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
                 bufferedCaptives = bufferedCaptives?.Where(p => p != null).Distinct().ToList() ?? new List<Pawn>();
         }
