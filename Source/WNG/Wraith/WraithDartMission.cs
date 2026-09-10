@@ -33,10 +33,8 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Mission-state layer for one real Wraith Dart. It does not replace CompShuttle,
-    /// CompTransporter, native boarding jobs, or native launch. It records the two-pass culling
-    /// sequence and the escape preference so CatCraft/native shuttle integrations can complete
-    /// the physical route without the craft being despawned by WNG.
+    /// Mission-state layer for one real Wraith Dart. It never replaces CompShuttle,
+    /// CompTransporter, native boarding jobs, native launch, or CatCraft Stargate mechanics.
     /// </summary>
     public sealed class CompWraithDartRaidMission : ThingComp
     {
@@ -90,9 +88,6 @@ namespace WraithNaniteGravtech
                     break;
 
                 case WNGShuttleRaidPhase.RetreatRequested:
-                    // Route selection is intentionally separate from route execution. CatCraft owns
-                    // Stargate dialing/traversal; native RimWorld/Odyssey owns shuttle launch.
-                    // Until one of those integrations confirms a viable route, the real craft stays.
                     phase = WNGShuttleRaidPhase.StargateEscapePending;
                     nextPhaseTick = int.MaxValue;
                     break;
@@ -131,7 +126,7 @@ namespace WraithNaniteGravtech
 
         private bool IsValidPassTarget(Pawn pawn)
         {
-            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn == null || pawn.Map != parent.Map)
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map != parent.Map)
                 return false;
             if (!WraithCaptivityRegistry.IsValidBiologicalCaptive(pawn))
                 return false;
@@ -147,19 +142,36 @@ namespace WraithNaniteGravtech
         }
 
         /// <summary>
-        /// Called only by CatCraft-compatible integration when an actual accessible Stargate route
-        /// has been established for this same Dart. WNG does not dial or despawn the craft here.
+        /// Gate integration reports the actual local wormhole direction before WNG accepts a gate
+        /// route. A Dart can depart only through an outbound wormhole initiated by the local gate.
+        /// An active inbound wormhole can never be reused in reverse; it must shut down and be
+        /// redialed outbound first.
         /// </summary>
-        public void NotifyStargateRouteAvailable()
+        public WNGStargateTransitDecision EvaluateStargateDeparture(WNGStargateConnectionDirection direction)
         {
             if (phase != WNGShuttleRaidPhase.StargateEscapePending)
-                return;
-            nextPhaseTick = int.MaxValue;
+                return WNGStargateTransitDecision.Unusable;
+            return WNGStargateTransitPolicy.EvaluateLocalDeparture(direction);
         }
 
         /// <summary>
-        /// Called by the Stargate integration after the same craft has physically completed gate
-        /// traversal. Exact buffered captives then become off-map Wraith captives.
+        /// Called only after CatCraft-compatible integration confirms that this same Dart has a
+        /// genuine outbound wormhole from the local gate. Inbound/unknown-active connections are
+        /// rejected and must first be shut down/redialed.
+        /// </summary>
+        public bool NotifyStargateRouteAvailable(WNGStargateConnectionDirection direction)
+        {
+            if (phase != WNGShuttleRaidPhase.StargateEscapePending)
+                return false;
+            if (WNGStargateTransitPolicy.EvaluateLocalDeparture(direction) != WNGStargateTransitDecision.Allowed)
+                return false;
+            nextPhaseTick = int.MaxValue;
+            return true;
+        }
+
+        /// <summary>
+        /// Called by Stargate integration only after the same craft has physically completed an
+        /// allowed outbound traversal. Exact buffered captives then become off-map Wraith captives.
         /// </summary>
         public void NotifyStargateEscapeCompleted()
         {
@@ -170,11 +182,6 @@ namespace WraithNaniteGravtech
             nextPhaseTick = int.MaxValue;
         }
 
-        /// <summary>
-        /// CatCraft calls this when no usable outbound gate can be established. The mission then
-        /// permits the native shuttle route to be attempted; native code still performs boarding
-        /// and launch.
-        /// </summary>
         public void NotifyStargateUnavailableUseNativeFallback()
         {
             if (phase != WNGShuttleRaidPhase.StargateEscapePending)
@@ -183,10 +190,6 @@ namespace WraithNaniteGravtech
             nextPhaseTick = int.MaxValue;
         }
 
-        /// <summary>
-        /// Called only after native RimWorld/Odyssey reports that this actual shuttle has completed
-        /// its successful escape. It must not be called when launch was merely requested.
-        /// </summary>
         public void NotifyNativeEscapeCompleted()
         {
             if (phase != WNGShuttleRaidPhase.NativeEscapePending)
@@ -202,7 +205,6 @@ namespace WraithNaniteGravtech
                 return;
             phase = WNGShuttleRaidPhase.Stranded;
             nextPhaseTick = int.MaxValue;
-            // Deliberately no despawn, destruction or captive transfer. The real Dart stays on map.
         }
 
         public override string CompInspectStringExtra()
