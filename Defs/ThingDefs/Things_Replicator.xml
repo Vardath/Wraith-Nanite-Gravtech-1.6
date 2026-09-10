@@ -3,21 +3,42 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_ReplicatorMatter</defName>
     <label>replicator matter</label>
-    <description>Recovered blocks from a Replicator body. Large enough dormant collections can reassemble themselves; all threshold, timing and chance values are Def data so they can be tuned without rewriting the system.</description>
+    <description>Recovered blocks from a Replicator body. Large enough dormant collections can reassemble themselves unless held inside a powered Replicator containment field; threshold, timing, chance and population values remain tunable Def data.</description>
     <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <stackLimit>250</stackLimit><alwaysHaulable>true</alwaysHaulable><thingCategories><li>ResourcesRaw</li></thingCategories><tickerType>Rare</tickerType>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorMatterReassembly">
         <factionDefName>WNG_ReplicatorSwarm</factionDefName><pawnKindDefName>WNG_ReplicatorDrone</pawnKindDefName>
-        <minimumStack>10</minimumStack><consumePerPawn>10</consumePerPawn><dormantTicks>30000</dormantTicks><retryTicks>2500</retryTicks><chancePerCheck>0.15</chancePerCheck><maxPawnsPerWake>2</maxPawnsPerWake>
+        <minimumStack>10</minimumStack><consumePerPawn>10</consumePerPawn><dormantTicks>30000</dormantTicks><retryTicks>2500</retryTicks><chancePerCheck>0.15</chancePerCheck><maxPawnsPerWake>2</maxPawnsPerWake><maxHostileReplicatorsPerMap>120</maxHostileReplicatorsPerMap>
       </li>
     </comps>
     <statBases><MarketValue>3</MarketValue><Mass>0.08</Mass><Flammability>0</Flammability></statBases>
   </ThingDef>
+
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_ReplicatorCoreFragment</defName><label>replicator core fragment</label>
     <description>A partially intact Replicator control lattice suitable for later research, containment and reconstruction systems.</description>
     <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <stackLimit>25</stackLimit><statBases><MarketValue>90</MarketValue><Mass>0.35</Mass><Flammability>0</Flammability></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_ReplicatorContainmentProjector</defName>
+    <label>replicator containment projector</label>
+    <description>A powered suppression projector for captured Replicator bodies and dangerous Replicator Matter. While powered, uncontrolled Replicators inside its field cannot assimilate or recombine and dangerous matter cannot self-assemble.</description>
+    <graphicData><texPath>Things/Building/Misc/OrbitalTradeBeacon</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1.2,1.2)</drawSize></graphicData>
+    <size>(1,1)</size>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.25</fillPercent>
+    <pathCost>10</pathCost>
+    <designationCategory>Misc</designationCategory>
+    <researchPrerequisites><li>WNG_NaniteContainment</li></researchPrerequisites>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <costList><Steel>120</Steel><ComponentIndustrial>4</ComponentIndustrial><WNG_ReplicatorCoreFragment>1</WNG_ReplicatorCoreFragment></costList>
+    <statBases><WorkToBuild>5500</WorkToBuild><MaxHitPoints>220</MaxHitPoints><Flammability>0.2</Flammability><Beauty>-1</Beauty></statBases>
+    <comps>
+      <li Class="CompProperties_Power"><basePowerConsumption>900</basePowerConsumption></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorContainmentProjector"><radius>8.5</radius></li>
+    </comps>
   </ThingDef>
 </Defs>
