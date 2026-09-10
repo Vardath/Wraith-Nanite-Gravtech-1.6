@@ -30,7 +30,8 @@ namespace WraithNaniteGravtech
             // health damage. A shield interception therefore still destroys the shot correctly.
             base.Impact(hitThing, blockedByShield);
 
-            if (blockedByShield || hitThing is not Pawn pawn || pawn.Dead)
+            Pawn pawn = hitThing as Pawn;
+            if (blockedByShield || pawn == null || pawn.Dead)
                 return;
 
             pawn.stances?.stunner?.StunFor(stunTicks, instigator, addBattleLog: true);
