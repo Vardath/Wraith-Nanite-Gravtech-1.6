@@ -70,6 +70,9 @@ jobs:
       - name: Wraith Hive infrastructure audit
         run: python3 Tools/audit_wraith_hive_infrastructure.py
 
+      - name: Mature Wraith Hive site audit
+        run: python3 Tools/audit_wraith_mature_hive_site.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
