@@ -26,7 +26,8 @@ namespace WraithNaniteGravtech
     /// Hostile Wraith Dart capture mission. The Dart scans a bounded area, targets only valid
     /// biological colony prey, stuns the selected pawn, stores that exact pawn in its transporter,
     /// then transfers the same pawn to the persistent world-pawn pool when the Dart withdraws.
-    /// It never fabricates replacement captives.
+    /// A successful native RimWorld hack opens the capture buffer and returns those exact pawns
+    /// to the map before escape. It never fabricates replacement captives.
     /// </summary>
     public sealed class CompWraithDartAbduction : ThingComp
     {
@@ -37,6 +38,7 @@ namespace WraithNaniteGravtech
 
         private CompProperties_WraithDartAbduction Props => (CompProperties_WraithDartAbduction)props;
         private CompTransporter Transporter => parent?.GetComp<CompTransporter>();
+        private CompHackable Hackable => parent?.GetComp<CompHackable>();
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
@@ -49,6 +51,9 @@ namespace WraithNaniteGravtech
         {
             base.CompTick();
             if (parent == null || !parent.Spawned || parent.Map == null || Find.TickManager == null)
+                return;
+
+            if (Hackable?.IsHacked == true)
                 return;
 
             Faction faction = parent.Faction;
@@ -141,6 +146,41 @@ namespace WraithNaniteGravtech
             capturedCount++;
             if (capturedCount >= Math.Max(1, Props.maxCaptives))
                 ScheduleRetreat(now);
+        }
+
+        public override void Notify_Hacked(Pawn hacker)
+        {
+            base.Notify_Hacked(hacker);
+            retreatTick = -1;
+            consecutiveEmptyScans = 0;
+            RecoverBufferedCaptives();
+        }
+
+        private void RecoverBufferedCaptives()
+        {
+            CompTransporter transporter = Transporter;
+            Map map = parent?.Map;
+            if (transporter == null || map == null || parent == null || !parent.Spawned)
+                return;
+
+            WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
+            List<Pawn> captives = transporter.innerContainer.OfType<Pawn>().ToList();
+            foreach (Pawn captive in captives)
+            {
+                if (captive == null)
+                    continue;
+
+                transporter.innerContainer.Remove(captive);
+                registry?.ReleaseExactPawn(captive);
+
+                if (captive.IsWorldPawn())
+                    Find.WorldPawns.RemovePawn(captive);
+
+                IntVec3 releaseCell = CellFinder.RandomClosewalkCellNear(parent.Position, map, 4);
+                GenSpawn.Spawn(captive, releaseCell, map);
+            }
+
+            capturedCount = Math.Max(0, capturedCount - captives.Count);
         }
 
         private void ScheduleRetreat(int now)
