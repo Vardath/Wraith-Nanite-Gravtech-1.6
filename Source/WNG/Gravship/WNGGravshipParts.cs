@@ -18,7 +18,8 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Theme state for native Odyssey gravship parts that WNG deliberately keeps as their real
     /// vanilla Defs (notably GravshipHull). Static WNG facilities can also use this comp so mixed
-    /// gravships remain inspectable and future art/repair systems can distinguish technologies.
+    /// gravships remain inspectable and incompatible technology-family facility links can be
+    /// removed immediately instead of briefly satisfying another family's flight requirements.
     /// </summary>
     public sealed class CompWNGGravshipPartTheme : ThingComp
     {
@@ -33,6 +34,22 @@ namespace WraithNaniteGravtech
         {
             runtimeTheme = theme;
             hasRuntimeTheme = true;
+            NotifyNearbyThemedEngines();
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            NotifyNearbyThemedEngines();
+        }
+
+        private void NotifyNearbyThemedEngines()
+        {
+            if (parent?.Spawned != true || parent.Map == null)
+                return;
+
+            foreach (Building_GravEngine engine in parent.Map.listerBuildings.AllBuildingsColonistOfClass<Building_GravEngine>())
+                engine.TryGetComp<CompWNGGravEngineTheme>()?.EnforceFamilyLinks();
         }
 
         public override string CompInspectStringExtra()
