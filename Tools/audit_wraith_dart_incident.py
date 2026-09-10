@@ -43,9 +43,18 @@ for needle, description in [
 ]:
     require(defs, needle, description)
 
-# This is explicitly an independent non-Stargate Wraith attack path.
-if "Stargate" in source or "Stargate" in defs:
-    errors.append("Wraith Dart culling incident must remain independent of Stargate availability")
+# This attack path may mention Stargates in comments/documentation, but must not look up or call
+# any Stargate gameplay object. Its execution is deliberately independent of gate availability.
+for forbidden in [
+    'GetNamedSilentFail("WNG_Stargate',
+    'GetNamed("WNG_Stargate',
+    "WNG_Stargate",
+    "StargateUtility",
+    "StargateManager",
+]:
+    if forbidden in source or forbidden in defs:
+        errors.append("Wraith Dart culling incident must remain independent of Stargate availability")
+        break
 
 # The incident spawns a craft only; captive identity is handled by the Dart runtime.
 for forbidden in ["PawnGenerator.GeneratePawn", "GeneratePrisoner"]:
