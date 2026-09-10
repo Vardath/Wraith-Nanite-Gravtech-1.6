@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    WNG power conduits deliberately inherit vanilla PowerConduit. They remain genuine RimWorld
+    CompPowerTransmitter nodes and therefore use the ordinary power-net topology rather than a
+    bespoke ship-power system. Current graphics are vanilla mechanics-validation placeholders.
+  -->
+
+  <ThingDef ParentName="PowerConduit">
+    <defName>WNG_WraithPowerConduit</defName>
+    <label>Wraith bioelectric conduit</label>
+    <description>A cultivated conductive vein for distributing ordinary electrical power through Wraith living technology. Functionally it is a native RimWorld power conduit and can be carried on a gravship.</description>
+    <graphicData>
+      <texPath>Things/Building/Linked/PowerConduit_Atlas</texPath>
+      <color>(0.38,0.18,0.28)</color>
+    </graphicData>
+    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <statBases>
+      <MaxHitPoints>100</MaxHitPoints>
+      <WorkToBuild>45</WorkToBuild>
+      <Flammability>0.15</Flammability>
+      <Beauty>-1</Beauty>
+    </statBases>
+    <costList><WNG_WraithBioSludge>1</WNG_WraithBioSludge></costList>
+    <designationCategory>WNG</designationCategory>
+    <designationHotKey IsNull="True" />
+    <researchPrerequisites><li>WNG_WraithGravships</li></researchPrerequisites>
+  </ThingDef>
+
+  <ThingDef ParentName="PowerConduit">
+    <defName>WNG_WraithHiddenPowerConduit</defName>
+    <label>hidden Wraith bioelectric conduit</label>
+    <description>A concealed cultivated bioelectric vein. It remains part of RimWorld's native power net but is hidden in normal map view and tougher to disrupt than an exposed Wraith conduit.</description>
+    <graphicData>
+      <color>(0,0,0,0)</color>
+      <shaderType>Transparent</shaderType>
+    </graphicData>
+    <uiIconPath>Things/Building/Linked/HiddenConduit_MenuIcon</uiIconPath>
+    <statBases>
+      <MaxHitPoints>130</MaxHitPoints>
+      <WorkToBuild>300</WorkToBuild>
+      <Flammability>0</Flammability>
+      <Beauty>0</Beauty>
+    </statBases>
+    <costList><WNG_WraithBioSludge>2</WNG_WraithBioSludge></costList>
+    <designationCategory>WNG</designationCategory>
+    <designationHotKey IsNull="True" />
+    <researchPrerequisites><li>WNG_WraithGravships</li></researchPrerequisites>
+    <constructEffect>ConstructDirt</constructEffect>
+    <building>
+      <ai_neverTrashThis>true</ai_neverTrashThis>
+      <isTargetable>false</isTargetable>
+      <expandHomeArea>false</expandHomeArea>
+      <canBeDamagedByAttacks>false</canBeDamagedByAttacks>
+    </building>
+  </ThingDef>
+
+  <ThingDef ParentName="PowerConduit">
+    <defName>WNG_AsuranPowerConduit</defName>
+    <label>Asuran power conduit</label>
+    <description>An Ancient-derived conductive lattice reconstructed by Asuran nanites. It remains a genuine native RimWorld power conduit and carries ordinary electrical power across colony and gravship systems.</description>
+    <graphicData>
+      <texPath>Things/Building/Linked/PowerConduit_Atlas</texPath>
+      <color>(0.28,0.58,0.78)</color>
+    </graphicData>
+    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <statBases>
+      <MaxHitPoints>120</MaxHitPoints>
+      <WorkToBuild>45</WorkToBuild>
+      <Flammability>0</Flammability>
+      <Beauty>0</Beauty>
+    </statBases>
+    <costList><WNG_NaniteSludge>1</WNG_NaniteSludge></costList>
+    <designationCategory>WNG</designationCategory>
+    <designationHotKey IsNull="True" />
+    <researchPrerequisites><li>WNG_AsuranGravships</li></researchPrerequisites>
+  </ThingDef>
+
+  <ThingDef ParentName="PowerConduit">
+    <defName>WNG_AsuranHiddenPowerConduit</defName>
+    <label>hidden Asuran power conduit</label>
+    <description>A concealed Asuran conductive lattice built into surrounding structure. It is visually hidden in normal map view while remaining on RimWorld's ordinary power net.</description>
+    <graphicData>
+      <color>(0,0,0,0)</color>
+      <shaderType>Transparent</shaderType>
+    </graphicData>
+    <uiIconPath>Things/Building/Linked/HiddenConduit_MenuIcon</uiIconPath>
+    <statBases>
+      <MaxHitPoints>150</MaxHitPoints>
+      <WorkToBuild>280</WorkToBuild>
+      <Flammability>0</Flammability>
+      <Beauty>0</Beauty>
+    </statBases>
+    <costList><WNG_NaniteSludge>2</WNG_NaniteSludge></costList>
+    <designationCategory>WNG</designationCategory>
+    <designationHotKey IsNull="True" />
+    <researchPrerequisites><li>WNG_AsuranGravships</li></researchPrerequisites>
+    <constructEffect>ConstructDirt</constructEffect>
+    <building>
+      <ai_neverTrashThis>true</ai_neverTrashThis>
+      <isTargetable>false</isTargetable>
+      <expandHomeArea>false</expandHomeArea>
+      <canBeDamagedByAttacks>false</canBeDamagedByAttacks>
+    </building>
+  </ThingDef>
+</Defs>
