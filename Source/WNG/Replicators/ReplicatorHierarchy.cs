@@ -18,11 +18,11 @@ namespace WraithNaniteGravtech
     {
         public string upgradePawnKind;
         public int unitsRequired;
-        public float assemblyRadius = 7f;
-        public int assemblyCheckTicks = 2500;
+        public float assemblyRadius;
+        public int assemblyCheckTicks;
         public string splitChildPawnKind;
         public int splitCount;
-        public int splitRecombineDelayTicks = 2500;
+        public int splitRecombineDelayTicks;
         public CompProperties_ReplicatorHierarchy() => compClass = typeof(CompReplicatorHierarchy);
     }
 
@@ -41,7 +41,7 @@ namespace WraithNaniteGravtech
             Pawn pawn = parent as Pawn;
             if (pawn?.Spawned == true) lastPosition = pawn.Position;
             if (!respawningAfterLoad && CanUpgrade)
-                nextAssemblyTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(250, Props.assemblyCheckTicks);
+                nextAssemblyTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(1, Props.assemblyCheckTicks);
         }
 
         public override void CompTick()
@@ -53,10 +53,11 @@ namespace WraithNaniteGravtech
 
             int now = Find.TickManager.TicksGame;
             if (now < nextAssemblyTick || now < recombineBlockedUntil) return;
-            nextAssemblyTick = now + Math.Max(250, Props.assemblyCheckTicks);
+            nextAssemblyTick = now + Math.Max(1, Props.assemblyCheckTicks);
 
             Map map = pawn.Map;
-            float radiusSq = Props.assemblyRadius * Props.assemblyRadius;
+            float radius = Math.Max(0.1f, Props.assemblyRadius);
+            float radiusSq = radius * radius;
             List<Pawn> candidates = map.mapPawns.AllPawnsSpawned
                 .Where(p => p != null && !p.Dead && p.Spawned && p.def == pawn.def && p.Faction == pawn.Faction
                     && p.Position.DistanceToSquared(pawn.Position) <= radiusSq
@@ -128,7 +129,6 @@ namespace WraithNaniteGravtech
             IntVec3 origin = lastPosition;
             if (!origin.IsValid || !origin.InBounds(map)) return;
 
-            // Latch before emission so a death transaction can never duplicate children on re-entry.
             deathSplitHandled = true;
             for (int i = 0; i < Props.splitCount; i++)
             {
@@ -136,15 +136,24 @@ namespace WraithNaniteGravtech
                 {
                     Pawn child = PawnGenerator.GeneratePawn(childKind, source.Faction);
                     child.TryGetComp<CompReplicatorState>()?.CopyFrom(source.TryGetComp<CompReplicatorState>());
+                    child.TryGetComp<CompReplicatorHierarchy>()?.DelayRecombination(Props.splitRecombineDelayTicks);
                     IntVec3 cell = CellFinder.RandomClosewalkCellNear(origin, map, 2);
                     GenSpawn.Spawn(child, cell, map);
-                    child.TryGetComp<CompReplicatorHierarchy>()?.DelayRecombination(Props.splitRecombineDelayTicks);
                 }
                 catch (Exception ex)
                 {
                     Log.Error($"[WNG] Replicator death split failed: {ex}");
                 }
             }
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            Pawn pawn = parent as Pawn;
+            int now = Find.TickManager?.TicksGame ?? 0;
+            if (pawn == null || !pawn.Spawned || recombineBlockedUntil <= now) return null;
+            int remaining = recombineBlockedUntil - now;
+            return $"Recombination lockout: {remaining / (float)GenDate.TicksPerHour:0.0} in-game hour(s)";
         }
 
         public override void PostExposeData()
