@@ -4,7 +4,7 @@
     <defName>WNG_ReplicatorSwarm</defName>
     <label>replicator swarm</label>
     <fixedName>The Replication Swarm</fixedName>
-    <description>An autonomous machine infestation that dismantles accessible matter, rebuilds itself from what it consumes and reorganizes smaller units into larger operational forms.</description>
+    <description>An autonomous machine infestation that dismantles accessible matter, learns from useful technology, rebuilds itself from what it consumes and reorganizes smaller units into larger operational and specialist forms.</description>
     <basicMemberKind>WNG_ReplicatorDrone</basicMemberKind>
     <pawnSingular>replicator</pawnSingular><pawnsPlural>replicators</pawnsPlural>
     <requiredCountAtGameStart>1</requiredCountAtGameStart>
@@ -22,7 +22,12 @@
           <WNG_ReplicatorDrone>12</WNG_ReplicatorDrone>
           <WNG_ReplicatorHunter>5</WNG_ReplicatorHunter>
           <WNG_ReplicatorBulwark>1.6</WNG_ReplicatorBulwark>
-          <WNG_ReplicatorController>0.35</WNG_ReplicatorController>
+          <WNG_ReplicatorController>0.55</WNG_ReplicatorController>
+          <WNG_ReplicatorRepairer>0.9</WNG_ReplicatorRepairer>
+          <WNG_ReplicatorBurrower>0.75</WNG_ReplicatorBurrower>
+          <WNG_ReplicatorArtillery>0.35</WNG_ReplicatorArtillery>
+          <WNG_ReplicatorTitan>0.22</WNG_ReplicatorTitan>
+          <WNG_ReplicatorSiegeMass>0.05</WNG_ReplicatorSiegeMass>
         </options>
       </li>
     </pawnGroupMakers>
