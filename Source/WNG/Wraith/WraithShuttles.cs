@@ -86,29 +86,47 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
+            Transporter.Notify_ThingAdded(target);
             if (!bufferedCaptives.Contains(target))
                 bufferedCaptives.Add(target);
             return true;
         }
 
-        public void CommitNativeEscapeWithCaptives()
+        /// <summary>
+        /// Native shuttle launch moves all transporter contents into ActiveTransporterInfo before
+        /// the exact shuttle itself is inserted there. Native escape therefore removes the exact
+        /// captives from that transit container at the real leaving-skyfaller boundary.
+        /// </summary>
+        public void CommitNativeEscapeWithCaptives(ThingOwner transitContainer)
         {
-            CompTransporter transporter = Transporter;
-            if (transporter == null)
+            if (nativeEscapeCommitted || transitAnnihilated)
                 return;
 
-            foreach (Pawn captive in bufferedCaptives.Where(p => p != null).ToList())
+            ThingOwner source = transitContainer ?? Transporter?.innerContainer;
+            bool sourceIsOnboard = ReferenceEquals(source, Transporter?.innerContainer);
+
+            foreach (Pawn captive in bufferedCaptives.Where(p => p != null).Distinct().ToList())
             {
-                if (!transporter.innerContainer.Contains(captive))
-                    continue;
-                transporter.innerContainer.Remove(captive);
-                if (!captive.IsWorldPawn())
+                if (source?.Contains(captive) == true)
+                {
+                    source.Remove(captive);
+                    if (sourceIsOnboard)
+                        Transporter.Notify_ThingRemoved(captive);
+                }
+
+                if (!captive.Dead && !captive.IsWorldPawn())
                     Find.WorldPawns.PassToWorld(captive, PawnDiscardDecideMode.KeepForever);
             }
 
             bufferedCaptives.Clear();
             nativeEscapeCommitted = true;
         }
+
+        public void CommitNativeEscapeWithCaptives()
+            => CommitNativeEscapeWithCaptives(Transporter?.innerContainer);
+
+        public void CommitStargateEscapeWithCaptives()
+            => CommitNativeEscapeWithCaptives(Transporter?.innerContainer);
 
         public void ResolveTransitAnnihilation()
         {
@@ -123,7 +141,10 @@ namespace WraithNaniteGravtech
             foreach (Pawn captive in bufferedCaptives.Where(p => p != null).Distinct().ToList())
             {
                 if (transporter?.innerContainer?.Contains(captive) == true)
+                {
                     transporter.innerContainer.Remove(captive);
+                    transporter.Notify_ThingRemoved(captive);
+                }
                 registry?.ReleaseExactPawn(captive);
                 if (!captive.Dead)
                     captive.Kill(null);
@@ -159,7 +180,10 @@ namespace WraithNaniteGravtech
             foreach (Pawn captive in captives)
             {
                 if (transporter?.innerContainer?.Contains(captive) == true)
+                {
                     transporter.innerContainer.Remove(captive);
+                    transporter.Notify_ThingRemoved(captive);
+                }
                 registry?.ReleaseExactPawn(captive);
 
                 if (map == null || captive.Dead)
