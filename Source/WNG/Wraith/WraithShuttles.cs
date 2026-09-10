@@ -20,10 +20,9 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Stargate-specific culling layer attached to a native RimWorld/Odyssey shuttle.
-    /// Native CompShuttle/CompTransporter continue to own loading, boarding and launch behavior.
-    /// This component only owns Wraith culling-beam capture continuity, hacking outcome and
-    /// deterministic captive resolution.
+    /// Culling layer attached to the same native Wraith Dart used for flight, landing, hacking and
+    /// boarding. The Dart may be temporarily held by a WNG attack-pass Skyfaller; its transporter
+    /// and exact captive list remain on that same craft throughout the pass sequence.
     /// </summary>
     public sealed class CompWraithDartCulling : ThingComp
     {
@@ -54,20 +53,23 @@ namespace WraithNaniteGravtech
         }
 
         public bool TryAbsorbExact(Pawn target)
+            => TryAbsorbExact(target, parent?.Map);
+
+        public bool TryAbsorbExact(Pawn target, Map missionMap)
         {
-            if (target == null || target.Dead || !target.Spawned || target.Map != parent?.Map)
+            if (target == null || target.Dead || !target.Spawned || missionMap == null || target.Map != missionMap)
                 return false;
             if (CapacityRemaining <= 0 || Transporter == null || !WraithCaptivityRegistry.IsValidBiologicalCaptive(target))
                 return false;
-            if (!WraithCaptivityRegistry.IsWraithFaction(parent.Faction))
+            if (!WraithCaptivityRegistry.IsWraithFaction(parent?.Faction))
                 return false;
 
             float targetMass = target.GetStatValue(StatDefOf.Mass);
             if (Transporter.MassUsage + targetMass > Transporter.MassCapacity)
                 return false;
 
-            Map map = target.Map;
             IntVec3 position = target.Position;
+            lastMapPosition = position;
             WraithCaptivityRegistry registry = WraithCaptivityRegistry.Current;
             if (registry?.RegisterCapturedPawn(target, parent.Faction, false) == null)
                 return false;
@@ -80,7 +82,7 @@ namespace WraithNaniteGravtech
             {
                 registry.ReleaseExactPawn(target);
                 if (!target.Spawned)
-                    GenSpawn.Spawn(target, position, map);
+                    GenSpawn.Spawn(target, position, missionMap);
                 return false;
             }
 
@@ -89,10 +91,6 @@ namespace WraithNaniteGravtech
             return true;
         }
 
-        /// <summary>
-        /// Called only after this exact craft successfully leaves by Stargate or the native shuttle
-        /// route. Captives become off-map Wraith captives; requesting retreat alone is not enough.
-        /// </summary>
         public void CommitNativeEscapeWithCaptives()
         {
             CompTransporter transporter = Transporter;
@@ -112,11 +110,6 @@ namespace WraithNaniteGravtech
             nativeEscapeCommitted = true;
         }
 
-        /// <summary>
-        /// Canon Stargate iris/shield outcome. The incoming Dart and everything transported with it
-        /// are destroyed before successful rematerialization. This is intentionally different from
-        /// an ordinary on-map wreck, which releases surviving buffered captives.
-        /// </summary>
         public void ResolveTransitAnnihilation()
         {
             if (transitAnnihilated)
