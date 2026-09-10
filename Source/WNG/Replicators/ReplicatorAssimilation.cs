@@ -18,6 +18,7 @@ namespace WraithNaniteGravtech
         public float minimumMatterYield = 1f;
         public float offspringMatterCost = 10f;
         public int maxOffspringPerAssimilation = 2;
+        public int maxHostileReplicatorsPerMap = 120;
         public string offspringPawnKind = "WNG_ReplicatorDrone";
         public CompProperties_ReplicatorAssimilation() => compClass = typeof(CompReplicatorAssimilation);
     }
@@ -53,10 +54,28 @@ namespace WraithNaniteGravtech
             float radiusSq = Props.searchRadius * Props.searchRadius;
             cachedTarget = pawn.Map.listerThings.AllThings
                 .Where(t => IsTargetValid(pawn, t) && t.Position.DistanceToSquared(pawn.Position) <= radiusSq)
-                .OrderBy(t => t.Position.DistanceToSquared(pawn.Position))
+                .OrderByDescending(TargetPriority)
+                .ThenBy(t => t.Position.DistanceToSquared(pawn.Position))
                 .ThenBy(t => t.thingIDNumber)
                 .FirstOrDefault();
             return cachedTarget;
+        }
+
+        private static float TargetPriority(Thing target)
+        {
+            if (target?.def == null) return 0f;
+            string identity = ((target.def.defName ?? string.Empty) + " " + (target.def.label ?? string.Empty)).ToLowerInvariant();
+            float score = 0f;
+
+            if (identity.Contains("shield") || identity.Contains("barrier")) score += 1200f;
+            if (identity.Contains("grav") || identity.Contains("gravity")) score += 1100f;
+            if (target.def.IsWeapon && target.def.IsRangedWeapon) score += 950f;
+            if (target.TryGetComp<CompPowerTrader>() != null || target.TryGetComp<CompPowerBattery>() != null) score += 850f;
+            if (target.def.category == ThingCategory.Apparel) score += 700f;
+            if (target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500) score += 600f;
+            if (target.def.category == ThingCategory.Building) score += 250f;
+            score += Math.Min(250f, Math.Max(0f, target.MarketValue) * 0.05f);
+            return score;
         }
 
         private static bool IsTargetValid(Pawn pawn, Thing thing)
@@ -109,8 +128,15 @@ namespace WraithNaniteGravtech
         private void SpawnAffordableOffspring(Pawn parentPawn)
         {
             float cost = Math.Max(0.1f, Props.offspringMatterCost);
-            int possible = Math.Min(Math.Max(0, Props.maxOffspringPerAssimilation), (int)(storedMatter / cost));
+            int possibleByMatter = Math.Min(Math.Max(0, Props.maxOffspringPerAssimilation), (int)(storedMatter / cost));
+            if (possibleByMatter <= 0) return;
+
+            int cap = Math.Max(1, Props.maxHostileReplicatorsPerMap);
+            int current = parentPawn.Map.mapPawns.AllPawnsSpawned.Count(p =>
+                p != null && !p.Dead && p.Faction == parentPawn.Faction && p.TryGetComp<CompReplicatorState>() != null);
+            int possible = Math.Min(possibleByMatter, Math.Max(0, cap - current));
             if (possible <= 0) return;
+
             PawnKindDef kind = DefDatabase<PawnKindDef>.GetNamedSilentFail(Props.offspringPawnKind);
             if (kind == null) return;
 
