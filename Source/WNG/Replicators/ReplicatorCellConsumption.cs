@@ -55,7 +55,8 @@ namespace WraithNaniteGravtech
                 .Where(c => c.InBounds(pawn.Map) && IsConsumableCell(pawn.Map, c) && pawn.CanReach(c, PathEndMode.Touch, Danger.Deadly))
                 .OrderByDescending(c => CellPriority(pawn.Map, c))
                 .ThenBy(c => c.DistanceToSquared(pawn.Position))
-                .FirstOrDefault(IntVec3.Invalid);
+                .DefaultIfEmpty(IntVec3.Invalid)
+                .First();
             return cachedCell;
         }
 
@@ -102,15 +103,16 @@ namespace WraithNaniteGravtech
         {
             if (map == null || !cell.InBounds(map) || ReplicatorContainmentUtility.IsContained(map, cell)) return false;
             if (FoundationAt(map, cell) != null) return true;
-            if (IsConsumableTopTerrain(map.terrainGrid.TerrainAt(cell))) return true;
+            if (HasConsumableTopTerrain(map, cell)) return true;
             return map.roofGrid.RoofAt(cell) != null;
         }
+
+        internal static bool HasConsumableTopTerrain(Map map, IntVec3 cell)
+            => map != null && cell.InBounds(map) && IsConsumableTopTerrain(map.terrainGrid.TerrainAt(cell));
 
         private static bool IsConsumableTopTerrain(TerrainDef terrain)
         {
             if (terrain == null || terrain.isFoundation) return false;
-            // Layerable terrains are constructed/removable floor layers. Costed terrain is also
-            // treated as built material, while natural soil/water/rough ground is left alone.
             return terrain.layerable || (terrain.costList != null && terrain.costList.Count > 0);
         }
 
@@ -118,8 +120,7 @@ namespace WraithNaniteGravtech
         {
             float score = 0f;
             if (FoundationAt(map, cell) != null) score += 300f;
-            TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
-            if (IsConsumableTopTerrain(terrain)) score += 200f;
+            if (HasConsumableTopTerrain(map, cell)) score += 200f;
             RoofDef roof = map.roofGrid.RoofAt(cell);
             if (roof != null) score += roof.isThickRoof ? 160f : 100f;
             return score;
@@ -127,6 +128,7 @@ namespace WraithNaniteGravtech
 
         private static readonly MethodInfo FoundationAtMethod = typeof(TerrainGrid).GetMethod("FoundationAt", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new[] { typeof(IntVec3) }, null);
         private static readonly MethodInfo RemoveFoundationMethod = typeof(TerrainGrid).GetMethod("RemoveFoundation", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new[] { typeof(IntVec3) }, null);
+        private static readonly MethodInfo SetFoundationMethod = typeof(TerrainGrid).GetMethod("SetFoundation", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new[] { typeof(IntVec3), typeof(TerrainDef) }, null);
 
         internal static TerrainDef FoundationAt(Map map, IntVec3 cell)
         {
@@ -137,17 +139,25 @@ namespace WraithNaniteGravtech
 
         private static bool RemoveFoundation(Map map, IntVec3 cell)
         {
-            if (map?.terrainGrid == null || RemoveFoundationMethod == null) return false;
+            if (map?.terrainGrid == null) return false;
             try
             {
-                RemoveFoundationMethod.Invoke(map.terrainGrid, new object[] { cell });
-                return true;
+                if (RemoveFoundationMethod != null)
+                {
+                    RemoveFoundationMethod.Invoke(map.terrainGrid, new object[] { cell });
+                    return true;
+                }
+                if (SetFoundationMethod != null)
+                {
+                    SetFoundationMethod.Invoke(map.terrainGrid, new object[] { cell, null });
+                    return true;
+                }
             }
             catch (Exception ex)
             {
                 Log.Warning("[WNG] Could not remove consumed foundation at " + cell + ": " + ex.Message);
-                return false;
             }
+            return false;
         }
 
         private static void RecordTerrainFeedstock(CompReplicatorState state, TerrainDef terrain)
