@@ -11,16 +11,12 @@ namespace WraithNaniteGravtech
         public float signalRadius = 24f;
         public int maxNearbyResponders = 5;
         public int retaliationTicks = 6000;
-        public float starvationMatterThreshold = 0.1f;
-        public int starvationCheckTicks = 600;
-        public float feedstockSearchRadius = 45f;
         public CompProperties_ReplicatorRetaliation() => compClass = typeof(CompReplicatorRetaliation);
     }
 
     public sealed class CompReplicatorRetaliation : ThingComp
     {
         private int retaliationUntil;
-        private int nextStarvationCheck;
         private Pawn retaliationTarget;
         private CompProperties_ReplicatorRetaliation Props => (CompProperties_ReplicatorRetaliation)props;
         private Pawn Pawn => parent as Pawn;
@@ -51,28 +47,11 @@ namespace WraithNaniteGravtech
         {
             base.CompTick();
             Pawn pawn = Pawn;
-            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null || pawn.Faction == Faction.OfPlayer || pawn.IsColonyMechPlayerControlled)
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null)
                 return;
             int now = Find.TickManager?.TicksGame ?? 0;
             if (retaliationUntil <= now)
                 retaliationTarget = null;
-            if (now < nextStarvationCheck || IsRetaliating)
-                return;
-            nextStarvationCheck = now + Math.Max(60, Props.starvationCheckTicks);
-
-            CompReplicatorAssimilation assimilation = pawn.TryGetComp<CompReplicatorAssimilation>();
-            if (assimilation == null || assimilation.StoredMatter > Math.Max(0f, Props.starvationMatterThreshold))
-                return;
-            if (ReplicatorFeedstockUtility.HasAccessibleFeedstock(pawn, Math.Max(5f, Props.feedstockSearchRadius)))
-                return;
-
-            Pawn target = pawn.Map.mapPawns.AllPawnsSpawned
-                .Where(p => p != null && p != pawn && !p.Dead && p.Spawned && pawn.HostileTo(p))
-                .OrderBy(p => p.Position.DistanceToSquared(pawn.Position))
-                .ThenBy(p => p.thingIDNumber)
-                .FirstOrDefault();
-            if (target != null)
-                Provoke(target, signalOthers: false);
         }
 
         public void Provoke(Pawn target, bool signalOthers)
@@ -110,46 +89,7 @@ namespace WraithNaniteGravtech
         {
             base.PostExposeData();
             Scribe_Values.Look(ref retaliationUntil, "wngReplicatorRetaliationUntil", 0);
-            Scribe_Values.Look(ref nextStarvationCheck, "wngReplicatorStarvationCheck", 0);
             Scribe_References.Look(ref retaliationTarget, "wngReplicatorRetaliationTarget");
-        }
-    }
-
-    internal static class ReplicatorFeedstockUtility
-    {
-        public static bool HasAccessibleFeedstock(Pawn pawn, float radius)
-        {
-            if (pawn?.Spawned != true || pawn.Map == null)
-                return false;
-            float radiusSq = radius * radius;
-            if (pawn.Map.listerThings.AllThings.Any(t => IsConsumableThing(pawn, t, radiusSq)))
-                return true;
-
-            foreach (IntVec3 cell in GenRadial.RadialCellsAround(pawn.Position, radius, true))
-            {
-                if (!cell.InBounds(pawn.Map) || cell.DistanceToSquared(pawn.Position) > radiusSq)
-                    continue;
-                TerrainDef terrain = cell.GetTerrain(pawn.Map);
-                RoofDef roof = cell.GetRoof(pawn.Map);
-                if ((terrain != null && terrain != TerrainDefOf.Soil) || roof != null)
-                    return true;
-            }
-            return false;
-        }
-
-        private static bool IsConsumableThing(Pawn pawn, Thing thing, float radiusSq)
-        {
-            if (thing == null || thing == pawn || thing.Destroyed || !thing.Spawned || thing.Map != pawn.Map || thing.Position.DistanceToSquared(pawn.Position) > radiusSq)
-                return false;
-            if (thing is Pawn || thing is Corpse || thing.Faction == pawn.Faction)
-                return false;
-            if (thing is Plant)
-                return pawn.CanReach(thing, PathEndMode.Touch, Danger.Deadly);
-            if (thing.def == null || !thing.def.destroyable)
-                return false;
-            bool item = thing.def.category == ThingCategory.Item && thing.def.EverHaulable;
-            bool building = thing.def.category == ThingCategory.Building && thing.def.useHitPoints;
-            return (item || building) && pawn.CanReach(thing, PathEndMode.Touch, Danger.Deadly);
         }
     }
 
