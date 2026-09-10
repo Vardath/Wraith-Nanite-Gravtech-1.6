@@ -19,8 +19,8 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Marks a particular map as an active Queen-capture operation.  Vanilla Lord/raid AI remains
-    /// responsible for ordinary combat.  This component supplies only the special objective:
+    /// Marks a particular map as an active Queen-capture operation. Vanilla Lord/raid AI remains
+    /// responsible for ordinary combat. This component supplies only the special objective:
     /// concentrate on the exact Queen until she is downed, then start the vanilla Kidnap job so the
     /// real carry-to-edge transaction determines whether she is actually lost.
     /// </summary>
@@ -92,7 +92,7 @@ namespace WraithNaniteGravtech
             noOperativesSinceTick = -1;
 
             // While carried in a vanilla Kidnap job the Queen is no longer Spawned, but MapHeld
-            // remains this map.  Do not interfere with that transaction; the game-level bridge will
+            // remains this map. Do not interfere with that transaction; the game-level bridge will
             // commit capture only after vanilla records the actual map-edge kidnapping.
             if (!queen.Spawned)
                 return;
@@ -117,7 +117,7 @@ namespace WraithNaniteGravtech
                     continue;
 
                 // Recovery teams deliberately close for subdual rather than choosing a kill-at-range
-                // objective.  The moment the Queen becomes downed, the next 30-tick directive pass
+                // objective. The moment the Queen becomes downed, the next 30-tick directive pass
                 // interrupts remaining Queen-attack jobs and assigns one physical kidnap carrier.
                 Job job = JobMaker.MakeJob(JobDefOf.AttackMelee, queen);
                 job.expiryInterval = 240;
@@ -180,7 +180,7 @@ namespace WraithNaniteGravtech
     /// Dedicated non-random incident used by the Queen director for occasional later recovery raids.
     /// It delegates raid size/composition to RimWorld's real RaidEnemy worker, forces an edge walk-in
     /// so the spawned Lattice force is immediately present on the Queen's map, then marks the map's
-    /// capture objective active.  It never fires when the Queen is absent from that player home map.
+    /// capture objective active. It never fires when the Queen is absent from that player home map.
     /// </summary>
     public sealed class IncidentWorker_ReplicatorQueenCaptureRaid : IncidentWorker
     {
@@ -222,11 +222,21 @@ namespace WraithNaniteGravtech
 
             map.GetComponent<MapComponent_ReplicatorQueenCaptureOperation>()?.Activate();
             Pawn queen = Current.Game?.GetComponent<GameComponent_ReplicatorQueenState>()?.QueenPawn;
-            Messages.Message(
-                "The Lattice Collective has launched a recovery raid for the Replicator Queen. The raiders will attempt to take her alive.",
-                queen ?? (LookTargets)map.Center,
-                MessageTypeDefOf.ThreatBig,
-                historical: true);
+            if (queen != null)
+            {
+                Messages.Message(
+                    "The Lattice Collective has launched a recovery raid for the Replicator Queen. The raiders will attempt to take her alive.",
+                    queen,
+                    MessageTypeDefOf.ThreatBig,
+                    historical: true);
+            }
+            else
+            {
+                Messages.Message(
+                    "The Lattice Collective has launched a recovery raid for the Replicator Queen. The raiders will attempt to take her alive.",
+                    MessageTypeDefOf.ThreatBig,
+                    historical: true);
+            }
             return true;
         }
     }
