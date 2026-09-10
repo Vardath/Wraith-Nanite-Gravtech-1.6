@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Fresh WNGR2 Wraith research entry. Historical XML is not reused. -->
+  <ResearchProjectDef>
+    <defName>WNG_BiologicalCultivation</defName>
+    <label>biological cultivation</label>
+    <description>Reverse-engineer the growth media, tissue regulation and bioelectric control principles visible in recovered Wraith capture technology. This is the first step toward cultured biomass and living Wraith systems.</description>
+    <baseCost>800</baseCost>
+    <techLevel>Industrial</techLevel>
+    <researchViewX>9</researchViewX>
+    <researchViewY>10.2</researchViewY>
+    <prerequisites>
+      <li>Electricity</li>
+    </prerequisites>
+    <requiredAnalyzed>
+      <li>WNG_WraithStunner</li>
+    </requiredAnalyzed>
+  </ResearchProjectDef>
+</Defs>
