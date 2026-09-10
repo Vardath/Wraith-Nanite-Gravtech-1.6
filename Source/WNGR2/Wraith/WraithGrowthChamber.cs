@@ -28,6 +28,8 @@ namespace WraithNaniteGravtech
         private string activePawnKindDefName;
         private int finishTick = -1;
         private int investedBiomass;
+        private bool activePopulationReplacement;
+        private Pawn completedPopulationClone;
 
         private CompProperties_WraithGrowthChamber ChamberProps => (CompProperties_WraithGrowthChamber)props;
         public bool HasActiveGestation => !activePawnKindDefName.NullOrEmpty() && finishTick >= 0;
@@ -40,6 +42,36 @@ namespace WraithNaniteGravtech
 
             if (Find.TickManager.TicksGame >= finishTick)
                 TryCompleteGestation();
+        }
+
+        /// <summary>
+        /// Mature NPC Hives use this entry point so demographic replacement pays through the same
+        /// biomass/Life Force path as ordinary gestation. Only the three bounded replacement castes
+        /// are accepted. The exact resulting Pawn is retained for TakeCompletedPopulationClone().
+        /// </summary>
+        public bool TryStartPopulationReplacement(string pawnKindDefName)
+        {
+            if (parent.Faction == null || parent.Faction == Faction.OfPlayer || completedPopulationClone != null)
+                return false;
+
+            switch (pawnKindDefName)
+            {
+                case "WNG_WraithHunter":
+                    return TryStartGestation(pawnKindDefName, 160, 120000, true);
+                case "WNG_WraithWarrior":
+                    return TryStartGestation(pawnKindDefName, 220, 180000, true);
+                case "WNG_WraithKeeper":
+                    return TryStartGestation(pawnKindDefName, 280, 240000, true);
+                default:
+                    return false;
+            }
+        }
+
+        public Pawn TakeCompletedPopulationClone()
+        {
+            Pawn result = completedPopulationClone;
+            completedPopulationClone = null;
+            return result;
         }
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
@@ -75,7 +107,7 @@ namespace WraithNaniteGravtech
                     + " cultured biomass, a Keeper or Queen, and a same-faction Wraith donor with at least "
                     + ChamberProps.minimumDonorLifeForce.ToString("0.00") + " Life Force. Gestation: "
                     + (durationTicks / 60000f).ToString("0.0") + " days.",
-                action = () => TryStartGestation(pawnKindDefName, biomassCost, durationTicks)
+                action = () => TryStartGestation(pawnKindDefName, biomassCost, durationTicks, false)
             };
 
             string reason = DisabledReason(biomassCost);
@@ -99,25 +131,27 @@ namespace WraithNaniteGravtech
             return null;
         }
 
-        private void TryStartGestation(string pawnKindDefName, int biomassCost, int durationTicks)
+        private bool TryStartGestation(string pawnKindDefName, int biomassCost, int durationTicks, bool populationReplacement)
         {
             if (HasActiveGestation || !DisabledReason(biomassCost).NullOrEmpty())
-                return;
+                return false;
 
             PawnKindDef kind = DefDatabase<PawnKindDef>.GetNamedSilentFail(pawnKindDefName);
             Gene_Resource_LifeForce donor = FindChargedDonor(parent.Map, parent.Faction, ChamberProps.minimumDonorLifeForce);
             if (kind == null || donor == null)
-                return;
+                return false;
             if (pawnKindDefName == "WNG_WraithQueen")
-                return;
+                return false;
             if (!TryConsumeBiomass(parent.Map, biomassCost))
-                return;
+                return false;
 
             donor.Value = Math.Max(0f, donor.Value - Math.Max(0f, ChamberProps.donorLifeForceCost));
             activePawnKindDefName = pawnKindDefName;
             investedBiomass = biomassCost;
+            activePopulationReplacement = populationReplacement;
             finishTick = Find.TickManager.TicksGame + Math.Max(1, durationTicks);
             Messages.Message("Wraith gestation begun in " + parent.LabelShort + ".", parent, MessageTypeDefOf.PositiveEvent, false);
+            return true;
         }
 
         private void TryCompleteGestation()
@@ -141,7 +175,11 @@ namespace WraithNaniteGravtech
                 if (!clone.Spawned || clone.Map != map)
                     throw new InvalidOperationException("Paid Wraith gestation did not produce a spawned clone.");
 
+                bool populationReplacement = activePopulationReplacement;
                 ClearGestation();
+                if (populationReplacement)
+                    completedPopulationClone = clone;
+
                 Find.LetterStack.ReceiveLetter(
                     "Wraith clone matured",
                     clone.LabelShortCap + " has emerged from the Growth Chamber with a limited Life Force reserve.",
@@ -171,6 +209,7 @@ namespace WraithNaniteGravtech
             activePawnKindDefName = null;
             finishTick = -1;
             investedBiomass = 0;
+            activePopulationReplacement = false;
         }
 
         private static bool ResearchFinished(string defName)
@@ -302,6 +341,8 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref activePawnKindDefName, "wngGrowthChamberCloneKind");
             Scribe_Values.Look(ref finishTick, "wngGrowthChamberFinishTick", -1);
             Scribe_Values.Look(ref investedBiomass, "wngGrowthChamberInvestedBiomass", 0);
+            Scribe_Values.Look(ref activePopulationReplacement, "wngGrowthChamberPopulationReplacement", false);
+            Scribe_References.Look(ref completedPopulationClone, "wngGrowthChamberCompletedPopulationClone");
         }
     }
 }
