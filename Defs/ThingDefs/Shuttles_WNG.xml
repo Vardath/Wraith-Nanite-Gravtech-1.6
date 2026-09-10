@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <!-- All four WNG shuttle families inherit RimWorld/Odyssey ShuttleBase so vanilla CompShuttle,
+  <!-- WNG shuttle families inherit RimWorld/Odyssey ShuttleBase so vanilla CompShuttle,
        CompTransporter and native loading/boarding/launch systems remain authoritative. -->
 
   <ThingDef ParentName="ShuttleBase">
@@ -55,5 +55,18 @@
     <size>(4,3)</size><rotatable>false</rotatable><selectable>true</selectable>
     <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(4.8,3.0)</drawSize></graphicData>
     <statBases><MaxHitPoints>1200</MaxHitPoints><Flammability>0.12</Flammability></statBases>
+  </ThingDef>
+
+  <!-- Goa'uld/Jaffa optional-integration craft. The Def is dependency-free and inert unless the
+       ONAC + RimGate/Jaffa compatibility layer resolves an external owning faction. -->
+  <ThingDef ParentName="ShuttleBase">
+    <defName>WNG_AlkeshTransport</defName>
+    <label>Al'kesh transport</label>
+    <description>A Goa'uld Al'kesh-derived bomber and troop transport. WNG exposes it only through optional ONAC/RimGate-Jaffa integration; native RimWorld/Odyssey shuttle systems retain boarding, loading and launch behavior.</description>
+    <size>(5,3)</size>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(5.5,3.2)</drawSize></graphicData>
+    <statBases><MaxHitPoints>1350</MaxHitPoints><Flammability>0.16</Flammability></statBases>
   </ThingDef>
 </Defs>
