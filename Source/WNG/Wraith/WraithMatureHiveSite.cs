@@ -345,7 +345,12 @@ namespace WraithNaniteGravtech
                 return false;
             Faction faction = factions.RandomElement();
 
-            if (!TileFinder.TryFindNewSiteTile(out PlanetTile tile, MinSiteDistance, MaxSiteDistance, false, TileFinderMode.Near))
+            if (!TileFinder.TryFindNewSiteTile(
+                    out PlanetTile tile,
+                    MinSiteDistance,
+                    MaxSiteDistance,
+                    allowCaravans: false,
+                    tileFinderMode: TileFinderMode.Near))
                 return false;
 
             Site site = SiteMaker.MakeSite(siteDef, tile, faction, ifHostileThenMustRemainHostile: true, threatPoints: 0f);
