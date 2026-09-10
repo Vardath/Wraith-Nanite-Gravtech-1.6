@@ -36,23 +36,14 @@ namespace WraithNaniteGravtech
         public CompProperties_ReplicatorState() => compClass = typeof(CompReplicatorState);
     }
 
-    /// <summary>
-    /// Save-safe Replicator knowledge/state. Adaptations are cumulative and transfer through
-    /// split/recombine. Anti-shield knowledge is deliberately separate from the first shield
-    /// adaptation: repeated shield experience is required before the countermeasure is learned.
-    /// </summary>
     public sealed class CompReplicatorState : ThingComp
     {
         private string materialDefName;
         private int adaptationMask;
         private int shieldEvidence;
-
         private CompProperties_ReplicatorState Props => (CompProperties_ReplicatorState)props;
 
-        public ThingDef MaterialDef => string.IsNullOrEmpty(materialDefName)
-            ? null
-            : DefDatabase<ThingDef>.GetNamedSilentFail(materialDefName);
-
+        public ThingDef MaterialDef => string.IsNullOrEmpty(materialDefName) ? null : DefDatabase<ThingDef>.GetNamedSilentFail(materialDefName);
         public ReplicatorAdaptation Adaptations => (ReplicatorAdaptation)adaptationMask;
         public int ShieldEvidence => shieldEvidence;
         public int AntiShieldEvidenceRequired => Math.Max(1, Props.antiShieldEvidenceRequired);
@@ -79,8 +70,7 @@ namespace WraithNaniteGravtech
         public void MergeFrom(CompReplicatorState other)
         {
             if (other == null) return;
-            if (string.IsNullOrEmpty(materialDefName) && !string.IsNullOrEmpty(other.materialDefName))
-                materialDefName = other.materialDefName;
+            if (string.IsNullOrEmpty(materialDefName) && !string.IsNullOrEmpty(other.materialDefName)) materialDefName = other.materialDefName;
             adaptationMask |= other.adaptationMask;
             shieldEvidence = Math.Min(int.MaxValue, shieldEvidence + Math.Max(0, other.shieldEvidence));
             UnlockAntiShieldIfReady();
@@ -89,22 +79,15 @@ namespace WraithNaniteGravtech
         public void RecordAssimilation(Thing target)
         {
             if (target?.def == null) return;
-
             ThingDef material = target.Stuff ?? (target.def.IsStuff ? target.def : null);
             if (material != null)
             {
                 materialDefName = material.defName;
                 AddAdaptation(ReplicatorAdaptation.Material);
             }
-
-            if (target.def.IsWeapon && target.def.IsRangedWeapon)
-                AddAdaptation(ReplicatorAdaptation.Ranged);
-
-            if (target.TryGetComp<CompPowerTrader>() != null || target.TryGetComp<CompPowerBattery>() != null)
-                AddAdaptation(ReplicatorAdaptation.Power);
-
-            if (target.def.category == ThingCategory.Apparel || (target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500))
-                AddAdaptation(ReplicatorAdaptation.Armor);
+            if (target.def.IsWeapon && target.def.IsRangedWeapon) AddAdaptation(ReplicatorAdaptation.Ranged);
+            if (target.TryGetComp<CompPowerTrader>() != null || target.TryGetComp<CompPowerBattery>() != null) AddAdaptation(ReplicatorAdaptation.Power);
+            if (target.def.apparel != null || (target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500)) AddAdaptation(ReplicatorAdaptation.Armor);
 
             string identity = ((target.def.defName ?? string.Empty) + " " + (target.def.label ?? string.Empty)).ToLowerInvariant();
             if (identity.Contains("shield") || identity.Contains("barrier"))
@@ -113,29 +96,17 @@ namespace WraithNaniteGravtech
                 if (shieldEvidence < int.MaxValue) shieldEvidence++;
                 UnlockAntiShieldIfReady();
             }
-
-            if (identity.Contains("grav") || identity.Contains("gravity"))
-                AddAdaptation(ReplicatorAdaptation.Grav);
+            if (identity.Contains("grav") || identity.Contains("gravity")) AddAdaptation(ReplicatorAdaptation.Grav);
         }
 
         private void UnlockAntiShieldIfReady()
         {
-            if (shieldEvidence >= AntiShieldEvidenceRequired)
-                AddAdaptation(ReplicatorAdaptation.AntiShield);
+            if (shieldEvidence >= AntiShieldEvidenceRequired) AddAdaptation(ReplicatorAdaptation.AntiShield);
         }
 
         private IEnumerable<ReplicatorAdaptation> LearnedAdaptations()
         {
-            ReplicatorAdaptation[] values =
-            {
-                ReplicatorAdaptation.Material,
-                ReplicatorAdaptation.Armor,
-                ReplicatorAdaptation.Ranged,
-                ReplicatorAdaptation.Power,
-                ReplicatorAdaptation.Shield,
-                ReplicatorAdaptation.Grav,
-                ReplicatorAdaptation.AntiShield
-            };
+            ReplicatorAdaptation[] values = { ReplicatorAdaptation.Material, ReplicatorAdaptation.Armor, ReplicatorAdaptation.Ranged, ReplicatorAdaptation.Power, ReplicatorAdaptation.Shield, ReplicatorAdaptation.Grav, ReplicatorAdaptation.AntiShield };
             return values.Where(HasAdaptation);
         }
 
@@ -144,15 +115,9 @@ namespace WraithNaniteGravtech
             string material = MaterialDef?.LabelCap;
             List<string> lines = new List<string>();
             if (!string.IsNullOrEmpty(material)) lines.Add($"Replication material: {material}");
-
-            List<string> learned = LearnedAdaptations()
-                .Select(a => a == ReplicatorAdaptation.AntiShield ? "Anti-shield" : a.ToString())
-                .ToList();
+            List<string> learned = LearnedAdaptations().Select(a => a == ReplicatorAdaptation.AntiShield ? "Anti-shield" : a.ToString()).ToList();
             if (learned.Count > 0) lines.Add($"Learned adaptations: {string.Join(", ", learned)}");
-
-            if (HasAdaptation(ReplicatorAdaptation.Shield) && !HasAdaptation(ReplicatorAdaptation.AntiShield))
-                lines.Add($"Shield countermeasure evidence: {Math.Min(shieldEvidence, AntiShieldEvidenceRequired)}/{AntiShieldEvidenceRequired}");
-
+            if (HasAdaptation(ReplicatorAdaptation.Shield) && !HasAdaptation(ReplicatorAdaptation.AntiShield)) lines.Add($"Shield countermeasure evidence: {Math.Min(shieldEvidence, AntiShieldEvidenceRequired)}/{AntiShieldEvidenceRequired}");
             return lines.Count == 0 ? null : string.Join("\n", lines);
         }
 
@@ -162,13 +127,11 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref materialDefName, "wngReplicatorMaterial");
             Scribe_Values.Look(ref adaptationMask, "wngReplicatorAdaptationMask", 0);
             Scribe_Values.Look(ref shieldEvidence, "wngReplicatorShieldEvidence", 0);
-
             LegacyReplicatorAdaptation legacy = LegacyReplicatorAdaptation.None;
             Scribe_Values.Look(ref legacy, "wngReplicatorAdaptation", LegacyReplicatorAdaptation.None);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                if (adaptationMask == 0 && legacy != LegacyReplicatorAdaptation.None)
-                    adaptationMask = (int)ConvertLegacy(legacy);
+                if (adaptationMask == 0 && legacy != LegacyReplicatorAdaptation.None) adaptationMask = (int)ConvertLegacy(legacy);
                 UnlockAntiShieldIfReady();
             }
         }
