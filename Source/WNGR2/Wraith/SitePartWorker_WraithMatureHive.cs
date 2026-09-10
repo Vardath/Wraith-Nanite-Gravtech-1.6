@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
+using Verse.AI;
 using Verse.AI.Group;
 
 namespace WraithNaniteGravtech
 {
     /// <summary>
-    /// Fresh mature-Hive map generator. The exact infrastructure and exact founding Wraiths created
-    /// here are passed directly into the Hive Heart population tracker; there is no map-wide adoption.
+    /// Fresh mature-Hive map generator. The exact infrastructure, exact Wraith founders and exact
+    /// finite feeding-stock prisoners created here are handed directly to the Hive Heart controller;
+    /// there is no map-wide adoption or automatic feeding-stock replenishment.
     ///
     /// Current public test-balance topology: six active founders (Queen 1, Keeper 1, Hunter 2,
-    /// Warrior 2), two ordinary hibernating founders (Hunter 1, Warrior 1), 420 cultured biomass,
-    /// two Hibernation Pods and two independent sealed finite combat-reserve Vaults. Ordinary
-    /// hibernators count toward the fixed demographic cap; sealed Vault reserves never do.
+    /// Warrior 2), two ordinary hibernating founders (Hunter 1, Warrior 1), three finite biological
+    /// feeding-stock prisoners, 420 cultured biomass, two Hibernation Pods and two independent sealed
+    /// combat-reserve Vaults. Ordinary hibernators count toward the fixed demographic cap; feeding
+    /// stock and sealed Vault reserves never do.
     /// </summary>
     public sealed class SitePartWorker_WraithMatureHive : SitePartWorker
     {
@@ -24,6 +27,7 @@ namespace WraithNaniteGravtech
         private const int HibernationPodCount = 2;
         private const int DormancyVaultCount = 2;
         private const int StoredBiomass = 420;
+        private const int FeedingStockGenerationAttempts = 8;
         private const float DormantInitialLifeForce = 0.45f;
 
         public override SitePartParams GenerateDefaultParams(float myThreatPoints, PlanetTile tile, Faction faction)
@@ -63,10 +67,11 @@ namespace WraithNaniteGravtech
                 return;
             }
 
+            List<Building_Bed> feedingNiches = CollectGeneratedBeds(infrastructure, defs.feedingNiche);
             List<Building_Bed> hibernationPods = CollectGeneratedBeds(infrastructure, defs.hibernationPod);
-            if (hibernationPods.Count != HibernationPodCount)
+            if (feedingNiches.Count != FeedingNicheCount || hibernationPods.Count != HibernationPodCount)
             {
-                Log.Error("[WNG] Mature Wraith Hive generation could not retain exact Hibernation Pod references; generated infrastructure is being removed rather than creating untracked sleepers.");
+                Log.Error("[WNG] Mature Wraith Hive generation could not retain exact Feeding Niche/Hibernation Pod references; generated infrastructure is being removed rather than creating untracked occupants.");
                 DestroyGeneratedInfrastructure(infrastructure);
                 return;
             }
@@ -98,10 +103,31 @@ namespace WraithNaniteGravtech
                 return;
             }
 
-            CompMatureWraithHivePopulation population = heart.GetComp<CompMatureWraithHivePopulation>();
-            if (population == null || !population.InitializeGeneratedHive(activeFounders, dormantFounders, hibernationPods, chamber))
+            List<Pawn> finiteFeedingStock = new List<Pawn>(FeedingNicheCount);
+            for (int i = 0; i < feedingNiches.Count; i++)
             {
-                Log.Error("[WNG] Mature Wraith Hive Heart rejected explicit active/dormant demographic initialization; generated founders and infrastructure are being removed rather than leaving an unbounded Hive.");
+                if (TrySpawnFiniteFeedingStock(faction, map, feedingNiches[i], finiteFeedingStock))
+                    continue;
+
+                Log.Error("[WNG] Mature Wraith Hive generation could not establish its complete finite biological feeding stock; generated captives, founders and infrastructure are being removed rather than creating a partially functional feeding Hive.");
+                DestroyGeneratedPawns(finiteFeedingStock);
+                DestroyGeneratedPawns(dormantFounders);
+                DestroyGeneratedPawns(activeFounders);
+                DestroyGeneratedInfrastructure(infrastructure);
+                return;
+            }
+
+            CompMatureWraithHivePopulation population = heart.GetComp<CompMatureWraithHivePopulation>();
+            if (population == null || !population.InitializeGeneratedHive(
+                    activeFounders,
+                    dormantFounders,
+                    hibernationPods,
+                    finiteFeedingStock,
+                    feedingNiches,
+                    chamber))
+            {
+                Log.Error("[WNG] Mature Wraith Hive Heart rejected explicit active/dormant/feeding-stock initialization; generated pawns and infrastructure are being removed rather than leaving an unbounded Hive.");
+                DestroyGeneratedPawns(finiteFeedingStock);
                 DestroyGeneratedPawns(dormantFounders);
                 DestroyGeneratedPawns(activeFounders);
                 DestroyGeneratedInfrastructure(infrastructure);
@@ -127,9 +153,6 @@ namespace WraithNaniteGravtech
             if (faction == null || faction == Faction.OfPlayer || !WraithCaptureUtility.IsWraithCaptor(faction))
                 return;
 
-            // Discovery may expose a lineage that is not currently hostile. Merely opening that
-            // sovereign site must not schedule retaliation. The consequence arms only after the
-            // exact lineage is hostile, then fires once its active defenders/reserves are cleared.
             if (Faction.OfPlayer == null || !faction.HostileTo(Faction.OfPlayer))
                 return;
 
@@ -224,8 +247,7 @@ namespace WraithNaniteGravtech
             List<Building_Bed> beds = new List<Building_Bed>();
             for (int i = 0; i < generated.Count; i++)
             {
-                Thing thing = generated[i];
-                Building_Bed bed = thing as Building_Bed;
+                Building_Bed bed = generated[i] as Building_Bed;
                 if (bed != null && bed.def == bedDef && bed.Spawned)
                     beds.Add(bed);
             }
@@ -302,6 +324,71 @@ namespace WraithNaniteGravtech
             if (lifeForce != null)
                 lifeForce.Value = Math.Min(lifeForce.Max, DormantInitialLifeForce);
             return true;
+        }
+
+        private static bool TrySpawnFiniteFeedingStock(Faction faction, Map map, Building_Bed niche, List<Pawn> stock)
+        {
+            if (faction == null || map == null || niche == null || !niche.Spawned || niche.Map != map || niche.Faction != faction)
+                return false;
+
+            PawnKindDef captiveKind = DefDatabase<PawnKindDef>.GetNamedSilentFail("SpaceRefugee")
+                ?? DefDatabase<PawnKindDef>.GetNamedSilentFail("Villager");
+            if (captiveKind == null)
+                return false;
+
+            for (int attempt = 0; attempt < FeedingStockGenerationAttempts; attempt++)
+            {
+                Pawn pawn = PawnGenerator.GeneratePawn(captiveKind, null, map.Tile);
+                if (pawn == null)
+                    continue;
+                if (!WraithCaptureUtility.IsValidCaptiveIdentity(pawn) || pawn.guest == null)
+                {
+                    if (!pawn.Destroyed)
+                        pawn.Destroy(DestroyMode.Vanish);
+                    continue;
+                }
+
+                IntVec3 cell = CellFinder.RandomClosewalkCellNear(
+                    niche.Position,
+                    map,
+                    4,
+                    c => c.Standable(map) && !c.Fogged(map));
+                if (!cell.IsValid)
+                {
+                    if (!pawn.Destroyed)
+                        pawn.Destroy(DestroyMode.Vanish);
+                    continue;
+                }
+
+                try
+                {
+                    GenSpawn.Spawn(pawn, cell, map);
+                    niche.ForOwnerType = BedOwnerType.Prisoner;
+                    pawn.guest.SetGuestStatus(faction, GuestStatus.Prisoner);
+                    if (!pawn.Spawned || pawn.Map != map || pawn.guest?.IsPrisoner != true
+                        || pawn.guest.HostFaction != faction || !WraithCaptureUtility.IsValidCaptiveIdentity(pawn))
+                    {
+                        if (!pawn.Destroyed)
+                            pawn.Destroy(DestroyMode.Vanish);
+                        continue;
+                    }
+
+                    Job job = JobMaker.MakeJob(JobDefOf.LayDown, niche);
+                    job.expiryInterval = 60000;
+                    job.checkOverrideOnExpire = false;
+                    pawn.jobs.StartJob(job, JobCondition.InterruptForced, null, false, true, null, JobTag.Misc);
+                    stock.Add(pawn);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning("[WNG] Mature Hive finite feeding-stock generation retry failed: " + ex.Message);
+                    if (!pawn.Destroyed)
+                        pawn.Destroy(DestroyMode.Vanish);
+                }
+            }
+
+            return false;
         }
 
         private static void DestroyGeneratedPawns(List<Pawn> pawns)
