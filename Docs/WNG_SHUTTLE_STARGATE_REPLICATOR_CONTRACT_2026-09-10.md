@@ -52,7 +52,7 @@ Default autonomous block-Replicator priorities are:
 
 **consume -> convert material to replication matter/fuel -> reproduce -> combine into larger forms -> continue consuming**
 
-They are not ordinary kill-on-sight raiders.
+They are not ordinary kill-on-sight raiders during the normal feeding phase.
 
 ### What they consume
 
@@ -67,15 +67,32 @@ Replicators may consume, where reachable/applicable:
 
 Burrowers still prioritize genuine access blockers/containment where needed to reach matter, but ordinary swarm members should preferentially consume rather than attack pawns.
 
-### Provocation and retaliation
+### Provocation and local retaliation
 
-Replicators attack pawns only when:
+Before terminal map consumption is reached, Replicators attack pawns only when:
 - they are directly provoked/attacked; or
 - they have exhausted usable replication matter/fuel and cannot obtain more through feeding.
 
 When one Replicator is provoked, it sends a local retaliation signal. At most **five nearby Replicators** are recruited into that retaliation response, including/alongside the provoked unit as implementation permits. The larger swarm does not globally switch into combat mode; most Replicators continue consuming, reproducing, and combining.
 
 Retaliation must be bounded in range/time and save-safe. It must not permanently turn the entire faction into a kill-on-sight swarm.
+
+### Terminal consumption state — map stripped of matter
+
+Once the swarm has consumed roughly **90–95% of the map's eligible consumable matter**, it enters a terminal predation state.
+
+First-build tuning target: **92.5% consumed**, with the trigger centralized/tunable so Vardath can move it anywhere in the 90–95% band without code edits.
+
+Required behavior after the threshold is crossed:
+- the swarm stops preserving living/moving targets as non-food obstacles;
+- Replicators may attack **all remaining attackable entities on the map**, including colonists, prisoners, visitors, hostile pawns, animals, insects/creatures and mechs;
+- this is a swarm-wide terminal state, unlike the ordinary bounded five-unit retaliation response;
+- surviving Replicators may still consume/reproduce/combine opportunistically, but exterminating remaining entities becomes a valid high-priority behavior;
+- terminal state should be derived from a stable measure of how much eligible map feedstock has actually been consumed, not ordinary raid points or faction hostility;
+- the baseline/remaining-consumable accounting must be save-safe and should avoid expensive full-map recalculation every tick;
+- newly created/dropped material after terminal state does not automatically make the swarm peaceful again unless a future explicit design says it should. The terminal state is latched for that map encounter once genuinely reached.
+
+The phrase “biological” in the design intent does not exclude mechs here: the terminal behavior target set is deliberately broader and includes mechs as well as organic life.
 
 ### Material inheritance
 
@@ -164,7 +181,8 @@ Explicitly still unfinished:
 - floor/terrain consumption;
 - gravship/substructure terrain consumption;
 - roof consumption, including natural rock roof;
-- those three require a dedicated cell-target consumption job and exact RimWorld 1.6 terrain/roof API handling rather than being forced through the existing Thing-target assimilation job;
+- terminal 90–95% map-consumption accounting and latched swarm-wide predation state;
+- those map-consumption features require dedicated cell/map accounting rather than being forced through the existing Thing-target assimilation job;
 - four native-boardable shuttle Defs/behavior layer;
 - Dart absorption/flyby/landing/hacking implementation;
 - Puddle Jumper chair/drone flyby implementation;
