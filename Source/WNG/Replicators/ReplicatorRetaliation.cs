@@ -88,7 +88,7 @@ namespace WraithNaniteGravtech
         }
 
         public override string CompInspectStringExtra()
-            => IsRetaliating ? "Replicator state: local retaliation" : null;
+            => IsRetaliating && !ReplicatorTerminalUtility.IsTerminal(Pawn) ? "Replicator state: local retaliation" : null;
 
         public override void PostExposeData()
         {
@@ -102,6 +102,7 @@ namespace WraithNaniteGravtech
     {
         protected override Job TryGiveJob(Pawn pawn)
         {
+            if (ReplicatorTerminalUtility.IsTerminal(pawn)) return null;
             CompReplicatorRetaliation state = pawn?.TryGetComp<CompReplicatorRetaliation>();
             if (state?.IsRetaliating != true || ReplicatorEMP.IsSuppressed(pawn))
                 return null;
@@ -118,6 +119,7 @@ namespace WraithNaniteGravtech
     {
         public static bool CanAttack(Pawn pawn)
             => pawn?.Faction == Faction.OfPlayer || pawn?.IsColonyMechPlayerControlled == true
+                || ReplicatorTerminalUtility.IsTerminal(pawn)
                 || pawn?.TryGetComp<CompReplicatorRetaliation>()?.IsRetaliating == true;
     }
 }
