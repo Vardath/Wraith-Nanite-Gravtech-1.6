@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Temporary vanilla graphics are mechanics-validation placeholders. Final WNG release requires dedicated organic Wraith art. -->
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_WraithLivingForgeImplant</defName>
+    <label>living forge growth implant</label>
+    <description>A compact Wraith tissue culture programmed to turn a humanlike biological host into a living forge. It may be implanted into a colonist, prisoner, slave, or non-dessicated humanlike corpse.</description>
+    <graphicData><texPath>Things/Item/Resource/Chemfuel</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>10</stackLimit>
+    <statBases><MarketValue>180</MarketValue><Mass>0.8</Mass></statBases>
+    <comps>
+      <li Class="CompProperties_Usable">
+        <useJob>WNG_ImplantWraithBootstrap</useJob>
+        <useLabel>implant living forge growth</useLabel>
+        <useDuration>600</useDuration>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_TargetableWraithBootstrapHost" />
+      <li Class="WraithNaniteGravtech.CompProperties_WraithBootstrapImplantEffect">
+        <growthHediff>WNG_WraithLivingForgeGrowth</growthHediff>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_WraithGravEngineImplant</defName>
+    <label>Wraith grav engine growth implant</label>
+    <description>A mature Wraith propulsion culture programmed to consume a humanlike biological scaffold and grow a true grav engine heart. It produces the WNG grav-engine growth seed which resolves into RimWorld Odyssey's actual GravEngine, never an obsolete WNG Gravcore.</description>
+    <graphicData><texPath>Things/Item/Resource/Chemfuel</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>10</stackLimit>
+    <statBases><MarketValue>850</MarketValue><Mass>2.5</Mass></statBases>
+    <comps>
+      <li Class="CompProperties_Usable">
+        <useJob>WNG_ImplantWraithBootstrap</useJob>
+        <useLabel>implant grav engine growth</useLabel>
+        <useDuration>900</useDuration>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_TargetableWraithBootstrapHost" />
+      <li Class="WraithNaniteGravtech.CompProperties_WraithBootstrapImplantEffect">
+        <growthHediff>WNG_WraithGravEngineGrowth</growthHediff>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BenchBase">
+    <defName>WNG_LivingForge</defName>
+    <label>Wraith living forge</label>
+    <description>A controlled Wraith tissue-cultivation workshop grown from a biological host. It cultures organic feedstock into bio sludge and serves as the colony's bootstrap workshop for later Wraith living technology.</description>
+    <thingClass>Building_WorkTable</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Production/TableMachining</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(3.5,1.5)</drawSize>
+    </graphicData>
+    <size>(3,1)</size>
+    <fillPercent>0.5</fillPercent>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <surfaceType>Item</surfaceType>
+    <!-- Deliberately no designationCategory: default acquisition is host/corpse growth, not direct Architect construction. -->
+    <statBases>
+      <MaxHitPoints>260</MaxHitPoints>
+      <Flammability>0.15</Flammability>
+      <Cleanliness>-1</Cleanliness>
+      <WorkToBuild>0</WorkToBuild>
+    </statBases>
+    <recipes>
+      <li>WNG_CultureWraithBioSludge</li>
+    </recipes>
+    <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <shortCircuitInRain>true</shortCircuitInRain>
+        <basePowerConsumption>250</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Flickable" />
+    </comps>
+    <building><spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity></building>
+  </ThingDef>
+
+  <!-- These two items exist in Defs at all times for dev/save stability, but their FabricationBench recipes are attached only when the bypass setting is enabled. -->
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_DeployableLivingForgeCore</defName>
+    <label>deployable living forge core</label>
+    <description>A fabricated Wraith workshop growth core. This is the optional no-host bootstrap route enabled in WNG settings.</description>
+    <graphicData><texPath>Things/Item/Resource/Chemfuel</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>5</stackLimit>
+    <statBases><MarketValue>550</MarketValue><Mass>8</Mass></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGDeployBuilding">
+        <buildingDef>WNG_LivingForge</buildingDef>
+        <commandLabel>deploy Wraith living forge</commandLabel>
+        <commandDescription>Deploy the fabricated growth core as a completed Wraith living forge without using a biological host.</commandDescription>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_DeployableWraithGravEngineCore</defName>
+    <label>deployable Wraith grav engine core</label>
+    <description>A fabricated Wraith grav-engine growth core. This optional no-host route deploys the same WNG engine seed used by biological growth, which then becomes Odyssey's real GravEngine.</description>
+    <graphicData><texPath>Things/Item/Resource/Chemfuel</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>2</stackLimit>
+    <statBases><MarketValue>2600</MarketValue><Mass>20</Mass></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGDeployBuilding">
+        <buildingDef>WNG_WraithGravEngineSeed</buildingDef>
+        <commandLabel>deploy Wraith grav engine growth core</commandLabel>
+        <commandDescription>Deploy the fabricated growth core. The resulting WNG seed becomes the actual Odyssey GravEngine and receives the Wraith living-ship theme marker.</commandDescription>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>
