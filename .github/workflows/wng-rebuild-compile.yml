@@ -52,6 +52,9 @@ jobs:
       - name: Wraith Living Weapons audit
         run: python3 Tools/audit_wraith_living_weapons.py
 
+      - name: Wraith feeding ecology audit
+        run: python3 Tools/audit_wraith_feeding.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
