@@ -142,3 +142,30 @@ The EMP-room system should be based on actual covered cells/room geometry, not j
 - Wraith Dart absorption is distinct from ordinary Drain Life and strategic faction hunger.
 - Replicator material feeding is distinct from Wraith Life Force/biomass systems.
 - Replicator block disposal/EMP containment is player counterplay to the Replicator ecology and must remain compatible with normal vanilla hauling, bills, rooms and power behavior.
+
+## Current implementation checkpoint — 2026-09-10
+
+Implemented on public `main` in the fresh rebuild:
+- local save-persistent Replicator retaliation state;
+- provocation recruits a bounded nearby response rather than globally switching the swarm to ordinary raid combat;
+- adaptive ranged fire now obeys retaliation permission rather than firing opportunistically at any hostile pawn;
+- starvation checks look for usable nearby feedstock before triggering combat;
+- loose Replicator blocks wait one full day before any reformation attempt;
+- post-dormancy reformation chance grows with continued exposure and resets after successful reforming or powered containment;
+- room-wide powered EMP containment uses actual enclosed-room geometry;
+- `WNG_WallEMPContainmentPulser` exposes that room-wide EMP containment as a buildable powered device;
+- `WNG_SmeltReplicatorBlocks` uses a normal electric-smelter bill to permanently destroy blocks;
+- material phenotype is accumulated across feedstock instead of simply replacing the last material label;
+- material phenotype is copied into offspring and through existing combine/split state transfer;
+- organic/wood-heavy phenotype increases ordinary damage taken and strongly increases fire damage, while reinforced/advanced phenotype reduces damage;
+- plant/tree targets are now consumable feedstock and influence the inherited material phenotype.
+
+Explicitly still unfinished:
+- floor/terrain consumption;
+- gravship/substructure terrain consumption;
+- roof consumption, including natural rock roof;
+- those three require a dedicated cell-target consumption job and exact RimWorld 1.6 terrain/roof API handling rather than being forced through the existing Thing-target assimilation job;
+- four native-boardable shuttle Defs/behavior layer;
+- Dart absorption/flyby/landing/hacking implementation;
+- Puddle Jumper chair/drone flyby implementation;
+- Stargate roof breakthrough/heavy-roof explosion/cave-in entry behavior.
