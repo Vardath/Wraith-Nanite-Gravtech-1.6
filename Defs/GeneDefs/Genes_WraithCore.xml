@@ -37,4 +37,16 @@
     <biostatCpx>2</biostatCpx>
     <biostatMet>-1</biostatMet>
   </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HibernationGene</defName>
+    <label>wraith hibernation</label>
+    <description>Wraith metabolism can deliberately collapse into a protected three-day hibernation state, reducing Life Force consumption to two percent of normal while leaving the body almost inactive.</description>
+    <geneClass>WraithNaniteGravtech.Gene_WraithAbilityAnchor</geneClass>
+    <abilities>
+      <li>WNG_Hibernate</li>
+    </abilities>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
 </Defs>
