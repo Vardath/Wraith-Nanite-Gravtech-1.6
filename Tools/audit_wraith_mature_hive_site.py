@@ -72,7 +72,10 @@ else:
         ('GetNamedSilentFail("WNG_WraithWarrior")', "Warrior founder definition"),
         ("List<Pawn> activeFounders = new List<Pawn>(6)", "six-member active founder cohort"),
         ("List<Pawn> dormantFounders = new List<Pawn>(2)", "two-member ordinary hibernating founder cohort"),
+        ("List<Pawn> finiteFeedingStock = new List<Pawn>(FeedingNicheCount)", "finite biological feeding-stock cohort"),
+        ("CollectGeneratedBeds(infrastructure, defs.feedingNiche)", "exact generated Feeding Niche references"),
         ("CollectGeneratedBeds(infrastructure, defs.hibernationPod)", "exact generated Hibernation Pod references"),
+        ("feedingNiches.Count != FeedingNicheCount", "exact three-Niche validation"),
         ("hibernationPods.Count != HibernationPodCount", "exact two-Pod validation"),
         ("TrySpawnFounder(defs.queen", "one active Queen founder"),
         ("TrySpawnFounder(defs.keeper", "one active Keeper founder"),
@@ -80,8 +83,11 @@ else:
         ("TrySpawnFounder(defs.warrior", "active Warrior founders"),
         ("TrySpawnDormantFounder(defs.hunter", "ordinary dormant Hunter founder"),
         ("TrySpawnDormantFounder(defs.warrior", "ordinary dormant Warrior founder"),
+        ("TrySpawnFiniteFeedingStock", "finite biological feeding-stock generation"),
+        ("WraithCaptureUtility.IsValidCaptiveIdentity(pawn)", "feeding-stock biological identity validation"),
+        ("pawn.guest.SetGuestStatus(faction, GuestStatus.Prisoner)", "exact Hive prisoner ownership"),
         ("lifeForce.Value = Math.Min(lifeForce.Max, DormantInitialLifeForce)", "ordinary sleeper Life Force initialization"),
-        ("population.InitializeGeneratedHive(activeFounders, dormantFounders, hibernationPods, chamber)", "explicit active/dormant exact-founder initialization"),
+        ("DestroyGeneratedPawns(finiteFeedingStock)", "invalid feeding-stock cleanup"),
         ("DestroyGeneratedPawns(dormantFounders)", "invalid dormant-founder cleanup"),
         ("DestroyGeneratedPawns(activeFounders)", "invalid active-founder cleanup"),
         ("DestroyGeneratedInfrastructure(infrastructure)", "partial-infrastructure cleanup"),
@@ -94,6 +100,13 @@ else:
         ("SpawnBiomass(defs.biomass, StoredBiomass, heart.Position, map)", "real stored biomass generation"),
     ]:
         require(source, needle, description)
+
+    compact = "".join(source.split())
+    require(
+        compact,
+        "population.InitializeGeneratedHive(activeFounders,dormantFounders,hibernationPods,finiteFeedingStock,feedingNiches,chamber)",
+        "explicit active/dormant/feeding-stock exact initialization",
+    )
 
     if source.count("TrySpawnFounder(defs.queen") != 1:
         fail("Mature Hive must create exactly one active Queen founder")
@@ -115,6 +128,8 @@ else:
         ("Gravcore", "obsolete Gravcore shortcut/dependency"),
         ("CurOccupants", "site-worker forced occupancy instead of exact tracker-managed LayDown"),
         ("TryStartPopulationReplacement", "generator-time replacement cloning instead of exact founding"),
+        ("WraithFactionHunger", "strategic faction hunger leaking into local mature-Hive ecology"),
+        ("Dialog_MessageBox", "feeding-request popup logic leaking into mature-Hive site generation"),
     ]:
         if forbidden in source:
             fail(f"Mature-Hive generator violates bounded generation contract: found {description}")
