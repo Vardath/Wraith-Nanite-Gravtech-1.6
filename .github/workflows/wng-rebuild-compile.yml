@@ -40,6 +40,9 @@ jobs:
       - name: Wraith ground-kidnap bridge audit
         run: python3 Tools/audit_wraith_raid_kidnap.py
 
+      - name: Wraith recovered-tech research audit
+        run: python3 Tools/audit_wraith_research_entry.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
