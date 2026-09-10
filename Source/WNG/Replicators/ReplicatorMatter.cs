@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -78,6 +79,7 @@ namespace WraithNaniteGravtech
         public int retryTicks = 2500;
         public float chancePerCheck = 0.15f;
         public int maxPawnsPerWake = 2;
+        public int maxHostileReplicatorsPerMap = 120;
         public CompProperties_ReplicatorMatterReassembly() => compClass = typeof(CompReplicatorMatterReassembly);
     }
 
@@ -107,8 +109,14 @@ namespace WraithNaniteGravtech
             Faction faction = factionDef == null ? null : Find.FactionManager.FirstFactionOfDef(factionDef);
             if (kind == null || faction == null) return;
 
+            int cap = Math.Max(1, Props.maxHostileReplicatorsPerMap);
+            int existing = parent.Map.mapPawns.AllPawnsSpawned.Count(p =>
+                p != null && !p.Dead && p.Faction == faction && p.TryGetComp<CompReplicatorState>() != null);
+            int room = Math.Max(0, cap - existing);
+            if (room <= 0) return;
+
             int cost = Math.Max(1, Props.consumePerPawn);
-            int count = Math.Min(Math.Max(1, Props.maxPawnsPerWake), parent.stackCount / cost);
+            int count = Math.Min(Math.Min(Math.Max(1, Props.maxPawnsPerWake), parent.stackCount / cost), room);
             if (count <= 0) return;
             Map map = parent.Map;
             IntVec3 origin = parent.Position;
