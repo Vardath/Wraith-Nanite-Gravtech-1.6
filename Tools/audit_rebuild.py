@@ -22,6 +22,7 @@ CORE_TEXTURE_PLACEHOLDERS = {
     "Things/Item/Equipment/WeaponRanged/ChargeRifle",  # WNG_WraithStunner temporary visual only
     "Things/Building/Production/TableMachining",  # WNG_LivingForge temporary visual only
     "Things/Building/Power/WoodFiredGenerator",  # WNG_BioelectricOrgan temporary visual only
+    "Things/Building/Furniture/Bed/Bed",  # WNG_FeedingNiche temporary visual only
 }
 
 errors: list[str] = []
