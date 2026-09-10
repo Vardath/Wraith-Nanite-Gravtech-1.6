@@ -7,6 +7,8 @@ namespace WraithNaniteGravtech
     public sealed class CompProperties_ReplicatorContainmentProjector : CompProperties
     {
         public float radius = 8.5f;
+        public bool roomWide;
+        public bool requireEnclosedRoom = true;
         public CompProperties_ReplicatorContainmentProjector() => compClass = typeof(CompReplicatorContainmentProjector);
     }
 
@@ -14,20 +16,47 @@ namespace WraithNaniteGravtech
     {
         private CompProperties_ReplicatorContainmentProjector Props => (CompProperties_ReplicatorContainmentProjector)props;
         public float Radius => Props.radius;
+        public bool RoomWide => Props.roomWide;
+        public bool RequireEnclosedRoom => Props.requireEnclosedRoom;
+
         public bool Active
         {
             get
             {
                 if (parent == null || !parent.Spawned) return false;
                 CompPowerTrader power = parent.TryGetComp<CompPowerTrader>();
-                return power != null && power.PowerOn;
+                if (power == null || !power.PowerOn) return false;
+                if (!RoomWide || !RequireEnclosedRoom) return true;
+                Room room = parent.Position.GetRoom(parent.Map);
+                return room != null && !room.PsychologicallyOutdoors;
             }
+        }
+
+        public bool Contains(IntVec3 cell)
+        {
+            if (!Active || parent?.Map == null || !cell.InBounds(parent.Map)) return false;
+            if (!RoomWide)
+            {
+                float radius = Radius;
+                return cell.DistanceToSquared(parent.Position) <= radius * radius;
+            }
+
+            Room sourceRoom = parent.Position.GetRoom(parent.Map);
+            Room targetRoom = cell.GetRoom(parent.Map);
+            return sourceRoom != null && targetRoom == sourceRoom
+                && (!RequireEnclosedRoom || !sourceRoom.PsychologicallyOutdoors);
         }
 
         public override string CompInspectStringExtra()
         {
+            if (RoomWide)
+            {
+                if (!Active) return "Replicator EMP containment: offline. A powered enclosed room is required.";
+                return "Replicator EMP containment: active throughout this room. Loose Replicator blocks cannot reform and uncontrolled Replicators cannot assimilate or recombine here.";
+            }
+
             if (!Active) return $"Replicator containment field: offline (radius {Radius:0.0}).";
-            return $"Replicator containment field: active (radius {Radius:0.0}). Replicator Matter cannot reassemble and uncontrolled block Replicators cannot assimilate or recombine inside the field.";
+            return $"Replicator containment field: active (radius {Radius:0.0}). Replicator blocks cannot reform and uncontrolled block Replicators cannot assimilate or recombine inside the field.";
         }
     }
 
@@ -46,9 +75,7 @@ namespace WraithNaniteGravtech
             {
                 Thing thing = projectors[i];
                 CompReplicatorContainmentProjector comp = thing?.TryGetComp<CompReplicatorContainmentProjector>();
-                if (comp == null || !comp.Active) continue;
-                float radius = comp.Radius;
-                if (cell.DistanceToSquared(thing.Position) <= radius * radius) return true;
+                if (comp?.Contains(cell) == true) return true;
             }
             return false;
         }
@@ -60,14 +87,14 @@ namespace WraithNaniteGravtech
             nextRefreshTick = now + RefreshTicks;
             projectors.Clear();
 
-            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail("WNG_ReplicatorContainmentProjector");
-            if (def == null) return;
-            List<Thing> things = map.listerThings.ThingsOfDef(def);
-            if (things == null) return;
-            for (int i = 0; i < things.Count; i++)
+            List<Thing> all = map?.listerThings?.AllThings;
+            if (all == null) return;
+            for (int i = 0; i < all.Count; i++)
             {
-                Thing thing = things[i];
-                if (thing != null && !thing.Destroyed && thing.Spawned) projectors.Add(thing);
+                Thing thing = all[i];
+                if (thing != null && !thing.Destroyed && thing.Spawned
+                    && thing.TryGetComp<CompReplicatorContainmentProjector>() != null)
+                    projectors.Add(thing);
             }
         }
     }
