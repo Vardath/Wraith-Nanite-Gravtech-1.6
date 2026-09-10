@@ -8,8 +8,8 @@ using Verse;
 namespace WraithNaniteGravtech
 {
     /// <summary>
-    /// Explicit WNG testing surface. Vanilla's generic Spawn thing menu remains usable, but this
-    /// menu keeps WNG structures/resources discoverable during development and provides dedicated
+    /// Explicit WNG testing surface. Vanilla's generic spawn tools remain usable, but this menu
+    /// keeps WNG structures/resources discoverable during development and provides dedicated
     /// themed native-GravEngine actions because WNG intentionally does not define fake replacement
     /// GravEngine ThingDefs.
     /// </summary>
@@ -29,6 +29,25 @@ namespace WraithNaniteGravtech
                 {
                     category = DebugCategory(localDef),
                     action = () => DebugThingPlaceHelper.DebugSpawn(localDef, UI.MouseCell())
+                });
+            }
+            return result;
+        }
+
+        [DebugAction("WNG", "Set WNG terrain", false, false, false, false, false, 0, false,
+            allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        private static List<DebugActionNode> SetWNGTerrain()
+        {
+            List<DebugActionNode> result = new List<DebugActionNode>();
+            foreach (TerrainDef def in DefDatabase<TerrainDef>.AllDefs
+                         .Where(d => d?.defName?.StartsWith("WNG_", StringComparison.Ordinal) == true)
+                         .OrderBy(d => d.defName))
+            {
+                TerrainDef localDef = def;
+                result.Add(new DebugActionNode(localDef.defName, DebugActionType.ToolMap)
+                {
+                    category = localDef.isFoundation ? "Foundations" : "Terrain",
+                    action = () => SetTerrain(localDef)
                 });
             }
             return result;
@@ -56,7 +75,10 @@ namespace WraithNaniteGravtech
                 return false;
             if (def.defName.NullOrEmpty() || !def.defName.StartsWith("WNG_", StringComparison.Ordinal))
                 return false;
-            return true;
+
+            // Keep technical projectiles, motes and skyfallers out of the user-facing WNG debug
+            // list. Player-testable buildings, shuttles, equipment, resources and items remain.
+            return def.category == ThingCategory.Building || def.category == ThingCategory.Item;
         }
 
         private static string DebugCategory(ThingDef def)
@@ -67,7 +89,20 @@ namespace WraithNaniteGravtech
                 return "Apparel";
             if (def.IsWeapon)
                 return "Weapons";
-            return "Items / other";
+            return "Items / resources";
+        }
+
+        private static void SetTerrain(TerrainDef terrain)
+        {
+            Map map = Find.CurrentMap;
+            IntVec3 cell = UI.MouseCell();
+            if (map == null || terrain == null || !cell.InBounds(map))
+                return;
+
+            if (terrain.isFoundation)
+                map.terrainGrid.SetFoundation(cell, terrain);
+            else
+                map.terrainGrid.SetTerrain(cell, terrain);
         }
 
         private static void SpawnThemedNativeGravEngine(WNGGravshipTheme theme, string engineName)
