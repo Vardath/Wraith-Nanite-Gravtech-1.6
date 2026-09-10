@@ -71,4 +71,28 @@
       </li>
     </comps>
   </AbilityDef>
+
+  <AbilityDef>
+    <defName>WNG_Hibernate</defName>
+    <label>enter hibernation</label>
+    <description>Collapse into a three-day metabolic hibernation. Life Force drain falls to two percent of normal while movement, manipulation and awareness are nearly eliminated. Dedicated hibernation pods can maintain the same state automatically.</description>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>180000~180000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <range>0</range>
+      <warmupTime>1</warmupTime>
+      <targetParams>
+        <canTargetSelf>true</canTargetSelf>
+        <canTargetPawns>false</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityWraithHibernate">
+        <hibernatingHediff>WNG_WraithHibernating</hibernatingHediff>
+      </li>
+    </comps>
+  </AbilityDef>
 </Defs>
