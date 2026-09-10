@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>WNG_WraithLivingTechnology</defName>
+    <label>Wraith living technology</label>
+    <description>Learn to stabilize and direct Wraith-grown biological machinery. This permits living workshop growth programs and provides the biological foundation for later Wraith flight and gravship engineering.</description>
+    <baseCost>2800</baseCost>
+    <techLevel>Spacer</techLevel>
+    <prerequisites>
+      <li>Fabrication</li>
+    </prerequisites>
+    <researchViewX>17</researchViewX>
+    <researchViewY>9.5</researchViewY>
+  </ResearchProjectDef>
+</Defs>
