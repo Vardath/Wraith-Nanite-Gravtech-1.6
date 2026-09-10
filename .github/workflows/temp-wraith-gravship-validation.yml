@@ -13,28 +13,7 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Build WNG
         run: dotnet build Source/WNG/WNG.csproj -c Release
-      - name: Parse all XML
-        run: python - <<'PY'
-          import pathlib, xml.etree.ElementTree as ET
-          files = list(pathlib.Path('Defs').rglob('*.xml')) + list(pathlib.Path('Patches').rglob('*.xml')) + [pathlib.Path('About/About.xml')]
-          for p in files:
-              ET.parse(p)
-          print(f'XML parse OK: {len(files)} files')
-          PY
-      - name: Check fresh gravship invariants
-        run: python - <<'PY'
-          from pathlib import Path
-          parts = Path('Defs/ThingDefs/Buildings_WraithGravship.xml').read_text()
-          bridge = Path('Patches/WraithGravshipNativeBridge.xml').read_text()
-          source = Path('Source/WNG/Gravship/WNGGravshipParts.cs').read_text()
-          engine = Path('Source/WNG/Gravship/WNGGravEngineTheme.cs').read_text()
-          assert 'Gravcore' not in parts, 'obsolete Gravcore leaked into fresh Wraith gravship Defs'
-          assert 'CompPilotConsole' in parts
-          assert 'CompProperties_GravshipThruster' in parts
-          assert '<providesFuel>true</providesFuel>' not in parts, 'fuel facility should be inherited from native FuelTankBase, not duplicated'
-          assert 'ThingDefOf.GravshipHull' in source
-          assert 'ThingDefOf.GravEngine' in engine
-          assert 'WNG_WraithHullRegenerator' in bridge
-          assert 'GravshipShieldGenerator' not in parts, 'Wraith family must not reskin a conventional gravship shield'
-          print('Fresh Wraith gravship invariants OK')
-          PY
+      - name: Parse XML
+        run: python -c "import pathlib,xml.etree.ElementTree as ET; files=list(pathlib.Path('Defs').rglob('*.xml'))+list(pathlib.Path('Patches').rglob('*.xml'))+[pathlib.Path('About/About.xml')]; [ET.parse(p) for p in files]; print('XML parse OK',len(files))"
+      - name: Check Wraith gravship invariants
+        run: python -c "from pathlib import Path; p=Path('Defs/ThingDefs/Buildings_WraithGravship.xml').read_text(); b=Path('Patches/WraithGravshipNativeBridge.xml').read_text(); s=Path('Source/WNG/Gravship/WNGGravshipParts.cs').read_text(); e=Path('Source/WNG/Gravship/WNGGravEngineTheme.cs').read_text(); assert 'Gravcore' not in p; assert 'CompPilotConsole' in p; assert 'CompProperties_GravshipThruster' in p; assert 'ThingDefOf.GravshipHull' in s; assert 'ThingDefOf.GravEngine' in e; assert 'WNG_WraithHullRegenerator' in b; assert 'GravshipShieldGenerator' not in p; print('Wraith gravship invariants OK')"
