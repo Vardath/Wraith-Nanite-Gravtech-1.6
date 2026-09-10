@@ -9,9 +9,24 @@ namespace WraithNaniteGravtech
     /// Independent Wraith Dart culling incident. This is deliberately not tied to Stargate
     /// availability: a hostile Wraith faction may dispatch a Dart directly when biological prey
     /// is present. Only one active Dart is allowed per map from this incident at a time.
+    /// Strategic faction hunger raises the storyteller selection weight and biases which hostile
+    /// lineage dispatches the craft; it does not create a second hunger state.
     /// </summary>
     public sealed class IncidentWorker_WraithDartCulling : IncidentWorker
     {
+        public override float ChanceFactorNow(IIncidentTarget target)
+        {
+            float baseFactor = base.ChanceFactorNow(target);
+            WraithFactionHunger hunger = Current.Game?.GetComponent<WraithFactionHunger>();
+            if (hunger == null)
+                return baseFactor;
+
+            // Relatively fed Hives can still conduct opportunistic culling runs, but hunger
+            // progressively raises their strategic pressure. Range: 0.35x at zero to 2.0x at full.
+            float highestHostileHunger = hunger.HighestHostileStrategicHunger();
+            return baseFactor * (0.35f + 1.65f * highestHostileHunger);
+        }
+
         protected override bool CanFireNowSub(IncidentParms parms)
         {
             if (!(parms.target is Map map))
@@ -59,7 +74,10 @@ namespace WraithNaniteGravtech
                     out IntVec3 entryCell))
                 return false;
 
-            Faction faction = candidates.RandomElement();
+            Faction faction = SelectDispatchingFaction(candidates);
+            if (faction == null)
+                return false;
+
             Thing dart = ThingMaker.MakeThing(dartDef);
             if (dart == null)
                 return false;
@@ -68,6 +86,32 @@ namespace WraithNaniteGravtech
             GenSpawn.Spawn(dart, entryCell, map);
             SendStandardLetter(def.letterLabel, def.letterText, def.letterDef, parms, new TargetInfo(entryCell, map));
             return true;
+        }
+
+        private static Faction SelectDispatchingFaction(List<Faction> candidates)
+        {
+            if (candidates == null || candidates.Count == 0)
+                return null;
+
+            WraithFactionHunger hunger = Current.Game?.GetComponent<WraithFactionHunger>();
+            if (hunger == null)
+                return candidates.RandomElement();
+
+            float totalWeight = 0f;
+            foreach (Faction faction in candidates)
+                totalWeight += 0.20f + 1.80f * hunger.GetStrategicHunger(faction);
+
+            if (totalWeight <= 0f)
+                return candidates.RandomElement();
+
+            float roll = Rand.Value * totalWeight;
+            foreach (Faction faction in candidates)
+            {
+                roll -= 0.20f + 1.80f * hunger.GetStrategicHunger(faction);
+                if (roll <= 0f)
+                    return faction;
+            }
+            return candidates[candidates.Count - 1];
         }
 
         private static IEnumerable<Faction> HostileWraithFactions()
