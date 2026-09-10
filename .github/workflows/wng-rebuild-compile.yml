@@ -61,6 +61,9 @@ jobs:
       - name: Wraith Life Force and hibernation audit
         run: python3 Tools/audit_wraith_hibernation.py
 
+      - name: Wraith Growth Chamber audit
+        run: python3 Tools/audit_wraith_growth_chamber.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
