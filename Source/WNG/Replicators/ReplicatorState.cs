@@ -132,26 +132,42 @@ namespace WraithNaniteGravtech
             if (identity.Contains("grav") || identity.Contains("gravity")) AddAdaptation(ReplicatorAdaptation.Grav);
         }
 
+        public void RecordFeedstockDef(ThingDef def, int samples = 1)
+        {
+            if (def == null || samples <= 0) return;
+            materialDefName = def.defName;
+            float score = ScoreThingDef(def);
+            RecordEnvironmentalFeedstock(def.defName, def.label, score, samples);
+        }
+
+        public void RecordEnvironmentalFeedstock(string defName, string label, float quality, int samples = 1)
+        {
+            if (samples <= 0) return;
+            AddAdaptation(ReplicatorAdaptation.Material);
+            materialQualityTotal += quality * samples;
+            materialSamples = Math.Min(int.MaxValue, materialSamples + samples);
+        }
+
         private void RecordMaterialQuality(Thing target, ThingDef material)
         {
-            float score = 0f;
-            string identity = (((material ?? target.def).defName ?? string.Empty) + " " + ((material ?? target.def).label ?? string.Empty)).ToLowerInvariant();
-
-            if (target is Plant || identity.Contains("wood") || identity.Contains("log") || identity.Contains("tree"))
-            {
+            float score;
+            if (target is Plant)
                 score = -1f;
-            }
             else
-            {
-                float value = material?.BaseMarketValue ?? target.def.BaseMarketValue;
-                if (identity.Contains("plasteel") || identity.Contains("uranium") || identity.Contains("bioferrite") || value >= Math.Max(0f, Props.advancedMarketValueThreshold))
-                    score = 2f;
-                else if (value >= Math.Max(0f, Props.reinforcedMarketValueThreshold))
-                    score = 1f;
-            }
-
+                score = ScoreThingDef(material ?? target.def);
             materialQualityTotal += score;
             if (materialSamples < int.MaxValue) materialSamples++;
+        }
+
+        private float ScoreThingDef(ThingDef def)
+        {
+            if (def == null) return 0f;
+            string identity = ((def.defName ?? string.Empty) + " " + (def.label ?? string.Empty)).ToLowerInvariant();
+            if (identity.Contains("wood") || identity.Contains("log") || identity.Contains("tree")) return -1f;
+            float value = def.BaseMarketValue;
+            if (identity.Contains("plasteel") || identity.Contains("uranium") || identity.Contains("bioferrite") || value >= Math.Max(0f, Props.advancedMarketValueThreshold)) return 2f;
+            if (value >= Math.Max(0f, Props.reinforcedMarketValueThreshold)) return 1f;
+            return 0f;
         }
 
         private void UnlockAntiShieldIfReady()
