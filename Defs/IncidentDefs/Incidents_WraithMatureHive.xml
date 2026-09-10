@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_WraithMatureHiveDiscovered</defName>
+    <label>mature Wraith Hive discovered</label>
+    <targetTags><li>World</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_WraithMatureHiveDiscovery</workerClass>
+    <baseChance>0.08</baseChance>
+    <minRefireDays>25</minRefireDays>
+    <category>Misc</category>
+    <pointsScaleable>false</pointsScaleable>
+  </IncidentDef>
+</Defs>
