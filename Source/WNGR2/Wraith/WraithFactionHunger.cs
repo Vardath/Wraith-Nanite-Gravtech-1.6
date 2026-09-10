@@ -9,9 +9,9 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Save-persistent strategic hunger for the four Wraith lineages.
     ///
-    /// This is deliberately separate from pawn-level Drain Life.  Ordinary Wraith feeding never
-    /// opens diplomacy UI.  A request can only appear when a mutable Wraith faction has accumulated
-    /// genuine strategic hunger and the colony has an eligible biological prisoner.  Refusing an
+    /// This is deliberately separate from pawn-level Drain Life. Ordinary Wraith feeding never
+    /// opens diplomacy UI. A request can only appear when a mutable Wraith faction has accumulated
+    /// genuine strategic hunger and the colony has an eligible biological prisoner. Refusing an
     /// actual request makes that faction attack; hostile/high-hunger lineages also gain independent
     /// raid pressure as hunger rises.
     /// </summary>
@@ -42,6 +42,30 @@ namespace WraithNaniteGravtech
         private bool requestWindowOpen;
 
         public WraithFactionHunger(Game game) { }
+
+        /// <summary>
+        /// Read-only strategic hunger access for other WNG systems such as Dart incident weighting.
+        /// Pawn-level Drain Life does not call this and cannot directly alter faction hunger.
+        /// </summary>
+        public float GetStrategicHunger(Faction faction)
+        {
+            return faction?.def == null ? 0f : GetHunger(faction.def.defName);
+        }
+
+        public float HighestHostileStrategicHunger()
+        {
+            if (Find.FactionManager?.AllFactionsListForReading == null || Faction.OfPlayer == null)
+                return 0f;
+
+            float highest = 0f;
+            foreach (Faction faction in Find.FactionManager.AllFactionsListForReading)
+            {
+                if (faction == null || faction.defeated || !WraithCaptureUtility.IsWraithCaptor(faction) || !faction.HostileTo(Faction.OfPlayer))
+                    continue;
+                highest = Math.Max(highest, GetStrategicHunger(faction));
+            }
+            return Clamp01(highest);
+        }
 
         public override void GameComponentTick()
         {
