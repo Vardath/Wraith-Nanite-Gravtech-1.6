@@ -1,0 +1,20 @@
+name: WNG temporary compile
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore Source/WNG/WNG.csproj
+      - name: Compile RimWorld 1.6 assembly
+        run: dotnet build Source/WNG/WNG.csproj -c Release --no-restore
