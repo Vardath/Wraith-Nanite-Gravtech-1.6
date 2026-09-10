@@ -3,12 +3,12 @@
   <GeneDef>
     <defName>WNG_LifeForce</defName>
     <label>life force</label>
-    <description>Wraith tissues store stolen vitality as a visible Life Force reserve. The reserve slowly drains with time and is restored by feeding.</description>
+    <description>Wraith tissues store stolen vitality as a visible Life Force reserve. The reserve slowly drains with time, is restored by feeding, and collapses to two percent of normal consumption during deliberate hibernation.</description>
     <geneClass>WraithNaniteGravtech.Gene_Resource_LifeForce</geneClass>
     <resourceLabel>Life force</resourceLabel>
-    <resourceDescription>Stored vitality used by Wraith biology. Feeding restores this reserve.</resourceDescription>
-    <resourceLossPerDay>0.12</resourceLossPerDay>
-    <resourceGizmoThresholds><li>0.15</li><li>0.5</li></resourceGizmoThresholds>
+    <resourceDescription>Stored vitality used by Wraith biology. Feeding restores this reserve; deliberate hibernation greatly reduces its consumption.</resourceDescription>
+    <resourceLossPerDay>0.0666667</resourceLossPerDay>
+    <resourceGizmoThresholds><li>0.15</li><li>0.40</li><li>0.70</li></resourceGizmoThresholds>
     <showGizmoOnWorldView>true</showGizmoOnWorldView>
     <showGizmoWhenDrafted>true</showGizmoWhenDrafted>
     <showGizmoOnMultiSelect>false</showGizmoOnMultiSelect>
@@ -19,7 +19,7 @@
   <GeneDef>
     <defName>WNG_WraithRegeneration</defName>
     <label>wraith regeneration</label>
-    <description>Wraith tissue slowly repairs ordinary injuries while Life Force remains. A recently fed Wraith regenerates much faster.</description>
+    <description>Wraith tissue repairs ordinary injuries according to its available Life Force. Fresh feeding accelerates the same biological repair process.</description>
     <geneClass>WraithNaniteGravtech.Gene_WraithRegeneration</geneClass>
     <biostatCpx>3</biostatCpx>
     <biostatMet>-2</biostatMet>
