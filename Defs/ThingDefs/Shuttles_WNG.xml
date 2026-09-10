@@ -55,6 +55,16 @@
     <size>(4,3)</size><rotatable>false</rotatable><selectable>true</selectable>
     <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(4.8,3.0)</drawSize></graphicData>
     <statBases><MaxHitPoints>1200</MaxHitPoints><Flammability>0.12</Flammability></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_PuddleJumperRaidMission">
+        <attackPasses>2</attackPasses>
+        <passIntervalTicks>900</passIntervalTicks>
+        <dronesPerPass>3</dronesPerPass>
+        <acquisitionRadius>45</acquisitionRadius>
+        <landedRaidDelayTicks>1800</landedRaidDelayTicks>
+        <droneProjectile>WNG_AncientDroneProjectile</droneProjectile>
+      </li>
+    </comps>
   </ThingDef>
 
   <!-- Goa'uld/Jaffa optional-integration craft. The Def is dependency-free and inert unless the
