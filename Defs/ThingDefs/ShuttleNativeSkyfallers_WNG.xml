@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef Name="WNG_NativeShuttleIncomingBase" ParentName="ShuttleSkyfallerBase" Abstract="True">
+    <thingClass>PassengerShuttleIncoming</thingClass>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Misc/Shuttle</texPath><drawSize>(4,5)</drawSize></graphicData>
+    <skyfaller>
+      <anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>100</anticipationSoundTicks><ticksToImpactRange>160~200</ticksToImpactRange>
+      <rotationCurve><points><li>(0,25)</li><li>(0.5,4)</li><li>(0.9,-4)</li><li>(0.95,0)</li></points></rotationCurve>
+      <zPositionCurve><points><li>(0.95,2.5)</li><li>(1,0)</li></points></zPositionCurve>
+      <speedCurve><points><li>(0.6,0.8)</li><li>(0.95,0.12)</li></points></speedCurve>
+    </skyfaller>
+  </ThingDef>
+
+  <ThingDef Name="WNG_NativeShuttleLeavingBase" ParentName="ShuttleSkyfallerBase" Abstract="True">
+    <thingClass>WraithNaniteGravtech.WNGNativeShuttleLeaving</thingClass>
+    <rotatable>true</rotatable>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Misc/Shuttle</texPath><drawSize>(4,5)</drawSize></graphicData>
+    <skyfaller>
+      <reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><moteSpawnTime>0.05</moteSpawnTime><motesPerCell>1</motesPerCell>
+      <rotationCurve><points><li>(0,0)</li><li>(0.15,12)</li><li>(0.5,-4)</li></points></rotationCurve>
+      <zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve>
+      <speedCurve><points><li>(0,0.25)</li><li>(0.4,0.9)</li></points></speedCurve>
+    </skyfaller>
+  </ThingDef>
+
+  <ThingDef ParentName="WNG_NativeShuttleIncomingBase"><defName>WNG_WraithDartIncoming</defName><label>Wraith Dart (incoming)</label><graphicData><drawSize>(3,5)</drawSize></graphicData></ThingDef>
+  <ThingDef ParentName="WNG_NativeShuttleLeavingBase"><defName>WNG_WraithDartLeaving</defName><label>Wraith Dart (leaving)</label><graphicData><drawSize>(3,5)</drawSize></graphicData></ThingDef>
+
+  <ThingDef ParentName="WNG_NativeShuttleIncomingBase"><defName>WNG_WraithScoutIncoming</defName><label>Wraith scout craft (incoming)</label><graphicData><drawSize>(4,5)</drawSize></graphicData></ThingDef>
+  <ThingDef ParentName="WNG_NativeShuttleLeavingBase"><defName>WNG_WraithScoutLeaving</defName><label>Wraith scout craft (leaving)</label><graphicData><drawSize>(4,5)</drawSize></graphicData></ThingDef>
+
+  <ThingDef ParentName="WNG_NativeShuttleIncomingBase"><defName>WNG_WraithCruiserIncoming</defName><label>Wraith cruiser transport (incoming)</label><graphicData><drawSize>(6,5)</drawSize></graphicData></ThingDef>
+  <ThingDef ParentName="WNG_NativeShuttleLeavingBase"><defName>WNG_WraithCruiserLeaving</defName><label>Wraith cruiser transport (leaving)</label><graphicData><drawSize>(6,5)</drawSize></graphicData></ThingDef>
+
+  <ThingDef ParentName="WNG_NativeShuttleIncomingBase"><defName>WNG_PuddleJumperIncoming</defName><label>Puddle Jumper (incoming)</label><graphicData><drawSize>(4,5)</drawSize></graphicData></ThingDef>
+  <ThingDef ParentName="WNG_NativeShuttleLeavingBase"><defName>WNG_PuddleJumperLeaving</defName><label>Puddle Jumper (leaving)</label><graphicData><drawSize>(4,5)</drawSize></graphicData></ThingDef>
+
+  <ThingDef ParentName="WNG_NativeShuttleIncomingBase" MayRequire="idolord.ONAC"><defName>WNG_AlkeshIncoming</defName><label>Al'kesh transport (incoming)</label><graphicData><drawSize>(5,6)</drawSize></graphicData></ThingDef>
+  <ThingDef ParentName="WNG_NativeShuttleLeavingBase" MayRequire="idolord.ONAC"><defName>WNG_AlkeshLeaving</defName><label>Al'kesh transport (leaving)</label><graphicData><drawSize>(5,6)</drawSize></graphicData></ThingDef>
+</Defs>
