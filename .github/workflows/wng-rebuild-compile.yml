@@ -64,6 +64,9 @@ jobs:
       - name: Wraith Growth Chamber audit
         run: python3 Tools/audit_wraith_growth_chamber.py
 
+      - name: Mature Wraith Hive population audit
+        run: python3 Tools/audit_wraith_mature_hive_population.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
