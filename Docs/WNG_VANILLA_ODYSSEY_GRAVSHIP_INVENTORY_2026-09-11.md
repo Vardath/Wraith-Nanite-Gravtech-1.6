@@ -4,6 +4,19 @@ Newest explicit Vardath instructions override this checkpoint.
 
 Purpose: before WNG clones or themes gravship systems, account for the actual vanilla RimWorld 1.6 Odyssey gravship grammar so WNG reuses native behavior wherever possible instead of recreating it badly.
 
+## Gravship authority correction — 2026-09-11
+
+Historical WNG gravship implementations were not successful and are **not design authority** for the rebuild.
+
+For all fresh gravship work, use this authority order:
+
+1. Vardath's current explicit requirements and current rebuild contracts.
+2. Stargate canon/lore for what the Wraith, Asuran/Ancient-derived, and Goa'uld systems are and what they do.
+3. RimWorld 1.6 Odyssey's actual gravship Defs, classes, connection rules, construction behavior, launch requirements and rendering grammar.
+4. Fresh WNG code designed from those sources.
+
+Historical WNG gravship code may be inspected only as **negative/failure evidence**: to identify names, attempted concepts, regressions, API traps or behaviors that must not be repeated. Do not copy its architecture, do not assume its Defs/classes were correct, and do not use it to settle a design question when current requirements or vanilla behavior differ.
+
 ## Vanilla functional baseline
 
 A vanilla gravship is built around one `GravEngine`. Connected `GravshipSubstructure` defines the transported ship footprint. A flightworthy ship minimally requires:
