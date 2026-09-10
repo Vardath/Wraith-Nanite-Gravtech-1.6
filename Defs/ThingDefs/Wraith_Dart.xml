@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh WNGR2 Wraith Dart definition.
+    The graphic below is an explicit temporary Core placeholder only. Historical WNG Dart art/audio
+    is not reused. Replace with newly authored WNG art/audio before presentation completion.
+  -->
+  <ThingDef ParentName="ShuttleBase">
+    <defName>WNG_WraithDart</defName>
+    <label>Wraith Dart</label>
+    <description>A fast Wraith scout and culling craft. Hostile Darts can stun biological prey, hold the exact captured pawns in their onboard transport buffer, and carry them away into Wraith captivity if the craft escapes.</description>
+    <size>(3,2)</size>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <graphicData>
+      <texPath>Things/Building/Misc/Shuttle</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(3.6,2.0)</drawSize>
+      <shadowData>
+        <volume>(2.6,0.8,1.2)</volume>
+        <offset>(0,0,-0.08)</offset>
+      </shadowData>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>650</MaxHitPoints>
+      <Flammability>0.25</Flammability>
+    </statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithDartAbduction">
+        <maxCaptives>3</maxCaptives>
+        <scanIntervalTicks>500</scanIntervalTicks>
+        <acquisitionRadius>28</acquisitionRadius>
+        <stunTicks>1200</stunTicks>
+        <retreatDelayTicks>600</retreatDelayTicks>
+        <emptyScansBeforeRetreat>3</emptyScansBeforeRetreat>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>
