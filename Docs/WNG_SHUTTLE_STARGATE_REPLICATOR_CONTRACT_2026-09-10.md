@@ -90,6 +90,50 @@ Material phenotype is inherited by newly reproduced Replicators and carried thro
 
 The phenotype should be derived from meaningful recent/accumulated feedstock rather than an arbitrary cosmetic label, and its gameplay effects must be centralized/tunable rather than scattered magic constants.
 
+### Destruction and lower-tier breakup
+
+A genuinely destroyed higher-form Replicator produces **both**:
+- living Replicators of the next tier down; and
+- loose Replicator blocks/material from the destroyed body.
+
+Current physical ladder remains:
+**Drone/base -> Hunter -> Bulwark -> Titan -> Siege Mass**.
+
+Therefore genuine destruction reverses that ladder one step while also shedding loose blocks:
+- Siege Mass -> Titans + loose blocks;
+- Titan -> Bulwarks + loose blocks;
+- Bulwark -> Hunters + loose blocks;
+- Hunter -> Drone/base Replicators + loose blocks;
+- Drone/base -> loose blocks only.
+
+Intentional upward recombination is not destruction and must not emit breakup offspring or salvage blocks as though the source units died.
+
+### Loose Replicator blocks: reformation risk
+
+Loose Replicator blocks are dangerous salvage rather than inert scrap.
+
+Required behavior:
+- a sufficiently large pile has a **full one in-game day dormancy/recombination timer** before it may reform a Replicator;
+- after that day expires, the chance of reformation starts low and **grows the longer the blocks remain exposed/uncontained**;
+- a successful reformation consumes an appropriate amount of blocks and creates a hostile base Replicator;
+- remaining blocks restart the dormant cycle after a successful reformation rather than chaining instantly;
+- powered containment suppresses reformation and resets/freezes the danger clock;
+- save/load preserves the dormancy/exposure state correctly.
+
+### Disposal and EMP-room containment
+
+Players need two practical ways to manage loose Replicator blocks:
+
+1. **Smelting/destruction:** Replicator blocks are smeltable at an appropriate vanilla electric smelter or equivalent standard smelting worktable. Smelting permanently destroys the processed blocks so they cannot later reform. The recipe should use normal RimWorld bill/worktable behavior rather than a custom disposal UI.
+
+2. **EMP containment room:** Replicator blocks can be stored safely in a room kept under continuous/regular EMP suppression. The intended buildable approach is a **wall-mounted EMP pulser/emitter** (or equivalent compact EMP field device) that lets the player convert an ordinary enclosed room into a Replicator containment room. While the room is effectively EMP-suppressed:
+   - loose blocks cannot advance/reform;
+   - active block Replicators inside the effective field are suppressed consistently with the main Replicator EMP rules;
+   - the reformation danger clock is reset/frozen as appropriate;
+   - loss of power/EMP coverage restarts the normal one-day exposed dormancy period before reformation risk resumes.
+
+The EMP-room system should be based on actual covered cells/room geometry, not just a decorative room label. It should coexist with the dedicated Replicator containment projector rather than making one or the other meaningless. Exact emitter radius/pulse interval/power draw remains tunable.
+
 ## Separation rules
 
 - Native shuttle boarding/transport owns boarding for Wraith and Asuran craft.
@@ -97,3 +141,4 @@ The phenotype should be derived from meaningful recent/accumulated feedstock rat
 - WNG owns raid composition, shuttle entry/roof interaction, attack passes, absorption/drone attacks, landing, objectives, retreat outcomes, and WNG captivity.
 - Wraith Dart absorption is distinct from ordinary Drain Life and strategic faction hunger.
 - Replicator material feeding is distinct from Wraith Life Force/biomass systems.
+- Replicator block disposal/EMP containment is player counterplay to the Replicator ecology and must remain compatible with normal vanilla hauling, bills, rooms and power behavior.
