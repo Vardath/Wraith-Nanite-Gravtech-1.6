@@ -35,6 +35,8 @@ Optional Stargate integration remains an enhancement, not a requirement for ordi
 
 When a Stargate-entry raid includes a Wraith Dart or Puddle Jumper:
 - the shuttle may emerge through the gate as part of the raid;
+- normal Stargate arrival rules apply before any map spawn/rematerialization outcome;
+- if the receiving gate's iris/shield is closed, incoming pawns and shuttle matter are destroyed before successful rematerialization and do not spawn on the map;
 - if the gate exit is under an ordinary constructed/light roof, the craft breaks through the roof, takes some damage, remains functional if it survives, then performs its attack-pass sequence;
 - if the gate exit is under a heavy/rock roof, the shuttle cannot safely punch through: it explodes and causes a cave-in/collapse event around the entry area;
 - after successful entry, the craft performs **two real flyby passes**, then lands and participates in the raid/outcome;
@@ -46,21 +48,32 @@ When a Stargate-entry raid includes a Wraith Dart or Puddle Jumper:
 
 The roof interaction must be based on the actual roof over/around the gate emergence cells, not a generic map-wide roof flag.
 
+### Stargate direction and iris rules
+
+Stargate transit follows normal canon rules rather than generic teleporter behavior:
+- solid-matter travel is one-way, from the dialing gate to the receiving gate;
+- an already-active **inbound** connection at the local map cannot be used by the Dart or any other shuttle to travel back through the same wormhole;
+- outbound retreat therefore requires the current inbound connection to close, followed by a fresh outbound redial from the local gate;
+- a genuinely active outbound connection initiated by the local gate may be used for departure;
+- a closed iris/shield on the receiving side prevents successful rematerialization; incoming pawns/craft are destroyed before appearing on the destination map;
+- WNG does not bypass CatCraft iris/shield behavior. CatCraft owns the actual gate state and receive-buffer mechanics; WNG consumes that state and resolves its own craft/raid outcomes accordingly.
+
 ### Wraith Dart retreat route priority
 
 A hostile Wraith-piloted Dart that survives a raid does not simply despawn.
 
 Retreat order:
-1. **Stargate first when usable.** If hostile Wraith still control/pilot the Dart and an accessible compatible Stargate can be used, the Dart uses its own Stargate-dialing capability to establish an outbound route and physically leaves through the gate.
-2. **Native shuttle escape fallback.** If the Stargate is inaccessible, blocked, unavailable, cannot be redialed, or otherwise cannot provide a safe outbound route, the Dart attempts the normal RimWorld/Odyssey shuttle launch/exit behavior.
-3. **Failure leaves the craft behind.** If the Wraith fail to board/launch the surviving Dart, or neither escape route can actually complete, the craft remains on the map. It must never be silently despawned merely because a raid-retreat state was reached.
+1. **Stargate first when usable.** If hostile Wraith still control/pilot the Dart and an accessible compatible Stargate can be used, the Dart uses its own Stargate-dialing capability to establish a fresh outbound route and physically leaves through the gate.
+2. **Do not reverse an inbound wormhole.** If the gate is still active as the inbound connection used by the raid, the Dart must wait for that connection to close and then redial outbound; it cannot fly back through the active inbound wormhole.
+3. **Native shuttle escape fallback.** If the Stargate is inaccessible, blocked, unavailable, cannot be redialed, or otherwise cannot provide a safe outbound route, the Dart attempts the normal RimWorld/Odyssey shuttle launch/exit behavior.
+4. **Failure leaves the craft behind.** If the Wraith fail to board/launch the surviving Dart, or neither escape route can actually complete, the craft remains on the map. It must never be silently despawned merely because a raid-retreat state was reached.
 
 Additional rules:
 - the same actual Dart is used for arrival, culling passes, landing, boarding and escape;
 - any exact captives still in its culling/transport buffer leave with it only after a real escape route commits successfully;
 - if Wraith abandon the Dart, its buffered captives remain physically associated with the surviving craft until hacking/destruction/other explicitly resolved outcome;
 - CatCraft remains authoritative for Stargate network/address/dial/iris/shield/receive-buffer mechanics; WNG requests/uses that functionality rather than replacing it;
-- the Dart's own DHD/dialing capability is Stargate-canonical and is represented as the craft initiating the CatCraft-compatible outbound dial, not as WNG taking ownership of the gate network.
+- the Dart's own DHD/dialing capability is represented as the craft initiating the CatCraft-compatible outbound dial, not as WNG taking ownership of the gate network.
 
 ## Autonomous block-Replicator behavior
 
@@ -188,12 +201,15 @@ Implemented on public `main` in the fresh rebuild:
 - stronger feedstock produces reinforced/advanced bodies;
 - four shuttle ThingDefs inherit native RimWorld/Odyssey `ShuttleBase`;
 - fresh Wraith Dart culling component uses the inherited native `CompTransporter` for exact-pawn buffering;
-- Dart hack outcome releases exact buffered captives and transfers the surviving craft to player control without replacing native boarding.
+- Dart hack outcome releases exact buffered captives and transfers the surviving craft to player control without replacing native boarding;
+- two-pass Dart mission state exists and records landing/retreat phases;
+- Stargate transit policy explicitly distinguishes inbound versus outbound local connections and closed arrival barriers;
+- Dart retreat refuses to treat an active inbound wormhole as an outbound escape route.
 
 Explicitly still unfinished:
-- two-pass Dart flight/culling controller and landing sequence;
+- physical flyover presentation/trajectory for the two Dart attack passes and landing sequence;
 - successful Wraith boarding/escape commit tied to real native launch completion;
-- CatCraft-compatible gate-first Dart retreat implementation, with native shuttle fallback and leave-behind failure state;
+- concrete CatCraft adapter using the actual CatCraft gate API for redial/traversal/iris state;
 - Puddle Jumper chair/drone flyby implementation;
 - Stargate roof breakthrough/heavy-roof explosion/cave-in entry behavior;
 - final Wraith Strike Craft/Cruiser roles beyond their native-boardable shuttle foundation.
