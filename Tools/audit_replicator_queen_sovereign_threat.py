@@ -44,9 +44,14 @@ for needle, description in [
 ]:
     require(state, needle, description)
 
+# Crisis-pressure scaling is a separate pre-existing system and legitimately owns its own
+# HostileOutbreakBonus.  The Queen regression boundary is narrower: autonomous feral outbreaks
+# must not query Queen state, Queen capture, or the Lattice sovereign bridge at all.
 for forbidden, description in [
-    ("HostileOutbreakBonus", "obsolete +1 outbreak Queen consequence"),
     ("GameComponent_ReplicatorQueenState", "Queen capture coupled back into autonomous feral outbreak"),
+    ("HostileCollectiveHasSovereignControl", "captured-Queen sovereign state coupled into feral outbreak"),
+    ("FactionHasCapturedQueenAuthority", "exact Queen-captor authority coupled into feral outbreak"),
+    ("ReplicatorQueenSovereignThreatBridge", "Lattice sovereign assault bridge coupled into feral outbreak"),
 ]:
     if forbidden in outbreak:
         errors.append(f"Captured-Queen threat contract violated: {description}")
