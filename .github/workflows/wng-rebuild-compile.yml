@@ -37,6 +37,9 @@ jobs:
       - name: Wraith Dart culling incident audit
         run: python3 Tools/audit_wraith_dart_incident.py
 
+      - name: Wraith ground-kidnap bridge audit
+        run: python3 Tools/audit_wraith_raid_kidnap.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
