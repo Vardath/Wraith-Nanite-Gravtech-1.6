@@ -100,6 +100,15 @@ namespace WraithNaniteGravtech
             base.CompTickRare();
             if (parent == null || parent.Destroyed || !parent.Spawned || parent.stackCount < Math.Max(1, Props.minimumStack)) return;
             int now = Find.TickManager.TicksGame;
+
+            // Powered containment freezes the danger clock. If the field later fails, the stack
+            // must remain exposed for a full configured dormant interval before trying to wake.
+            if (ReplicatorContainmentUtility.IsContained(parent.Map, parent.Position))
+            {
+                nextAttemptTick = now + Math.Max(250, Props.dormantTicks);
+                return;
+            }
+
             if (now < nextAttemptTick) return;
             nextAttemptTick = now + Math.Max(250, Props.retryTicks);
             if (!Rand.Chance(Math.Max(0f, Math.Min(1f, Props.chancePerCheck)))) return;
@@ -110,8 +119,7 @@ namespace WraithNaniteGravtech
             if (kind == null || faction == null) return;
 
             int cap = Math.Max(1, Props.maxHostileReplicatorsPerMap);
-            int existing = parent.Map.mapPawns.AllPawnsSpawned.Count(p =>
-                p != null && !p.Dead && p.Faction == faction && p.TryGetComp<CompReplicatorState>() != null);
+            int existing = parent.Map.mapPawns.AllPawnsSpawned.Count(p => p != null && !p.Dead && p.Faction == faction && p.TryGetComp<CompReplicatorState>() != null);
             int room = Math.Max(0, cap - existing);
             if (room <= 0) return;
 
@@ -132,6 +140,14 @@ namespace WraithNaniteGravtech
                     break;
                 }
             }
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            if (parent == null || parent.stackCount < Math.Max(1, Props.minimumStack)) return null;
+            if (parent.Spawned && ReplicatorContainmentUtility.IsContained(parent.Map, parent.Position))
+                return "Contained Replicator Matter: powered suppression field prevents self-assembly.";
+            return "Dangerous Replicator Matter: sufficient mass remains capable of hostile self-assembly.";
         }
 
         public override void PostExposeData()
