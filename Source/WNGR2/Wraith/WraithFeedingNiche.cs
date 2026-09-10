@@ -80,10 +80,8 @@ namespace WraithNaniteGravtech
 
         private static Pawn FindHostedPrisoner(Building_Bed niche, Faction owner)
         {
-            List<Pawn> occupants = niche.CurOccupants;
-            for (int i = 0; i < occupants.Count; i++)
+            foreach (Pawn pawn in niche.CurOccupants)
             {
-                Pawn pawn = occupants[i];
                 if (!WraithCaptureUtility.IsValidCaptiveIdentity(pawn))
                     continue;
                 if (pawn.guest?.IsPrisoner != true)
@@ -98,7 +96,7 @@ namespace WraithNaniteGravtech
         private static List<Pawn> FindHungryWraith(Map map, Faction owner, float cutoff)
         {
             List<Pawn> result = new List<Pawn>();
-            List<Pawn> spawned = map.mapPawns.AllPawnsSpawned;
+            IReadOnlyList<Pawn> spawned = map.mapPawns.AllPawnsSpawned;
             float threshold = Math.Max(0f, Math.Min(1f, cutoff));
 
             for (int i = 0; i < spawned.Count; i++)
@@ -124,7 +122,7 @@ namespace WraithNaniteGravtech
 
         private static bool SupervisorPresent(Map map, Faction owner)
         {
-            List<Pawn> spawned = map.mapPawns.AllPawnsSpawned;
+            IReadOnlyList<Pawn> spawned = map.mapPawns.AllPawnsSpawned;
             for (int i = 0; i < spawned.Count; i++)
             {
                 Pawn pawn = spawned[i];
