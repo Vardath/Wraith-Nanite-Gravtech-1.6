@@ -8,6 +8,13 @@
   </JobDef>
 
   <JobDef>
+    <defName>WNG_ReplicatorConsumeCell</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorConsumeCell</driverClass>
+    <reportString>dismantling material at TargetA.</reportString>
+    <checkOverrideOnDamage>true</checkOverrideOnDamage>
+  </JobDef>
+
+  <JobDef>
     <defName>WNG_ReplicatorRepair</defName>
     <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorRepair</driverClass>
     <reportString>repairing TargetA.</reportString>
