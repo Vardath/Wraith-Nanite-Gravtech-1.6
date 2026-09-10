@@ -30,6 +30,13 @@ namespace WraithNaniteGravtech
         private float storedMatter;
         private CompProperties_ReplicatorAssimilation Props => (CompProperties_ReplicatorAssimilation)props;
         public int WorkTicks => Math.Max(60, Props.workTicks);
+        public float StoredMatter => Math.Max(0f, storedMatter);
+
+        public void SetStoredMatter(float value) => storedMatter = Math.Max(0f, value);
+        public void AddStoredMatter(float value)
+        {
+            if (value > 0f) storedMatter += value;
+        }
 
         public bool CanAct
         {
@@ -38,7 +45,8 @@ namespace WraithNaniteGravtech
                 Pawn pawn = parent as Pawn;
                 return pawn != null && !pawn.Dead && pawn.Spawned && pawn.Map != null
                     && pawn.Faction != Faction.OfPlayer && !pawn.IsColonyMechPlayerControlled
-                    && !ReplicatorEMP.IsSuppressed(pawn);
+                    && !ReplicatorEMP.IsSuppressed(pawn)
+                    && !ReplicatorContainmentUtility.IsContained(pawn.Map, pawn.Position);
             }
         }
 
@@ -66,7 +74,6 @@ namespace WraithNaniteGravtech
             if (target?.def == null) return 0f;
             string identity = ((target.def.defName ?? string.Empty) + " " + (target.def.label ?? string.Empty)).ToLowerInvariant();
             float score = 0f;
-
             if (identity.Contains("shield") || identity.Contains("barrier")) score += 1200f;
             if (identity.Contains("grav") || identity.Contains("gravity")) score += 1100f;
             if (target.def.IsWeapon && target.def.IsRangedWeapon) score += 950f;
@@ -84,6 +91,7 @@ namespace WraithNaniteGravtech
             if (thing is Pawn || thing is Corpse) return false;
             if (thing.Faction != null && thing.Faction == pawn.Faction) return false;
             if (thing.def == null || !thing.def.destroyable) return false;
+            if (ReplicatorContainmentUtility.BlocksAssimilation(pawn, thing)) return false;
             bool item = thing.def.category == ThingCategory.Item && thing.def.EverHaulable;
             bool building = thing.def.category == ThingCategory.Building && thing.def.useHitPoints;
             if (!item && !building) return false;
@@ -94,7 +102,6 @@ namespace WraithNaniteGravtech
         {
             Pawn pawn = parent as Pawn;
             if (!CanAct || pawn == null || !IsTargetValid(pawn, target)) return;
-
             pawn.TryGetComp<CompReplicatorState>()?.RecordAssimilation(target);
             float yield = CalculateYield(target);
             Consume(target);
@@ -130,16 +137,12 @@ namespace WraithNaniteGravtech
             float cost = Math.Max(0.1f, Props.offspringMatterCost);
             int possibleByMatter = Math.Min(Math.Max(0, Props.maxOffspringPerAssimilation), (int)(storedMatter / cost));
             if (possibleByMatter <= 0) return;
-
             int cap = Math.Max(1, Props.maxHostileReplicatorsPerMap);
-            int current = parentPawn.Map.mapPawns.AllPawnsSpawned.Count(p =>
-                p != null && !p.Dead && p.Faction == parentPawn.Faction && p.TryGetComp<CompReplicatorState>() != null);
+            int current = parentPawn.Map.mapPawns.AllPawnsSpawned.Count(p => p != null && !p.Dead && p.Faction == parentPawn.Faction && p.TryGetComp<CompReplicatorState>() != null);
             int possible = Math.Min(possibleByMatter, Math.Max(0, cap - current));
             if (possible <= 0) return;
-
             PawnKindDef kind = DefDatabase<PawnKindDef>.GetNamedSilentFail(Props.offspringPawnKind);
             if (kind == null) return;
-
             for (int i = 0; i < possible; i++)
             {
                 Pawn child = PawnGenerator.GeneratePawn(kind, parentPawn.Faction);
@@ -151,7 +154,6 @@ namespace WraithNaniteGravtech
         }
 
         public override string CompInspectStringExtra() => storedMatter > 0.01f ? $"Stored replication matter: {storedMatter:0.0}" : null;
-
         public override void PostExposeData()
         {
             base.PostExposeData();
@@ -176,21 +178,16 @@ namespace WraithNaniteGravtech
     public sealed class JobDriver_ReplicatorAssimilate : JobDriver
     {
         private const TargetIndex Target = TargetIndex.A;
-
-        public override bool TryMakePreToilReservations(bool errorOnFailed)
-            => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
-
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDestroyedNullOrForbidden(Target);
-            this.FailOn(() => ReplicatorEMP.IsSuppressed(pawn));
+            this.FailOn(() => ReplicatorEMP.IsSuppressed(pawn) || ReplicatorContainmentUtility.BlocksAssimilation(pawn, job.targetA.Thing));
             yield return Toils_Goto.GotoThing(Target, PathEndMode.Touch);
-
             CompReplicatorAssimilation comp = pawn.TryGetComp<CompReplicatorAssimilation>();
             Toil work = Toils_General.Wait(comp?.WorkTicks ?? 300);
             work.WithProgressBarToilDelay(Target);
             yield return work;
-
             Toil finish = ToilMaker.MakeToil("WNGReplicatorAssimilationFinish");
             finish.initAction = () => pawn.TryGetComp<CompReplicatorAssimilation>()?.Finish(job.targetA.Thing);
             finish.defaultCompleteMode = ToilCompleteMode.Instant;
