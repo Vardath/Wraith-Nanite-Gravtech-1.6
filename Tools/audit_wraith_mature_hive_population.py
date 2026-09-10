@@ -17,26 +17,40 @@ def require(text: str, needle: str, description: str) -> None:
         fail(f"Missing mature Hive population contract: {description}")
 
 
-if not POP.exists():
-    fail("Missing fresh mature Hive population runtime")
-    pop = ""
-else:
-    pop = POP.read_text(encoding="utf-8", errors="replace")
-
-if not CHAMBER.exists():
-    fail("Missing fresh Growth Chamber runtime")
-    chamber = ""
-else:
-    chamber = CHAMBER.read_text(encoding="utf-8", errors="replace")
+pop = POP.read_text(encoding="utf-8", errors="replace") if POP.exists() else ""
+chamber = CHAMBER.read_text(encoding="utf-8", errors="replace") if CHAMBER.exists() else ""
+if not POP.exists(): fail("Missing fresh mature Hive population runtime")
+if not CHAMBER.exists(): fail("Missing fresh Growth Chamber runtime")
 
 for needle, description in [
     ("replacementRetryTicks = 30000", "30,000-tick bounded replacement retry"),
-    ("InitializeGeneratedHive(IEnumerable<Pawn> foundingMembers, Building exactGeneratedGrowthChamber)", "explicit generator-only initialization entry point"),
+    ("dormantWakeRadius = 18f", "18-cell ordinary-dormant wake radius"),
+    ("activeLossesBeforeDormantWake = 2", "two-active-loss wake threshold"),
+    ("InitializeGeneratedHive(IEnumerable<Pawn> foundingMembers, Building exactGeneratedGrowthChamber)", "backward-compatible explicit initializer"),
+    ("IEnumerable<Pawn> hibernatingFounders", "explicit ordinary hibernating founder input"),
+    ("IEnumerable<Building_Bed> exactHibernationPods", "explicit exact Hibernation Pod input"),
     ("parent.Faction == Faction.OfPlayer", "player Hive initialization rejection"),
     ("exactGeneratedGrowthChamber.GetComp<CompWraithGrowthChamber>()", "exact generated Growth Chamber validation"),
-    ("foundingPopulationCap = exactFounders.Count", "fixed founding population cap"),
-    ("demographicMembers.AddRange(exactFounders)", "exact founding Pawn references"),
+    ("CollectExactWraiths(hibernatingFounders, activeFounders)", "exact dormant founder collection"),
+    ("CollectExactPods(exactHibernationPods)", "exact Pod collection"),
+    ("sleepingFounders.Count != sleepingPods.Count", "one exact Pod per ordinary hibernator"),
+    ("demographicMembers.AddRange(exactFounders)", "active and dormant exact founders in one demographic population"),
+    ("dormantMembers.AddRange(sleepingFounders)", "separate ordinary dormant cohort tracking"),
+    ("dormantBeds.AddRange(sleepingPods)", "separate exact dormant Pod tracking"),
+    ("foundingPopulationCap = exactFounders.Count", "fixed active-plus-dormant founding cap"),
+    ("initialActiveFounderCount = activeFounders.Count", "fixed initial active cohort size"),
+    ("MaintainDormantCohort()", "ordinary dormancy maintenance"),
+    ('GetNamedSilentFail("WNG_WraithHibernating")', "real hibernation Hediff maintenance"),
+    ("JobMaker.MakeJob(JobDefOf.LayDown, bed)", "normal RimWorld Pod occupancy job"),
+    ("pawn.jobs.StartJob", "actual exact-pawn LayDown assignment"),
+    ("FreeColonistsSpawned", "player-proximity wake observation"),
+    ("LivingActiveDemographicCount()", "active population accounting separated from sleepers"),
+    ("WakeDormantCohort()", "bounded ordinary sleeper wake path"),
+    ("pawn.health.RemoveHediff(existing)", "hibernation removal on wake"),
+    ("LordMaker.MakeNewLord", "woken ordinary cohort defense Lord"),
     ("Scribe_Collections.Look(ref demographicMembers", "save-persistent exact demographic references"),
+    ("Scribe_Collections.Look(ref dormantMembers", "save-persistent ordinary dormant Pawn references"),
+    ("Scribe_Collections.Look(ref dormantBeds", "save-persistent exact Hibernation Pod references"),
     ("Scribe_References.Look(ref generatedGrowthChamber", "save-persistent exact Growth Chamber reference"),
     ("TakeCompletedPopulationClone()", "exact completed replacement handoff"),
     ("TryStartPopulationReplacement(replacementKind)", "replacement through real Growth Chamber payment path"),
