@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef>
+    <defName>WNG_AsuranFabrication</defName>
+    <label>Asuran nanite fabrication</label>
+    <description>Reconstruct the programmable nanite fabrication methods used by Asuran technology, allowing a sufficiently supplied nanite humanoid to assemble a dedicated workshop and manufacture stable Asuran engineering materials.</description>
+    <baseCost>3600</baseCost>
+    <techLevel>Ultra</techLevel>
+    <prerequisites><li>Fabrication</li></prerequisites>
+    <researchViewX>19</researchViewX>
+    <researchViewY>15.5</researchViewY>
+  </ResearchProjectDef>
+</Defs>
