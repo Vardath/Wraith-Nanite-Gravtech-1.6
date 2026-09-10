@@ -38,9 +38,14 @@ namespace WraithNaniteGravtech
             Pawn pawn = Pawn;
             if (pawn == null || pawn.Dead || pawn.Faction == Faction.OfPlayer || pawn.IsColonyMechPlayerControlled)
                 return;
+
             Pawn instigator = dinfo.Instigator as Pawn;
-            if (instigator != null && instigator != pawn && pawn.HostileTo(instigator))
-                Provoke(instigator, signalOthers: true);
+            if (instigator == null || instigator == pawn || instigator.Dead)
+                return;
+            if (instigator.Faction != null && instigator.Faction == pawn.Faction)
+                return;
+
+            Provoke(instigator, signalOthers: true);
         }
 
         public override void CompTick()
@@ -100,15 +105,12 @@ namespace WraithNaniteGravtech
             CompReplicatorRetaliation state = pawn?.TryGetComp<CompReplicatorRetaliation>();
             if (state?.IsRetaliating != true || ReplicatorEMP.IsSuppressed(pawn))
                 return null;
+
             Pawn target = state.CurrentTarget;
-            if (target == null || target.Map != pawn.Map || !pawn.HostileTo(target))
-            {
-                target = pawn.Map?.mapPawns?.AllPawnsSpawned
-                    .Where(p => p != null && p != pawn && !p.Dead && p.Spawned && pawn.HostileTo(p))
-                    .OrderBy(p => p.Position.DistanceToSquared(pawn.Position))
-                    .FirstOrDefault();
-            }
-            return target == null ? null : JobMaker.MakeJob(JobDefOf.AttackMelee, target);
+            if (target == null || target.Map != pawn.Map)
+                return null;
+
+            return JobMaker.MakeJob(JobDefOf.AttackMelee, target);
         }
     }
 
