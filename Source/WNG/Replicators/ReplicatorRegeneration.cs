@@ -23,11 +23,15 @@ namespace WraithNaniteGravtech
             int now = Find.TickManager.TicksGame;
             if (now < nextHealTick) return;
             nextHealTick = now + System.Math.Max(60, Props.intervalTicks);
+
             Hediff_Injury injury = pawn.health?.hediffSet?.hediffs?.OfType<Hediff_Injury>()
                 .Where(x => x.Severity > 0f)
                 .OrderByDescending(x => x.Severity)
                 .FirstOrDefault();
-            injury?.Heal(System.Math.Max(0f, Props.healAmount));
+            if (injury == null) return;
+
+            float multiplier = pawn.TryGetComp<CompReplicatorAdaptationEffects>()?.PowerHealingMultiplier ?? 1f;
+            injury.Heal(System.Math.Max(0f, Props.healAmount * multiplier));
         }
 
         public override void PostExposeData()
