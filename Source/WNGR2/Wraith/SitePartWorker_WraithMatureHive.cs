@@ -8,13 +8,13 @@ using Verse.AI.Group;
 namespace WraithNaniteGravtech
 {
     /// <summary>
-    /// Fresh mature-Hive map generator. The exact infrastructure and founding Wraiths created here
-    /// are passed directly into the Hive Heart population tracker; there is no map-wide adoption.
+    /// Fresh mature-Hive map generator. The exact infrastructure and exact founding Wraiths created
+    /// here are passed directly into the Hive Heart population tracker; there is no map-wide adoption.
     ///
-    /// Founder and stock counts in this first public pass are fresh test-balance values, not copied
-    /// historical constants: Queen 1, Keeper 1, Hunter 2, Warrior 2, 420 cultured biomass.
-    /// Hibernation Pods are generated physically, but are not preloaded until a safe RimWorld 1.6
-    /// bed-occupancy initialization path is separately verified.
+    /// Current public test-balance topology: six active founders (Queen 1, Keeper 1, Hunter 2,
+    /// Warrior 2), two ordinary hibernating founders (Hunter 1, Warrior 1), 420 cultured biomass,
+    /// two Hibernation Pods and two independent sealed finite combat-reserve Vaults. Ordinary
+    /// hibernators count toward the fixed demographic cap; sealed Vault reserves never do.
     /// </summary>
     public sealed class SitePartWorker_WraithMatureHive : SitePartWorker
     {
@@ -24,6 +24,7 @@ namespace WraithNaniteGravtech
         private const int HibernationPodCount = 2;
         private const int DormancyVaultCount = 2;
         private const int StoredBiomass = 420;
+        private const float DormantInitialLifeForce = 0.45f;
 
         public override SitePartParams GenerateDefaultParams(float myThreatPoints, PlanetTile tile, Faction faction)
         {
@@ -62,27 +63,47 @@ namespace WraithNaniteGravtech
                 return;
             }
 
+            List<Building_Bed> hibernationPods = CollectGeneratedBeds(infrastructure, defs.hibernationPod);
+            if (hibernationPods.Count != HibernationPodCount)
+            {
+                Log.Error("[WNG] Mature Wraith Hive generation could not retain exact Hibernation Pod references; generated infrastructure is being removed rather than creating untracked sleepers.");
+                DestroyGeneratedInfrastructure(infrastructure);
+                return;
+            }
+
             SpawnBiomass(defs.biomass, StoredBiomass, heart.Position, map);
 
-            List<Pawn> founders = new List<Pawn>(6);
-            if (!TrySpawnFounder(defs.queen, faction, map, heart.Position, founders)
-                || !TrySpawnFounder(defs.keeper, faction, map, heart.Position, founders)
-                || !TrySpawnFounder(defs.hunter, faction, map, heart.Position, founders)
-                || !TrySpawnFounder(defs.hunter, faction, map, heart.Position, founders)
-                || !TrySpawnFounder(defs.warrior, faction, map, heart.Position, founders)
-                || !TrySpawnFounder(defs.warrior, faction, map, heart.Position, founders))
+            List<Pawn> activeFounders = new List<Pawn>(6);
+            if (!TrySpawnFounder(defs.queen, faction, map, heart.Position, activeFounders)
+                || !TrySpawnFounder(defs.keeper, faction, map, heart.Position, activeFounders)
+                || !TrySpawnFounder(defs.hunter, faction, map, heart.Position, activeFounders)
+                || !TrySpawnFounder(defs.hunter, faction, map, heart.Position, activeFounders)
+                || !TrySpawnFounder(defs.warrior, faction, map, heart.Position, activeFounders)
+                || !TrySpawnFounder(defs.warrior, faction, map, heart.Position, activeFounders))
             {
-                Log.Error("[WNG] Mature Wraith Hive generation could not establish the complete six-Wraith founding population; generated founders and infrastructure are being removed rather than initializing an invalid demographic cap.");
-                DestroyGeneratedPawns(founders);
+                Log.Error("[WNG] Mature Wraith Hive generation could not establish the complete six-Wraith active founding population; generated founders and infrastructure are being removed rather than initializing an invalid demographic cap.");
+                DestroyGeneratedPawns(activeFounders);
+                DestroyGeneratedInfrastructure(infrastructure);
+                return;
+            }
+
+            List<Pawn> dormantFounders = new List<Pawn>(2);
+            if (!TrySpawnDormantFounder(defs.hunter, faction, map, hibernationPods[0], dormantFounders)
+                || !TrySpawnDormantFounder(defs.warrior, faction, map, hibernationPods[1], dormantFounders))
+            {
+                Log.Error("[WNG] Mature Wraith Hive generation could not establish its exact ordinary hibernating founding cohort; all generated founders and infrastructure are being removed rather than degrading into a partial Hive.");
+                DestroyGeneratedPawns(dormantFounders);
+                DestroyGeneratedPawns(activeFounders);
                 DestroyGeneratedInfrastructure(infrastructure);
                 return;
             }
 
             CompMatureWraithHivePopulation population = heart.GetComp<CompMatureWraithHivePopulation>();
-            if (population == null || !population.InitializeGeneratedHive(founders, chamber))
+            if (population == null || !population.InitializeGeneratedHive(activeFounders, dormantFounders, hibernationPods, chamber))
             {
-                Log.Error("[WNG] Mature Wraith Hive Heart rejected explicit demographic initialization; generated founders and infrastructure are being removed rather than leaving an unbounded Hive.");
-                DestroyGeneratedPawns(founders);
+                Log.Error("[WNG] Mature Wraith Hive Heart rejected explicit active/dormant demographic initialization; generated founders and infrastructure are being removed rather than leaving an unbounded Hive.");
+                DestroyGeneratedPawns(dormantFounders);
+                DestroyGeneratedPawns(activeFounders);
                 DestroyGeneratedInfrastructure(infrastructure);
                 return;
             }
@@ -91,8 +112,8 @@ namespace WraithNaniteGravtech
                 faction,
                 new LordJob_DefendBase(faction, heart.Position, 60000),
                 map);
-            for (int i = 0; i < founders.Count; i++)
-                lord.AddPawn(founders[i]);
+            for (int i = 0; i < activeFounders.Count; i++)
+                lord.AddPawn(activeFounders[i]);
         }
 
         public override void SitePartWorkerTick(SitePart sitePart)
@@ -107,7 +128,7 @@ namespace WraithNaniteGravtech
                 return;
 
             // Discovery may expose a lineage that is not currently hostile. Merely opening that
-            // sovereign site must not schedule a retaliation. The consequence arms only after the
+            // sovereign site must not schedule retaliation. The consequence arms only after the
             // exact lineage is hostile, then fires once its active defenders/reserves are cleared.
             if (Faction.OfPlayer == null || !faction.HostileTo(Faction.OfPlayer))
                 return;
@@ -198,6 +219,19 @@ namespace WraithNaniteGravtech
             return spawned;
         }
 
+        private static List<Building_Bed> CollectGeneratedBeds(List<Thing> generated, ThingDef bedDef)
+        {
+            List<Building_Bed> beds = new List<Building_Bed>();
+            for (int i = 0; i < generated.Count; i++)
+            {
+                Thing thing = generated[i];
+                Building_Bed bed = thing as Building_Bed;
+                if (bed != null && bed.def == bedDef && bed.Spawned)
+                    beds.Add(bed);
+            }
+            return beds;
+        }
+
         private static void SpawnBiomass(ThingDef biomass, int count, IntVec3 near, Map map)
         {
             if (biomass == null || map == null || count <= 0)
@@ -252,6 +286,22 @@ namespace WraithNaniteGravtech
                     pawn.Destroy(DestroyMode.Vanish);
                 return false;
             }
+        }
+
+        private static bool TrySpawnDormantFounder(PawnKindDef kind, Faction faction, Map map, Building_Bed pod, List<Pawn> dormantFounders)
+        {
+            if (pod == null || !pod.Spawned || pod.Map != map || pod.Faction != faction)
+                return false;
+
+            int oldCount = dormantFounders.Count;
+            if (!TrySpawnFounder(kind, faction, map, pod.Position, dormantFounders) || dormantFounders.Count != oldCount + 1)
+                return false;
+
+            Pawn pawn = dormantFounders[dormantFounders.Count - 1];
+            Gene_Resource_LifeForce lifeForce = WraithLifeForceUtility.Get(pawn);
+            if (lifeForce != null)
+                lifeForce.Value = Math.Min(lifeForce.Max, DormantInitialLifeForce);
+            return true;
         }
 
         private static void DestroyGeneratedPawns(List<Pawn> pawns)
