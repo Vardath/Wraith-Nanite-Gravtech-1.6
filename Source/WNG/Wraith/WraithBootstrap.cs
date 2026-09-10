@@ -22,6 +22,14 @@ namespace WraithNaniteGravtech
     /// </summary>
     public sealed class CompTargetable_WraithBootstrapHost : CompTargetable
     {
+        protected override bool PlayerChoosesTarget => true;
+
+        public override IEnumerable<Thing> GetTargets(Thing targetChosenByPlayer = null)
+        {
+            if (targetChosenByPlayer != null && WraithBootstrapUtility.CanImplant(targetChosenByPlayer))
+                yield return targetChosenByPlayer;
+        }
+
         protected override TargetingParameters GetTargetingParameters()
         {
             TargetingParameters parms = new TargetingParameters
