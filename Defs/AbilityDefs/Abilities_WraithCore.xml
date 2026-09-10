@@ -3,7 +3,7 @@
   <AbilityDef ParentName="AbilityTouchBase">
     <defName>WNG_DrainLife</defName>
     <label>drain life</label>
-    <description>Feed from a downed living biological pawn at touch range. The victim gains 50 biological years and is left temporarily life-drained. The Wraith regains its Life Force reserve and becomes five biological years younger, but can never be rejuvenated below age 18.</description>
+    <description>Fully feed from a downed living biological pawn at touch range. The victim gains 50 biological years and is left temporarily life-drained. The Wraith restores its Life Force, becomes five biological years younger without crossing age 18, and produces cultured biomass. Fully feeding again before Life Drained clears is fatal to the victim.</description>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
     <cooldownTicksRange>2500~2500</cooldownTicksRange>
@@ -28,6 +28,44 @@
         <casterRejuvenationYears>5</casterRejuvenationYears>
         <minimumCasterAgeYears>18</minimumCasterAgeYears>
         <lifeForceGain>1</lifeForceGain>
+        <biomassGain>8</biomassGain>
+        <fatalIfAlreadyLifeDrained>true</fatalIfAlreadyLifeDrained>
+        <victimHediff>WNG_LifeDrained</victimHediff>
+        <casterHediff>WNG_FedRecently</casterHediff>
+      </li>
+    </comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_PartialFeed</defName>
+    <label>partial feed</label>
+    <description>Take only part of a downed biological pawn's vitality. The victim gains 10 biological years while the Wraith becomes one year younger, restores part of its Life Force reserve, and produces a small amount of cultured biomass. Repeating a partial feed is not subject to the full-feed lethal-repeat rule.</description>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>1800~1800</cooldownTicksRange>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <drawAimPie>false</drawAimPie>
+      <range>-1</range>
+      <warmupTime>1.5</warmupTime>
+      <stunTargetOnCastStart>true</stunTargetOnCastStart>
+      <targetParams>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityDrainLife">
+        <victimAgeYears>10</victimAgeYears>
+        <casterRejuvenationYears>1</casterRejuvenationYears>
+        <minimumCasterAgeYears>18</minimumCasterAgeYears>
+        <lifeForceGain>0.34</lifeForceGain>
+        <biomassGain>2</biomassGain>
+        <fatalIfAlreadyLifeDrained>false</fatalIfAlreadyLifeDrained>
         <victimHediff>WNG_LifeDrained</victimHediff>
         <casterHediff>WNG_FedRecently</casterHediff>
       </li>
