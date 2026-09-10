@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_LifeForce</defName>
+    <label>life force</label>
+    <description>Wraith tissues store stolen vitality as Life Force. The reserve drains over time, is restored by feeding, supports regeneration and is conserved during deliberate hibernation.</description>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_LifeForce</geneClass>
+    <resourceLabel>Life force</resourceLabel>
+    <resourceDescription>Stored vitality used by Wraith biology.</resourceDescription>
+    <resourceLossPerDay>0.0666667</resourceLossPerDay>
+    <resourceGizmoThresholds><li>0.15</li><li>0.40</li><li>0.70</li></resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView><showGizmoWhenDrafted>true</showGizmoWhenDrafted><showGizmoOnMultiSelect>false</showGizmoOnMultiSelect>
+    <modExtensions><li Class="WraithNaniteGravtech.WraithLifeForceExtension">
+      <starvedThreshold>0.15</starvedThreshold><torporThreshold>0.001</torporThreshold><recoverFromTorporThreshold>0.08</recoverFromTorporThreshold>
+      <hibernationDrainFactor>0.02</hibernationDrainFactor>
+      <hibernatingRegenerationFactor>0.12</hibernatingRegenerationFactor><starvedRegenerationFactor>0.25</starvedRegenerationFactor>
+      <lowRegenerationFactor>0.60</lowRegenerationFactor><normalRegenerationFactor>1</normalRegenerationFactor><highRegenerationFactor>1.60</highRegenerationFactor>
+    </li></modExtensions>
+    <biostatCpx>2</biostatCpx><biostatMet>-1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_WraithRegeneration</defName>
+    <label>wraith regeneration</label>
+    <description>Wraith tissue repairs injuries by spending available Life Force. Fresh feeding accelerates the same repair process.</description>
+    <geneClass>WraithNaniteGravtech.Gene_WraithRegeneration</geneClass>
+    <modExtensions><li Class="WraithNaniteGravtech.WraithRegenerationExtension">
+      <healIntervalTicks>250</healIntervalTicks><baseHealAmount>0.14</baseHealAmount><fedRecentlyMultiplier>4.6</fedRecentlyMultiplier><lifeForceCostPerHealPoint>0.0025</lifeForceCostPerHealPoint>
+    </li></modExtensions>
+    <biostatCpx>3</biostatCpx><biostatMet>-2</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_LifeDrainGene</defName>
+    <label>wraith feeding organs</label>
+    <description>Specialized Wraith tissues can fully drain or partially feed from a downed biological pawn.</description>
+    <geneClass>WraithNaniteGravtech.Gene_WraithAbilityAnchor</geneClass>
+    <abilities><li>WNG_DrainLife</li><li>WNG_PartialFeed</li></abilities>
+    <biostatCpx>2</biostatCpx><biostatMet>-1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HibernationGene</defName>
+    <label>wraith hibernation</label>
+    <description>Wraith metabolism can deliberately collapse into deep hibernation to conserve Life Force.</description>
+    <geneClass>WraithNaniteGravtech.Gene_WraithAbilityAnchor</geneClass>
+    <abilities><li>WNG_Hibernate</li></abilities>
+    <biostatCpx>1</biostatCpx><biostatMet>0</biostatMet>
+  </GeneDef>
+</Defs>
