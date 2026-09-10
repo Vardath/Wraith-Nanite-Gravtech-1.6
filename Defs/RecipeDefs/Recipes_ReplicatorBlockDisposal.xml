@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_SmeltReplicatorBlocks</defName>
+    <label>smelt replicator blocks</label>
+    <description>Destroy loose Replicator blocks in an electric smelter before they can reform.</description>
+    <jobString>Smelting Replicator blocks.</jobString>
+    <workAmount>900</workAmount>
+    <workSkill>Crafting</workSkill>
+    <effectWorking>Smelt</effectWorking>
+    <soundWorking>Recipe_Smelt</soundWorking>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs><li>WNG_ReplicatorMatter</li></thingDefs>
+        </filter>
+        <count>10</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs><li>WNG_ReplicatorMatter</li></thingDefs>
+    </fixedIngredientFilter>
+    <recipeUsers><li>ElectricSmelter</li></recipeUsers>
+  </RecipeDef>
+</Defs>
