@@ -12,5 +12,9 @@
     <li>ccyt.stargatesmod</li>
     <li>idolord.onac</li>
   </loadAfter>
-  <description>Wraith &amp; Nanite Gravtech by Vardath. RimWorld 1.6 reconstruction in progress. The fresh build begins with the block Replicator ecology and will expand through Wraith, human-form Replicator/Asuran, discovery, craft and gravship systems.</description>
+  <description>Unofficial, non-commercial fan-made RimWorld 1.6 mod inspired by Stargate Atlantis and SG-1 themes. WNG's core gameplay is independent of third-party Stargate mods.
+
+Requires RimWorld Biotech and Odyssey. CatCraft's Stargates!, ONAC and the RimGate/Jaffa ecosystem are optional: when present WNG can add compatible Stargate raid/travel behavior, faction interoperability and additional craft such as Jaffa/Goa'uld Al'kesh transport and Ha'tak-inspired gravship content without duplicating or taking ownership of those mods' Stargate, Goa'uld, Tok'ra or Jaffa systems.
+
+WNG uses dependency-free optional integration surfaces and must continue loading and functioning when those third-party mods are absent.</description>
 </ModMetaData>
