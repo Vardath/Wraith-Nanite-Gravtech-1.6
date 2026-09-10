@@ -33,7 +33,7 @@ namespace WraithNaniteGravtech
         private CompTransporter Transporter => parent.TryGetComp<CompTransporter>();
         private CompPowerTrader Power => parent.TryGetComp<CompPowerTrader>();
 
-        public bool Powered => !Props.requirePower || Power == null || Power.PowerOn;
+        public bool Powered => !Props.requirePower || (Power != null && Power.PowerOn);
         public bool Ready => Find.TickManager.TicksGame >= nextReadyTick;
 
         public bool ReceiveReadyFor(CompGoauldTransportRings sender)
