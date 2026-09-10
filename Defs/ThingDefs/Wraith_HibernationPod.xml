@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh WNG Hibernation Pod. Historical WNG XML/art/audio is not reused.
+    The Core single-bed graphic is a temporary presentation placeholder only.
+    Construction cost is a fresh rebuild balance choice pending live playtesting.
+  -->
+  <ThingDef ParentName="BedBase">
+    <defName>WNG_HibernationPod</defName>
+    <label>wraith hibernation pod</label>
+    <description>A living Wraith suspension berth that maintains deep metabolic hibernation while occupied. Hibernation reduces Life Force consumption to two percent of normal without requiring a Keeper. An allied Keeper or Queen can optionally spend cultured biomass to provide a small daily Life Force maintenance pulse.</description>
+    <graphicData>
+      <texPath>Things/Building/Furniture/Bed/Bed</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+      <drawSize>(2,2)</drawSize>
+    </graphicData>
+    <size>(1,2)</size>
+    <tickerType>Normal</tickerType>
+    <uiOrder>2046</uiOrder>
+    <statBases>
+      <MaxHitPoints>260</MaxHitPoints>
+      <WorkToBuild>2100</WorkToBuild>
+      <Mass>60</Mass>
+      <Comfort>0.25</Comfort>
+      <BedRestEffectiveness>0.8</BedRestEffectiveness>
+      <SurgerySuccessChanceFactor>0.7</SurgerySuccessChanceFactor>
+      <Flammability>0.2</Flammability>
+    </statBases>
+    <costList>
+      <Steel>50</Steel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+      <WNG_Biomass>30</WNG_Biomass>
+    </costList>
+    <building>
+      <bed_showSleeperBody>true</bed_showSleeperBody>
+      <bed_healPerDay>1</bed_healPerDay>
+    </building>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithHibernationPod">
+        <hibernationTicks>180000</hibernationTicks>
+        <maintenanceIntervalTicks>60000</maintenanceIntervalTicks>
+        <biomassMaintenanceCost>1</biomassMaintenanceCost>
+        <maintenanceLifeForceGain>0.02</maintenanceLifeForceGain>
+      </li>
+    </comps>
+    <researchPrerequisites>
+      <li>WNG_FeedingEcology</li>
+    </researchPrerequisites>
+  </ThingDef>
+</Defs>
