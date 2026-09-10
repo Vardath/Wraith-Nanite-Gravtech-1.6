@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace WraithNaniteGravtech
@@ -16,6 +17,8 @@ namespace WraithNaniteGravtech
         public override float InitialResourceMax => 1f;
         public override float MinLevelForAlert => StarvedThreshold;
         public override float MaxLevelOffset => 0.05f;
+        protected override Color BarColor => new Color(0.13f, 0.52f, 0.43f);
+        protected override Color BarHighlightColor => new Color(0.28f, 0.72f, 0.60f);
 
         private float StarvedThreshold => Math.Max(0f, DefModExtension?.starvedThreshold ?? 0.15f);
         private float TorporThreshold => Math.Max(0f, DefModExtension?.torporThreshold ?? 0.001f);
@@ -27,8 +30,8 @@ namespace WraithNaniteGravtech
         {
             get
             {
-                HediffDef def = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_WraithHibernating");
-                return def != null && pawn?.health?.hediffSet?.HasHediff(def) == true;
+                HediffDef hibernatingDef = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_WraithHibernating");
+                return hibernatingDef != null && pawn?.health?.hediffSet?.HasHediff(hibernatingDef) == true;
             }
         }
 
@@ -170,12 +173,13 @@ namespace WraithNaniteGravtech
             if (fedRecently) heal *= Math.Max(1f, ext?.fedRecentlyMultiplier ?? 4.6f);
             if (heal <= 0f) return;
 
-            float cost = heal * Math.Max(0f, ext?.lifeForceCostPerHealPoint ?? 0.0025f);
+            float costPerPoint = Math.Max(0f, ext?.lifeForceCostPerHealPoint ?? 0.0025f);
+            float cost = heal * costPerPoint;
             if (lifeForce.Value < cost && cost > 0f) heal *= lifeForce.Value / cost;
             if (heal <= 0f) return;
 
             injury.Heal(heal);
-            WraithLifeForceUtility.Offset(pawn, -heal * Math.Max(0f, ext?.lifeForceCostPerHealPoint ?? 0.0025f));
+            WraithLifeForceUtility.Offset(pawn, -heal * costPerPoint);
         }
 
         public override void ExposeData()
