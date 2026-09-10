@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[@Name="WNG_ReplicatorRaceBase"]/comps</xpath>
+    <value>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorCellConsumption">
+        <searchRadius>45</searchRadius>
+        <searchIntervalTicks>600</searchIntervalTicks>
+        <workTicks>300</workTicks>
+        <floorMatter>3</floorMatter>
+        <foundationMatter>5</foundationMatter>
+        <thinRoofMatter>2</thinRoofMatter>
+        <thickRoofMatter>8</thickRoofMatter>
+      </li>
+    </value>
+  </Operation>
+</Patch>
