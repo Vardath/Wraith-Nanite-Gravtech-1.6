@@ -1,8 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <ThingDef ParentName="WNG_ReplicatorRaceBase"><defName>WNG_ReplicatorRepairer</defName><label>replicator repairer</label><description>A support body reserved for the Replicator specialist behavior pass. Its approved graphic is retained in the fresh rebuild.</description><statBases><MarketValue>1650</MarketValue><MoveSpeed>4.7</MoveSpeed></statBases><race><baseBodySize>0.92</baseBodySize></race><tools Inherit="False"><li><label>repair manipulators</label><capacities><li>Blunt</li><li>Cut</li></capacities><power>10</power><cooldownTime>1.55</cooldownTime></li></tools><comps><li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorDrone</splitChildPawnKind><splitCount>2</splitCount><splitRecombineDelayTicks>2500</splitRecombineDelayTicks></li><li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>4</minMatter><maxMatter>7</maxMatter></li></comps></ThingDef>
-  <ThingDef ParentName="WNG_ReplicatorRaceBase"><defName>WNG_ReplicatorBurrower</defName><label>replicator burrower</label><description>A reinforced breaching form reserved for the specialist behavior pass. Its approved graphic is retained in the fresh rebuild.</description><statBases><MarketValue>1900</MarketValue><MoveSpeed>4.0</MoveSpeed></statBases><race><baseBodySize>1.02</baseBodySize></race><tools Inherit="False"><li><label>breaching mandibles</label><capacities><li>Cut</li><li>Blunt</li></capacities><power>17</power><cooldownTime>1.45</cooldownTime></li></tools><comps><li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorDrone</splitChildPawnKind><splitCount>2</splitCount><splitRecombineDelayTicks>2500</splitRecombineDelayTicks></li><li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>5</minMatter><maxMatter>8</maxMatter></li></comps></ThingDef>
-  <ThingDef ParentName="WNG_ReplicatorRaceBase"><defName>WNG_ReplicatorArtillery</defName><label>replicator artillery</label><description>A long-range support body reserved for the specialist behavior pass. Its approved graphic is retained in the fresh rebuild.</description><statBases><MarketValue>4400</MarketValue><MoveSpeed>2.95</MoveSpeed></statBases><race><baseBodySize>1.55</baseBodySize><mechWeightClass>Medium</mechWeightClass></race><tools Inherit="False"><li><label>stabilizer ram</label><capacities><li>Blunt</li></capacities><power>18</power><cooldownTime>2</cooldownTime></li></tools><comps><li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorHunter</splitChildPawnKind><splitCount>2</splitCount><splitRecombineDelayTicks>2500</splitRecombineDelayTicks></li><li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>9</minMatter><maxMatter>14</maxMatter></li></comps></ThingDef>
+  <ThingDef ParentName="WNG_ReplicatorRaceBase">
+    <defName>WNG_ReplicatorRepairer</defName>
+    <label>replicator repairer</label>
+    <description>A support body that seeks damaged same-domain block Replicators and actively repairs them while its systems are not EMP-suppressed.</description>
+    <statBases><MarketValue>1650</MarketValue><MoveSpeed>4.7</MoveSpeed></statBases>
+    <race><baseBodySize>0.92</baseBodySize></race>
+    <tools Inherit="False"><li><label>repair manipulators</label><capacities><li>Blunt</li><li>Cut</li></capacities><power>10</power><cooldownTime>1.55</cooldownTime></li></tools>
+    <modExtensions><li Class="WraithNaniteGravtech.ReplicatorSpecialistExtension"><repairRange>35</repairRange><repairWorkTicks>180</repairWorkTicks><repairAmount>4</repairAmount></li></modExtensions>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorDrone</splitChildPawnKind><splitCount>2</splitCount><splitRecombineDelayTicks>2500</splitRecombineDelayTicks></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>4</minMatter><maxMatter>7</maxMatter></li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="WNG_ReplicatorRaceBase">
+    <defName>WNG_ReplicatorBurrower</defName>
+    <label>replicator burrower</label>
+    <description>A reinforced breaching form that attacks hostile walls, doors and structures to open routes for the swarm.</description>
+    <statBases><MarketValue>1900</MarketValue><MoveSpeed>4.0</MoveSpeed></statBases>
+    <race><baseBodySize>1.02</baseBodySize></race>
+    <tools Inherit="False"><li><label>breaching mandibles</label><capacities><li>Cut</li><li>Blunt</li></capacities><power>17</power><cooldownTime>1.45</cooldownTime></li></tools>
+    <modExtensions><li Class="WraithNaniteGravtech.ReplicatorSpecialistExtension"><breachRange>45</breachRange><breachWorkTicks>150</breachWorkTicks><breachDamage>38</breachDamage></li></modExtensions>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorDrone</splitChildPawnKind><splitCount>2</splitCount><splitRecombineDelayTicks>2500</splitRecombineDelayTicks></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>5</minMatter><maxMatter>8</maxMatter></li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="WNG_ReplicatorRaceBase">
+    <defName>WNG_ReplicatorArtillery</defName>
+    <label>replicator artillery</label>
+    <description>A mature long-range support body that engages hostile pawns beyond melee range while protected by the rest of the swarm.</description>
+    <statBases><MarketValue>4400</MarketValue><MoveSpeed>2.95</MoveSpeed></statBases>
+    <race><baseBodySize>1.55</baseBodySize><mechWeightClass>Medium</mechWeightClass></race>
+    <tools Inherit="False"><li><label>stabilizer ram</label><capacities><li>Blunt</li></capacities><power>18</power><cooldownTime>2</cooldownTime></li></tools>
+    <modExtensions><li Class="WraithNaniteGravtech.ReplicatorSpecialistExtension"><artilleryMinRange>8</artilleryMinRange><artilleryRange>42</artilleryRange><artilleryWarmupTicks>180</artilleryWarmupTicks><artilleryDamage>18</artilleryDamage><artilleryArmorPenetration>0.25</artilleryArmorPenetration></li></modExtensions>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><splitChildPawnKind>WNG_ReplicatorHunter</splitChildPawnKind><splitCount>2</splitCount><splitRecombineDelayTicks>2500</splitRecombineDelayTicks></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><minMatter>9</minMatter><maxMatter>14</maxMatter></li>
+    </comps>
+  </ThingDef>
+
   <PawnKindDef ParentName="WNG_ReplicatorKindBase"><defName>WNG_ReplicatorRepairer</defName><label>replicator repairer</label><race>WNG_ReplicatorRepairer</race><combatPower>82</combatPower><lifeStages><li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorRepairer</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.28</drawSize></bodyGraphicData></li></lifeStages></PawnKindDef>
   <PawnKindDef ParentName="WNG_ReplicatorKindBase"><defName>WNG_ReplicatorBurrower</defName><label>replicator burrower</label><race>WNG_ReplicatorBurrower</race><combatPower>118</combatPower><lifeStages><li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorBurrower</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.38</drawSize></bodyGraphicData></li></lifeStages></PawnKindDef>
   <PawnKindDef ParentName="WNG_ReplicatorKindBase"><defName>WNG_ReplicatorArtillery</defName><label>replicator artillery</label><race>WNG_ReplicatorArtillery</race><combatPower>245</combatPower><lifeStages><li><bodyGraphicData><texPath>Things/Pawn/Replicator/WNG_ReplicatorArtillery</texPath><shaderType>Cutout</shaderType><graphicClass>Graphic_Multi</graphicClass><drawSize>1.95</drawSize></bodyGraphicData></li></lifeStages></PawnKindDef>
