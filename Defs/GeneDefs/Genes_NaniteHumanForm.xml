@@ -15,7 +15,7 @@
     <description>A visible reserve of converted feedstock used by accelerated nanite repair and high-cost reconstruction. Eating replenishes the reserve; ordinary passage of time does not consume it.</description>
     <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
     <resourceLabel>Nanite reserve</resourceLabel>
-    <resourceDescription>Stored nanite feedstock. Reserve-powered injury repair spends 1.5% per successful pulse and missing-part reconstruction spends 25% per restored part.</resourceDescription>
+    <resourceDescription>Stored nanite feedstock used by reconstruction and human-form fabrication.</resourceDescription>
     <resourceGizmoThresholds><li>0.10</li><li>0.25</li><li>0.60</li></resourceGizmoThresholds>
     <showGizmoOnWorldView>true</showGizmoOnWorldView>
     <showGizmoWhenDrafted>true</showGizmoWhenDrafted>
@@ -45,7 +45,9 @@
   <GeneDef>
     <defName>WNG_NeuralInterface</defName>
     <label>nanite neural interface</label>
-    <description>A structured synthetic neural interface used by WNG human-form Replicator copy, reconstruction and pattern-transfer systems.</description>
+    <description>A structured synthetic neural interface for direct allegiance/custody rewriting, skill-pattern acquisition and human-form copy assembly.</description>
+    <geneClass>WraithNaniteGravtech.Gene_NeuralInterface</geneClass>
+    <abilities><li>WNG_NaniteInterfaceAbility</li></abilities>
     <biostatCpx>2</biostatCpx>
     <biostatMet>0</biostatMet>
   </GeneDef>
