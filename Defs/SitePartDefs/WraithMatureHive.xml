@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh mature-Hive site part. It exposes the already-compiled public map generator to RimWorld's
+    site system. World discovery/incident creation is intentionally a separate later pass.
+    Core world-site textures are temporary presentation placeholders only.
+  -->
+  <SitePartDef>
+    <defName>WNG_WraithMatureHive</defName>
+    <label>mature Wraith hive</label>
+    <description>An established Wraith Hive with living infrastructure, a bounded founding population, stored cultured biomass and finite sealed combat reserves.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_WraithMatureHive</workerClass>
+    <siteTexture>World/WorldObjects/Sites/GenericSite</siteTexture>
+    <expandingIconTexture>World/WorldObjects/Expanding/Sites/ItemStash</expandingIconTexture>
+    <requiresFaction>true</requiresFaction>
+    <wantsThreatPoints>false</wantsThreatPoints>
+    <handlesWorldObjectTimeoutInspectString>false</handlesWorldObjectTimeoutInspectString>
+    <tags>
+      <li>WNG_WraithMatureHive</li>
+    </tags>
+  </SitePartDef>
+</Defs>
