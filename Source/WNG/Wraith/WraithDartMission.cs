@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace WraithNaniteGravtech
@@ -25,6 +26,8 @@ namespace WraithNaniteGravtech
         public int maxCapturesPerPass = 2;
         public float acquisitionRadius = 38f;
         public int landedRaidDelayTicks = 1800;
+        public int stargateDecisionTimeoutTicks = 1200;
+        public int stargateTransitTimeoutTicks = 6000;
 
         public CompProperties_WraithDartRaidMission()
         {
@@ -34,8 +37,9 @@ namespace WraithNaniteGravtech
 
     /// <summary>
     /// Mission-state layer for one real Wraith Dart. Physical attack passes carry this exact shuttle
-    /// inside WNG skyfallers; CompShuttle, CompTransporter, native boarding/launch and CatCraft remain
-    /// authoritative for their own responsibilities.
+    /// inside WNG skyfallers. After landing, hostile retreat prefers the optional Stargate route;
+    /// if that route is absent/inaccessible it falls back to RimWorld's native TransportShip /
+    /// ShipJob_FlyAway path. Native player boarding/loading/launch remain untouched after capture.
     /// </summary>
     public sealed class CompWraithDartRaidMission : ThingComp
     {
@@ -43,9 +47,11 @@ namespace WraithNaniteGravtech
         private int completedPasses;
         private int nextPhaseTick;
         private int totalCapturedDuringPasses;
+        private bool nativeLaunchIssued;
 
         private CompProperties_WraithDartRaidMission Props => (CompProperties_WraithDartRaidMission)props;
         private CompWraithDartCulling Culling => parent?.TryGetComp<CompWraithDartCulling>();
+        private CompWraithDartPilot Pilot => parent?.TryGetComp<CompWraithDartPilot>();
 
         public WNGShuttleRaidPhase Phase => phase;
         public int CompletedPasses => completedPasses;
@@ -56,18 +62,27 @@ namespace WraithNaniteGravtech
             if (parent?.Spawned != true || parent.Map == null || parent.Faction == null || !WraithCaptivityRegistry.IsWraithFaction(parent.Faction))
                 return;
 
+            // A Dart is a piloted craft in Stargate. Keep the exact Wraith pilot in the native
+            // transporter instead of treating the shuttle as an autonomous mech.
+            if (Pilot == null || !Pilot.EnsureHostilePilot(parent.Faction))
+            {
+                phase = WNGShuttleRaidPhase.Stranded;
+                nextPhaseTick = int.MaxValue;
+                return;
+            }
+
             Map map = parent.Map;
             IntVec3 firstPassCell = WNGShuttleFlightUtility.FindAttackPassCell(parent, map, parent.Position, oppositeSide: false);
 
             completedPasses = 0;
             totalCapturedDuringPasses = 0;
+            nativeLaunchIssued = false;
             phase = WNGShuttleRaidPhase.AttackPasses;
             nextPhaseTick = int.MaxValue;
 
             if (!WNGShuttleFlightUtility.TryBeginPhysicalPasses(parent, map, firstPassCell))
             {
-                // Do not pretend a grounded craft completed a flyby. Leave it present and mark the
-                // mission stranded so a later live fix/retreat can act on the same physical craft.
+                // Do not pretend a grounded craft completed a flyby. Leave the same craft present.
                 phase = WNGShuttleRaidPhase.Stranded;
                 nextPhaseTick = int.MaxValue;
             }
@@ -91,8 +106,9 @@ namespace WraithNaniteGravtech
         {
             if (phase != WNGShuttleRaidPhase.AttackPasses || parent?.Spawned != true)
                 return;
+
             phase = WNGShuttleRaidPhase.LandedRaid;
-            nextPhaseTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(60, Props.landedRaidDelayTicks);
+            nextPhaseTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, Math.Max(60, Props.landedRaidDelayTicks));
         }
 
         public override void CompTick()
@@ -105,11 +121,42 @@ namespace WraithNaniteGravtech
             if (now < nextPhaseTick)
                 return;
 
-            if (phase == WNGShuttleRaidPhase.RetreatRequested)
+            switch (phase)
+            {
+                case WNGShuttleRaidPhase.LandedRaid:
+                    RequestRetreat();
+                    break;
+
+                case WNGShuttleRaidPhase.RetreatRequested:
+                    BeginPreferredEscape(now);
+                    break;
+
+                case WNGShuttleRaidPhase.StargateEscapePending:
+                    // The optional CatCraft bridge gets a bounded window to find/redial/use a valid
+                    // outbound gate. An active inbound gate can never be reused in reverse.
+                    NotifyStargateUnavailableUseNativeFallback();
+                    break;
+            }
+        }
+
+        private void BeginPreferredEscape(int now)
+        {
+            if (Pilot?.HasOperationalHostilePilot != true || parent?.Faction == null || !WraithCaptivityRegistry.IsWraithFaction(parent.Faction))
+            {
+                NotifyEscapeFailedOrAbandoned();
+                return;
+            }
+
+            if (WNGOptionalIntegrations.StargatesActive)
             {
                 phase = WNGShuttleRaidPhase.StargateEscapePending;
-                nextPhaseTick = int.MaxValue;
+                nextPhaseTick = SafeFutureTick(now, Math.Max(60, Props.stargateDecisionTimeoutTicks));
+                return;
             }
+
+            phase = WNGShuttleRaidPhase.NativeEscapePending;
+            nextPhaseTick = int.MaxValue;
+            TryBeginNativeFallbackEscape();
         }
 
         private void ExecuteCullingPass(Map map, IntVec3 passCell)
@@ -155,6 +202,7 @@ namespace WraithNaniteGravtech
         {
             if (phase == WNGShuttleRaidPhase.Escaped || parent?.Destroyed != false)
                 return;
+
             phase = WNGShuttleRaidPhase.RetreatRequested;
             nextPhaseTick = Find.TickManager?.TicksGame ?? 0;
         }
@@ -168,11 +216,12 @@ namespace WraithNaniteGravtech
 
         public bool NotifyStargateRouteAvailable(WNGStargateConnectionDirection direction)
         {
-            if (phase != WNGShuttleRaidPhase.StargateEscapePending)
+            if (phase != WNGShuttleRaidPhase.StargateEscapePending || Pilot?.HasOperationalHostilePilot != true)
                 return false;
             if (WNGStargateTransitPolicy.EvaluateLocalDeparture(direction) != WNGStargateTransitDecision.Allowed)
                 return false;
-            nextPhaseTick = int.MaxValue;
+
+            nextPhaseTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, Math.Max(300, Props.stargateTransitTimeoutTicks));
             return true;
         }
 
@@ -180,34 +229,132 @@ namespace WraithNaniteGravtech
         {
             if (phase != WNGShuttleRaidPhase.StargateEscapePending)
                 return;
-            Culling?.CommitNativeEscapeWithCaptives();
+
+            Culling?.CommitStargateEscapeWithCaptives();
             phase = WNGShuttleRaidPhase.Escaped;
             nextPhaseTick = int.MaxValue;
+            nativeLaunchIssued = false;
         }
 
         public void NotifyStargateUnavailableUseNativeFallback()
         {
             if (phase != WNGShuttleRaidPhase.StargateEscapePending)
                 return;
+
             phase = WNGShuttleRaidPhase.NativeEscapePending;
             nextPhaseTick = int.MaxValue;
+            TryBeginNativeFallbackEscape();
         }
 
-        public void NotifyNativeEscapeCompleted()
+        /// <summary>
+        /// Hostile NPC escape uses RimWorld's TransportShip / ShipJob_FlyAway machinery rather than
+        /// the player CompLaunchable command path (whose pilot validation intentionally requires a
+        /// free colonist). A valid adjacent world tile keeps the exact shuttle inside the native
+        /// ActiveTransporter so the leaving-skyfaller callback can resolve exact captives correctly.
+        /// </summary>
+        private bool TryBeginNativeFallbackEscape()
+        {
+            if (nativeLaunchIssued)
+                return true;
+            if (phase != WNGShuttleRaidPhase.NativeEscapePending || parent?.Spawned != true || parent.Map == null)
+                return false;
+            if (Pilot?.HasOperationalHostilePilot != true)
+            {
+                NotifyEscapeFailedOrAbandoned();
+                return false;
+            }
+
+            CompShuttle shuttle = parent.TryGetComp<CompShuttle>();
+            TransportShip transportShip = shuttle?.shipParent;
+            if (transportShip == null || transportShip.Disposed)
+            {
+                NotifyEscapeFailedOrAbandoned();
+                return false;
+            }
+
+            CompLaunchable launchable = parent.TryGetComp<CompLaunchable>();
+            CompRefuelable refuelable = parent.TryGetComp<CompRefuelable>();
+            float minimumFuel = Math.Max(0f, launchable?.Props?.minFuelCost ?? 0f);
+            if (refuelable != null && refuelable.Fuel < minimumFuel)
+            {
+                NotifyEscapeFailedOrAbandoned();
+                return false;
+            }
+
+            PlanetTile destination = FindNativeEscapeDestination(parent.Tile);
+            if (!destination.Valid)
+            {
+                NotifyEscapeFailedOrAbandoned();
+                return false;
+            }
+
+            ShipJob_FlyAway flyAway = (ShipJob_FlyAway)ShipJobMaker.MakeShipJob(ShipJobDefOf.FlyAway);
+            flyAway.destinationTile = destination;
+            flyAway.arrivalAction = new WNGHostileShuttleEscapeArrivalAction();
+            flyAway.dropMode = TransportShipDropMode.None;
+
+            nativeLaunchIssued = true;
+            transportShip.ForceJob(flyAway);
+
+            // ShipJob_FlyAway is immediate. If the same craft is still spawned, native launch did
+            // not occur; leave it on-map as salvage/raid material rather than silently deleting it.
+            if (parent.Spawned)
+            {
+                nativeLaunchIssued = false;
+                NotifyEscapeFailedOrAbandoned();
+                return false;
+            }
+
+            if (refuelable != null && minimumFuel > 0f)
+                refuelable.ConsumeFuel(minimumFuel);
+            return true;
+        }
+
+        private static PlanetTile FindNativeEscapeDestination(PlanetTile origin)
+        {
+            if (!origin.Valid || Find.WorldGrid == null)
+                return PlanetTile.Invalid;
+
+            List<PlanetTile> neighbors = new List<PlanetTile>();
+            Find.WorldGrid.GetTileNeighbors(origin, neighbors);
+            if (neighbors.Count > 0)
+                return neighbors.RandomElement();
+
+            return origin;
+        }
+
+        public void NotifyNativeEscapeCompleted(ThingOwner transitContainer)
         {
             if (phase != WNGShuttleRaidPhase.NativeEscapePending)
                 return;
-            Culling?.CommitNativeEscapeWithCaptives();
+
+            Culling?.CommitNativeEscapeWithCaptives(transitContainer);
             phase = WNGShuttleRaidPhase.Escaped;
             nextPhaseTick = int.MaxValue;
+            nativeLaunchIssued = false;
         }
 
         public void NotifyEscapeFailedOrAbandoned()
         {
-            if (phase != WNGShuttleRaidPhase.StargateEscapePending && phase != WNGShuttleRaidPhase.NativeEscapePending && phase != WNGShuttleRaidPhase.RetreatRequested)
+            if (phase != WNGShuttleRaidPhase.StargateEscapePending &&
+                phase != WNGShuttleRaidPhase.NativeEscapePending &&
+                phase != WNGShuttleRaidPhase.RetreatRequested &&
+                phase != WNGShuttleRaidPhase.LandedRaid)
                 return;
+
             phase = WNGShuttleRaidPhase.Stranded;
             nextPhaseTick = int.MaxValue;
+            nativeLaunchIssued = false;
+        }
+
+        public override void Notify_Hacked(Pawn hacker)
+        {
+            // Hacking ends the hostile mission. The culling and pilot comps separately release
+            // exact captives/eject the Wraith pilot and transfer ownership to the player.
+            phase = WNGShuttleRaidPhase.Idle;
+            nextPhaseTick = int.MaxValue;
+            nativeLaunchIssued = false;
+            base.Notify_Hacked(hacker);
         }
 
         public override string CompInspectStringExtra()
@@ -224,6 +371,13 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref completedPasses, "wngDartCompletedPasses", 0);
             Scribe_Values.Look(ref nextPhaseTick, "wngDartNextPhaseTick", 0);
             Scribe_Values.Look(ref totalCapturedDuringPasses, "wngDartTotalPassCaptures", 0);
+            Scribe_Values.Look(ref nativeLaunchIssued, "wngDartNativeLaunchIssued", false);
+        }
+
+        private static int SafeFutureTick(int now, int delay)
+        {
+            long value = (long)Math.Max(0, now) + Math.Max(1, delay);
+            return value >= int.MaxValue ? int.MaxValue : (int)value;
         }
     }
 }
