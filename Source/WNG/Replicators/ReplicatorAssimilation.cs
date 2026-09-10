@@ -15,6 +15,7 @@ namespace WraithNaniteGravtech
         public int itemUnitsPerBite = 10;
         public float matterPerMarketValue = 0.02f;
         public float matterPerBuildingHitPoint = 0.025f;
+        public float matterPerPlantHitPoint = 0.018f;
         public float minimumMatterYield = 1f;
         public float offspringMatterCost = 10f;
         public int maxOffspringPerAssimilation = 2;
@@ -77,6 +78,7 @@ namespace WraithNaniteGravtech
             if (target.def.apparel != null) score += 700f;
             if (target.def.useHitPoints && target.def.BaseMaxHitPoints >= 500) score += 600f;
             if (target.def.category == ThingCategory.Building) score += 250f;
+            if (target is Plant) score += 80f;
             score += Math.Min(250f, Math.Max(0f, target.MarketValue) * 0.05f);
             return score;
         }
@@ -90,7 +92,8 @@ namespace WraithNaniteGravtech
             if (ReplicatorContainmentUtility.BlocksAssimilation(pawn, thing)) return false;
             bool item = thing.def.category == ThingCategory.Item && thing.def.EverHaulable;
             bool building = thing.def.category == ThingCategory.Building && thing.def.useHitPoints;
-            if (!item && !building) return false;
+            bool plant = thing is Plant;
+            if (!item && !building && !plant) return false;
             return pawn.CanReach(thing, PathEndMode.Touch, Danger.Deadly);
         }
 
@@ -113,6 +116,8 @@ namespace WraithNaniteGravtech
                 int units = Math.Min(Math.Max(1, Props.itemUnitsPerBite), Math.Max(1, target.stackCount));
                 return Math.Max(Props.minimumMatterYield, target.MarketValue * units * Math.Max(0f, Props.matterPerMarketValue));
             }
+            if (target is Plant)
+                return Math.Max(Props.minimumMatterYield, target.HitPoints * Math.Max(0f, Props.matterPerPlantHitPoint));
             return Math.Max(Props.minimumMatterYield, target.HitPoints * Math.Max(0f, Props.matterPerBuildingHitPoint));
         }
 
