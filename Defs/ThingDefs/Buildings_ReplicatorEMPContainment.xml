@@ -13,7 +13,7 @@
     <passability>PassThroughOnly</passability>
     <fillPercent>0.08</fillPercent>
     <pathCost>0</pathCost>
-    <designationCategory>Misc</designationCategory>
+    <designationCategory>WNG</designationCategory>
     <researchPrerequisites><li>WNG_NaniteContainment</li></researchPrerequisites>
     <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
     <costList>
