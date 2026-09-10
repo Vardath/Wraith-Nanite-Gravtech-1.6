@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- All four WNG shuttle families inherit RimWorld/Odyssey ShuttleBase so vanilla CompShuttle,
+       CompTransporter and native loading/boarding/launch systems remain authoritative. -->
+
+  <ThingDef ParentName="ShuttleBase">
+    <defName>WNG_WraithDart</defName>
+    <label>Wraith Dart</label>
+    <description>A Wraith culling and interceptor craft. Its Stargate-specific culling beam can dematerialize exact biological captives into the shuttle's native transport buffer, while boarding and launch remain governed by RimWorld's shuttle systems.</description>
+    <size>(3,2)</size>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <graphicData>
+      <texPath>Things/Building/Misc/Shuttle</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(3.6,2.0)</drawSize>
+    </graphicData>
+    <statBases><MaxHitPoints>650</MaxHitPoints><Flammability>0.25</Flammability></statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithDartCulling"><maxCaptives>3</maxCaptives><stunTicks>1200</stunTicks><releaseRadius>4</releaseRadius></li>
+      <li Class="CompProperties_Hackable">
+        <defence>400</defence>
+        <intellectualSkillPrerequisite>6</intellectualSkillPrerequisite>
+        <showProgressAfterHackCompletion>false</showProgressAfterHackCompletion>
+        <notHackedInspectString>Wraith flight and culling controls are secured.</notHackedInspectString>
+        <hackedInspectString>Wraith controls breached; shuttle transferred to colony control.</hackedInspectString>
+        <hackedMessage>{HACKER} has breached the Wraith Dart controls, released any buffered captives and transferred the surviving shuttle to colony control.</hackedMessage>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="ShuttleBase">
+    <defName>WNG_WraithStrikeCraft</defName>
+    <label>Wraith strike craft</label>
+    <description>A heavier Wraith combat shuttle derived from Wraith fighter and support-craft technology. It preserves native shuttle boarding and transport behavior.</description>
+    <size>(4,3)</size><rotatable>false</rotatable><selectable>true</selectable>
+    <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(4.6,3.0)</drawSize></graphicData>
+    <statBases><MaxHitPoints>1050</MaxHitPoints><Flammability>0.22</Flammability></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="ShuttleBase">
+    <defName>WNG_WraithCruiser</defName>
+    <label>Wraith cruiser shuttle</label>
+    <description>A large Wraith transport and assault craft represented at RimWorld shuttle scale. It remains a native boardable shuttle; larger strategic Wraith cruisers and hive ships are separate world-scale craft.</description>
+    <size>(5,4)</size><rotatable>false</rotatable><selectable>true</selectable>
+    <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(5.8,4.0)</drawSize></graphicData>
+    <statBases><MaxHitPoints>1700</MaxHitPoints><Flammability>0.18</Flammability></statBases>
+  </ThingDef>
+
+  <ThingDef ParentName="ShuttleBase">
+    <defName>WNG_PuddleJumper</defName>
+    <label>Puddle Jumper</label>
+    <description>An Ancient/Lantean gate-capable shuttle. Native RimWorld/Odyssey shuttle systems own boarding, loading and launch; WNG adds Ancient control and drone-weapon behavior around that native foundation.</description>
+    <size>(4,3)</size><rotatable>false</rotatable><selectable>true</selectable>
+    <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(4.8,3.0)</drawSize></graphicData>
+    <statBases><MaxHitPoints>1200</MaxHitPoints><Flammability>0.12</Flammability></statBases>
+  </ThingDef>
+</Defs>
