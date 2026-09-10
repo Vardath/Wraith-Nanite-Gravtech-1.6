@@ -18,3 +18,10 @@ jobs:
         run: dotnet restore Source/WNG/WNG.csproj
       - name: Compile RimWorld 1.6 assembly
         run: dotnet build Source/WNG/WNG.csproj -c Release --no-restore
+      - name: Parse Def XML
+        run: python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+          for p in pathlib.Path('Defs').rglob('*.xml'):
+              ET.parse(p)
+          print('Def XML syntax OK')
+          PY
