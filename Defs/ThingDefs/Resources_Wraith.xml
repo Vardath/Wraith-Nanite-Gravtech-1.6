@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh WNGR2 cultured biomass resource.
+    The raw-fungus graphic is an explicit temporary Core placeholder only. Historical WNG biomass
+    art is not reused. Replace with newly authored WNG resource art before presentation completion.
+  -->
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_Biomass</defName>
+    <label>cultured biomass</label>
+    <description>Stabilized Wraith-grown biological matter used as feedstock for living technology, tissue cultivation and hive infrastructure. It is a manufactured biological resource, not ordinary food.</description>
+    <graphicData>
+      <texPath>Things/Item/Resource/RawFungus</texPath>
+      <graphicClass>Graphic_StackCount</graphicClass>
+    </graphicData>
+    <stackLimit>80</stackLimit>
+    <statBases>
+      <MarketValue>4.2</MarketValue>
+      <Mass>0.18</Mass>
+      <Flammability>0.35</Flammability>
+    </statBases>
+    <thingCategories>
+      <li>ResourcesRaw</li>
+    </thingCategories>
+    <tradeability>Sellable</tradeability>
+    <drawGUIOverlay>true</drawGUIOverlay>
+  </ThingDef>
+</Defs>
