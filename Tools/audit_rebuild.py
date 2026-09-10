@@ -13,6 +13,13 @@ DEFS = ROOT / "Defs"
 SOURCE = ROOT / "Source"
 TEXTURES = ROOT / "Textures"
 
+# Explicit base-game visual placeholders allowed while new WNG art is being authored.
+# Keep this list narrow: adding a Core path here is an intentional temporary presentation debt,
+# not a general exemption from local texture validation.
+CORE_TEXTURE_PLACEHOLDERS = {
+    "Things/Building/Misc/Shuttle",  # WNG_WraithDart temporary visual only
+}
+
 errors: list[str] = []
 warnings: list[str] = []
 notes: list[str] = []
@@ -117,8 +124,10 @@ for path, root in parsed:
         if value.startswith("WNG_") and value not in all_def_names:
             warn(f"WNG Def reference not found locally: {value} in {path.relative_to(ROOT)}")
 
-# 6. Texture paths must have an actual texture file. Graphic_Multi may legitimately use
-#    directional suffixes rather than a base PNG, so either exact or prefix files satisfy it.
+# 6. Texture paths normally require an actual local texture file. Graphic_Multi may legitimately
+#    use directional suffixes rather than a base PNG, so either exact or prefix files satisfy it.
+#    A tiny explicit allow-list permits documented Core placeholders while replacement WNG art is
+#    still pending; these remain warnings so they cannot be mistaken for completed presentation art.
 texture_paths: list[tuple[Path, str]] = []
 for path, root in parsed:
     for node in root.iter("texPath"):
@@ -134,8 +143,12 @@ if TEXTURES.exists():
 for owner, tex_path in texture_paths:
     exact = tex_path in texture_rel_no_ext
     directional = any(p.startswith(tex_path + "_") for p in texture_rel_no_ext)
-    if not exact and not directional:
-        err(f"Missing texture for texPath {tex_path} referenced by {owner.relative_to(ROOT)}")
+    if exact or directional:
+        continue
+    if tex_path in CORE_TEXTURE_PLACEHOLDERS:
+        warn(f"Temporary Core texture placeholder still pending replacement: {tex_path} in {owner.relative_to(ROOT)}")
+        continue
+    err(f"Missing texture for texPath {tex_path} referenced by {owner.relative_to(ROOT)}")
 
 # 7. Forbidden obsolete gameplay concept. Documentation/history outside playable Source/Defs is
 #    intentionally ignored; the active mod may not resurrect Grav Core/Gravcore progression.
