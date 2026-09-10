@@ -31,7 +31,7 @@
     <passability>PassThroughOnly</passability>
     <fillPercent>0.25</fillPercent>
     <pathCost>10</pathCost>
-    <designationCategory>Misc</designationCategory>
+    <designationCategory>WNG</designationCategory>
     <researchPrerequisites><li>WNG_NaniteContainment</li></researchPrerequisites>
     <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
     <costList><Steel>120</Steel><ComponentIndustrial>4</ComponentIndustrial><WNG_ReplicatorCoreFragment>1</WNG_ReplicatorCoreFragment></costList>
