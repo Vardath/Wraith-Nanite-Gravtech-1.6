@@ -15,12 +15,26 @@ This contract records the current intended first-build behavior for hostile Wrai
 7. If the Wraith retreat or otherwise abandon the Dart without taking it, the Dart remains behind. It does **not** auto-despawn merely because the Wraith force withdraws. The abandoned craft remains hackable salvage.
 8. Hacking an abandoned surviving Dart gives the player the craft as a free shuttle and releases any exact captives still physically buffered inside it.
 
+## Native boarding requirement — Wraith and Asuran shuttles
+
+This is a hard implementation rule for the fresh rebuild:
+
+- **Wraith shuttles and Asuran shuttles must be boardable through RimWorld/Odyssey's native shuttle transport flow.**
+- Use the vanilla/Odyssey shuttle transport stack (`CompShuttle`, `CompTransporter`, launch/loading systems and their native boarding jobs/gizmos) wherever the base game provides the required behavior.
+- Do **not** replace pawn boarding with a WNG-only custom boarding command, custom pawn-container abstraction or fake launch sequence.
+- A captured Wraith or Asuran shuttle that becomes player-owned must remain compatible with the same native pawn-loading/boarding flow expected from a vanilla shuttle.
+- WNG-specific code may control faction ownership, hostile objectives, capture buffers, hacking, special weapons, escape decisions and narrative outcomes, but it must not sever the vanilla boarding pipeline.
+- If a WNG craft feature conflicts with native boarding, the WNG feature must be redesigned around the vanilla transport system rather than replacing it.
+
+This requirement exists because the earlier build's custom shuttle implementation broke boardability and proved difficult to repair. The fresh rebuild must not repeat that architecture.
+
 ## Ownership / outcome rules
 
 - The Dart starts hostile/Wraith-owned.
 - Wraith escape with Dart: Dart leaves with the Wraith; buffered captives become off-map exact-pawn Wraith captives.
 - Wraith abandon Dart: Dart remains on-map hostile/neutral-to-hack until hacked or destroyed.
 - Successful player hack: captured pawns are recovered from that same craft and the surviving Dart becomes player-owned/usable.
+- After capture, the player must be able to load/board pawns using the vanilla shuttle interface rather than a WNG substitute.
 - Destroyed Dart: must resolve its buffered pawns deterministically; it may not silently delete them. Exact destruction outcome will be implemented with the craft layer and verified in-game.
 - A hack must never fabricate recovered pawns. Recovery is from the Dart's actual persisted buffer.
 - The craft must not be destroyed as a side effect of a successful hack.
@@ -43,7 +57,8 @@ The fresh Dart implementation must therefore provide, as one coherent system:
 - an exact-pawn persistent internal transport buffer;
 - landing behavior;
 - Wraith boarding/retreat use of the same craft;
-- native hack interaction;
+- native vanilla/Odyssey boarding and loading compatibility;
+- native hack interaction where suitable, or a WNG hack component layered around the vanilla shuttle without replacing boarding;
 - captive release on successful hack;
 - ownership transfer on successful hack;
 - persistent usable player shuttle behavior after capture;
