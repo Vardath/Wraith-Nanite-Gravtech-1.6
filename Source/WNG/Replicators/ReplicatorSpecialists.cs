@@ -157,16 +157,45 @@ namespace WraithNaniteGravtech
             float rangeSq = range * range;
 
             Thing target = pawn.Map.listerThings.AllThings
-                .Where(t => t != null && !t.Destroyed && t.Spawned && t.def?.category == ThingCategory.Building
-                    && t.def.destroyable && t.Faction != null && pawn.HostileTo(t)
-                    && t.Position.DistanceToSquared(pawn.Position) <= rangeSq
-                    && pawn.CanReach(t, PathEndMode.Touch, Danger.Deadly))
-                .OrderBy(t => t.Position.DistanceToSquared(pawn.Position))
+                .Where(t => IsBreachCandidate(pawn, t, rangeSq))
+                .OrderByDescending(BreachPriority)
+                .ThenBy(t => t.Position.DistanceToSquared(pawn.Position))
                 .ThenBy(t => t.HitPoints)
+                .ThenBy(t => t.thingIDNumber)
                 .FirstOrDefault();
 
             JobDef jobDef = DefDatabase<JobDef>.GetNamedSilentFail("WNG_ReplicatorBreach");
             return target == null || jobDef == null ? null : JobMaker.MakeJob(jobDef, target);
+        }
+
+        private static bool IsBreachCandidate(Pawn pawn, Thing thing, float rangeSq)
+        {
+            if (thing == null || thing.Destroyed || !thing.Spawned || thing.def?.category != ThingCategory.Building || !thing.def.destroyable)
+                return false;
+            if (thing.Position.DistanceToSquared(pawn.Position) > rangeSq || !pawn.CanReach(thing, PathEndMode.Touch, Danger.Deadly))
+                return false;
+
+            if (thing.def.defName == "WNG_ReplicatorContainmentProjector")
+                return thing.Faction == null || pawn.HostileTo(thing);
+
+            string identity = ((thing.def.defName ?? string.Empty) + " " + (thing.def.label ?? string.Empty)).ToLowerInvariant();
+            bool accessBlocker = thing is Building_Door || identity.Contains("wall") || identity.Contains("barricade") || identity.Contains("bulkhead") || identity.Contains("gate");
+            if (accessBlocker)
+                return thing.Faction == null || pawn.HostileTo(thing);
+
+            return thing.Faction != null && pawn.HostileTo(thing);
+        }
+
+        private static float BreachPriority(Thing thing)
+        {
+            if (thing?.def == null) return 0f;
+            if (thing.def.defName == "WNG_ReplicatorContainmentProjector") return 10000f;
+
+            string identity = ((thing.def.defName ?? string.Empty) + " " + (thing.def.label ?? string.Empty)).ToLowerInvariant();
+            if (thing is Building_Door || identity.Contains("gate") || identity.Contains("bulkhead")) return 8000f;
+            if (identity.Contains("wall")) return 7000f;
+            if (identity.Contains("barricade")) return 6000f;
+            return 1000f;
         }
     }
 
@@ -192,7 +221,8 @@ namespace WraithNaniteGravtech
             strike.initAction = () =>
             {
                 Thing target = job.targetA.Thing;
-                if (target == null || target.Destroyed || !pawn.HostileTo(target)) return;
+                if (target == null || target.Destroyed) return;
+                if (target.Faction != null && !pawn.HostileTo(target)) return;
                 float damage = Math.Max(1f, ReplicatorSpecialistUtility.Extension(pawn)?.breachDamage ?? 38f);
                 target.TakeDamage(new DamageInfo(DamageDefOf.Crush, damage, instigator: pawn));
             };
