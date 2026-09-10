@@ -19,6 +19,7 @@ TEXTURES = ROOT / "Textures"
 CORE_TEXTURE_PLACEHOLDERS = {
     "Things/Building/Misc/Shuttle",  # WNG_WraithDart temporary visual only
     "Things/Item/Resource/RawFungus",  # WNG_Biomass temporary visual only
+    "Things/Item/Equipment/WeaponRanged/ChargeRifle",  # WNG_WraithStunner temporary visual only
 }
 
 errors: list[str] = []
