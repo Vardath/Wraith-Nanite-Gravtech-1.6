@@ -45,8 +45,6 @@ namespace WraithNaniteGravtech
 
     public sealed class CompReplicatorHierarchy : ThingComp
     {
-        // Split-born forms must remain separated long enough for the breakup to matter,
-        // but the locked WNG rule is one in-game hour rather than one day.
         public const int DeathBreakupRecombinationCooldownTicks = 2500;
 
         private int nextAssemblyTick;
@@ -103,8 +101,8 @@ namespace WraithNaniteGravtech
             if (now < recombinationBlockedUntilTick || now < nextAssemblyTick)
                 return;
 
-            if (ReplicatorEMPSuppressionUtility.IsSuppressed(pawn) ||
-                ReplicatorLatticeOverrideUtility.IsTemporarilyOverridden(pawn))
+            if (ReplicatorEMPSuppressionUtility.IsSuppressed(pawn)
+                || ReplicatorLatticeOverrideUtility.IsTemporarilyOverridden(pawn))
             {
                 nextAssemblyTick = now + 250;
                 return;
@@ -124,14 +122,16 @@ namespace WraithNaniteGravtech
             float intervalFactor = adaptationFactor * coordinationFactor * postureFactor;
             nextAssemblyTick = now + Math.Max(250, (int)Math.Round(Props.assemblyIntervalTicks * intervalFactor));
 
+            Pawn sovereignController = pawn.TryGetComp<CompReplicatorControl>()?.ActiveSovereignController;
             float radiusSq = Props.assemblyRadius * Props.assemblyRadius;
             List<Pawn> candidates = map.mapPawns.AllPawnsSpawned
-                .Where(p => p != null && !p.Dead && p.def == pawn.def && p.Faction == pawn.Faction &&
-                            p.Position.DistanceToSquared(pawn.Position) <= radiusSq &&
-                            containment?.IsContained(p.Position) != true &&
-                            !ReplicatorEMPSuppressionUtility.IsSuppressed(p) &&
-                            !ReplicatorLatticeOverrideUtility.IsTemporarilyOverridden(p) &&
-                            !IsDeathBreakupCoolingDown(p))
+                .Where(p => p != null && !p.Dead && p.def == pawn.def && p.Faction == pawn.Faction
+                    && p.Position.DistanceToSquared(pawn.Position) <= radiusSq
+                    && containment?.IsContained(p.Position) != true
+                    && !ReplicatorEMPSuppressionUtility.IsSuppressed(p)
+                    && !ReplicatorLatticeOverrideUtility.IsTemporarilyOverridden(p)
+                    && !IsDeathBreakupCoolingDown(p)
+                    && SameSovereignControlDomain(p, sovereignController))
                 .OrderBy(p => p.thingIDNumber)
                 .ToList();
 
@@ -165,6 +165,13 @@ namespace WraithNaniteGravtech
 
                 ReplicatorRecombinationVisualUtility.PlayConvergence(consumed, spawnCell, map);
                 GenSpawn.Spawn(upgraded, spawnCell, map);
+
+                if (sovereignController != null)
+                {
+                    CompReplicatorControl upgradedControl = upgraded.TryGetComp<CompReplicatorControl>();
+                    if (upgradedControl == null || !upgradedControl.BindToSovereign(sovereignController))
+                        throw new InvalidOperationException("shared sovereign binding could not be transferred to recombined Replicator");
+                }
 
                 sourceCommitStarted = true;
                 foreach (Pawn unit in consumed)
@@ -208,6 +215,12 @@ namespace WraithNaniteGravtech
             {
                 assemblyInProgress = false;
             }
+        }
+
+        private static bool SameSovereignControlDomain(Pawn candidate, Pawn expectedController)
+        {
+            Pawn actualController = candidate?.TryGetComp<CompReplicatorControl>()?.ActiveSovereignController;
+            return actualController == expectedController;
         }
 
         private static bool IsDeathBreakupCoolingDown(Pawn pawn)
@@ -254,6 +267,7 @@ namespace WraithNaniteGravtech
             Faction faction = pawn.Faction;
             CompReplicatorMaterial material = pawn.TryGetComp<CompReplicatorMaterial>();
             CompReplicatorLatticeOverride latticeOverride = pawn.TryGetComp<CompReplicatorLatticeOverride>();
+            CompReplicatorControl sourceControl = pawn.TryGetComp<CompReplicatorControl>();
             ReplicatorAdaptationType role = pawn.TryGetComp<CompReplicatorAdaptation>()?.Specialization ?? ReplicatorAdaptationType.Primitive;
 
             ReplicatorSplitVisualUtility.PlayBreakup(origin, map, count);
@@ -288,6 +302,7 @@ namespace WraithNaniteGravtech
 
                     IntVec3 cell = CellFinder.RandomClosewalkCellNear(origin, map, 2);
                     GenSpawn.Spawn(child, cell, map);
+                    sourceControl?.CopySovereignBindingTo(child, map);
                     ReplicatorSplitVisualUtility.PlayChildEmergence(child);
                     spawned++;
                 }
@@ -314,10 +329,10 @@ namespace WraithNaniteGravtech
 
         private static bool HasDeathSplitFor(string parentDefName)
         {
-            return parentDefName == "WNG_ReplicatorSiegeMass" ||
-                   parentDefName == "WNG_ReplicatorTitan" ||
-                   parentDefName == "WNG_ReplicatorBulwark" ||
-                   parentDefName == "WNG_ReplicatorHunter";
+            return parentDefName == "WNG_ReplicatorSiegeMass"
+                || parentDefName == "WNG_ReplicatorTitan"
+                || parentDefName == "WNG_ReplicatorBulwark"
+                || parentDefName == "WNG_ReplicatorHunter";
         }
 
         private static bool TryResolveDeathSplit(string parentDefName, out PawnKindDef childKind, out int count)

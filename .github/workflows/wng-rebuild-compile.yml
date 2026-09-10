@@ -85,6 +85,9 @@ jobs:
       - name: Nanite and human-form identity audit
         run: python3 Tools/audit_nanite_humanform_identity.py
 
+      - name: Replicator sovereign hierarchy audit
+        run: python3 Tools/audit_replicator_sovereign_hierarchy.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 

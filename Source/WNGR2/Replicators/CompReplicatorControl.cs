@@ -13,11 +13,10 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Player-built Replicators are harmless colony mechs while actively overseen.  A living
-    /// same-faction Replicator Queen passively coordinates all local base Replicators.  A non-Queen
-    /// Sovereign Neural Lattice bearer can instead establish a save-persistent target-specific
-    /// binding; that binding remains valid only while the exact controller is alive, present and
-    /// still possesses sovereign authority.  Temporary Asuran lattice intrusion remains separate.
+    /// Player-built Replicators are harmless colony mechs while actively overseen. A living
+    /// same-faction Replicator Queen passively coordinates all local base Replicators. A non-Queen
+    /// Sovereign Neural Lattice bearer instead establishes a save-persistent target-specific
+    /// binding. Temporary Asuran lattice intrusion remains a separate save-safe override.
     /// </summary>
     public sealed class CompReplicatorControl : ThingComp
     {
@@ -39,13 +38,7 @@ namespace WraithNaniteGravtech
 
         private Pawn Pawn => parent as Pawn;
 
-        public Pawn ActiveSovereignController
-        {
-            get
-            {
-                return HasActiveSovereignBinding() ? sovereignController : null;
-            }
-        }
+        public Pawn ActiveSovereignController => HasActiveSovereignBinding() ? sovereignController : null;
 
         public bool BindToSovereign(Pawn controller)
         {
@@ -54,6 +47,8 @@ namespace WraithNaniteGravtech
                 || !ReplicatorQueenUtility.HasSovereignDirectiveAuthority(controller))
                 return false;
 
+            // A real Queen does not create per-unit implant bindings. Her same-faction presence is
+            // already the broader sovereign coordination domain.
             if (ReplicatorQueenUtility.IsQueen(controller))
             {
                 sovereignController = null;
@@ -65,7 +60,10 @@ namespace WraithNaniteGravtech
             sovereignController = controller;
             pawn.SetFaction(controller.Faction, null);
             uncontrolledTicks = 0;
-            return HasActiveSovereignBinding();
+
+            // Newly generated hierarchy children can be bound only after they have spawned. All
+            // player-issued bindings use already-spawned targets and therefore validate here.
+            return !pawn.Spawned || HasActiveSovereignBinding();
         }
 
         public void ClearSovereignBinding()
@@ -73,21 +71,37 @@ namespace WraithNaniteGravtech
             sovereignController = null;
         }
 
-        public void CopySovereignBindingTo(Pawn child)
+        /// <summary>
+        /// Preserve a valid implant-level command domain across a hierarchy transaction. This
+        /// deliberately validates the controller against the destination map/faction rather than
+        /// the source Replicator, because a genuine death split runs after the source pawn is dead.
+        /// </summary>
+        public void CopySovereignBindingTo(Pawn child, Map expectedMap)
         {
-            if (child == null || ActiveSovereignController == null)
+            if (child == null || sovereignController == null || expectedMap == null)
                 return;
-            child.TryGetComp<CompReplicatorControl>()?.BindToSovereign(sovereignController);
+            if (!ControllerCanOwnOnMap(sovereignController, expectedMap, child.Faction))
+                return;
+
+            CompReplicatorControl childControl = child.TryGetComp<CompReplicatorControl>();
+            if (childControl != null)
+                childControl.BindToSovereign(sovereignController);
         }
 
         public bool HasActiveSovereignBinding()
         {
             Pawn pawn = Pawn;
-            if (pawn == null || pawn.Dead || !pawn.Spawned || sovereignController == null || sovereignController.Dead
-                || !sovereignController.Spawned || sovereignController.Map != pawn.Map
-                || sovereignController.Faction == null || pawn.Faction != sovereignController.Faction)
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null || sovereignController == null)
                 return false;
-            return ReplicatorQueenUtility.HasSovereignDirectiveAuthority(sovereignController);
+            return ControllerCanOwnOnMap(sovereignController, pawn.Map, pawn.Faction);
+        }
+
+        private static bool ControllerCanOwnOnMap(Pawn controller, Map map, Faction targetFaction)
+        {
+            if (controller == null || controller.Dead || !controller.Spawned || controller.Map != map
+                || controller.Faction == null || targetFaction == null || controller.Faction != targetFaction)
+                return false;
+            return ReplicatorQueenUtility.HasSovereignDirectiveAuthority(controller);
         }
 
         public override void CompTick()
