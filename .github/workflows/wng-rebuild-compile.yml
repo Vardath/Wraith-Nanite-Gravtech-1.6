@@ -58,6 +58,9 @@ jobs:
       - name: Wraith Feeding Niche audit
         run: python3 Tools/audit_wraith_feeding_niche.py
 
+      - name: Wraith Life Force and hibernation audit
+        run: python3 Tools/audit_wraith_hibernation.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
