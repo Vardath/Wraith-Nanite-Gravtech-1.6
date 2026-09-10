@@ -22,9 +22,8 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Offensive mission layer for one real Puddle Jumper. Native CompShuttle/CompTransporter
-    /// remain authoritative for boarding, loading, landing and launch. WNG only supplies the
-    /// Stargate-style two-pass Ancient drone attack sequence and mission state.
+    /// Ancient/Lantean attack mission using the same physical Puddle Jumper through both skyfaller
+    /// passes and final landing. Native shuttle transport/boarding remains untouched.
     /// </summary>
     public sealed class CompPuddleJumperRaidMission : ThingComp
     {
@@ -43,51 +42,51 @@ namespace WraithNaniteGravtech
             if (parent?.Spawned != true || parent.Map == null || parent.Faction == null)
                 return;
 
+            Map map = parent.Map;
+            IntVec3 firstPassCell = WNGShuttleFlightUtility.FindAttackPassCell(parent, map, parent.Position, oppositeSide: false);
             completedPasses = 0;
             dronesLaunched = 0;
             phase = WNGShuttleRaidPhase.AttackPasses;
-            nextPhaseTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(60, Props.passIntervalTicks);
-        }
+            nextPhaseTick = int.MaxValue;
 
-        public override void CompTick()
-        {
-            base.CompTick();
-            if (parent?.Destroyed != false || Find.TickManager == null)
-                return;
-
-            int now = Find.TickManager.TicksGame;
-            if (now < nextPhaseTick)
-                return;
-
-            if (phase == WNGShuttleRaidPhase.AttackPasses)
+            if (!WNGShuttleFlightUtility.TryBeginPhysicalPasses(parent, map, firstPassCell))
             {
-                ExecuteDronePass();
-                completedPasses++;
-                if (completedPasses >= Math.Max(1, Props.attackPasses))
-                {
-                    phase = WNGShuttleRaidPhase.LandedRaid;
-                    nextPhaseTick = now + Math.Max(60, Props.landedRaidDelayTicks);
-                }
-                else
-                {
-                    nextPhaseTick = now + Math.Max(60, Props.passIntervalTicks);
-                }
+                phase = WNGShuttleRaidPhase.Stranded;
+                nextPhaseTick = int.MaxValue;
             }
         }
 
-        private void ExecuteDronePass()
+        public bool ExecutePhysicalPass(Map map, IntVec3 passCell)
         {
-            if (parent?.Spawned != true || parent.Map == null || Props.droneProjectile == null)
+            if (phase != WNGShuttleRaidPhase.AttackPasses || map == null || parent == null || parent.Destroyed)
+                return false;
+
+            ExecuteDronePass(map, passCell);
+            completedPasses++;
+            return completedPasses < Math.Max(1, Props.attackPasses);
+        }
+
+        public void NotifyPhysicallyLanded()
+        {
+            if (phase != WNGShuttleRaidPhase.AttackPasses || parent?.Spawned != true)
+                return;
+            phase = WNGShuttleRaidPhase.LandedRaid;
+            nextPhaseTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(60, Props.landedRaidDelayTicks);
+        }
+
+        private void ExecuteDronePass(Map map, IntVec3 passCell)
+        {
+            if (map?.mapPawns?.AllPawnsSpawned == null || Props.droneProjectile == null)
                 return;
 
             float radius = Math.Max(1f, Props.acquisitionRadius);
             float radiusSq = radius * radius;
             int limit = Math.Max(1, Props.dronesPerPass);
 
-            List<Pawn> targets = parent.Map.mapPawns.AllPawnsSpawned
-                .Where(IsValidCombatTarget)
-                .Where(p => p.Position.DistanceToSquared(parent.Position) <= radiusSq)
-                .OrderBy(p => p.Position.DistanceToSquared(parent.Position))
+            List<Pawn> targets = map.mapPawns.AllPawnsSpawned
+                .Where(p => IsValidCombatTarget(p, map))
+                .Where(p => p.Position.DistanceToSquared(passCell) <= radiusSq)
+                .OrderBy(p => p.Position.DistanceToSquared(passCell))
                 .ThenBy(p => p.thingIDNumber)
                 .Take(limit)
                 .ToList();
@@ -101,19 +100,17 @@ namespace WraithNaniteGravtech
                     continue;
                 }
 
-                GenSpawn.Spawn(projectile, parent.Position, parent.Map);
-                projectile.Launch(parent, parent.DrawPos, target, target, ProjectileHitFlags.IntendedTarget);
+                GenSpawn.Spawn(projectile, passCell, map);
+                projectile.Launch(parent, passCell.ToVector3Shifted(), target, target, ProjectileHitFlags.IntendedTarget);
                 dronesLaunched++;
             }
         }
 
-        private bool IsValidCombatTarget(Pawn pawn)
+        private bool IsValidCombatTarget(Pawn pawn, Map map)
         {
-            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map != parent.Map)
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map != map || parent?.Faction == null)
                 return false;
             if (pawn.Faction == parent.Faction)
-                return false;
-            if (parent.Faction == null)
                 return false;
             return pawn.HostileTo(parent.Faction) || parent.Faction.HostileTo(pawn.Faction);
         }
