@@ -18,6 +18,7 @@
     <statBases><MaxHitPoints>650</MaxHitPoints><Flammability>0.25</Flammability></statBases>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithDartCulling"><maxCaptives>3</maxCaptives><stunTicks>1200</stunTicks><releaseRadius>4</releaseRadius></li>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithDartRaidMission"><attackPasses>2</attackPasses><passIntervalTicks>900</passIntervalTicks><maxCapturesPerPass>2</maxCapturesPerPass><acquisitionRadius>38</acquisitionRadius><landedRaidDelayTicks>1800</landedRaidDelayTicks></li>
       <li Class="CompProperties_Hackable">
         <defence>400</defence>
         <intellectualSkillPrerequisite>6</intellectualSkillPrerequisite>
