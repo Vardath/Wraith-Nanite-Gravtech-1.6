@@ -73,6 +73,9 @@ jobs:
       - name: Mature Wraith Hive site audit
         run: python3 Tools/audit_wraith_mature_hive_site.py
 
+      - name: Mature Wraith Hive discovery audit
+        run: python3 Tools/audit_wraith_mature_hive_discovery.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
