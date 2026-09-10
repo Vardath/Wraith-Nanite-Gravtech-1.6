@@ -32,8 +32,8 @@
 
   <ThingDef ParentName="ShuttleBase">
     <defName>WNG_WraithStrikeCraft</defName>
-    <label>Wraith strike craft</label>
-    <description>A heavier Wraith combat shuttle derived from Wraith fighter and support-craft technology. It preserves native shuttle boarding and transport behavior.</description>
+    <label>Wraith scout craft</label>
+    <description>A Wraith scout, shuttle and cargo craft larger than a Dart. It represents the canon Wraith scout-vessel role rather than a redundant second fighter: reconnaissance, personnel movement and light transport while preserving native shuttle boarding and launch.</description>
     <size>(4,3)</size><rotatable>false</rotatable><selectable>true</selectable>
     <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(4.6,3.0)</drawSize></graphicData>
     <statBases><MaxHitPoints>1050</MaxHitPoints><Flammability>0.22</Flammability></statBases>
@@ -41,8 +41,8 @@
 
   <ThingDef ParentName="ShuttleBase">
     <defName>WNG_WraithCruiser</defName>
-    <label>Wraith cruiser shuttle</label>
-    <description>A large Wraith transport and assault craft represented at RimWorld shuttle scale. It remains a native boardable shuttle; larger strategic Wraith cruisers and hive ships are separate world-scale craft.</description>
+    <label>Wraith cruiser transport</label>
+    <description>A RimWorld-scale abstraction of the smaller Wraith cruiser/transport role: a heavier organic assault and personnel craft used to move ground teams and support Wraith operations. Native shuttle boarding remains authoritative; full strategic cruisers and hive ships remain larger-scale vessels.</description>
     <size>(5,4)</size><rotatable>false</rotatable><selectable>true</selectable>
     <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(5.8,4.0)</drawSize></graphicData>
     <statBases><MaxHitPoints>1700</MaxHitPoints><Flammability>0.18</Flammability></statBases>
