@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh WNGR2 recovered-technology entry gate. Historical WNG weapon code/art/audio is not reused.
+    The Core charge-rifle graphic is a temporary visual placeholder only and remains audit-visible.
+  -->
+  <ThingDef ParentName="BaseWeapon">
+    <defName>WNG_WraithStunner</defName>
+    <label>wraith stunner</label>
+    <description>An organic Wraith capture weapon that overloads neuromuscular control without relying on conventional ballistic trauma. A recovered specimen can be analyzed to open the first branch of Wraith biological research.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData>
+      <texPath>Things/Item/Equipment/WeaponRanged/ChargeRifle</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.15</drawSize>
+    </graphicData>
+    <equipmentType>Primary</equipmentType>
+    <weaponTags>
+      <li>WNGR2_WraithCaptureWeapon</li>
+      <li>WNGR2_WraithRecoveredTechnology</li>
+    </weaponTags>
+    <statBases>
+      <MarketValue>850</MarketValue>
+      <Mass>2.1</Mass>
+      <RangedWeapon_Cooldown>1.65</RangedWeapon_Cooldown>
+      <AccuracyTouch>0.76</AccuracyTouch>
+      <AccuracyShort>0.82</AccuracyShort>
+      <AccuracyMedium>0.68</AccuracyMedium>
+      <AccuracyLong>0.42</AccuracyLong>
+    </statBases>
+    <verbs>
+      <li>
+        <verbClass>Verb_Shoot</verbClass>
+        <hasStandardCommand>true</hasStandardCommand>
+        <defaultProjectile>WNGR2_ProjectileWraithStunner</defaultProjectile>
+        <warmupTime>0.75</warmupTime>
+        <range>23.5</range>
+        <burstShotCount>1</burstShotCount>
+      </li>
+    </verbs>
+    <comps>
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>917201</analysisID>
+        <analysisDurationHours>2.5</analysisDurationHours>
+        <destroyedOnAnalyzed>false</destroyedOnAnalyzed>
+        <allowRepeatAnalysis>false</allowRepeatAnalysis>
+        <canStudyInPlace>false</canStudyInPlace>
+        <showProgress>true</showProgress>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <ThingDef ParentName="BaseBullet">
+    <defName>WNGR2_ProjectileWraithStunner</defName>
+    <label>wraith stunner pulse</label>
+    <projectile>
+      <damageDef>Stun</damageDef>
+      <damageAmountBase>12</damageAmountBase>
+      <speed>68</speed>
+    </projectile>
+  </ThingDef>
+</Defs>
