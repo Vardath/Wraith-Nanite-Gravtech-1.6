@@ -14,9 +14,4 @@ jobs:
       - name: Build WNG
         run: dotnet build Source/WNG/WNG.csproj -c Release
       - name: Parse XML
-        run: python - <<'PY'
-          import pathlib, xml.etree.ElementTree as ET
-          for p in pathlib.Path('Defs').rglob('*.xml'):
-              ET.parse(p)
-          print('XML parse OK')
-          PY
+        run: python -c "import pathlib,xml.etree.ElementTree as ET; [ET.parse(p) for p in pathlib.Path('Defs').rglob('*.xml')]; print('XML parse OK')"
