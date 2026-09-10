@@ -33,6 +33,20 @@
     <researchViewY>13.5</researchViewY>
   </ResearchProjectDef>
 
+  <ResearchProjectDef>
+    <defName>WNG_WraithGravships</defName>
+    <label>Wraith living gravships</label>
+    <description>Adapt Wraith living-ship propulsion, control tissue, bio-sludge storage, regeneration and jamming systems to RimWorld's native Odyssey gravship architecture. The resulting ships remain genuine Odyssey gravships rather than a parallel custom flight framework.</description>
+    <baseCost>5200</baseCost>
+    <techLevel>Ultra</techLevel>
+    <prerequisites>
+      <li>WNG_WraithShuttles</li>
+      <li>BasicGravtech</li>
+    </prerequisites>
+    <researchViewX>21</researchViewX>
+    <researchViewY>10.5</researchViewY>
+  </ResearchProjectDef>
+
   <ResearchProjectDef MayRequire="idolord.ONAC">
     <defName>WNG_GoauldShuttles</defName>
     <label>Goa'uld shuttle integration</label>
