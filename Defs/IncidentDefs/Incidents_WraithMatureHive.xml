@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh mature-Hive discovery cadence. These values are public test-balance choices, not recovered
+    historical constants. The worker itself enforces the hard active-site limits and sends the
+    discovery letter after a real site has been created.
+  -->
+  <IncidentDef>
+    <defName>WNG_WraithMatureHiveDiscovered</defName>
+    <label>mature Wraith Hive discovered</label>
+    <targetTags>
+      <li>World</li>
+    </targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_WraithMatureHiveDiscovery</workerClass>
+    <baseChance>0.08</baseChance>
+    <minRefireDays>25</minRefireDays>
+    <category>Misc</category>
+    <pointsScaleable>false</pointsScaleable>
+  </IncidentDef>
+</Defs>
