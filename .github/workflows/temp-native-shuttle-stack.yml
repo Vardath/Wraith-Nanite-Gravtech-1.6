@@ -15,3 +15,10 @@ jobs:
         run: dotnet build Source/WNG/WNG.csproj -c Release
       - name: Parse XML
         run: python -c "import pathlib,xml.etree.ElementTree as ET; [ET.parse(p) for p in pathlib.Path('Defs').rglob('*.xml')]; ET.parse('About/About.xml'); print('XML parse OK')"
+      - name: Inspect native CompLaunchable API
+        run: |
+          dotnet restore Source/WNG/WNG.csproj
+          ASM=$(find "$HOME/.nuget/packages/krafs.rimworld.ref/1.6.4871" -type f -name 'Assembly-CSharp.dll' | head -n1)
+          dotnet tool install --global ilspycmd
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          ilspycmd -t RimWorld.CompLaunchable "$ASM" | sed -n '1,360p'
