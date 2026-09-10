@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- CompPilotConsole dereferences CompBreakdownable in RimWorld 1.6. Add the same required comp
+       used by native-compatible pilot-console implementations so the Wraith control interface
+       cannot throw when its launch gizmo checks breakdown state. -->
+  <Operation Class="PatchOperationAdd">
+    <xpath>Defs/ThingDef[defName="WNG_WraithControlInterface"]/comps</xpath>
+    <value><li Class="RimWorld.CompProperties_Breakdownable" /></value>
+  </Operation>
+</Patch>
