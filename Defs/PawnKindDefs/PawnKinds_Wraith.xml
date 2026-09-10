@@ -23,6 +23,9 @@
     <defName>WNG_WraithHunter</defName>
     <label>wraith hunter</label>
     <combatPower>95</combatPower>
+    <weaponTags>
+      <li>WNGR2_WraithCaptureWeapon</li>
+    </weaponTags>
   </PawnKindDef>
 
   <PawnKindDef ParentName="WNG_WraithPawnBase">
