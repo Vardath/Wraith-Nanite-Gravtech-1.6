@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_NaniteReserve</defName>
+    <label>nanite reserve</label>
+    <description>A visible reserve of converted nanite feedstock used by Asuran and human-form Replicator reconstruction and fabrication. It does not drain merely because time passes; explicit repair or construction operations spend it.</description>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
+    <resourceLabel>Nanite reserve</resourceLabel>
+    <resourceDescription>Stored nanite feedstock used by Asuran reconstruction and fabrication.</resourceDescription>
+    <resourceGizmoThresholds><li>0.10</li><li>0.25</li><li>0.60</li></resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView>
+    <showGizmoWhenDrafted>true</showGizmoWhenDrafted>
+    <showGizmoOnMultiSelect>false</showGizmoOnMultiSelect>
+    <abilities><li>WNG_AssembleAsuranWorkshop</li></abilities>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+</Defs>
