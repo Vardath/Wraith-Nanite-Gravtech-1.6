@@ -28,7 +28,6 @@
     <costList>
       <Steel>120</Steel>
       <ComponentIndustrial>4</ComponentIndustrial>
-      <WNG_Biomass>8</WNG_Biomass>
     </costList>
     <statBases>
       <WorkToBuild>2800</WorkToBuild>
