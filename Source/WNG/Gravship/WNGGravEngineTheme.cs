@@ -23,15 +23,14 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Theme marker attached by XML to the real Odyssey GravEngine Def. Keeping the runtime Thing
-    /// as ThingDefOf.GravEngine is deliberate: RimWorld 1.6 still hard-codes that exact Def in
-    /// player-engine discovery, substructure overlays and several placement checks. WNG therefore
-    /// themes the native engine rather than substituting an incompatible parallel engine Def.
+    /// Theme marker attached to Odyssey's real GravEngine. RimWorld 1.6 hard-codes the exact native
+    /// engine Def in critical discovery, substructure and launch paths, so WNG themes that engine
+    /// rather than substituting a parallel fake one.
     ///
-    /// Odyssey's facility list itself is Def-based and does not know about WNG technology families.
-    /// This comp therefore removes mismatched WNG facility links from the native engine while
-    /// leaving ordinary vanilla facilities alone. A Wraith engine cannot silently use Asuran or
-    /// Goa'uld fuel/thrusters/controls, and vice versa.
+    /// Odyssey's facility linking is Def-based and has no concept of WNG technology families. Once
+    /// an engine is themed, every linked gravship facility must therefore carry the same WNG theme.
+    /// This rejects both another WNG family and unthemed vanilla fuel/controls/thrusters, preventing
+    /// chemfuel or mixed-family hardware from satisfying a Wraith, Asuran or Goa'uld ship.
     /// </summary>
     public sealed class CompWNGGravEngineTheme : ThingComp
     {
@@ -65,8 +64,11 @@ namespace WraithNaniteGravtech
             List<Thing> linked = affected.LinkedFacilitiesListForReading.ToList();
             foreach (Thing facilityThing in linked)
             {
-                CompWNGGravshipPartTheme partTheme = facilityThing?.TryGetComp<CompWNGGravshipPartTheme>();
-                if (partTheme == null || partTheme.Theme == WNGGravshipTheme.None || partTheme.Theme == theme)
+                if (facilityThing?.TryGetComp<CompGravshipFacility>() == null)
+                    continue;
+
+                CompWNGGravshipPartTheme partTheme = facilityThing.TryGetComp<CompWNGGravshipPartTheme>();
+                if (partTheme != null && partTheme.Theme == theme)
                     continue;
 
                 CompFacility facility = facilityThing.TryGetComp<CompFacility>();
