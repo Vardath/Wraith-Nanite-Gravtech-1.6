@@ -4,34 +4,25 @@
     <defName>WNG_ReplicatorSwarm</defName>
     <label>replicator swarm</label>
     <fixedName>The Replication Swarm</fixedName>
-    <description>An autonomous machine swarm that disassembles usable matter and turns successful consumption into additional Replicators. Mature swarms can field human-form Replicators alongside small machine forms, using the former as adaptive assault and infiltration units.</description>
+    <description>An autonomous machine infestation that dismantles accessible matter, rebuilds itself from what it consumes and reorganizes smaller units into larger operational forms.</description>
     <basicMemberKind>WNG_ReplicatorDrone</basicMemberKind>
-    <pawnSingular>replicator</pawnSingular>
-    <pawnsPlural>replicators</pawnsPlural>
+    <pawnSingular>replicator</pawnSingular><pawnsPlural>replicators</pawnsPlural>
     <requiredCountAtGameStart>1</requiredCountAtGameStart>
-    <canMakeRandomly>false</canMakeRandomly>
-    <settlementGenerationWeight>0</settlementGenerationWeight>
-    <factionIconPath>World/WorldObjects/Expanding/Sites/MechCluster</factionIconPath>
+    <canMakeRandomly>false</canMakeRandomly><settlementGenerationWeight>0</settlementGenerationWeight>
     <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath>
-    <techLevel>Ultra</techLevel>
-    <humanlikeFaction>false</humanlikeFaction>
-    <hidden>true</hidden>
-    <permanentEnemy>true</permanentEnemy>
-    <hostileToFactionlessHumanlikes>true</hostileToFactionlessHumanlikes>
-    <autoFlee>false</autoFlee>
-    <canSiege>false</canSiege>
-    <canStageAttacks>true</canStageAttacks>
-    <rescueesCanJoin>false</rescueesCanJoin>
+    <factionIconPath>World/WorldObjects/Expanding/Sites/MechCluster</factionIconPath>
+    <techLevel>Ultra</techLevel><humanlikeFaction>false</humanlikeFaction>
+    <hidden>true</hidden><permanentEnemy>true</permanentEnemy><hostileToFactionlessHumanlikes>true</hostileToFactionlessHumanlikes>
+    <autoFlee>false</autoFlee><canSiege>false</canSiege><canStageAttacks>true</canStageAttacks><rescueesCanJoin>false</rescueesCanJoin>
     <allowedArrivalTemperatureRange>-100~200</allowedArrivalTemperatureRange>
-    <raidCommonalityFromPointsCurve><points><li>(0,0.18)</li></points></raidCommonalityFromPointsCurve>
-    <maxPawnCostPerTotalPointsCurve><points><li>(0,40)</li><li>(500,180)</li><li>(1500,260)</li><li>(100000,100000)</li></points></maxPawnCostPerTotalPointsCurve>
     <pawnGroupMakers>
       <li>
-        <kindDef>Combat</kindDef>
-        <commonality>100</commonality>
+        <kindDef>Combat</kindDef><commonality>100</commonality>
         <options>
-          <WNG_ReplicatorDrone>10</WNG_ReplicatorDrone>
-          <WNG_HumanFormReplicator>2.2</WNG_HumanFormReplicator>
+          <WNG_ReplicatorDrone>12</WNG_ReplicatorDrone>
+          <WNG_ReplicatorHunter>5</WNG_ReplicatorHunter>
+          <WNG_ReplicatorBulwark>1.6</WNG_ReplicatorBulwark>
+          <WNG_ReplicatorController>0.35</WNG_ReplicatorController>
         </options>
       </li>
     </pawnGroupMakers>

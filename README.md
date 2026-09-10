@@ -1,33 +1,19 @@
-# Wraith & Nanite Gravtech — RimWorld 1.6 reconstruction workspace
+# Wraith & Nanite Gravtech — fresh RimWorld 1.6 rebuild
 
-**Author: Vardath**
+Author/design authority: **Vardath**.
 
-This public `main` branch is the active WNG RimWorld 1.6 reconstruction workspace.
+This repository was deliberately reset on 2026-09-10. The old implementation remains in Git history only as reference material; it is not a known-good state and is not an implementation authority.
 
-## Continuity / “refresh memory and continue”
+The durable rebuild plan and refresh/continuity instructions live in:
 
-Read [`CONTINUE_WNG_REBUILD.md`](CONTINUE_WNG_REBUILD.md) first, then read [`Docs/WNG_REBUILD_MASTER_PLAN.md`](Docs/WNG_REBUILD_MASTER_PLAN.md) and [`Docs/WNG_REBUILD_MASTER_PLAN_ADDENDUM.md`](Docs/WNG_REBUILD_MASTER_PLAN_ADDENDUM.md) completely.
+`Vardath/Vardath.github.io/wng-rebuild/`
 
-The master plan records the intended first complete implementation. The addendum is equally authoritative and makes explicit that the design remains editable: timings, races/xenotypes, audio, art, balance, processes and whole systems may be changed later by Vardath after testing. The purpose of the plan is continuity and a complete first build, not to freeze the mod forever.
+Read that continuity set before resuming work after a context reset.
 
-Historical/private WNG builds and source are reference evidence only when accessible. There are no known-good historical states. Current work and continuity live in this public 1.6 repository; do not write to the private WNG repository unless Vardath explicitly re-authorizes it.
+## Current rebuild stage
 
-## Current first-build direction
+The first rebuilt subsystem is the mechanical block Replicator ecology. Approved Replicator graphics are retained; behavior is reconstructed cleanly.
 
-- RimWorld 1.6; Biotech + Odyssey hard dependencies; CatCraft Stargates!, ONAC and RimGate optional/dependency-safe.
-- Preserve the approved Replicator graphics and genuinely working split/recombine behavior while the first build is reconstructed.
-- Wraith are one xenotype/civilization with caste PawnKinds; backstories are biography, not races/castes.
-- Routine Wraith feeding is separate from strategic faction hunger/request/raid pressure.
-- Human-form Replicators/Asurans are nanite humanoids with real Nanite Reserve/reconstruction/EMP systems.
-- Replicator Queen is a player-recruited human-form pawn when released from her casket; Asurans can attempt to kidnap her during the quest and later from a home map where she is present.
-- Queen authority, implant authority and temporary lattice overrides have different scopes in the current implementation.
-- No obsolete Gravcore progression in the first-build design; use functional Wraith/Precursor Grav Engines and the planned Wraith/Asuran fuel systems.
-- Wraith Dart Stargate culling is currently designed as two real passes.
+Design/balance values are intentionally kept in Def data / component properties where practical so Vardath can tune them later. The plan is a first-build target, not immutable canon.
 
-These are implementation targets, not permanent prohibitions on later redesign.
-
-## Development approach
-
-Build the planned mod first and make it work. Do not spend rebuild time freezing balance/design choices with anti-regression or release-check machinery. The GitHub workflow is for basic C# restore/build/assembly verification only. Gameplay acceptance comes from live RimWorld testing and Vardath's feedback.
-
-Migration/reconstruction is still in progress. A successful compile means the assembly builds; it does not mean the mod is finished or approved.
+No design-locking anti-regression suite or release-check bureaucracy belongs in this fresh rebuild. Add only implementation checks that are actually needed to make the mod work.
