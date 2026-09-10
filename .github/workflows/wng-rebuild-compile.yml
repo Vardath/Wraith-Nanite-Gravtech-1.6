@@ -55,6 +55,9 @@ jobs:
       - name: Wraith feeding ecology audit
         run: python3 Tools/audit_wraith_feeding.py
 
+      - name: Wraith Feeding Niche audit
+        run: python3 Tools/audit_wraith_feeding_niche.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
