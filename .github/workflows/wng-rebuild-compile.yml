@@ -91,6 +91,9 @@ jobs:
       - name: Replicator Queen vault and capture audit
         run: python3 Tools/audit_replicator_queen_vault.py
 
+      - name: Captured Queen sovereign threat audit
+        run: python3 Tools/audit_replicator_queen_sovereign_threat.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
