@@ -22,6 +22,9 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Rebuild continuity contract audit
+        run: python3 Tools/audit_rebuild_continuity.py
+
       - name: Structural and gameplay contract audit
         run: python3 Tools/audit_rebuild.py
 

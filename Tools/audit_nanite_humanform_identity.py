@@ -6,10 +6,8 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
 
-
 def fail(msg):
     errors.append(msg)
-
 
 def load(path):
     try:
@@ -17,7 +15,6 @@ def load(path):
     except Exception as ex:
         fail(f"{path}: {ex}")
         return None
-
 
 genes = load("Defs/GeneDefs/Genes_NaniteHumanForm.xml")
 xenos = load("Defs/XenotypeDefs/Xenotypes_NaniteHumanForm.xml")
@@ -60,6 +57,7 @@ if kinds is not None:
 source = (ROOT / "Source/WNGR2/Replicators/ReplicatorQueenSystems.cs").read_text(encoding="utf-8")
 control = (ROOT / "Source/WNGR2/Replicators/CompReplicatorControl.cs").read_text(encoding="utf-8")
 nanites = (ROOT / "Source/WNGR2/Replicators/NaniteHumanFormGenes.cs").read_text(encoding="utf-8")
+
 for needle, description in [
     ('pawn.kindDef?.defName != "WNG_ReplicatorQueenChild"', "Queen authority restricted to exact Queen PawnKind"),
     ('!ReplicatorQueenUtility.IsBlockReplicator(targetPawn)', "sovereign directive restricted to block Replicators"),
@@ -69,9 +67,11 @@ for needle, description in [
 ]:
     if needle not in source:
         fail(f"Queen system missing {description}")
+
 for forbidden in ['HostileOutbreakBonus => queenAbducted ? 1 : 0', 'Future Replicator outbreaks will begin slightly stronger']:
     if forbidden in source:
         fail("old +1 outbreak-only Queen consequence is still present")
+
 for needle, description in [
     ('private Pawn sovereignController;', "target-specific sovereign controller reference"),
     ('BindToSovereign(Pawn controller)', "implant target binding"),
@@ -80,6 +80,7 @@ for needle, description in [
 ]:
     if needle not in control:
         fail(f"Replicator control missing {description}")
+
 for needle, description in [
     ('public const float FastHealCost = 0.015f', "1.5% fast-heal cost"),
     ('public const float ReconstructPartCost = 0.25f', "25% reconstruction cost"),
@@ -92,14 +93,26 @@ for needle, description in [
     if needle not in nanites:
         fail(f"nanite physiology missing {description}")
 
-# Faction references which previously compiled despite missing PawnKinds must now resolve.
+# PawnKindDef is a Def type, not a directory contract. WNG intentionally colocates block
+# Replicator PawnKinds with their custom race ThingDefs, so scan every Def XML.
 all_kind_names = set()
-for path in (ROOT / "Defs/PawnKindDefs").glob("*.xml"):
+duplicate_kind_names = set()
+for path in (ROOT / "Defs").rglob("*.xml"):
     try:
-        r = ET.parse(path).getroot()
-        all_kind_names.update((x.findtext("defName") or "").strip() for x in r.findall("PawnKindDef") if x.find("defName") is not None)
+        root = ET.parse(path).getroot()
     except ET.ParseError:
-        pass
+        continue
+    for node in root.findall("PawnKindDef"):
+        name = (node.findtext("defName") or "").strip()
+        if not name:
+            continue
+        if name in all_kind_names:
+            duplicate_kind_names.add(name)
+        all_kind_names.add(name)
+
+for duplicate in sorted(duplicate_kind_names):
+    fail(f"duplicate concrete PawnKindDef name {duplicate}")
+
 for faction_path in ["Defs/FactionDefs/Factions_WraithPrecursor.xml", "Defs/FactionDefs/Factions_Replicator.xml"]:
     r = load(faction_path)
     if r is None:
@@ -118,4 +131,5 @@ if errors:
     for error in errors:
         print("- " + error)
     sys.exit(1)
+
 print("Nanite/human-form identity audit OK")
