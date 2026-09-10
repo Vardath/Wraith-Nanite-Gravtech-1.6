@@ -43,6 +43,9 @@ jobs:
       - name: Wraith recovered-tech research audit
         run: python3 Tools/audit_wraith_research_entry.py
 
+      - name: Wraith biomass economy audit
+        run: python3 Tools/audit_wraith_biomass.py
+
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj
 
