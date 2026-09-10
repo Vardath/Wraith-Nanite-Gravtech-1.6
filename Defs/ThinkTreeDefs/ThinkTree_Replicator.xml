@@ -18,12 +18,10 @@
             </li>
           </subNodes>
         </li>
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorRetaliate" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorRepair" />
-        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorArtillery" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorBreach" />
-        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorControllerFocus" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
-        <li Class="ThinkNode_Subtree"><treeDef>LordDuty</treeDef></li>
         <li Class="JobGiver_WanderAnywhere"><maxDanger>Deadly</maxDanger></li>
         <li Class="JobGiver_IdleError" />
       </subNodes>
