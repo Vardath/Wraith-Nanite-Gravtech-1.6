@@ -30,26 +30,32 @@ namespace WraithNaniteGravtech
         Grav = 6
     }
 
-    /// <summary>
-    /// Save-safe Replicator state that survives split/recombine transactions.
-    /// Learned adaptations are cumulative: assimilating a new technology does not erase
-    /// adaptations learned earlier.
-    /// </summary>
     public sealed class CompProperties_ReplicatorState : CompProperties
     {
+        public int antiShieldEvidenceRequired = 3;
         public CompProperties_ReplicatorState() => compClass = typeof(CompReplicatorState);
     }
 
+    /// <summary>
+    /// Save-safe Replicator knowledge/state. Adaptations are cumulative and transfer through
+    /// split/recombine. Anti-shield knowledge is deliberately separate from the first shield
+    /// adaptation: repeated shield experience is required before the countermeasure is learned.
+    /// </summary>
     public sealed class CompReplicatorState : ThingComp
     {
         private string materialDefName;
         private int adaptationMask;
+        private int shieldEvidence;
+
+        private CompProperties_ReplicatorState Props => (CompProperties_ReplicatorState)props;
 
         public ThingDef MaterialDef => string.IsNullOrEmpty(materialDefName)
             ? null
             : DefDatabase<ThingDef>.GetNamedSilentFail(materialDefName);
 
         public ReplicatorAdaptation Adaptations => (ReplicatorAdaptation)adaptationMask;
+        public int ShieldEvidence => shieldEvidence;
+        public int AntiShieldEvidenceRequired => Math.Max(1, Props.antiShieldEvidenceRequired);
 
         public bool HasAdaptation(ReplicatorAdaptation adaptation)
             => adaptation != ReplicatorAdaptation.None && (Adaptations & adaptation) == adaptation;
@@ -67,6 +73,7 @@ namespace WraithNaniteGravtech
             if (other == null) return;
             materialDefName = other.materialDefName;
             adaptationMask = other.adaptationMask;
+            shieldEvidence = other.shieldEvidence;
         }
 
         public void MergeFrom(CompReplicatorState other)
@@ -75,6 +82,8 @@ namespace WraithNaniteGravtech
             if (string.IsNullOrEmpty(materialDefName) && !string.IsNullOrEmpty(other.materialDefName))
                 materialDefName = other.materialDefName;
             adaptationMask |= other.adaptationMask;
+            shieldEvidence = Math.Min(int.MaxValue, shieldEvidence + Math.Max(0, other.shieldEvidence));
+            UnlockAntiShieldIfReady();
         }
 
         public void RecordAssimilation(Thing target)
@@ -101,11 +110,18 @@ namespace WraithNaniteGravtech
             if (identity.Contains("shield") || identity.Contains("barrier"))
             {
                 AddAdaptation(ReplicatorAdaptation.Shield);
-                AddAdaptation(ReplicatorAdaptation.AntiShield);
+                if (shieldEvidence < int.MaxValue) shieldEvidence++;
+                UnlockAntiShieldIfReady();
             }
 
             if (identity.Contains("grav") || identity.Contains("gravity"))
                 AddAdaptation(ReplicatorAdaptation.Grav);
+        }
+
+        private void UnlockAntiShieldIfReady()
+        {
+            if (shieldEvidence >= AntiShieldEvidenceRequired)
+                AddAdaptation(ReplicatorAdaptation.AntiShield);
         }
 
         private IEnumerable<ReplicatorAdaptation> LearnedAdaptations()
@@ -126,13 +142,18 @@ namespace WraithNaniteGravtech
         public override string CompInspectStringExtra()
         {
             string material = MaterialDef?.LabelCap;
-            List<string> learned = LearnedAdaptations().Select(a => a == ReplicatorAdaptation.AntiShield ? "Anti-shield" : a.ToString()).ToList();
-            if (learned.Count == 0 && string.IsNullOrEmpty(material)) return null;
+            List<string> lines = new List<string>();
+            if (!string.IsNullOrEmpty(material)) lines.Add($"Replication material: {material}");
 
-            string adaptationText = learned.Count == 0 ? null : $"Learned adaptations: {string.Join(", ", learned)}";
-            if (string.IsNullOrEmpty(material)) return adaptationText;
-            if (string.IsNullOrEmpty(adaptationText)) return $"Replication material: {material}";
-            return $"Replication material: {material}\n{adaptationText}";
+            List<string> learned = LearnedAdaptations()
+                .Select(a => a == ReplicatorAdaptation.AntiShield ? "Anti-shield" : a.ToString())
+                .ToList();
+            if (learned.Count > 0) lines.Add($"Learned adaptations: {string.Join(", ", learned)}");
+
+            if (HasAdaptation(ReplicatorAdaptation.Shield) && !HasAdaptation(ReplicatorAdaptation.AntiShield))
+                lines.Add($"Shield countermeasure evidence: {Math.Min(shieldEvidence, AntiShieldEvidenceRequired)}/{AntiShieldEvidenceRequired}");
+
+            return lines.Count == 0 ? null : string.Join("\n", lines);
         }
 
         public override void PostExposeData()
@@ -140,11 +161,16 @@ namespace WraithNaniteGravtech
             base.PostExposeData();
             Scribe_Values.Look(ref materialDefName, "wngReplicatorMaterial");
             Scribe_Values.Look(ref adaptationMask, "wngReplicatorAdaptationMask", 0);
+            Scribe_Values.Look(ref shieldEvidence, "wngReplicatorShieldEvidence", 0);
 
             LegacyReplicatorAdaptation legacy = LegacyReplicatorAdaptation.None;
             Scribe_Values.Look(ref legacy, "wngReplicatorAdaptation", LegacyReplicatorAdaptation.None);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit && adaptationMask == 0 && legacy != LegacyReplicatorAdaptation.None)
-                adaptationMask = (int)ConvertLegacy(legacy);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                if (adaptationMask == 0 && legacy != LegacyReplicatorAdaptation.None)
+                    adaptationMask = (int)ConvertLegacy(legacy);
+                UnlockAntiShieldIfReady();
+            }
         }
 
         private static ReplicatorAdaptation ConvertLegacy(LegacyReplicatorAdaptation legacy)
