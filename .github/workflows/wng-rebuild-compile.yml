@@ -1,4 +1,4 @@
-name: WNG rebuild compile gate
+name: WNG compile
 
 on:
   push:
@@ -21,78 +21,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
-      - name: Rebuild continuity contract audit
-        run: python3 Tools/audit_rebuild_continuity.py
-
-      - name: Structural and gameplay contract audit
-        run: python3 Tools/audit_rebuild.py
-
-      - name: Wraith lineage politics audit
-        run: python3 Tools/audit_wraith_politics.py
-
-      - name: Wraith captivity identity audit
-        run: python3 Tools/audit_wraith_captivity.py
-
-      - name: Wraith Dart abduction audit
-        run: python3 Tools/audit_wraith_dart.py
-
-      - name: Wraith Dart culling incident audit
-        run: python3 Tools/audit_wraith_dart_incident.py
-
-      - name: Wraith ground-kidnap bridge audit
-        run: python3 Tools/audit_wraith_raid_kidnap.py
-
-      - name: Wraith recovered-tech research audit
-        run: python3 Tools/audit_wraith_research_entry.py
-
-      - name: Wraith biomass economy audit
-        run: python3 Tools/audit_wraith_biomass.py
-
-      - name: Wraith bioelectric organ audit
-        run: python3 Tools/audit_wraith_bioelectric.py
-
-      - name: Wraith Living Weapons audit
-        run: python3 Tools/audit_wraith_living_weapons.py
-
-      - name: Wraith feeding ecology audit
-        run: python3 Tools/audit_wraith_feeding.py
-
-      - name: Wraith Feeding Niche audit
-        run: python3 Tools/audit_wraith_feeding_niche.py
-
-      - name: Wraith Life Force and hibernation audit
-        run: python3 Tools/audit_wraith_hibernation.py
-
-      - name: Wraith Growth Chamber audit
-        run: python3 Tools/audit_wraith_growth_chamber.py
-
-      - name: Mature Wraith Hive population audit
-        run: python3 Tools/audit_wraith_mature_hive_population.py
-
-      - name: Wraith Hive infrastructure audit
-        run: python3 Tools/audit_wraith_hive_infrastructure.py
-
-      - name: Mature Wraith Hive site audit
-        run: python3 Tools/audit_wraith_mature_hive_site.py
-
-      - name: Mature Wraith Hive discovery audit
-        run: python3 Tools/audit_wraith_mature_hive_discovery.py
-
-      - name: Mature Wraith Hive retaliation audit
-        run: python3 Tools/audit_wraith_mature_hive_retaliation.py
-
-      - name: Nanite and human-form identity audit
-        run: python3 Tools/audit_nanite_humanform_identity.py
-
-      - name: Replicator sovereign hierarchy audit
-        run: python3 Tools/audit_replicator_sovereign_hierarchy.py
-
-      - name: Replicator Queen vault and capture audit
-        run: python3 Tools/audit_replicator_queen_vault.py
-
-      - name: Captured Queen sovereign threat audit
-        run: python3 Tools/audit_replicator_queen_sovereign_threat.py
 
       - name: Restore
         run: dotnet restore Source/WNGR2/WNGR2.csproj

@@ -1,29 +1,33 @@
 # Wraith & Nanite Gravtech — RimWorld 1.6 reconstruction workspace
 
+**Author: Vardath**
+
 This public `main` branch is the active WNG RimWorld 1.6 reconstruction workspace.
 
 ## Continuity / “refresh memory and continue”
 
-**Read [`CONTINUE_WNG_REBUILD.md`](CONTINUE_WNG_REBUILD.md) first, then read [`Docs/WNG_REBUILD_MASTER_PLAN.md`](Docs/WNG_REBUILD_MASTER_PLAN.md) completely.**
+Read [`CONTINUE_WNG_REBUILD.md`](CONTINUE_WNG_REBUILD.md) first, then read [`Docs/WNG_REBUILD_MASTER_PLAN.md`](Docs/WNG_REBUILD_MASTER_PLAN.md) and [`Docs/WNG_REBUILD_MASTER_PLAN_ADDENDUM.md`](Docs/WNG_REBUILD_MASTER_PLAN_ADDENDUM.md) completely.
 
-The master plan is the public in-repository continuity authority for this rebuild and incorporates the consolidated requirements plus newer September 9–10 corrections. It is deliberately protected by a continuity audit so future work does not silently lose the rebuild rules.
+The master plan records the intended first complete implementation. The addendum is equally authoritative and makes explicit that the design remains editable: timings, races/xenotypes, audio, art, balance, processes and whole systems may be changed later by Vardath after testing. The purpose of the plan is continuity and a complete first build, not to freeze the mod forever.
 
-Historical/private WNG builds and source are **reference evidence only**. There are no known-good historical states. Newer explicit user instructions override older implementation details and the plan must be updated when requirements change.
+Historical/private WNG builds and source are reference evidence only when accessible. There are no known-good historical states. Current work and continuity live in this public 1.6 repository; do not write to the private WNG repository unless Vardath explicitly re-authorizes it.
 
-## Locked high-level rules
+## Current first-build direction
 
 - RimWorld 1.6; Biotech + Odyssey hard dependencies; CatCraft Stargates!, ONAC and RimGate optional/dependency-safe.
-- Preserve approved Replicator graphics and genuinely working split/recombine behavior.
+- Preserve the approved Replicator graphics and genuinely working split/recombine behavior while the first build is reconstructed.
 - Wraith are one xenotype/civilization with caste PawnKinds; backstories are biography, not races/castes.
 - Routine Wraith feeding is separate from strategic faction hunger/request/raid pressure.
-- Exact Replicator split ladder: **Siege Mass -> 2 Titans -> 2 Bulwarks -> 2 Hunters -> 2 Drones**.
-- Split-born recombination cooldown: **2,500 ticks / one in-game hour**.
-- Dangerous Replicator Matter minimum stack: **10**; dormancy: **30,000 ticks**.
-- Child’s Toy gestation: **90,000 ticks**.
 - Human-form Replicators/Asurans are nanite humanoids with real Nanite Reserve/reconstruction/EMP systems.
-- Replicator Queen is one exact age-13 female human-form pawn; Queen authority, implant authority and temporary lattice overrides have different scopes.
-- No obsolete Gravcore progression. Canonical gravship fuels are `WNG_WraithBiofluidFuel` and `WNG_AsuranNaniteSlurry`.
-- Wraith Dart Stargate culling uses exactly **two real passes**.
-- Final acceptance requires source/Def correctness, audits, RimWorld 1.6 compile, playable package, live startup/gameplay/save-load, visual/audio review and Player.log/RimDoctor review.
+- Replicator Queen is a player-recruited human-form pawn when released from her casket; Asurans can attempt to kidnap her during the quest and later from a home map where she is present.
+- Queen authority, implant authority and temporary lattice overrides have different scopes in the current implementation.
+- No obsolete Gravcore progression in the first-build design; use functional Wraith/Precursor Grav Engines and the planned Wraith/Asuran fuel systems.
+- Wraith Dart Stargate culling is currently designed as two real passes.
 
-Migration/reconstruction is still in progress. Individual commits and green CI runs are checkpoints, not completion claims.
+These are implementation targets, not permanent prohibitions on later redesign.
+
+## Development approach
+
+Build the planned mod first and make it work. Do not spend rebuild time freezing balance/design choices with anti-regression or release-check machinery. The GitHub workflow is for basic C# restore/build/assembly verification only. Gameplay acceptance comes from live RimWorld testing and Vardath's feedback.
+
+Migration/reconstruction is still in progress. A successful compile means the assembly builds; it does not mean the mod is finished or approved.
