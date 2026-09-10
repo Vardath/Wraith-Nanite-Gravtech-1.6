@@ -8,8 +8,10 @@ GENES = ROOT / "Defs" / "GeneDefs" / "Genes_WraithCore.xml"
 HEDIFFS = ROOT / "Defs" / "HediffDefs" / "Hediffs_WraithCore.xml"
 ABILITIES = ROOT / "Defs" / "AbilityDefs" / "Abilities_WraithCore.xml"
 XENOTYPES = ROOT / "Defs" / "XenotypeDefs" / "Xenotypes_Wraith.xml"
+POD_DEF = ROOT / "Defs" / "ThingDefs" / "Wraith_HibernationPod.xml"
 LIFE_SOURCE = ROOT / "Source" / "WNGR2" / "Wraith" / "WraithLifeForce.cs"
 HIB_SOURCE = ROOT / "Source" / "WNGR2" / "Wraith" / "WraithHibernation.cs"
+POD_SOURCE = ROOT / "Source" / "WNGR2" / "Wraith" / "WraithHibernationPod.cs"
 
 errors: list[str] = []
 
@@ -51,6 +53,7 @@ genes_root = parse(GENES)
 hediffs_root = parse(HEDIFFS)
 abilities_root = parse(ABILITIES)
 xenotypes_root = parse(XENOTYPES)
+pod_root = parse(POD_DEF)
 
 life_gene = find_def(genes_root, "GeneDef", "WNG_LifeForce")
 hibernation_gene = find_def(genes_root, "GeneDef", "WNG_HibernationGene")
@@ -59,6 +62,7 @@ starved = find_def(hediffs_root, "HediffDef", "WNG_LifeForceStarved")
 torpor = find_def(hediffs_root, "HediffDef", "WNG_LifeForceTorpor")
 hibernate = find_def(abilities_root, "AbilityDef", "WNG_Hibernate")
 wraith = find_def(xenotypes_root, "XenotypeDef", "WNG_Wraith")
+pod = find_def(pod_root, "ThingDef", "WNG_HibernationPod")
 
 require(life_gene, "resourceLossPerDay", "0.0666667", "normal Life Force drain")
 if life_gene is not None:
@@ -106,6 +110,22 @@ if wraith is not None:
         if required not in genes:
             fail(f"True Wraith xenotype must retain {required}")
 
+if pod is not None:
+    if pod.attrib.get("ParentName") != "BedBase":
+        fail("WNG_HibernationPod must remain a native BedBase occupancy structure")
+    require(pod, "researchPrerequisites/li", "WNG_FeedingEcology", "hibernation pod research gate")
+    require(pod, "costList/Steel", "50", "hibernation pod steel cost")
+    require(pod, "costList/ComponentIndustrial", "2", "hibernation pod component cost")
+    require(pod, "costList/WNG_Biomass", "30", "hibernation pod biomass cost")
+    pod_comp = pod.find("comps/li")
+    if pod_comp is None or pod_comp.attrib.get("Class") != "WraithNaniteGravtech.CompProperties_WraithHibernationPod":
+        fail("WNG_HibernationPod must use the fresh public pod runtime")
+    else:
+        require(pod_comp, "hibernationTicks", "180000", "pod maintained hibernation duration")
+        require(pod_comp, "maintenanceIntervalTicks", "60000", "pod maintenance cadence")
+        require(pod_comp, "biomassMaintenanceCost", "1", "pod biomass maintenance cost")
+        require(pod_comp, "maintenanceLifeForceGain", "0.02", "pod Life Force maintenance pulse")
+
 life_source = LIFE_SOURCE.read_text(encoding="utf-8", errors="replace") if LIFE_SOURCE.exists() else ""
 if not LIFE_SOURCE.exists():
     fail("Missing Wraith Life Force runtime")
@@ -142,6 +162,30 @@ else:
     ]:
         if needle not in hib_source:
             fail(f"Missing deliberate hibernation contract: {description}")
+
+pod_source = POD_SOURCE.read_text(encoding="utf-8", errors="replace") if POD_SOURCE.exists() else ""
+if not POD_SOURCE.exists():
+    fail("Missing Wraith Hibernation Pod runtime")
+else:
+    for needle, description in [
+        ("Building_Bed", "native bed occupancy"),
+        ("WraithLifeForceUtility.Get(pawn) != null", "only Wraith Life Force sleepers are maintained"),
+        ("WNG_WraithHibernating", "pod must maintain the existing hibernation Hediff"),
+        ("ticksToDisappear", "pod must extend the existing disappearing Hediff rather than recreate it continuously"),
+        ("maintenanceIntervalTicks = 60000", "one-day maintenance cadence default"),
+        ("biomassMaintenanceCost = 1", "one biomass maintenance default"),
+        ("maintenanceLifeForceGain = 0.02f", "0.02 Life Force maintenance default"),
+        ("WNG_WraithKeeper", "Keeper maintenance supervision"),
+        ("WNG_WraithQueen", "Queen maintenance supervision"),
+        ("sleeper.Faction != owner", "maintenance only for allied same-faction sleepers"),
+        ("TryConsumeBiomass", "real biomass consumption"),
+        ("keeperMaintenanceEnabled", "player maintenance toggle"),
+    ]:
+        if needle not in pod_source:
+            fail(f"Missing Hibernation Pod contract: {description}")
+    for forbidden in ("WraithFactionHunger", "WNG_DrainLife", "fatalIfAlreadyLifeDrained"):
+        if forbidden in pod_source:
+            fail(f"Hibernation Pod must remain separate from feeding/faction-hunger logic: found {forbidden}")
 
 if errors:
     print("Wraith hibernation physiology audit FAILED")
