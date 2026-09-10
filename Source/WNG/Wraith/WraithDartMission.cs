@@ -33,8 +33,9 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Mission-state layer for one real Wraith Dart. It never replaces CompShuttle,
-    /// CompTransporter, native boarding jobs, native launch, or CatCraft Stargate mechanics.
+    /// Mission-state layer for one real Wraith Dart. Physical attack passes carry this exact shuttle
+    /// inside WNG skyfallers; CompShuttle, CompTransporter, native boarding/launch and CatCraft remain
+    /// authoritative for their own responsibilities.
     /// </summary>
     public sealed class CompWraithDartRaidMission : ThingComp
     {
@@ -55,10 +56,43 @@ namespace WraithNaniteGravtech
             if (parent?.Spawned != true || parent.Map == null || parent.Faction == null || !WraithCaptivityRegistry.IsWraithFaction(parent.Faction))
                 return;
 
+            Map map = parent.Map;
+            IntVec3 firstPassCell = WNGShuttleFlightUtility.FindAttackPassCell(parent, map, parent.Position, oppositeSide: false);
+
             completedPasses = 0;
             totalCapturedDuringPasses = 0;
             phase = WNGShuttleRaidPhase.AttackPasses;
-            nextPhaseTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(60, Props.passIntervalTicks);
+            nextPhaseTick = int.MaxValue;
+
+            if (!WNGShuttleFlightUtility.TryBeginPhysicalPasses(parent, map, firstPassCell))
+            {
+                // Do not pretend a grounded craft completed a flyby. Leave it present and mark the
+                // mission stranded so a later live fix/retreat can act on the same physical craft.
+                phase = WNGShuttleRaidPhase.Stranded;
+                nextPhaseTick = int.MaxValue;
+            }
+        }
+
+        /// <summary>
+        /// Invoked by the skyfaller carrying this exact Dart when a physical pass reaches its attack
+        /// line. Returns true when another physical pass is still required.
+        /// </summary>
+        public bool ExecutePhysicalPass(Map map, IntVec3 passCell)
+        {
+            if (phase != WNGShuttleRaidPhase.AttackPasses || map == null || parent == null || parent.Destroyed)
+                return false;
+
+            ExecuteCullingPass(map, passCell);
+            completedPasses++;
+            return completedPasses < Math.Max(1, Props.attackPasses);
+        }
+
+        public void NotifyPhysicallyLanded()
+        {
+            if (phase != WNGShuttleRaidPhase.AttackPasses || parent?.Spawned != true)
+                return;
+            phase = WNGShuttleRaidPhase.LandedRaid;
+            nextPhaseTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(60, Props.landedRaidDelayTicks);
         }
 
         public override void CompTick()
@@ -71,42 +105,26 @@ namespace WraithNaniteGravtech
             if (now < nextPhaseTick)
                 return;
 
-            switch (phase)
+            if (phase == WNGShuttleRaidPhase.RetreatRequested)
             {
-                case WNGShuttleRaidPhase.AttackPasses:
-                    ExecuteCullingPass();
-                    completedPasses++;
-                    if (completedPasses >= Math.Max(1, Props.attackPasses))
-                    {
-                        phase = WNGShuttleRaidPhase.LandedRaid;
-                        nextPhaseTick = now + Math.Max(60, Props.landedRaidDelayTicks);
-                    }
-                    else
-                    {
-                        nextPhaseTick = now + Math.Max(60, Props.passIntervalTicks);
-                    }
-                    break;
-
-                case WNGShuttleRaidPhase.RetreatRequested:
-                    phase = WNGShuttleRaidPhase.StargateEscapePending;
-                    nextPhaseTick = int.MaxValue;
-                    break;
+                phase = WNGShuttleRaidPhase.StargateEscapePending;
+                nextPhaseTick = int.MaxValue;
             }
         }
 
-        private void ExecuteCullingPass()
+        private void ExecuteCullingPass(Map map, IntVec3 passCell)
         {
-            if (parent?.Spawned != true || parent.Map == null || Culling == null || Culling.CapacityRemaining <= 0)
+            if (map?.mapPawns?.AllPawnsSpawned == null || Culling == null || Culling.CapacityRemaining <= 0)
                 return;
 
             float radius = Math.Max(1f, Props.acquisitionRadius);
             float radiusSq = radius * radius;
             int limit = Math.Min(Math.Max(1, Props.maxCapturesPerPass), Culling.CapacityRemaining);
 
-            List<Pawn> targets = parent.Map.mapPawns.AllPawnsSpawned
-                .Where(IsValidPassTarget)
-                .Where(p => p.Position.DistanceToSquared(parent.Position) <= radiusSq)
-                .OrderBy(p => p.Position.DistanceToSquared(parent.Position))
+            List<Pawn> targets = map.mapPawns.AllPawnsSpawned
+                .Where(p => IsValidPassTarget(p, map))
+                .Where(p => p.Position.DistanceToSquared(passCell) <= radiusSq)
+                .OrderBy(p => p.Position.DistanceToSquared(passCell))
                 .ThenBy(p => p.thingIDNumber)
                 .Take(limit * 3)
                 .ToList();
@@ -116,7 +134,7 @@ namespace WraithNaniteGravtech
             {
                 if (captured >= limit || Culling.CapacityRemaining <= 0)
                     break;
-                if (Culling.TryAbsorbExact(target))
+                if (Culling.TryAbsorbExact(target, map))
                 {
                     captured++;
                     totalCapturedDuringPasses++;
@@ -124,13 +142,13 @@ namespace WraithNaniteGravtech
             }
         }
 
-        private bool IsValidPassTarget(Pawn pawn)
+        private bool IsValidPassTarget(Pawn pawn, Map map)
         {
-            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map != parent.Map)
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map != map)
                 return false;
             if (!WraithCaptivityRegistry.IsValidBiologicalCaptive(pawn))
                 return false;
-            return parent.Faction == null || pawn.Faction != parent.Faction;
+            return parent?.Faction == null || pawn.Faction != parent.Faction;
         }
 
         public void RequestRetreat()
@@ -141,12 +159,6 @@ namespace WraithNaniteGravtech
             nextPhaseTick = Find.TickManager?.TicksGame ?? 0;
         }
 
-        /// <summary>
-        /// Gate integration reports the actual local wormhole direction before WNG accepts a gate
-        /// route. A Dart can depart only through an outbound wormhole initiated by the local gate.
-        /// An active inbound wormhole can never be reused in reverse; it must shut down and be
-        /// redialed outbound first.
-        /// </summary>
         public WNGStargateTransitDecision EvaluateStargateDeparture(WNGStargateConnectionDirection direction)
         {
             if (phase != WNGShuttleRaidPhase.StargateEscapePending)
@@ -154,11 +166,6 @@ namespace WraithNaniteGravtech
             return WNGStargateTransitPolicy.EvaluateLocalDeparture(direction);
         }
 
-        /// <summary>
-        /// Called only after CatCraft-compatible integration confirms that this same Dart has a
-        /// genuine outbound wormhole from the local gate. Inbound/unknown-active connections are
-        /// rejected and must first be shut down/redialed.
-        /// </summary>
         public bool NotifyStargateRouteAvailable(WNGStargateConnectionDirection direction)
         {
             if (phase != WNGShuttleRaidPhase.StargateEscapePending)
@@ -169,10 +176,6 @@ namespace WraithNaniteGravtech
             return true;
         }
 
-        /// <summary>
-        /// Called by Stargate integration only after the same craft has physically completed an
-        /// allowed outbound traversal. Exact buffered captives then become off-map Wraith captives.
-        /// </summary>
         public void NotifyStargateEscapeCompleted()
         {
             if (phase != WNGShuttleRaidPhase.StargateEscapePending)
