@@ -89,7 +89,7 @@ namespace WraithNaniteGravtech
     /// </summary>
     public sealed class CompAbilityEffect_AssembleAsuranWorkshop : CompAbilityEffect
     {
-        private CompProperties_AbilityAssembleAsuranWorkshop Props =>
+        private CompProperties_AbilityAssembleAsuranWorkshop WorkshopProps =>
             (CompProperties_AbilityAssembleAsuranWorkshop)props;
 
         public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
@@ -98,23 +98,23 @@ namespace WraithNaniteGravtech
             if (caster == null || caster.Dead || !caster.IsColonistPlayerControlled)
                 return Reject("Only a player-controlled nanite humanoid can assemble an Asuran workshop.", throwMessages);
 
-            if (Props.workshopDef == null)
+            if (WorkshopProps.workshopDef == null)
                 return Reject("The Asuran workshop definition is unavailable.", throwMessages);
 
-            if (Props.researchPrerequisite != null && !Props.researchPrerequisite.IsFinished)
-                return Reject($"Research {Props.researchPrerequisite.LabelCap} first.", throwMessages);
+            if (WorkshopProps.researchPrerequisite != null && !WorkshopProps.researchPrerequisite.IsFinished)
+                return Reject($"Research {WorkshopProps.researchPrerequisite.LabelCap} first.", throwMessages);
 
             Gene_Resource_NaniteReserve reserve = Gene_Resource_NaniteReserve.Get(caster);
-            if (reserve == null || !reserve.CanSpend(Math.Max(0f, Props.reserveCost)))
-                return Reject($"Requires {Math.Max(0f, Props.reserveCost):P0} Nanite Reserve.", throwMessages);
+            if (reserve == null || !reserve.CanSpend(Math.Max(0f, WorkshopProps.reserveCost)))
+                return Reject($"Requires {Math.Max(0f, WorkshopProps.reserveCost):P0} Nanite Reserve.", throwMessages);
 
             if (!target.Cell.IsValid || caster.Map == null || !target.Cell.InBounds(caster.Map))
                 return Reject("Choose a valid construction cell.", throwMessages);
 
             AcceptanceReport report = GenConstruct.CanPlaceBlueprintAt(
-                Props.workshopDef,
+                WorkshopProps.workshopDef,
                 target.Cell,
-                Props.workshopDef.defaultPlacingRot,
+                WorkshopProps.workshopDef.defaultPlacingRot,
                 caster.Map,
                 godMode: true);
             if (!report.Accepted)
@@ -130,22 +130,22 @@ namespace WraithNaniteGravtech
                 return;
 
             Gene_Resource_NaniteReserve reserve = Gene_Resource_NaniteReserve.Get(caster);
-            float cost = Math.Max(0f, Props.reserveCost);
+            float cost = Math.Max(0f, WorkshopProps.reserveCost);
             if (reserve == null || !reserve.CanSpend(cost))
                 return;
 
-            Thing workshop = ThingMaker.MakeThing(Props.workshopDef);
+            Thing workshop = ThingMaker.MakeThing(WorkshopProps.workshopDef);
             if (workshop == null)
                 return;
 
-            if (Props.workshopDef.CanHaveFaction)
+            if (WorkshopProps.workshopDef.CanHaveFaction)
                 workshop.SetFactionDirect(Faction.OfPlayer);
 
             Thing spawned = GenSpawn.Spawn(
                 workshop,
                 target.Cell,
                 caster.Map,
-                Props.workshopDef.defaultPlacingRot,
+                WorkshopProps.workshopDef.defaultPlacingRot,
                 WipeMode.Vanish);
 
             if (spawned == null)
@@ -160,7 +160,7 @@ namespace WraithNaniteGravtech
             }
 
             Messages.Message(
-                $"{caster.LabelShort} assembled {Props.workshopDef.label} from Nanite Reserve.",
+                $"{caster.LabelShort} assembled {WorkshopProps.workshopDef.label} from Nanite Reserve.",
                 spawned,
                 MessageTypeDefOf.PositiveEvent,
                 historical: false);
