@@ -118,16 +118,164 @@ When the exact Biotech RimGate + ONAC ecosystem is present:
 - **WNG + Stargates! + ONAC + RimGate Biotech:** both integration families may cooperate, while ownership boundaries remain unchanged.
 - Missing optional mods must produce no red errors and no broken Def references.
 
-## Implementation order from this checkpoint
+## Buildability, research and Architect-menu contract — added 2026-09-11
 
-1. Keep current Wraith Dart native-shuttle/culling work intact.
-2. Finish Puddle Jumper two-pass Ancient-drone layer.
-3. Maintain dependency-free optional-mod/faction detection utility for Stargates!, ONAC and the exact RimGate Biotech target.
-4. **Track Steam Workshop `3762118088` as the required RimGate implementation for ONAC.** Verify its exact packageId and external Jaffa/Goa'uld faction Def names from the actual mod before writing faction activation patches.
-5. Keep `WNG_AlkeshTransport` as a native-boardable shuttle foundation; faction activation remains dormant until the external identity bridge resolves the Biotech RimGate owner correctly.
-6. Design/build `WNG_HatakGravship` on the Odyssey gravship system, using Ha'tak lore as the mechanical/visual guide and the current WNG gravtech architecture rather than historical Gravcore code.
-7. Reconcile all craft against historical WNG code only as reference evidence.
-8. Compile/test in at least these configurations conceptually/where CI can represent them: WNG alone; WNG + Stargates; WNG + ONAC + RimGate Biotech; WNG + ONAC + HAR RimGate without Biotech target (integration must remain off); all intended integrations together.
+### All shuttle families become buildable after research
+The WNG shuttle and gravship families are not raid-only set pieces. After the appropriate research is completed, the player can construct them using normal RimWorld/Odyssey systems wherever practical.
+
+Core WNG research/buildability includes the Wraith Dart, Wraith Strike Craft, Wraith Cruiser, Puddle Jumper and WNG gravship-family components. Their research and construction Defs must remain valid without ONAC, RimGate or CatCraft installed.
+
+Native systems are authoritative wherever RimWorld already provides the behavior. In particular:
+- use native Odyssey shuttle loading/boarding/transport/launch rather than a WNG replacement boarding system;
+- use normal research prerequisites, construction recipes, resource filters, power/fuel networks and Architect placement where those systems can express the intended behavior;
+- add WNG code only for behavior RimWorld does not provide, such as culling, living-tech fuel identity, faction-specific combat logic, optional Stargate traversal, special gravship systems and compatibility bridges.
+
+### WNG Architect category
+WNG must provide a dedicated **WNG** Architect tab/category containing WNG-owned player-buildable structures after their relevant research is complete.
+
+This includes, as appropriate after reconciliation:
+- Wraith structures and living-tech infrastructure;
+- Replicator containment/countermeasure structures;
+- WNG gravship walls, hull/floor/substructure pieces and ship systems;
+- WNG fuel/sludge infrastructure;
+- visible and hidden conduit variants;
+- WNG shuttle/gravship construction access where the vanilla/Odyssey UI model expects Architect placement.
+
+The goal is one coherent place to find WNG-owned construction rather than scattering core WNG structures across unrelated vanilla categories unless vanilla UI mechanics require a specific placement category.
+
+### ONAC Architect category integration
+When the exact supported ONAC + RimGate Biotech ecosystem is present, the **new Goa'uld-themed WNG additions appear in the existing ONAC Architect tab/category** rather than creating a competing Goa'uld category.
+
+This includes Goa'uld-themed shuttle/gravship structures and related construction infrastructure that WNG adds for that optional ecosystem.
+
+Important dependency rule:
+- the Goa'uld integration research and content are implemented as WNG optional content, not as a hard dependency;
+- they activate/become available only when the relevant owning external mod ecosystem is installed and safely identified;
+- WNG must still load and function when ONAC is absent;
+- no unconditional Def reference may point at an ONAC/RimGate Def when those mods are absent;
+- exact ONAC category/research/resource Def names must be verified from the installed/source mod before implementation; do not guess them.
+
+## Vanilla-faithful gravship clone contract — added 2026-09-11
+
+WNG gravship-family construction is to behave like a themed extension/clone of vanilla Odyssey gravship building, not as unrelated custom static buildings.
+
+### Structural completeness
+Each WNG gravship family must be audited against the current vanilla Odyssey gravship construction set and include themed equivalents wherever the vanilla system has a meaningful shipbuilding role. The audit must account for at least:
+- gravship hull/floor/substructure pieces;
+- walls and doors/bulkheads where applicable;
+- corner/angled wall behavior;
+- grav engine equivalents;
+- all relevant vanilla gravship consoles/control stations;
+- fuel pipes;
+- fuel containers/tanks;
+- thrusters;
+- power conduits and ship power infrastructure;
+- any other vanilla gravship component required for a fully functional player-built gravship.
+
+Do not assume this list is exhaustive. Before implementation, inventory the actual RimWorld 1.6/Odyssey gravship Def set and map every vanilla role to WNG equivalents, an explicit intentional omission, or a shared vanilla component.
+
+### Vanilla-style wall and corner art
+WNG walls must use the same connection logic and visual grammar as vanilla walls. Art must support the connection states expected by RimWorld rather than relying on one static square texture.
+
+For gravship exterior/corner geometry, connected walls must form the same angled/corner silhouette behavior the vanilla gravship set uses. Themed Wraith/Asuran/Goa'uld art should visually belong to its faction while preserving the vanilla connection/corner semantics.
+
+### Rotational art requirement
+Any buildable whose vanilla equivalent has directional/corner/connection graphics must receive the corresponding WNG directional variants. This applies especially to:
+- pipes;
+- conduits;
+- thrusters;
+- ship wall/corner pieces;
+- directional consoles or machinery;
+- any structure whose function/readability changes by rotation.
+
+Art must be built to the vanilla copy/atlas expectations so rotation and adjacency work naturally.
+
+## Fuel and conduit networks — added 2026-09-11
+
+### Fuel pipes
+Faction-themed gravship fuels use a pipe network visually and behaviorally analogous to vanilla conduit-style networks where possible.
+
+Fuel pipes must:
+- be visible when exposed;
+- be hidden visually when routed beneath/through a wall where the vanilla-style system permits it;
+- include straight, turn/corner, junction and other connection art needed by the chosen vanilla connection system;
+- follow rotation/adjacency automatically rather than requiring separate awkward manual decorative pieces when vanilla connection graphics can do the work.
+
+There must also be **hidden fuel conduit/pipe variants** for deliberate concealed routing.
+
+### Power conduits
+WNG shipbuilding also gets visible and hidden power-conduit options, retaining vanilla power-network behavior wherever possible.
+
+Visible/hidden conduit art must support correct connection and corner states and should disappear beneath walls where appropriate, matching the visual language of vanilla conduit routing rather than drawing over walls.
+
+## Faction fuel/sludge economies — added 2026-09-11
+
+The three technological families use distinct ship fuels/material fluids.
+
+### Wraith — bio sludge
+Wraith ships use **Wraith bio sludge** as their themed ship fuel/resource.
+
+Requirements:
+- dedicated ThingDef/resource identity;
+- crafting/production recipe(s) integrated with the Wraith living-tech economy;
+- dedicated item/container/tank/pipeline art;
+- fuel storage and ship-consumption behavior implemented through vanilla/Odyssey fuel/network systems where possible;
+- exact recipe inputs and balance remain tunable and must be reconciled with the later living-tech/biomass/Growth Chamber economy.
+
+### Asuran — nanite sludge
+Asuran ships use **nanite sludge**.
+
+Requirements mirror the Wraith resource but remain mechanically/economically distinct:
+- dedicated ThingDef/resource identity;
+- crafting/production recipe(s);
+- dedicated art for loose resource/storage/tanks/network presentation;
+- compatible with Asuran/nanite progression rather than Wraith Life Force/biomass systems.
+
+### Goa'uld/ONAC — liquid naquadah
+Optional Goa'uld variants use **liquid naquadah supplied by the supported ONAC ecosystem**.
+
+Rules:
+- do not create an unconditional hard reference to ONAC's resource Def;
+- when ONAC is installed and the exact resource Def is verified, the WNG Goa'uld fuel network consumes the external liquid-naquadah resource directly;
+- do not silently create a second competing WNG liquid-naquadah item when the correct ONAC resource is available;
+- Goa'uld fuel research/infrastructure appears only with the supported optional ecosystem and should be surfaced in the ONAC Architect/research presentation where technically appropriate;
+- exact Def names and recipe interfaces must be verified from ONAC source before writing XML patches.
+
+## Art quality contract — added 2026-09-11
+
+All new WNG structure/resource art must be production-quality and compatible with vanilla RimWorld/Odyssey rendering conventions.
+
+Required art inventory now explicitly includes:
+- Wraith bio sludge item/resource graphics;
+- Asuran nanite sludge item/resource graphics;
+- faction-specific fuel tanks/containers where not shared;
+- visible fuel-pipe connection graphics;
+- hidden fuel-pipe designation/build graphics as needed;
+- visible and hidden power-conduit graphics where WNG supplies themed versions;
+- wall connection/corner sets;
+- gravship angled corner pieces/connection states;
+- rotational thrusters, consoles and machinery as required;
+- all shuttle/gravship building graphics needed for player construction and native flight presentation.
+
+Do not generate placeholder art and call the visual pass complete. Existing vanilla graphics may be used temporarily for technical implementation/testing, but the final art audit must account for every required directional/connection state.
+
+## Updated implementation order from this checkpoint
+
+1. Keep the compiled exact-craft two-pass Dart/Puddle Jumper shuttle architecture and native boarding foundation intact; live RimWorld verification remains required.
+2. Tie hostile Dart retreat/captive commit to actual native launch completion and landed crew behavior.
+3. Inventory the complete vanilla RimWorld 1.6/Odyssey gravship construction Def set: walls/corners, hull/substructure, consoles, fuel system, tanks, thrusters, power and all other functional components.
+4. Create the dedicated WNG Architect category and map every WNG-owned buildable into it with research gating.
+5. Make all WNG shuttle families player-buildable after appropriate research using native Odyssey construction/boarding/launch systems wherever possible.
+6. Design the Wraith and Asuran gravship clone families against the vanilla inventory rather than ad-hoc historical WNG structures.
+7. Implement vanilla-faithful connected/angled wall graphics and rotational/connection behavior for ship structures.
+8. Implement visible/hidden power conduits and visible/hidden fuel-pipe networks using vanilla connection behavior wherever possible.
+9. Implement Wraith bio sludge and Asuran nanite sludge Defs, recipes, tanks/network interfaces and final art requirements.
+10. Verify ONAC's exact Architect category, research and liquid-naquadah Def/API names from its source before adding optional patches.
+11. When the supported ONAC/RimGate ecosystem is present, expose WNG Goa'uld research and new Goa'uld-themed shuttle/gravship construction in the ONAC UI/category and consume ONAC liquid naquadah directly.
+12. Build the Goa'uld/Ha'tak/Al'kesh family on the same vanilla-faithful construction principles, without making ONAC a hard WNG dependency.
+13. Continue CatCraft adapter work independently; CatCraft remains optional and does not gate ordinary shuttle/gravship construction.
+14. Complete production art audit for every connection, rotation, corner, resource and structure state before release.
+15. Validate WNG-only, WNG+CatCraft, WNG+ONAC/RimGate Biotech, wrong-HAR-RimGate coexistence, and full intended integration configurations.
 
 ## Mandatory design question for every integration feature
 
@@ -136,5 +284,6 @@ Before implementation ask:
 2. What does it actually do in Stargate?
 3. What does Vardath's current plan require?
 4. What did historical WNG do?
-5. Which exact external mod/version owns the underlying system/faction?
-6. How can WNG add value without taking ownership or becoming dependent on it?
+5. Which exact external mod/version owns the underlying system/faction/resource/UI category?
+6. Which vanilla RimWorld/Odyssey system already does part of this job?
+7. How can WNG add value without replacing that vanilla behavior or becoming dependent on a third-party mod?
