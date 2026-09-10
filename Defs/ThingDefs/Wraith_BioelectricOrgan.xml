@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Fresh WNGR2 living power structure. Historical WNG XML/code/art/audio is not reused.
+    The Core wood-fired-generator graphic is a temporary visual placeholder only; this structure
+    has no wood/fuel comp and produces power through RimWorld's normal CompPowerPlant network.
+  -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_BioelectricOrgan</defName>
+    <label>bioelectric organ</label>
+    <description>A cultivated Wraith organ that converts sustained metabolic activity into usable electrical output. Once connected, it behaves as a conventional power producer while retaining its biological construction requirements.</description>
+    <thingClass>Building</thingClass>
+    <category>Building</category>
+    <graphicData>
+      <texPath>Things/Building/Power/WoodFiredGenerator</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(2,2)</drawSize>
+    </graphicData>
+    <size>(2,2)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <fillPercent>0.75</fillPercent>
+    <useHitPoints>true</useHitPoints>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <designationCategory>Power</designationCategory>
+    <uiOrder>2045</uiOrder>
+    <costList>
+      <Steel>60</Steel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+      <WNG_Biomass>45</WNG_Biomass>
+    </costList>
+    <statBases>
+      <WorkToBuild>4200</WorkToBuild>
+      <MaxHitPoints>260</MaxHitPoints>
+      <Flammability>0.45</Flammability>
+      <Beauty>-1</Beauty>
+    </statBases>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerPlant</compClass>
+        <basePowerConsumption>-1200</basePowerConsumption>
+        <transmitsPower>true</transmitsPower>
+      </li>
+      <li Class="CompProperties_Breakdownable"/>
+    </comps>
+    <researchPrerequisites>
+      <li>WNG_BioelectricOrgans</li>
+    </researchPrerequisites>
+  </ThingDef>
+</Defs>
