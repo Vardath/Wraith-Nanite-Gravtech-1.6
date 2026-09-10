@@ -6,4 +6,25 @@
     <reportString>assimilating TargetA.</reportString>
     <checkOverrideOnDamage>true</checkOverrideOnDamage>
   </JobDef>
+
+  <JobDef>
+    <defName>WNG_ReplicatorRepair</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorRepair</driverClass>
+    <reportString>repairing TargetA.</reportString>
+    <checkOverrideOnDamage>true</checkOverrideOnDamage>
+  </JobDef>
+
+  <JobDef>
+    <defName>WNG_ReplicatorBreach</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorBreach</driverClass>
+    <reportString>breaching TargetA.</reportString>
+    <checkOverrideOnDamage>true</checkOverrideOnDamage>
+  </JobDef>
+
+  <JobDef>
+    <defName>WNG_ReplicatorArtilleryFire</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorArtilleryFire</driverClass>
+    <reportString>firing on TargetA.</reportString>
+    <checkOverrideOnDamage>true</checkOverrideOnDamage>
+  </JobDef>
 </Defs>
