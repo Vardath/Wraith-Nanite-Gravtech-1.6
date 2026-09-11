@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_AsuranInfiltratorPhysiologyMask</defName>
+    <label>metabolic equilibrium</label>
+    <description>This pawn presents stable ordinary human metabolic markers. No unusual xenobiological classification is exposed by routine observation.</description>
+    <geneClass>WraithNaniteGravtech.Gene_AsuranInfiltratorPhysiology</geneClass>
+    <makeImmuneTo><li>Malnutrition</li></makeImmuneTo>
+    <dontMindRawFood>true</dontMindRawFood>
+    <foodPoisoningChanceFactor>0</foodPoisoningChanceFactor>
+    <sterilize>true</sterilize>
+    <biologicalAgeTickFactorFromAgeCurve><points><li>(0,0)</li><li>(1000,0)</li></points></biologicalAgeTickFactorFromAgeCurve>
+    <modExtensions>
+      <li Class="WraithNaniteGravtech.AsuranNanitePhysiologyExtension">
+        <reconcileIntervalTicks>120</reconcileIntervalTicks>
+        <healIntervalTicks>250</healIntervalTicks>
+        <baseHealAmount>0.12</baseHealAmount>
+        <reserveCostPerHealPoint>0.004</reserveCostPerHealPoint>
+        <depletionThreshold>0.15</depletionThreshold>
+        <empSuppressionTicks>1800</empSuppressionTicks>
+      </li>
+      <li Class="WraithNaniteGravtech.AsuranInfiltrationExtension">
+        <meaningfulDamageThreshold>8</meaningfulDamageThreshold>
+        <selfRepairRevealPoints>1</selfRepairRevealPoints>
+      </li>
+    </modExtensions>
+    <biostatCpx>0</biostatCpx><biostatMet>0</biostatMet>
+  </GeneDef>
+</Defs>
