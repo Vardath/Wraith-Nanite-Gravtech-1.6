@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ResearchProjectDef MayRequire="idolord.ONAC">
+    <defName>WNG_GoauldGravships</defName>
+    <label>Ha'tak mothership systems</label>
+    <description>Scale Goa'uld mothership architecture into RimWorld Odyssey's native gravship framework: a pel'tac command deck, naquadah-based power, liquid-Naquadria propulsion, shield generators and Ha'tak structural systems. This research extends the existing Al'kesh/ONAC technology path rather than replacing it.</description>
+    <baseCost>6200</baseCost>
+    <techLevel>Ultra</techLevel>
+    <prerequisites>
+      <li>WNG_GoauldShuttles</li>
+      <li>BasicGravtech</li>
+    </prerequisites>
+    <researchViewX>23</researchViewX>
+    <researchViewY>12.5</researchViewY>
+  </ResearchProjectDef>
+</Defs>
