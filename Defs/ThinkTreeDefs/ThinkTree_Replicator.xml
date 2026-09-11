@@ -6,6 +6,7 @@
       <subNodes>
         <li Class="ThinkNode_Subtree"><treeDef>Despawned</treeDef></li>
         <li Class="ThinkNode_Subtree"><treeDef>Downed</treeDef></li>
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorSovereignSuppressed" />
         <li Class="ThinkNode_QueuedJob" />
         <li Class="ThinkNode_ConditionalOfPlayerFaction">
           <subNodes>
