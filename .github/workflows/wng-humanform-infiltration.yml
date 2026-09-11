@@ -1,0 +1,68 @@
+name: WNG human-form infiltration validation
+
+on:
+  push:
+    branches:
+      - rebuild/humanform-infiltration-20260911
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/humanform-infiltration-20260911
+
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+
+      - name: Parse Def and Patch XML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+
+      - name: Verify infiltration invariants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          inf = Path('Source/WNG/Asuran/AsuranInfiltration.cs').read_text(encoding='utf-8')
+          phys = Path('Source/WNG/Asuran/AsuranNaniteFabrication.cs').read_text(encoding='utf-8')
+          neural = Path('Source/WNG/Asuran/AsuranNeuralInterface.cs').read_text(encoding='utf-8')
+          genes = Path('Defs/GeneDefs/Genes_AsuranInfiltration.xml').read_text(encoding='utf-8')
+          xeno = Path('Defs/XenotypeDefs/Xenotypes_Asuran.xml').read_text(encoding='utf-8')
+          kinds = Path('Defs/PawnKindDefs/PawnKinds_Asuran.xml').read_text(encoding='utf-8')
+          hediffs = Path('Defs/HediffDefs/Hediffs_AsuranNanite.xml').read_text(encoding='utf-8')
+          faction = Path('Defs/FactionDefs/Factions_Asuran.xml').read_text(encoding='utf-8')
+          required = [
+              (inf, 'Scribe_Values.Look(ref revealed'),
+              (inf, 'public override bool Visible => revealed && base.Visible'),
+              (inf, 'pawn.genes.RemoveGene(mask)'),
+              (inf, 'pawn.genes.SetXenotypeDirect(realXenotype)'),
+              (inf, 'WNG_NaniteHumanoid'),
+              (inf, 'DamageDefOf.EMP'),
+              (inf, 'meaningfulDamageThreshold'),
+              (inf, 'selfRepairRevealPoints'),
+              (phys, 'if (AsuranInfiltrationUtility.IsConcealed(pawn))'),
+              (phys, 'public override bool Visible => base.Visible && !AsuranInfiltrationUtility.IsConcealed(pawn)'),
+              (phys, 'AsuranInfiltrationUtility.NotifyDamage'),
+              (phys, 'AsuranInfiltrationUtility.NotifySelfRepair'),
+              (neural, 'direct Neural Interface scan'),
+              (neural, 'bool concealedInfiltrator'),
+              (genes, 'WNG_AsuranInfiltratorPhysiologyMask'),
+              (xeno, 'WNG_AsuranHumanBaselineMask'),
+              (kinds, 'WNG_AsuranInfiltrator'),
+              (hediffs, 'WNG_AsuranInfiltrationState'),
+              (faction, '<WNG_AsuranInfiltrator>2</WNG_AsuranInfiltrator>'),
+          ]
+          missing = [needle for text, needle in required if needle not in text]
+          if missing:
+              raise SystemExit('Missing infiltration invariants: ' + ', '.join(missing))
+          if '<WNG_NaniteHumanoid>1</WNG_NaniteHumanoid>' in kinds.split('<defName>WNG_AsuranInfiltrator</defName>',1)[1]:
+              raise SystemExit('Infiltrator PawnKind still exposes public nanite xenotype')
+          PY
