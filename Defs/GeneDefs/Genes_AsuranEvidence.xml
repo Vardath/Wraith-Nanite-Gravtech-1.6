@@ -2,9 +2,10 @@
 <Defs>
   <GeneDef>
     <defName>WNG_AsuranEvidenceTrace</defName>
-    <label>persistent nanite substrate</label>
-    <description>This human-form synthetic is built from a persistent microscopic nanite substrate. If a hostile Asuran Lattice body is physically destroyed on-map, a recoverable residue sample can remain for analysis.</description>
+    <label>cellular persistence</label>
+    <description>A stable microscopic substrate marker with no ordinary physiological effect. Its presence does not by itself expose a concealed pawn's synthetic identity.</description>
     <geneClass>WraithNaniteGravtech.Gene_AsuranEvidenceResidue</geneClass>
+    <canGenerateInGeneSet>false</canGenerateInGeneSet>
     <biostatCpx>0</biostatCpx>
     <biostatMet>0</biostatMet>
   </GeneDef>
