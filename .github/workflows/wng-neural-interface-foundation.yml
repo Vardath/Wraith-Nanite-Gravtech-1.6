@@ -45,7 +45,8 @@ jobs:
               'copy.story.Childhood = source.story.Childhood',
               'copy.story.Adulthood = source.story.Adulthood',
               'dst.passion = src.passion',
-              'copy.genes.AddGene(sourceGene.def, sourceGene.Xenogene)',
+              'source.genes.Xenogenes.Contains(sourceGene)',
+              'copy.genes.AddGene(sourceGene.def, sourceWasXenogene)',
               'TrySpendFraction(caster, cost)',
               'copy.Destroy(DestroyMode.Vanish)',
           ]
