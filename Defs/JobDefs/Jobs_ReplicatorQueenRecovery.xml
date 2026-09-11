@@ -5,11 +5,23 @@
     <driverClass>WraithNaniteGravtech.JobDriver_AsuranSubdueQueen</driverClass>
     <reportString>subduing the Replicator Queen.</reportString>
     <playerInterruptible>false</playerInterruptible>
+    <checkOverrideOnDamage>Never</checkOverrideOnDamage>
+    <neverShowWeapon>true</neverShowWeapon>
   </JobDef>
   <JobDef>
     <defName>WNG_AsuranLoadReplicatorQueen</defName>
     <driverClass>WraithNaniteGravtech.JobDriver_AsuranLoadQueen</driverClass>
     <reportString>carrying the Replicator Queen to the Asuran Jumper.</reportString>
     <playerInterruptible>false</playerInterruptible>
+    <checkOverrideOnDamage>Never</checkOverrideOnDamage>
+    <neverShowWeapon>true</neverShowWeapon>
+  </JobDef>
+  <JobDef>
+    <defName>WNG_AsuranHoldQueenRecovery</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_AsuranHoldRecovery</driverClass>
+    <reportString>holding position for the Replicator Queen recovery.</reportString>
+    <playerInterruptible>false</playerInterruptible>
+    <checkOverrideOnDamage>Never</checkOverrideOnDamage>
+    <neverShowWeapon>true</neverShowWeapon>
   </JobDef>
 </Defs>
