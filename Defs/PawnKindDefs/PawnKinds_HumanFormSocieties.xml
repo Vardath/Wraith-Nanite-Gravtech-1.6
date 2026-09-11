@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef Name="WNG_HumanFormSocietyBase" Abstract="True">
+    <race>Human</race>
+    <defaultFactionDef>WNG_HumanFormEnclave</defaultFactionDef>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet>
+      <xenotypeChances><WNG_NaniteHumanoid>1</WNG_NaniteHumanoid></xenotypeChances>
+    </xenotypeSet>
+    <minGenerationAge>18</minGenerationAge>
+    <maxGenerationAge>90</maxGenerationAge>
+    <allowOldAgeInjuries>false</allowOldAgeInjuries>
+    <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
+    <gearHealthRange>0.85~1</gearHealthRange>
+    <itemQuality>Good</itemQuality>
+    <initialWillRange>8~18</initialWillRange>
+    <initialResistanceRange>10~24</initialResistanceRange>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
+    <defName>WNG_HumanFormReplicator</defName>
+    <label>human-form Replicator</label>
+    <description>A human-form nanite synthetic living as an individual within a Replicator society. This is a social PawnKind role, not a separate race or block-Replicator form.</description>
+    <combatPower>130</combatPower>
+    <isFighter>true</isFighter>
+    <weaponMoney>600~1500</weaponMoney>
+    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <apparelMoney>900~2200</apparelMoney>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
+    <defName>WNG_HumanFormEngineer</defName>
+    <label>lattice engineer</label>
+    <description>A human-form Replicator focused on fabrication, reconstruction, infrastructure and the maintenance of advanced synthetic systems.</description>
+    <combatPower>100</combatPower>
+    <isFighter>false</isFighter>
+    <weaponMoney>350~1000</weaponMoney>
+    <weaponTags><li>IndustrialGunAdvanced</li></weaponTags>
+    <apparelMoney>700~1800</apparelMoney>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
+    <defName>WNG_HumanFormSoldier</defName>
+    <label>lattice defender</label>
+    <description>A human-form Replicator configured and trained to defend synthetic settlements and protect other lattice members without implying the unrestricted aggression of the hostile Asuran Lattice.</description>
+    <combatPower>190</combatPower>
+    <isFighter>true</isFighter>
+    <weaponMoney>1100~2600</weaponMoney>
+    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <apparelMoney>1800~3800</apparelMoney>
+    <itemQuality>Good</itemQuality>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
+    <defName>WNG_HumanFormCoordinator</defName>
+    <label>lattice coordinator</label>
+    <description>A senior human-form Replicator responsible for negotiating external relations and coordinating replication, fabrication and defensive priorities.</description>
+    <combatPower>220</combatPower>
+    <isFighter>true</isFighter>
+    <factionLeader>true</factionLeader>
+    <weaponMoney>1200~2800</weaponMoney>
+    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <apparelMoney>1800~4200</apparelMoney>
+    <itemQuality>Excellent</itemQuality>
+    <initialWillRange>14~26</initialWillRange>
+    <initialResistanceRange>18~32</initialResistanceRange>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
+    <defName>WNG_PlayerHumanFormReplicator</defName>
+    <label>player human-form Replicator</label>
+    <description>A human-form Replicator aligned with the player's colony. It uses the same nanite physiology as other human-form Replicators while remaining a distinct player role rather than a separate race.</description>
+    <defaultFactionDef>PlayerColony</defaultFactionDef>
+    <combatPower>140</combatPower>
+    <isFighter>true</isFighter>
+    <weaponMoney>450~1300</weaponMoney>
+    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <apparelMoney>500~1800</apparelMoney>
+    <initialWillRange>0~0</initialWillRange>
+    <initialResistanceRange>0~0</initialResistanceRange>
+  </PawnKindDef>
+</Defs>
