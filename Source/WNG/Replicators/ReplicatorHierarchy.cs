@@ -53,9 +53,9 @@ namespace WraithNaniteGravtech
             if (pawn?.Spawned == true) lastPosition = pawn.Position;
             if (pawn == null || pawn.Dead || !pawn.Spawned || !CanUpgrade || assembling || ReplicatorEMP.IsSuppressed(pawn)) return;
 
-            // Player/sovereign Replicators never silently reorganize themselves. Their exact Queen
-            // can invoke TrySovereignRecombine explicitly; autonomous recombination remains hostile-
-            // swarm behavior.
+            // Player/controller-domain Replicators never silently reorganize themselves. An exact
+            // live controller can invoke TrySovereignRecombine explicitly; autonomous recombination
+            // remains hostile-swarm behavior.
             if (pawn.Faction == Faction.OfPlayer || pawn.IsColonyMechPlayerControlled) return;
             if (ReplicatorContainmentUtility.IsContained(pawn.Map, pawn.Position)) return;
 
@@ -87,9 +87,9 @@ namespace WraithNaniteGravtech
             }
 
             CompReplicatorSovereignty sovereignty = pawn.TryGetComp<CompReplicatorSovereignty>();
-            if (sovereignty?.Operational != true || !sovereignty.IsQueenControlledBy(controller))
+            if (sovereignty?.Operational != true || sovereignty.Controller != controller)
             {
-                rejection = "Only an operational block in this exact Queen's sovereign domain can be explicitly recombined.";
+                rejection = "Only an operational block in this exact controller domain can be explicitly recombined.";
                 return false;
             }
 
@@ -113,7 +113,7 @@ namespace WraithNaniteGravtech
             List<Pawn> sameDomain = FindCandidates(pawn, now);
             if (sameDomain.Count < Props.unitsRequired)
             {
-                rejection = $"Requires {Props.unitsRequired} same-form Replicators in the same sovereign domain within assembly range.";
+                rejection = $"Requires {Props.unitsRequired} same-form Replicators in the same controller domain within assembly range.";
                 return false;
             }
 
