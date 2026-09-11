@@ -24,4 +24,11 @@
     <description>A senior Asuran field commander coordinating Lattice operations. Command rank is not the same as the unique Replicator Queen's sovereign block-Replicator authority.</description>
     <initialWillRange>24~36</initialWillRange><initialResistanceRange>30~44</initialResistanceRange>
   </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_AsuranPawnBase">
+    <defName>WNG_AsuranInfiltrator</defName><label>human operative</label><combatPower>165</combatPower>
+    <description>An apparently ordinary human whose true synthetic nature is concealed until exposed by direct scanning, meaningful structural injury, EMP, or unmistakable nanite self-repair.</description>
+    <xenotypeSet><xenotypeChances><WNG_AsuranHumanBaselineMask>1</WNG_AsuranHumanBaselineMask></xenotypeChances></xenotypeSet>
+    <initialWillRange>18~30</initialWillRange><initialResistanceRange>22~36</initialResistanceRange>
+  </PawnKindDef>
 </Defs>

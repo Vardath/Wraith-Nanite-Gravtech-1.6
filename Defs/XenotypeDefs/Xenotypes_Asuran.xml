@@ -12,4 +12,16 @@
       <li>WNG_AsuranLatticeLink</li>
     </genes>
   </XenotypeDef>
+
+  <XenotypeDef>
+    <defName>WNG_AsuranHumanBaselineMask</defName>
+    <label>baseliner</label>
+    <description>A routine human genetic profile with no synthetic classification exposed by ordinary observation.</description>
+    <descriptionShort>An apparently ordinary human.</descriptionShort>
+    <inheritable>false</inheritable>
+    <iconPath>UI/Icons/Xenotypes/Baseliner</iconPath>
+    <genes>
+      <li>WNG_AsuranInfiltratorPhysiologyMask</li>
+    </genes>
+  </XenotypeDef>
 </Defs>

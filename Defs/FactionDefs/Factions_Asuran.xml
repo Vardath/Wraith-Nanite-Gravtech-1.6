@@ -16,7 +16,7 @@
     <xenotypeSet><xenotypeChances><WNG_NaniteHumanoid>999</WNG_NaniteHumanoid></xenotypeChances></xenotypeSet>
     <pawnGroupMakers>
       <li><kindDef>Combat</kindDef><commonality>100</commonality><options>
-        <WNG_AsuranOperative>12</WNG_AsuranOperative><WNG_AsuranTechnician>3</WNG_AsuranTechnician><WNG_AsuranCommander>1</WNG_AsuranCommander>
+        <WNG_AsuranOperative>12</WNG_AsuranOperative><WNG_AsuranTechnician>3</WNG_AsuranTechnician><WNG_AsuranInfiltrator>2</WNG_AsuranInfiltrator><WNG_AsuranCommander>1</WNG_AsuranCommander>
       </options></li>
     </pawnGroupMakers>
   </FactionDef>
