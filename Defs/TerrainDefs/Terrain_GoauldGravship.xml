@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Ha'tak deck substructure uses Odyssey's real Substructure tag. Heavy affordance is also exposed
+    so Goa'uld transport rings and other heavy interior equipment can be built inside the ship.
+    Current texture is mechanics-validation placeholder art only.
+  -->
+  <TerrainDef ParentName="FloorBase" MayRequire="idolord.ONAC">
+    <defName>WNG_GoauldSubstructure</defName>
+    <label>Ha'tak deck substructure</label>
+    <description>A reinforced Goa'uld mothership deck lattice built around naquadah-alloy structural members. It participates in Odyssey's real connected gravship-substructure system and can support heavy internal Ha'tak equipment such as transport rings.</description>
+    <texturePath>Terrain/Surfaces/Substructure/Substructure</texturePath>
+    <color>(0.62,0.47,0.20)</color>
+    <fertility>0</fertility>
+    <edgeType>Hard</edgeType>
+    <renderPrecedence>399</renderPrecedence>
+    <constructEffect>ConstructMetal</constructEffect>
+    <isPaintable>false</isPaintable>
+    <designationCategory>ONAC_Architect</designationCategory>
+    <isFoundation>true</isFoundation>
+    <preventCraters>true</preventCraters>
+    <affordances>
+      <li>Heavy</li>
+      <li>Substructure</li>
+    </affordances>
+    <statBases>
+      <WorkToBuild>700</WorkToBuild>
+      <Flammability>0</Flammability>
+      <CleaningTimeFactor>0.8</CleaningTimeFactor>
+    </statBases>
+    <costList>
+      <ONAC_Naquadah>1</ONAC_Naquadah>
+      <Plasteel>2</Plasteel>
+    </costList>
+    <researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites>
+    <requireInspectedGravEngine>true</requireInspectedGravEngine>
+    <terrainAffordanceNeeded>Walkable</terrainAffordanceNeeded>
+    <resourcesFractionWhenDeconstructed>0.5</resourcesFractionWhenDeconstructed>
+    <tags><li>Substructure</li></tags>
+    <placeWorkers>
+      <li>PlaceWorker_InSubstructureFootprint</li>
+      <li>PlaceWorker_BuildingsValidOverSubstructure</li>
+    </placeWorkers>
+  </TerrainDef>
+</Defs>
