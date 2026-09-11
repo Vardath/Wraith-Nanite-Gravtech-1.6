@@ -3,7 +3,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_WraithHiveHeart</defName>
     <label>wraith hive heart</label>
-    <description>The central population anchor of a mature Wraith Hive. A generated hostile Hive can bind its exact active founders, exact ordinary hibernators and finite exact feeding stock to this Heart. The recorded founding Wraith population is the demographic ceiling; a linked Growth Chamber may replace Hunter/Warrior losses only up to that ceiling.</description>
+    <description>The central population anchor of a mature Wraith Hive. A generated hostile Hive can bind its exact active founders, exact ordinary hibernators and finite exact feeding stock to this Heart. The recorded founding Wraith population is the demographic ceiling; a linked Growth Chamber may replace Hunter/Warrior losses only up to that ceiling. A preserved Heart can be analyzed in place to reveal the principles of Wraith-grown living machinery.</description>
     <thingClass>Building</thingClass>
     <tickerType>Normal</tickerType>
     <size>(3,3)</size>
@@ -25,6 +25,34 @@
       <li Class="WraithNaniteGravtech.CompProperties_MatureWraithHivePopulation">
         <dormantWakeRadius>18</dormantWakeRadius>
         <activeLossesBeforeDormantWake>2</activeLossesBeforeDormantWake>
+      </li>
+      <li Class="CompProperties_CompAnalyzableUnlockResearch">
+        <analysisID>160912002</analysisID>
+        <requiresMechanitor>false</requiresMechanitor>
+        <analysisDurationHours>2</analysisDurationHours>
+        <destroyedOnAnalyzed>false</destroyedOnAnalyzed>
+        <canStudyInPlace>true</canStudyInPlace>
+        <completedLetterLabel>Wraith Hive Heart analyzed</completedLetterLabel>
+        <completedLetter>Study of the preserved Wraith Hive Heart has revealed enough of its self-organizing biological control systems to begin {RESEARCH}.</completedLetter>
+        <completedLetterDef>PositiveEvent</completedLetterDef>
+        <activateTexPath>UI/Icons/Study</activateTexPath>
+        <activateLabelString>Analyze Hive Heart...</activateLabelString>
+        <activateDescString>Study this preserved Wraith Hive Heart in place to unlock the colony's first Wraith living-technology research.</activateDescString>
+        <jobString>Analyzing Wraith Hive Heart.</jobString>
+        <guiLabelString>Choose a colonist to analyze the Wraith Hive Heart.</guiLabelString>
+        <inspectString>Can be analyzed in place to unlock Wraith living technology.</inspectString>
+        <targetingParameters>
+          <canTargetLocations>false</canTargetLocations>
+          <canTargetPawns>true</canTargetPawns>
+          <canTargetBuildings>false</canTargetBuildings>
+          <canTargetItems>false</canTargetItems>
+          <canTargetAnimals>false</canTargetAnimals>
+          <canTargetHumans>true</canTargetHumans>
+          <canTargetMechs>false</canTargetMechs>
+          <canTargetSubhumans>false</canTargetSubhumans>
+          <canTargetEntities>false</canTargetEntities>
+          <onlyTargetColonists>true</onlyTargetColonists>
+        </targetingParameters>
       </li>
     </comps>
   </ThingDef>
