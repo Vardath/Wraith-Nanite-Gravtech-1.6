@@ -34,6 +34,7 @@
     <researchPrerequisites><li>WNG_AsuranFabrication</li></researchPrerequisites>
     <recipes>
       <li>WNG_SynthesizeNaniteSludge</li>
+      <li>WNG_FabricateSovereignNeuralLattice</li>
     </recipes>
     <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
     <comps>
