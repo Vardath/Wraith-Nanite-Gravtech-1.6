@@ -1,0 +1,61 @@
+name: WNG Neural Interface foundation validation
+
+on:
+  push:
+    branches:
+      - rebuild/neural-interface-foundation-20260911
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/neural-interface-foundation-20260911
+
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+
+      - name: Parse Def and Patch XML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+
+      - name: Verify Neural Interface invariants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s = Path('Source/WNG/Asuran/AsuranNeuralInterface.cs').read_text(encoding='utf-8')
+          a = Path('Defs/AbilityDefs/Abilities_NeuralInterface.xml').read_text(encoding='utf-8')
+          g = Path('Defs/GeneDefs/Genes_AsuranFabrication.xml').read_text(encoding='utf-8')
+          p = Path('Defs/PawnKindDefs/PawnKinds_HumanFormReplicator.xml').read_text(encoding='utf-8')
+          required = [
+              'SetFaction(caster.Faction, caster)',
+              'GuestStatus.Prisoner',
+              'GuestStatus.Slave',
+              'TryCopySkills',
+              'ApplyExactPersonSnapshot',
+              'AgeBiologicalTicks = source.ageTracker.AgeBiologicalTicks',
+              'copy.story.Childhood = source.story.Childhood',
+              'copy.story.Adulthood = source.story.Adulthood',
+              'dst.passion = src.passion',
+              'copy.genes.AddGene(sourceGene.def, sourceGene.Xenogene)',
+              'TrySpendFraction(caster, cost)',
+              'copy.Destroy(DestroyMode.Vanish)',
+          ]
+          missing = [v for v in required if v not in s]
+          if missing:
+              raise SystemExit('Missing Neural Interface invariants: ' + ', '.join(missing))
+          if '<baseChance>' in a:
+              raise SystemExit('Unexpected incident semantics in ability Def')
+          if '<copyReserveCost>0.60</copyReserveCost>' not in a or '<li>WNG_NeuralInterface</li>' not in g:
+              raise SystemExit('Ability/cost/gene wiring missing')
+          if '<defName>WNG_HumanFormReplicatorCopy</defName>' not in p or '<WNG_NaniteHumanoid>1</WNG_NaniteHumanoid>' not in p:
+              raise SystemExit('Copy PawnKind/xenotype wiring missing')
+          PY
