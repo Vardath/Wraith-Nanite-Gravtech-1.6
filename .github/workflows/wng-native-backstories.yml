@@ -1,0 +1,81 @@
+name: WNG native backstory validation
+
+on:
+  push:
+    branches:
+      - rebuild/native-backstories-20260911
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/native-backstories-20260911
+          fetch-depth: 0
+
+      - name: Wire WNG backstory categories
+        run: |
+          echo 'ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmltcG9ydCB4bWwuZXRyZWUuRWxlbWVudFRyZWUgYXMgRVQKCk1BUFBJTkdTID0gewogICAgJ0RlZnMvUGF3bktpbmREZWZzL1Bhd25LaW5kc19XcmFpdGgueG1sJzogewogICAgICAgICdXTkdfV3JhaXRoSHVudGVyJzogKCdXTkdfV3JhaXRoT3JpZ2luJywgJ1dOR19XcmFpdGhIdW50ZXJBZHVsdCcpLAogICAgICAgICdXTkdfV3JhaXRoV2Fycmlvcic6ICgnV05HX1dyYWl0aE9yaWdpbicsICdXTkdfV3JhaXRoV2FycmlvckFkdWx0JyksCiAgICAgICAgJ1dOR19XcmFpdGhDb21tYW5kZXInOiAoJ1dOR19XcmFpdGhPcmlnaW4nLCAnV05HX1dyYWl0aENvbW1hbmRlckFkdWx0JyksCiAgICAgICAgJ1dOR19XcmFpdGhLZWVwZXInOiAoJ1dOR19XcmFpdGhPcmlnaW4nLCAnV05HX1dyYWl0aEtlZXBlckFkdWx0JyksCiAgICAgICAgJ1dOR19XcmFpdGhRdWVlbic6ICgnV05HX1dyYWl0aE9yaWdpbicsICdXTkdfV3JhaXRoUXVlZW5BZHVsdCcpLAogICAgICAgICdXTkdfUGxheWVyV3JhaXRoJzogKCdXTkdfV3JhaXRoT3JpZ2luJywgJ1dOR19XcmFpdGhQbGF5ZXJBZHVsdCcpLAogICAgfSwKICAgICdEZWZzL1Bhd25LaW5kRGVmcy9QYXduS2luZHNfQXN1cmFuLnhtbCc6IHsKICAgICAgICAnV05HX0FzdXJhbk9wZXJhdGl2ZSc6ICgnV05HX0FzdXJhbk9yaWdpbicsICdXTkdfQXN1cmFuT3BlcmF0aXZlQWR1bHQnKSwKICAgICAgICAnV05HX0FzdXJhblRlY2huaWNpYW4nOiAoJ1dOR19Bc3VyYW5PcmlnaW4nLCAnV05HX1N5bnRoZXRpY0VuZ2luZWVyQWR1bHQnKSwKICAgICAgICAnV05HX0FzdXJhbkNvbW1hbmRlcic6ICgnV05HX0FzdXJhbk9yaWdpbicsICdXTkdfU3ludGhldGljQ29vcmRpbmF0b3JBZHVsdCcpLAogICAgICAgICdXTkdfQXN1cmFuSW5maWx0cmF0b3InOiAoJ1dOR19Bc3VyYW5PcmlnaW4nLCAnV05HX0FzdXJhbkluZmlsdHJhdG9yQWR1bHQnKSwKICAgIH0sCiAgICAnRGVmcy9QYXduS2luZERlZnMvUGF3bktpbmRzX0h1bWFuRm9ybVNvY2lldGllcy54bWwnOiB7CiAgICAgICAgJ1dOR19IdW1hbkZvcm1SZXBsaWNhdG9yJzogKCdXTkdfQXN1cmFuT3JpZ2luJywgJ1dOR19RdWlldExhdHRpY2VBZHVsdCcpLAogICAgICAgICdXTkdfSHVtYW5Gb3JtRW5naW5lZXInOiAoJ1dOR19Bc3VyYW5PcmlnaW4nLCAnV05HX1N5bnRoZXRpY0VuZ2luZWVyQWR1bHQnKSwKICAgICAgICAnV05HX0h1bWFuRm9ybVNvbGRpZXInOiAoJ1dOR19Bc3VyYW5PcmlnaW4nLCAnV05HX1N5bnRoZXRpY1NvbGRpZXJBZHVsdCcpLAogICAgICAgICdXTkdfSHVtYW5Gb3JtQ29vcmRpbmF0b3InOiAoJ1dOR19Bc3VyYW5PcmlnaW4nLCAnV05HX1N5bnRoZXRpY0Nvb3JkaW5hdG9yQWR1bHQnKSwKICAgICAgICAnV05HX1BsYXllckh1bWFuRm9ybVJlcGxpY2F0b3InOiAoJ1dOR19Bc3VyYW5PcmlnaW4nLCAnV05HX0FzdXJhblBsYXllckFkdWx0JyksCiAgICB9LAogICAgJ0RlZnMvUGF3bktpbmREZWZzL1Bhd25LaW5kc19SZXBsaWNhdG9yUXVlZW4ueG1sJzogewogICAgICAgICdXTkdfUmVwbGljYXRvclF1ZWVuJzogKCdXTkdfQXN1cmFuT3JpZ2luJywgJ1dOR19Bc3VyYW5QbGF5ZXJBZHVsdCcpLAogICAgfSwKfQoKZGVmIGNoaWxkX3RleHQocGFyZW50LCB0YWcpOgogICAgbm9kZSA9IHBhcmVudC5maW5kKHRhZykKICAgIHJldHVybiBOb25lIGlmIG5vZGUgaXMgTm9uZSBlbHNlIG5vZGUudGV4dAoKZGVmIG1ha2VfZmlsdGVyKGtpbmQsIGNoaWxkaG9vZCwgYWR1bHRob29kKToKICAgIGV4aXN0aW5nID0ga2luZC5maW5kKCdiYWNrc3RvcnlGaWx0ZXJzT3ZlcnJpZGUnKQogICAgaWYgZXhpc3RpbmcgaXMgbm90IE5vbmU6CiAgICAgICAga2luZC5yZW1vdmUoZXhpc3RpbmcpCiAgICBmaWx0ZXJzID0gRVQuU3ViRWxlbWVudChraW5kLCAnYmFja3N0b3J5RmlsdGVyc092ZXJyaWRlJykKICAgIGl0ZW0gPSBFVC5TdWJFbGVtZW50KGZpbHRlcnMsICdsaScpCiAgICBjID0gRVQuU3ViRWxlbWVudChpdGVtLCAnY2F0ZWdvcmllc0NoaWxkaG9vZCcpCiAgICBFVC5TdWJFbGVtZW50KGMsICdsaScpLnRleHQgPSBjaGlsZGhvb2QKICAgIGEgPSBFVC5TdWJFbGVtZW50KGl0ZW0sICdjYXRlZ29yaWVzQWR1bHRob29kJykKICAgIEVULlN1YkVsZW1lbnQoYSwgJ2xpJykudGV4dCA9IGFkdWx0aG9vZAoKZm9yIGZpbGVuYW1lLCBtYXBwaW5nIGluIE1BUFBJTkdTLml0ZW1zKCk6CiAgICBwYXRoID0gUGF0aChmaWxlbmFtZSkKICAgIHRyZWUgPSBFVC5wYXJzZShwYXRoKQogICAgcm9vdCA9IHRyZWUuZ2V0cm9vdCgpCiAgICBmb3VuZCA9IHNldCgpCiAgICBmb3Iga2luZCBpbiByb290LmZpbmRhbGwoJ1Bhd25LaW5kRGVmJyk6CiAgICAgICAgZGVmX25hbWUgPSBjaGlsZF90ZXh0KGtpbmQsICdkZWZOYW1lJykKICAgICAgICBpZiBkZWZfbmFtZSBpbiBtYXBwaW5nOgogICAgICAgICAgICBtYWtlX2ZpbHRlcihraW5kLCAqbWFwcGluZ1tkZWZfbmFtZV0pCiAgICAgICAgICAgIGZvdW5kLmFkZChkZWZfbmFtZSkKICAgIG1pc3NpbmcgPSBzZXQobWFwcGluZykgLSBmb3VuZAogICAgaWYgbWlzc2luZzoKICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KGYne2ZpbGVuYW1lfTogbWlzc2luZyBQYXduS2luZERlZnM6IHtzb3J0ZWQobWlzc2luZyl9JykKICAgIEVULmluZGVudCh0cmVlLCBzcGFjZT0nICAnKQogICAgdHJlZS53cml0ZShwYXRoLCBlbmNvZGluZz0ndXRmLTgnLCB4bWxfZGVjbGFyYXRpb249VHJ1ZSkK' | base64 -d > /tmp/wng-wire-backstories.py
+          python /tmp/wng-wire-backstories.py
+
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+
+      - name: Parse Def and Patch XML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+
+      - name: Verify native backstory schema and role wiring
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          root = ET.parse('Defs/BackstoryDefs/Backstories_WNG.xml').getroot()
+          stories = root.findall('BackstoryDef')
+          if len(stories) < 25:
+              raise SystemExit(f'Expected substantial WNG backstory pool, found {len(stories)}')
+
+          categories = set()
+          for story in stories:
+              if story.findtext('requiresSpawnCategory') != 'true':
+                  raise SystemExit('Every WNG backstory must require its WNG spawn category')
+              categories.update(li.text for li in story.findall('./spawnCategories/li'))
+              for gain in story.findall('./skillGains/li'):
+                  if gain.find('skill') is None or gain.find('amount') is None:
+                      raise SystemExit('Backstory skillGains must use current list schema')
+              skills = story.find('skillGains')
+              if skills is not None and any(child.tag != 'li' for child in list(skills)):
+                  raise SystemExit('Legacy dictionary-style skill gain found')
+
+          required = {'WNG_WraithOrigin','WNG_WraithHunterAdult','WNG_WraithWarriorAdult','WNG_WraithCommanderAdult','WNG_WraithKeeperAdult','WNG_WraithQueenAdult','WNG_WraithPlayerAdult','WNG_AsuranOrigin','WNG_AsuranOperativeAdult','WNG_SyntheticEngineerAdult','WNG_SyntheticSoldierAdult','WNG_SyntheticCoordinatorAdult','WNG_AsuranInfiltratorAdult','WNG_QuietLatticeAdult','WNG_AsuranPlayerAdult'}
+          missing = sorted(required - categories)
+          if missing:
+              raise SystemExit('Missing WNG backstory categories: ' + ', '.join(missing))
+
+          files = ['Defs/PawnKindDefs/PawnKinds_Wraith.xml','Defs/PawnKindDefs/PawnKinds_Asuran.xml','Defs/PawnKindDefs/PawnKinds_HumanFormSocieties.xml','Defs/PawnKindDefs/PawnKinds_ReplicatorQueen.xml']
+          for filename in files:
+              text = Path(filename).read_text()
+              if '<backstoryFiltersOverride>' not in text:
+                  raise SystemExit(filename + ': backstory filters not wired')
+          PY
+
+      - name: Commit validated wiring and remove validator
+        run: |
+          rm .github/workflows/wng-native-backstories.yml
+          git config user.name "Vardath"
+          git config user.email "59270526+Vardath@users.noreply.github.com"
+          git add Defs/BackstoryDefs/Backstories_WNG.xml Defs/PawnKindDefs/PawnKinds_Wraith.xml Defs/PawnKindDefs/PawnKinds_Asuran.xml Defs/PawnKindDefs/PawnKinds_HumanFormSocieties.xml Defs/PawnKindDefs/PawnKinds_ReplicatorQueen.xml .github/workflows/wng-native-backstories.yml
+          git commit -m "rebuild: wire native WNG backstories to current roles"
+          git push origin HEAD:rebuild/native-backstories-20260911
