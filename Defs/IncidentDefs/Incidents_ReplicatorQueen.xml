@@ -18,6 +18,12 @@
         <maxSiteDistance>24</maxSiteDistance>
         <maxActiveSites>1</maxActiveSites>
       </li>
+      <li Class="WraithNaniteGravtech.ReplicatorQueenRecurringRecoveryExtension">
+        <minIntervalTicks>120000</minIntervalTicks>
+        <maxIntervalTicks>240000</maxIntervalTicks>
+        <failedSpawnRetryTicks>10000</failedSpawnRetryTicks>
+        <maintenanceIntervalTicks>2500</maintenanceIntervalTicks>
+      </li>
     </modExtensions>
   </IncidentDef>
 </Defs>
