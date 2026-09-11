@@ -21,10 +21,11 @@ This slice implements the first physical storyline layer for the exact Replicato
 - entering the site generates the exact Queen only once;
 - she is physically inserted into RimWorld's real vanilla `CryptosleepCasket` through `Building_CryptosleepCasket.TryAcceptThing`;
 - casket ejection/destruction uses native RimWorld container behavior;
-- once that exact Queen becomes physically spawned from the casket, she joins `Faction.OfPlayer` immediately;
+- only the `Dormant` exact Queen becoming physically spawned on the actual Queen-vault map is treated as the release boundary;
+- once released, that exact pawn joins `Faction.OfPlayer` immediately;
 - vanilla cryptosleep sickness is removed because this Queen uses the synthetic nanite-humanoid physiology even though the current RimWorld body shell remains `Human`.
 
-The initial recovery schedule is stored globally in the Queen GameComponent, so moving the exact Queen to another player map before the delay expires does not evade the first recovery operation.
+The initial recovery schedule is stored globally in the Queen GameComponent, so moving the exact Queen to another player map before the delay expires does not evade the first recovery operation. A later map transition cannot re-run release or reset that timer, and a Queen already captured by the Asurans cannot be auto-recruited by an unrelated map component.
 
 ## Asuran recovery operation
 
@@ -38,10 +39,13 @@ Default current tuning is Def-driven:
 Recovery operatives:
 - are exact `WNG_AsuranOperative` human-form nanite pawns;
 - are generated without ordinary weapons for this capture mission;
+- the requested recovery team is all-or-nothing: if all four exact operatives cannot be generated and physically spawned, the partial team/Jumper are rolled back and the globally scheduled recovery remains eligible to retry;
 - do not use ordinary lethal raid AI against the Queen;
 - one operative at a time receives the dedicated non-damaging subdual job;
 - that job uses RimWorld's real `StunHandler.StunFor`;
-- other operatives hold position and can replace a killed/intercepted active captor.
+- the remaining operatives use a dedicated recovery-hold job rather than ordinary combat/idle AI;
+- subdue, load and hold JobDefs all use `checkOverrideOnDamage = Never`, so taking damage cannot flip the mission into normal combat AI;
+- other operatives can replace a killed/intercepted active captor.
 
 ## Physical carrier / Asuran Jumper
 
@@ -104,6 +108,7 @@ Source/API behavior was checked against RimWorld 1.6 decompiled classes for:
 - `Pawn_CarryTracker`;
 - `ThingOwner.TryTransferToContainer`;
 - `JobDriver_EnterTransporter`;
+- `JobDef.checkOverrideOnDamage` / `CheckJobOverrideOnDamageMode.Never`;
 - `CompShuttle`;
 - `CompTransporter`;
 - `TransportShip` / `ShipJob_FlyAway`;
