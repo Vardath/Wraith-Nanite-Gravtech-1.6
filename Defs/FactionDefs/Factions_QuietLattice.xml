@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_HumanFormEnclave</defName>
+    <label>human-form Replicator enclave</label>
+    <fixedName>The Quiet Lattice</fixedName>
+    <description>A non-hostile human-form Replicator splinter society that restricts its own replication and prefers negotiated coexistence, controlled fabrication and defensive continuity over unrestricted expansion. The Quiet Lattice is a WNG society inspired by dissenting and ascension-seeking Asuran splinter groups; it is not a canon-named Stargate faction.</description>
+    <basicMemberKind>WNG_HumanFormReplicator</basicMemberKind>
+    <pawnSingular>human-form Replicator</pawnSingular>
+    <pawnsPlural>human-form Replicators</pawnsPlural>
+    <leaderTitle>coordinator</leaderTitle>
+
+    <requiredCountAtGameStart>1</requiredCountAtGameStart>
+    <maxCountAtGameStart>1</maxCountAtGameStart>
+    <maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation>
+    <configurationListOrderPriority>141</configurationListOrderPriority>
+    <canMakeRandomly>true</canMakeRandomly>
+    <settlementGenerationWeight>0.18</settlementGenerationWeight>
+
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath>
+    <factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker>
+    <settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+
+    <techLevel>Ultra</techLevel>
+    <humanlikeFaction>true</humanlikeFaction>
+    <permanentEnemy>false</permanentEnemy>
+    <naturalEnemy>false</naturalEnemy>
+    <mustStartOneEnemy>false</mustStartOneEnemy>
+    <canSiege>true</canSiege>
+    <canStageAttacks>true</canStageAttacks>
+    <autoFlee>true</autoFlee>
+    <rescueesCanJoin>true</rescueesCanJoin>
+
+    <!-- Native WNG backstories are still a required later pass. These generic categories are
+         provisional generation compatibility only and must not be mistaken for final biographies. -->
+    <backstoryCategories><li>Outlander</li><li>Offworld</li></backstoryCategories>
+    <allowedArrivalTemperatureRange>-80~80</allowedArrivalTemperatureRange>
+    <colorSpectrum><li>(0.45,0.68,0.72)</li><li>(0.66,0.78,0.80)</li></colorSpectrum>
+    <xenotypeSet><xenotypeChances><WNG_NaniteHumanoid>999</WNG_NaniteHumanoid></xenotypeChances></xenotypeSet>
+
+    <raidCommonalityFromPointsCurve><points><li>(0,0.04)</li></points></raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve>
+      <points><li>(0,100)</li><li>(500,190)</li><li>(1600,290)</li><li>(3000,360)</li><li>(100000,10000)</li></points>
+    </maxPawnCostPerTotalPointsCurve>
+
+    <pawnGroupMakers>
+      <li>
+        <kindDef>Combat</kindDef>
+        <commonality>100</commonality>
+        <options>
+          <WNG_HumanFormReplicator>10</WNG_HumanFormReplicator>
+          <WNG_HumanFormSoldier>5</WNG_HumanFormSoldier>
+          <WNG_HumanFormCoordinator>0.8</WNG_HumanFormCoordinator>
+        </options>
+      </li>
+      <li>
+        <kindDef>Peaceful</kindDef>
+        <commonality>100</commonality>
+        <options>
+          <WNG_HumanFormReplicator>10</WNG_HumanFormReplicator>
+          <WNG_HumanFormEngineer>6</WNG_HumanFormEngineer>
+          <WNG_HumanFormCoordinator>0.6</WNG_HumanFormCoordinator>
+        </options>
+      </li>
+      <li>
+        <kindDef>Settlement</kindDef>
+        <options>
+          <WNG_HumanFormReplicator>10</WNG_HumanFormReplicator>
+          <WNG_HumanFormEngineer>5</WNG_HumanFormEngineer>
+          <WNG_HumanFormSoldier>4</WNG_HumanFormSoldier>
+          <WNG_HumanFormCoordinator>1.2</WNG_HumanFormCoordinator>
+        </options>
+      </li>
+    </pawnGroupMakers>
+  </FactionDef>
+</Defs>
