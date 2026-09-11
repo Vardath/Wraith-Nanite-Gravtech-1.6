@@ -35,7 +35,7 @@ namespace WraithNaniteGravtech
 
     /// <summary>
     /// Persistent authority metadata attached to every real WNG block Replicator. Queen authority,
-    /// Sovereign Neural Lattice authority and future temporary Asuran intrusion share one physical
+    /// Sovereign Neural Lattice authority and temporary Asuran intrusion share one physical
     /// transaction model without becoming the same identity/domain.
     /// </summary>
     public sealed class CompReplicatorSovereignty : ThingComp
@@ -49,6 +49,15 @@ namespace WraithNaniteGravtech
         private int nextValidationTick;
         private bool lastInterferenceBlocked;
 
+        // A TemporaryAsuran transaction suspends rather than destroys the exact previous authority.
+        // These fields are copied through hierarchy transactions and scribed through save/load.
+        private bool hasTemporarySnapshot;
+        private ReplicatorControlAuthority suspendedAuthority;
+        private Pawn suspendedController;
+        private Faction suspendedOriginalFaction;
+        private Faction suspendedControlFaction;
+        private string suspendedDomainKey;
+
         private Pawn Pawn => parent as Pawn;
         private CompProperties_ReplicatorSovereignty Props => (CompProperties_ReplicatorSovereignty)props;
 
@@ -60,6 +69,14 @@ namespace WraithNaniteGravtech
         public bool HasAuthority => authority != ReplicatorControlAuthority.None;
         public bool IsQueenControlled => authority == ReplicatorControlAuthority.Queen && controller != null;
         public bool IsNeuralLatticeControlled => authority == ReplicatorControlAuthority.NeuralLattice && controller != null;
+        public bool IsTemporaryAsuranControlled => authority == ReplicatorControlAuthority.TemporaryAsuran && controller != null;
+        public bool HasTemporarySnapshot => hasTemporarySnapshot;
+        public ReplicatorControlAuthority SuspendedAuthority => suspendedAuthority;
+        public Pawn SuspendedController => suspendedController;
+        public Faction SuspendedOriginalFaction => suspendedOriginalFaction;
+        public Faction SuspendedControlFaction => suspendedControlFaction;
+        public string SuspendedDomainKey => suspendedDomainKey;
+        public int TemporaryUntil => temporaryUntil;
         public bool AuthorityValid => HasAuthority && ReplicatorSovereigntyUtility.IsAuthorityValid(this);
         public bool InterferenceBlocked => HasAuthority && ReplicatorSovereigntyUtility.IsInterferenceBlocking(this);
         public bool Operational => AuthorityValid && !InterferenceBlocked;
@@ -69,6 +86,9 @@ namespace WraithNaniteGravtech
 
         public bool IsNeuralLatticeControlledBy(Pawn exactBearer)
             => IsNeuralLatticeControlled && controller == exactBearer && !string.IsNullOrEmpty(domainKey);
+
+        public bool IsTemporaryAsuranControlledBy(Pawn exactAsuran)
+            => IsTemporaryAsuranControlled && controller == exactAsuran && !string.IsNullOrEmpty(domainKey);
 
         public bool IsControlledBy(Pawn exactController)
             => HasAuthority && controller == exactController && !string.IsNullOrEmpty(domainKey);
@@ -156,6 +176,66 @@ namespace WraithNaniteGravtech
             return true;
         }
 
+        public bool TryAssignTemporaryAsuran(Pawn exactAsuran, int durationTicks, out string rejection)
+        {
+            rejection = null;
+            Pawn pawn = Pawn;
+            if (exactAsuran == null || exactAsuran.Dead || exactAsuran.Downed ||
+                ReplicatorSovereigntyUtility.IsExactQueen(exactAsuran) ||
+                !AsuranNaniteUtility.IsNaniteHumanoid(exactAsuran))
+            {
+                rejection = "Only an active ordinary nanite humanoid can establish a temporary Asuran lattice intrusion.";
+                return false;
+            }
+            if (!ValidatePhysicalTarget(pawn, exactAsuran, out rejection))
+                return false;
+            if (ReplicatorSovereigntyUtility.IsAsuranSignalDisrupted(exactAsuran))
+            {
+                rejection = "The Asuran subspace lattice is disrupted by EMP.";
+                return false;
+            }
+            if (!ValidateAcquisitionInterference(pawn, exactAsuran, out rejection))
+                return false;
+            if (exactAsuran.Faction == null)
+            {
+                rejection = "The Asuran intrusion source has no active faction authority.";
+                return false;
+            }
+
+            int now = Find.TickManager?.TicksGame ?? 0;
+            int until = SafeFutureTick(now, Math.Max(60, durationTicks));
+
+            if (IsTemporaryAsuranControlled)
+            {
+                if (controller != exactAsuran)
+                {
+                    rejection = "That Replicator is already inside another Asuran intrusion domain.";
+                    return false;
+                }
+                temporaryUntil = Math.Max(temporaryUntil, until);
+                return true;
+            }
+
+            CaptureTemporarySnapshot();
+            originalFaction = pawn?.Faction;
+            controlFaction = exactAsuran.Faction;
+            controller = exactAsuran;
+            authority = ReplicatorControlAuthority.TemporaryAsuran;
+            domainKey = ReplicatorSovereigntyUtility.TemporaryAsuranDomainKey(
+                exactAsuran,
+                suspendedAuthority,
+                suspendedDomainKey,
+                suspendedOriginalFaction,
+                suspendedControlFaction);
+            temporaryUntil = until;
+            lastInterferenceBlocked = false;
+
+            if (pawn != null && pawn.Faction != controlFaction)
+                pawn.SetFaction(controlFaction, exactAsuran);
+            pawn?.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+            return true;
+        }
+
         private static bool ValidatePhysicalTarget(Pawn pawn, Pawn exactController, out string rejection)
         {
             rejection = null;
@@ -201,6 +281,7 @@ namespace WraithNaniteGravtech
             string exactDomainKey)
         {
             Pawn pawn = Pawn;
+            ClearTemporarySnapshot();
             originalFaction = pawn?.Faction;
             controlFaction = exactControlFaction;
             controller = exactController;
@@ -212,6 +293,27 @@ namespace WraithNaniteGravtech
             if (pawn != null && pawn.Faction != controlFaction)
                 pawn.SetFaction(controlFaction, exactController);
             pawn?.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+        }
+
+        private void CaptureTemporarySnapshot()
+        {
+            Pawn pawn = Pawn;
+            hasTemporarySnapshot = true;
+            suspendedAuthority = authority;
+            suspendedController = controller;
+            suspendedOriginalFaction = HasAuthority ? originalFaction : pawn?.Faction;
+            suspendedControlFaction = controlFaction;
+            suspendedDomainKey = domainKey;
+        }
+
+        private void ClearTemporarySnapshot()
+        {
+            hasTemporarySnapshot = false;
+            suspendedAuthority = ReplicatorControlAuthority.None;
+            suspendedController = null;
+            suspendedOriginalFaction = null;
+            suspendedControlFaction = null;
+            suspendedDomainKey = null;
         }
 
         public void CopyAuthorityFrom(CompReplicatorSovereignty other)
@@ -229,9 +331,22 @@ namespace WraithNaniteGravtech
             domainKey = other.domainKey;
             temporaryUntil = other.temporaryUntil;
             lastInterferenceBlocked = other.lastInterferenceBlocked;
+            hasTemporarySnapshot = other.hasTemporarySnapshot;
+            suspendedAuthority = other.suspendedAuthority;
+            suspendedController = other.suspendedController;
+            suspendedOriginalFaction = other.suspendedOriginalFaction;
+            suspendedControlFaction = other.suspendedControlFaction;
+            suspendedDomainKey = other.suspendedDomainKey;
         }
 
         public bool ReleaseAuthority(bool restoreFaction = true)
+        {
+            if (authority == ReplicatorControlAuthority.TemporaryAsuran && hasTemporarySnapshot)
+                return RestoreTemporarySnapshot();
+            return ReleaseCurrentAuthority(restoreFaction);
+        }
+
+        private bool ReleaseCurrentAuthority(bool restoreFaction)
         {
             Pawn pawn = Pawn;
             if (!HasAuthority)
@@ -254,6 +369,50 @@ namespace WraithNaniteGravtech
             return true;
         }
 
+        public bool RestoreTemporarySnapshot()
+        {
+            Pawn pawn = Pawn;
+            if (authority != ReplicatorControlAuthority.TemporaryAsuran || !hasTemporarySnapshot)
+                return false;
+
+            ReplicatorControlAuthority restoreAuthority = suspendedAuthority;
+            Pawn restoreController = suspendedController;
+            Faction restoreOriginalFaction = suspendedOriginalFaction;
+            Faction restoreControlFaction = suspendedControlFaction;
+            string restoreDomainKey = suspendedDomainKey;
+
+            ClearMetadata();
+            if (pawn == null || pawn.Destroyed)
+                return true;
+
+            pawn.jobs?.EndCurrentJob(JobCondition.InterruptForced);
+
+            if (restoreAuthority == ReplicatorControlAuthority.None)
+            {
+                Faction restoreFaction = restoreOriginalFaction;
+                if (restoreFaction == null || restoreFaction.defeated)
+                    restoreFaction = ReplicatorSovereigntyUtility.ResolveAutonomousSwarmFaction();
+                if (pawn.Faction != restoreFaction)
+                    pawn.SetFaction(restoreFaction);
+                return true;
+            }
+
+            authority = restoreAuthority;
+            controller = restoreController;
+            originalFaction = restoreOriginalFaction;
+            controlFaction = restoreControlFaction;
+            domainKey = restoreDomainKey;
+            temporaryUntil = -1;
+            lastInterferenceBlocked = false;
+
+            if (controlFaction != null && !controlFaction.defeated && pawn.Faction != controlFaction)
+                pawn.SetFaction(controlFaction, controller);
+
+            if (!ReplicatorSovereigntyUtility.IsAuthorityValid(this))
+                ReleaseCurrentAuthority(restoreFaction: true);
+            return true;
+        }
+
         private void ClearMetadata()
         {
             authority = ReplicatorControlAuthority.None;
@@ -263,6 +422,13 @@ namespace WraithNaniteGravtech
             domainKey = null;
             temporaryUntil = -1;
             lastInterferenceBlocked = false;
+            ClearTemporarySnapshot();
+        }
+
+        private static int SafeFutureTick(int now, int delay)
+        {
+            long result = (long)Math.Max(0, now) + Math.Max(0, delay);
+            return result >= int.MaxValue ? int.MaxValue : (int)result;
         }
 
         public override void CompTick()
@@ -276,14 +442,24 @@ namespace WraithNaniteGravtech
                 return;
             nextValidationTick = now + Math.Max(15, Props.validationIntervalTicks);
 
-            if (temporaryUntil >= 0 && now >= temporaryUntil)
+            if (authority == ReplicatorControlAuthority.TemporaryAsuran)
             {
-                ReleaseAuthority();
+                bool expired = temporaryUntil >= 0 && now >= temporaryUntil;
+                bool invalid = !ReplicatorSovereigntyUtility.IsAuthorityValid(this);
+                bool interrupted = ReplicatorSovereigntyUtility.IsInterferenceBlocking(this);
+                if (expired || invalid || interrupted)
+                {
+                    if (!RestoreTemporarySnapshot())
+                        ReleaseCurrentAuthority(restoreFaction: true);
+                    return;
+                }
+                lastInterferenceBlocked = false;
                 return;
             }
+
             if (!ReplicatorSovereigntyUtility.IsAuthorityValid(this))
             {
-                ReleaseAuthority();
+                ReleaseCurrentAuthority(restoreFaction: true);
                 return;
             }
 
@@ -489,7 +665,17 @@ namespace WraithNaniteGravtech
                 return null;
             string controllerLabel = controller?.LabelShort ?? "unresolved controller";
             string status = !AuthorityValid ? "authority lost" : InterferenceBlocked ? "signal disrupted" : "operational";
-            return $"Replicator control: {authority} — {controllerLabel}\nController signal: {status}";
+            string text = $"Replicator control: {authority} — {controllerLabel}\nController signal: {status}";
+            if (authority == ReplicatorControlAuthority.TemporaryAsuran)
+            {
+                int now = Find.TickManager?.TicksGame ?? 0;
+                int remaining = Math.Max(0, temporaryUntil - now);
+                string restore = suspendedAuthority == ReplicatorControlAuthority.None
+                    ? (suspendedOriginalFaction?.Name ?? "autonomous swarm")
+                    : suspendedAuthority.ToString();
+                text += $"\nIntrusion remaining: {remaining / (float)GenDate.TicksPerHour:0.0} in-game hour(s)\nRestores to: {restore}";
+            }
+            return text;
         }
 
         public override void PostExposeData()
@@ -503,6 +689,12 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref temporaryUntil, "wngReplicatorTemporaryAuthorityUntil", -1);
             Scribe_Values.Look(ref nextValidationTick, "wngReplicatorAuthorityNextValidation", 0);
             Scribe_Values.Look(ref lastInterferenceBlocked, "wngReplicatorAuthorityWasBlocked", false);
+            Scribe_Values.Look(ref hasTemporarySnapshot, "wngReplicatorHasTemporarySnapshot", false);
+            Scribe_Values.Look(ref suspendedAuthority, "wngReplicatorSuspendedAuthority", ReplicatorControlAuthority.None);
+            Scribe_References.Look(ref suspendedController, "wngReplicatorSuspendedController");
+            Scribe_References.Look(ref suspendedOriginalFaction, "wngReplicatorSuspendedOriginalFaction");
+            Scribe_References.Look(ref suspendedControlFaction, "wngReplicatorSuspendedControlFaction");
+            Scribe_Values.Look(ref suspendedDomainKey, "wngReplicatorSuspendedDomainKey");
         }
     }
 
@@ -520,6 +712,30 @@ namespace WraithNaniteGravtech
         public static string NeuralLatticeDomainKey(Pawn bearer)
             => bearer == null ? null : "NeuralLattice:" + bearer.GetUniqueLoadID();
 
+        public static string TemporaryAsuranDomainKey(
+            Pawn asuran,
+            ReplicatorControlAuthority restoreAuthority,
+            string restoreDomainKey,
+            Faction restoreOriginalFaction,
+            Faction restoreControlFaction)
+        {
+            if (asuran == null)
+                return null;
+            string restoreIdentity;
+            if (restoreAuthority == ReplicatorControlAuthority.None)
+            {
+                restoreIdentity = "Faction:" + (restoreOriginalFaction?.def?.defName ?? "Factionless");
+            }
+            else
+            {
+                string priorDomain = !string.IsNullOrEmpty(restoreDomainKey)
+                    ? restoreDomainKey
+                    : restoreControlFaction?.def?.defName ?? restoreOriginalFaction?.def?.defName ?? "Unresolved";
+                restoreIdentity = restoreAuthority + ":" + priorDomain;
+            }
+            return "TemporaryAsuran:" + asuran.GetUniqueLoadID() + "|Restore:" + restoreIdentity;
+        }
+
         public static Hediff_SovereignNeuralLattice GetSovereignNeuralLattice(Pawn pawn)
             => pawn?.health?.hediffSet?.hediffs?.OfType<Hediff_SovereignNeuralLattice>().FirstOrDefault();
 
@@ -536,6 +752,15 @@ namespace WraithNaniteGravtech
 
         public static bool IsNeuralLatticeSignalDisrupted(Pawn bearer)
             => GetSovereignNeuralLattice(bearer)?.SignalDisrupted != false;
+
+        public static bool IsAsuranSignalDisrupted(Pawn asuran)
+        {
+            if (asuran == null || asuran.Dead || asuran.Downed || !AsuranNaniteUtility.IsNaniteHumanoid(asuran) ||
+                asuran.health?.hediffSet == null)
+                return true;
+            HediffDef disrupted = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_AsuranEMPDisrupted");
+            return disrupted != null && asuran.health.hediffSet.HasHediff(disrupted);
+        }
 
         public static bool SharesPhysicalPresence(Pawn controller, Pawn block)
         {
@@ -572,7 +797,14 @@ namespace WraithNaniteGravtech
                     return !IsExactQueen(controller) && HasSovereignNeuralLattice(controller) &&
                            comp.DomainKey == NeuralLatticeDomainKey(controller);
                 case ReplicatorControlAuthority.TemporaryAsuran:
-                    return !string.IsNullOrEmpty(comp.DomainKey);
+                    return !IsExactQueen(controller) && !controller.Downed && AsuranNaniteUtility.IsNaniteHumanoid(controller) &&
+                           comp.HasTemporarySnapshot &&
+                           comp.DomainKey == TemporaryAsuranDomainKey(
+                               controller,
+                               comp.SuspendedAuthority,
+                               comp.SuspendedDomainKey,
+                               comp.SuspendedOriginalFaction,
+                               comp.SuspendedControlFaction);
                 default:
                     return false;
             }
@@ -591,6 +823,8 @@ namespace WraithNaniteGravtech
             if (comp.Authority == ReplicatorControlAuthority.Queen && IsQueenSignalDisrupted(controller))
                 return true;
             if (comp.Authority == ReplicatorControlAuthority.NeuralLattice && IsNeuralLatticeSignalDisrupted(controller))
+                return true;
+            if (comp.Authority == ReplicatorControlAuthority.TemporaryAsuran && IsAsuranSignalDisrupted(controller))
                 return true;
             if (controller?.Spawned == true && controller.Map != null && ReplicatorContainmentUtility.IsContained(controller.Map, controller.Position))
                 return true;
@@ -693,12 +927,77 @@ namespace WraithNaniteGravtech
             return comp.TryAssignNeuralLattice(bearer, out rejection);
         }
 
+        public static bool TryAcquireForTemporaryAsuran(
+            Pawn asuran,
+            Pawn block,
+            float range,
+            int maxControlled,
+            int durationTicks,
+            out string rejection)
+        {
+            rejection = null;
+            if (asuran == null || asuran.Dead || asuran.Downed || !asuran.Spawned || asuran.Map == null ||
+                IsExactQueen(asuran) || !AsuranNaniteUtility.IsNaniteHumanoid(asuran) || asuran.Faction == null)
+            {
+                rejection = "An active ordinary nanite humanoid must be physically present to intrude into a block Replicator.";
+                return false;
+            }
+            if (IsAsuranSignalDisrupted(asuran))
+            {
+                rejection = "The Asuran subspace lattice is disrupted by EMP.";
+                return false;
+            }
+            if (ReplicatorContainmentUtility.IsContained(asuran.Map, asuran.Position))
+            {
+                rejection = "An active Replicator containment field is blocking the Asuran intrusion signal.";
+                return false;
+            }
+            if (!ValidateAcquisitionTarget(asuran, block, range, out rejection))
+                return false;
+
+            CompReplicatorSovereignty comp = block.TryGetComp<CompReplicatorSovereignty>();
+            if (comp == null)
+            {
+                rejection = "The target has no WNG Replicator controller state.";
+                return false;
+            }
+            if (comp.IsTemporaryAsuranControlled)
+            {
+                if (comp.Controller != asuran)
+                {
+                    rejection = "That Replicator is already inside another Asuran intrusion domain.";
+                    return false;
+                }
+                return comp.TryAssignTemporaryAsuran(asuran, durationTicks, out rejection);
+            }
+
+            int cap = Math.Max(1, maxControlled);
+            int controlled = CountControllerDomainOnMap(asuran, ReplicatorControlAuthority.TemporaryAsuran);
+            if (controlled >= cap)
+            {
+                rejection = "This Asuran intrusion source has reached its current temporary block-control limit.";
+                return false;
+            }
+
+            return comp.TryAssignTemporaryAsuran(asuran, durationTicks, out rejection);
+        }
+
         private static bool ValidateAcquisitionTarget(Pawn controller, Pawn block, float range, out string rejection)
         {
             rejection = null;
             if (!IsBlockReplicator(block) || block.Dead || !block.Spawned || block.Map != controller.Map)
             {
                 rejection = "Choose a living WNG block Replicator on the controller's map.";
+                return false;
+            }
+            if (ReplicatorEMP.IsSuppressed(block))
+            {
+                rejection = "The target Replicator is disrupted by EMP.";
+                return false;
+            }
+            if (ReplicatorContainmentUtility.IsContained(block.Map, block.Position))
+            {
+                rejection = "An active Replicator containment field is blocking control acquisition.";
                 return false;
             }
             float allowed = Math.Max(1f, range);
