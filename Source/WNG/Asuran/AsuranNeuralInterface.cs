@@ -22,7 +22,8 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Touch-range human-form Replicator Neural Interface. The interface uses native faction/guest
     /// status mechanics for allegiance/prisoner/slave state and opens a paused operation menu for
-    /// the exact biological pawn under the operator's hand.
+    /// the exact biological pawn under the operator's hand. A concealed Asuran infiltrator is
+    /// allowed as a scan target; direct interface contact permanently exposes its synthetic lattice.
     /// </summary>
     public sealed class CompAbilityEffect_NeuralInterface : CompAbilityEffect
     {
@@ -55,6 +56,12 @@ namespace WraithNaniteGravtech
             if (!NeuralInterfaceUtility.IsValidSubject(caster, subject, requireAdjacent: true))
             {
                 Messages.Message("The Neural Interface target is no longer available at touch range.", caster, MessageTypeDefOf.RejectInput, false);
+                return;
+            }
+
+            if (AsuranInfiltrationUtility.IsConcealed(subject))
+            {
+                AsuranInfiltrationUtility.Reveal(subject, "direct Neural Interface scan", caster);
                 return;
             }
 
@@ -91,7 +98,10 @@ namespace WraithNaniteGravtech
                 return false;
             if (subject.RaceProps == null || !subject.RaceProps.Humanlike || !subject.RaceProps.IsFlesh || subject.RaceProps.IsMechanoid)
                 return false;
-            if (AsuranNaniteUtility.IsNaniteHumanoid(subject) || subject.TryGetComp<CompReplicatorState>() != null)
+
+            bool concealedInfiltrator = AsuranInfiltrationUtility.IsConcealed(subject);
+            if ((!concealedInfiltrator && AsuranNaniteUtility.IsNaniteHumanoid(subject)) ||
+                subject.TryGetComp<CompReplicatorState>() != null)
                 return false;
             if (requireAdjacent && !caster.Position.AdjacentTo8WayOrInside(subject.Position))
                 return false;
