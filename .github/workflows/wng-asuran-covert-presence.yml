@@ -1,0 +1,62 @@
+name: WNG Asuran covert presence validation
+
+on:
+  push:
+    branches:
+      - rebuild/humanform-covert-presence-20260911
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/humanform-covert-presence-20260911
+
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+
+      - name: Parse Def and Patch XML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+
+      - name: Verify covert-presence invariants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('Source/WNG/Asuran/AsuranCovertPresence.cs').read_text(encoding='utf-8')
+          i = Path('Source/WNG/Asuran/AsuranInfiltration.cs').read_text(encoding='utf-8')
+          x = Path('Defs/IncidentDefs/Incidents_AsuranCovertPresence.xml').read_text(encoding='utf-8')
+          required_p = [
+              'GameComponent_AsuranCovertPresence',
+              'WNG_AsuranCovertVisitor',
+              'TryFindCoverFaction',
+              'GuestStatus.Guest',
+              'LordJob_VisitColony',
+              'TryActivateRevealedPawn',
+              'LordJob_AssaultColony',
+              'WNG_AsuranLattice',
+              'Scribe_Values.Look(ref nextAttemptTick',
+          ]
+          required_i = [
+              'trueFaction',
+              'coverFaction',
+              'BeginCovertPresence',
+              'Scribe_References.Look(ref trueFaction',
+              'AsuranCovertPresenceUtility.TryActivateRevealedPawn',
+          ]
+          missing = [v for v in required_p if v not in p] + [v for v in required_i if v not in i]
+          if missing:
+              raise SystemExit('Missing covert-presence invariants: ' + ', '.join(missing))
+          if '<baseChance>0</baseChance>' not in x or '<category>Misc</category>' not in x:
+              raise SystemExit('Covert incident must be scheduler-only Misc content')
+          if '<minIntervalTicks>240000</minIntervalTicks>' not in x or '<maxIntervalTicks>480000</maxIntervalTicks>' not in x:
+              raise SystemExit('Def-tunable cadence wiring missing')
+          PY
