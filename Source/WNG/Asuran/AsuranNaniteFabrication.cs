@@ -20,6 +20,7 @@ namespace WraithNaniteGravtech
     /// Human-form Replicators/Asurans use RimWorld's exact Need_Food machinery as a matter reserve.
     /// The custom NeedDef remains Need_Food, so native eating/caravan/feeding behavior stays intact;
     /// only its WNG meaning and synthetic consequences change. Block Replicators do not use this.
+    /// A concealed infiltrator deliberately keeps ordinary Food as the visible cover UI until reveal.
     /// </summary>
     public static class AsuranNaniteUtility
     {
@@ -38,7 +39,11 @@ namespace WraithNaniteGravtech
         {
             if (!IsNaniteHumanoid(pawn))
                 return null;
+
             Need_Food reserve = pawn.needs?.food;
+            if (AsuranInfiltrationUtility.IsConcealed(pawn))
+                return reserve;
+
             return reserve?.def?.defName == "WNG_NaniteMatterReserve" ? reserve : null;
         }
 
@@ -94,7 +99,7 @@ namespace WraithNaniteGravtech
         }
     }
 
-    public sealed class Gene_AsuranNanitePhysiology : Gene
+    public class Gene_AsuranNanitePhysiology : Gene
     {
         private int nextReconcileTick;
 
@@ -138,8 +143,8 @@ namespace WraithNaniteGravtech
             if (!Active || pawn == null || pawn.Dead || pawn.health?.hediffSet == null)
                 return;
 
-            // The gene disables vanilla Food and enables WNG_NaniteMatterReserve. Both use the exact
-            // Need_Food class, so this rebinding preserves native eating/caravan behavior.
+            // Normal nanite humanoids replace vanilla Food with WNG_NaniteMatterReserve. Concealed
+            // infiltrators use a mask GeneDef that deliberately leaves Food active until reveal.
             pawn.needs?.AddOrRemoveNeedsAsAppropriate();
 
             EnsureNamedHediff("WNG_AsuranNaniteLattice");
@@ -217,6 +222,8 @@ namespace WraithNaniteGravtech
         private AsuranNanitePhysiologyExtension Extension => Physiology?.Extension;
         private bool EmpSuppressed => (Find.TickManager?.TicksGame ?? 0) < suppressedUntil;
 
+        public override bool Visible => base.Visible && !AsuranInfiltrationUtility.IsConcealed(pawn);
+
         public override string LabelInBrackets
         {
             get
@@ -228,16 +235,37 @@ namespace WraithNaniteGravtech
             }
         }
 
+        public void ApplyEmpSuppression(int durationTicks)
+        {
+            int now = Find.TickManager?.TicksGame ?? 0;
+            int duration = Math.Max(60, durationTicks);
+            long until = (long)now + duration;
+            suppressedUntil = Math.Max(suppressedUntil, until >= int.MaxValue ? int.MaxValue : (int)until);
+        }
+
         public override void Notify_PawnPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
         {
             base.Notify_PawnPostApplyDamage(dinfo, totalDamageDealt);
-            if (dinfo.Def != DamageDefOf.EMP || pawn == null || pawn.Dead)
+            if (pawn == null || pawn.Dead)
                 return;
 
-            int now = Find.TickManager?.TicksGame ?? 0;
-            int duration = Math.Max(60, Extension?.empSuppressionTicks ?? 1800);
-            long until = (long)now + duration;
-            suppressedUntil = Math.Max(suppressedUntil, until >= int.MaxValue ? int.MaxValue : (int)until);
+            bool wasConcealed = AsuranInfiltrationUtility.IsConcealed(pawn);
+            int empDuration = Math.Max(60, Extension?.empSuppressionTicks ?? 1800);
+            if (dinfo.Def == DamageDefOf.EMP)
+                ApplyEmpSuppression(empDuration);
+
+            AsuranInfiltrationUtility.NotifyDamage(pawn, dinfo, totalDamageDealt);
+
+            // Revealing removes the masking physiology gene and adds the public nanite physiology,
+            // which rebuilds the lattice hediff. Carry EMP suppression onto that replacement state.
+            if (wasConcealed && dinfo.Def == DamageDefOf.EMP && !AsuranInfiltrationUtility.IsConcealed(pawn))
+            {
+                Hediff_AsuranNaniteLattice replacement = pawn.health?.hediffSet?.hediffs
+                    .OfType<Hediff_AsuranNaniteLattice>()
+                    .FirstOrDefault();
+                if (replacement != null && replacement != this)
+                    replacement.ApplyEmpSuppression(empDuration);
+            }
         }
 
         public override void TickInterval(int delta)
@@ -275,7 +303,10 @@ namespace WraithNaniteGravtech
                 return;
 
             if (affordableHeal > 0f)
+            {
                 injury.Heal(affordableHeal);
+                AsuranInfiltrationUtility.NotifySelfRepair(pawn, affordableHeal);
+            }
         }
 
         private void SyncEmpDisruptionHediff()
