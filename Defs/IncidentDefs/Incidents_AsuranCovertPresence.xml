@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_AsuranCovertVisitor</defName>
+    <label>visitor</label>
+    <targetTags><li>Map_PlayerHome</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_AsuranCovertVisitor</workerClass>
+    <baseChance>0</baseChance>
+    <category>Misc</category>
+    <letterDef>NeutralEvent</letterDef>
+    <modExtensions>
+      <li Class="WraithNaniteGravtech.AsuranCovertPresenceExtension">
+        <checkIntervalTicks>600</checkIntervalTicks>
+        <minIntervalTicks>240000</minIntervalTicks>
+        <maxIntervalTicks>480000</maxIntervalTicks>
+        <retryDelayTicks>30000</retryDelayTicks>
+        <attemptChance>0.65</attemptChance>
+        <minVisitDurationTicks>30000</minVisitDurationTicks>
+        <maxVisitDurationTicks>60000</maxVisitDurationTicks>
+        <infiltratorKind>WNG_AsuranInfiltrator</infiltratorKind>
+        <trueFactionDef>WNG_AsuranLattice</trueFactionDef>
+      </li>
+    </modExtensions>
+  </IncidentDef>
+</Defs>
