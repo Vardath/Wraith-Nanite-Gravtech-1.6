@@ -121,6 +121,11 @@ namespace WraithNaniteGravtech
             if (!Active || pawn == null || pawn.Dead)
                 return;
 
+            // Pawn tick order runs Need_Food before genes. Remove vanilla biological starvation in
+            // the same pawn tick it can be created so a nanite humanoid never carries Malnutrition
+            // as its actual depletion consequence.
+            RemoveBiologicalMalnutrition();
+
             int now = Find.TickManager?.TicksGame ?? 0;
             if (now < nextReconcileTick)
                 return;
@@ -138,12 +143,7 @@ namespace WraithNaniteGravtech
             pawn.needs?.AddOrRemoveNeedsAsAppropriate();
 
             EnsureNamedHediff("WNG_AsuranNaniteLattice");
-
-            // Need_Food normally expresses starvation as biological malnutrition. Nanite humanoids
-            // instead weaken/shut down through WNG_NaniteDepletion, so never leave Malnutrition on them.
-            Hediff malnutrition = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.Malnutrition);
-            if (malnutrition != null)
-                pawn.health.RemoveHediff(malnutrition);
+            RemoveBiologicalMalnutrition();
 
             Need_Food reserve = AsuranNaniteUtility.Reserve(pawn);
             float threshold = Math.Max(0.001f, Extension?.depletionThreshold ?? 0.15f);
@@ -167,6 +167,15 @@ namespace WraithNaniteGravtech
             }
             if (depletion != null)
                 depletion.Severity = Mathf.Clamp01((threshold - reservePct) / threshold);
+        }
+
+        private void RemoveBiologicalMalnutrition()
+        {
+            if (pawn?.health?.hediffSet == null)
+                return;
+            Hediff malnutrition = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.Malnutrition);
+            if (malnutrition != null)
+                pawn.health.RemoveHediff(malnutrition);
         }
 
         private void EnsureNamedHediff(string defName)
