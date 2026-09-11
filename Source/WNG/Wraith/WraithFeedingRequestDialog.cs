@@ -16,6 +16,7 @@ namespace WraithNaniteGravtech
         private readonly string factionName;
         private readonly List<Pawn> subjects;
         private readonly int feedingAgeYears;
+        private readonly int strategicHungerPercent;
         private readonly Action<Pawn> submitAction;
         private readonly Action cancelAction;
         private Pawn selected;
@@ -27,6 +28,7 @@ namespace WraithNaniteGravtech
             string factionName,
             IEnumerable<Pawn> subjects,
             int feedingAgeYears,
+            int strategicHungerPercent,
             Action<Pawn> submitAction,
             Action cancelAction)
         {
@@ -37,6 +39,7 @@ namespace WraithNaniteGravtech
                 .OrderBy(p => p.LabelShort)
                 .ToList() ?? new List<Pawn>();
             this.feedingAgeYears = Math.Max(0, feedingAgeYears);
+            this.strategicHungerPercent = Math.Max(0, Math.Min(100, strategicHungerPercent));
             this.submitAction = submitAction;
             this.cancelAction = cancelAction;
             if (this.subjects.Count == 1)
@@ -58,9 +61,11 @@ namespace WraithNaniteGravtech
             Text.Font = GameFont.Small;
 
             string explanation =
+                factionName + " is suffering a genuine feeding shortage. Strategic hunger is at " + strategicHungerPercent + "%. " +
                 "Select the biological prisoner or feeding-stock subject to place under the requested controlled feeding agreement. " +
                 "This stage selects the subject only; individual Wraiths are not selected here. The selected subject will gain " +
-                feedingAgeYears + " biological years and Life Drained if the final request is submitted.";
+                feedingAgeYears + " biological years and Life Drained if the final request is submitted. " +
+                "Canceling/refusing this genuine request increases attack pressure according to the faction's hunger policy.";
             float explanationHeight = Text.CalcHeight(explanation, inRect.width);
             Widgets.Label(new Rect(0f, 44f, inRect.width, explanationHeight), explanation);
 
