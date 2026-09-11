@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <Defs>
   <PawnKindDef Name="WNG_HumanFormSocietyBase" Abstract="True">
     <race>Human</race>
     <defaultFactionDef>WNG_HumanFormEnclave</defaultFactionDef>
     <useFactionXenotypes>false</useFactionXenotypes>
     <xenotypeSet>
-      <xenotypeChances><WNG_NaniteHumanoid>1</WNG_NaniteHumanoid></xenotypeChances>
+      <xenotypeChances>
+        <WNG_NaniteHumanoid>1</WNG_NaniteHumanoid>
+      </xenotypeChances>
     </xenotypeSet>
     <minGenerationAge>18</minGenerationAge>
     <maxGenerationAge>90</maxGenerationAge>
@@ -16,7 +18,6 @@
     <initialWillRange>8~18</initialWillRange>
     <initialResistanceRange>10~24</initialResistanceRange>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
     <defName>WNG_HumanFormReplicator</defName>
     <label>human-form Replicator</label>
@@ -24,10 +25,22 @@
     <combatPower>130</combatPower>
     <isFighter>true</isFighter>
     <weaponMoney>600~1500</weaponMoney>
-    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <weaponTags>
+      <li>SpacerGun</li>
+      <li>IndustrialGunAdvanced</li>
+    </weaponTags>
     <apparelMoney>900~2200</apparelMoney>
+    <backstoryFiltersOverride>
+      <li>
+        <categoriesChildhood>
+          <li>WNG_AsuranOrigin</li>
+        </categoriesChildhood>
+        <categoriesAdulthood>
+          <li>WNG_QuietLatticeAdult</li>
+        </categoriesAdulthood>
+      </li>
+    </backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
     <defName>WNG_HumanFormEngineer</defName>
     <label>lattice engineer</label>
@@ -35,10 +48,21 @@
     <combatPower>100</combatPower>
     <isFighter>false</isFighter>
     <weaponMoney>350~1000</weaponMoney>
-    <weaponTags><li>IndustrialGunAdvanced</li></weaponTags>
+    <weaponTags>
+      <li>IndustrialGunAdvanced</li>
+    </weaponTags>
     <apparelMoney>700~1800</apparelMoney>
+    <backstoryFiltersOverride>
+      <li>
+        <categoriesChildhood>
+          <li>WNG_AsuranOrigin</li>
+        </categoriesChildhood>
+        <categoriesAdulthood>
+          <li>WNG_SyntheticEngineerAdult</li>
+        </categoriesAdulthood>
+      </li>
+    </backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
     <defName>WNG_HumanFormSoldier</defName>
     <label>lattice defender</label>
@@ -46,11 +70,23 @@
     <combatPower>190</combatPower>
     <isFighter>true</isFighter>
     <weaponMoney>1100~2600</weaponMoney>
-    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <weaponTags>
+      <li>SpacerGun</li>
+      <li>IndustrialGunAdvanced</li>
+    </weaponTags>
     <apparelMoney>1800~3800</apparelMoney>
     <itemQuality>Good</itemQuality>
+    <backstoryFiltersOverride>
+      <li>
+        <categoriesChildhood>
+          <li>WNG_AsuranOrigin</li>
+        </categoriesChildhood>
+        <categoriesAdulthood>
+          <li>WNG_SyntheticSoldierAdult</li>
+        </categoriesAdulthood>
+      </li>
+    </backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
     <defName>WNG_HumanFormCoordinator</defName>
     <label>lattice coordinator</label>
@@ -59,13 +95,25 @@
     <isFighter>true</isFighter>
     <factionLeader>true</factionLeader>
     <weaponMoney>1200~2800</weaponMoney>
-    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <weaponTags>
+      <li>SpacerGun</li>
+      <li>IndustrialGunAdvanced</li>
+    </weaponTags>
     <apparelMoney>1800~4200</apparelMoney>
     <itemQuality>Excellent</itemQuality>
     <initialWillRange>14~26</initialWillRange>
     <initialResistanceRange>18~32</initialResistanceRange>
+    <backstoryFiltersOverride>
+      <li>
+        <categoriesChildhood>
+          <li>WNG_AsuranOrigin</li>
+        </categoriesChildhood>
+        <categoriesAdulthood>
+          <li>WNG_SyntheticCoordinatorAdult</li>
+        </categoriesAdulthood>
+      </li>
+    </backstoryFiltersOverride>
   </PawnKindDef>
-
   <PawnKindDef ParentName="WNG_HumanFormSocietyBase">
     <defName>WNG_PlayerHumanFormReplicator</defName>
     <label>player human-form Replicator</label>
@@ -74,9 +122,22 @@
     <combatPower>140</combatPower>
     <isFighter>true</isFighter>
     <weaponMoney>450~1300</weaponMoney>
-    <weaponTags><li>SpacerGun</li><li>IndustrialGunAdvanced</li></weaponTags>
+    <weaponTags>
+      <li>SpacerGun</li>
+      <li>IndustrialGunAdvanced</li>
+    </weaponTags>
     <apparelMoney>500~1800</apparelMoney>
     <initialWillRange>0~0</initialWillRange>
     <initialResistanceRange>0~0</initialResistanceRange>
+    <backstoryFiltersOverride>
+      <li>
+        <categoriesChildhood>
+          <li>WNG_AsuranOrigin</li>
+        </categoriesChildhood>
+        <categoriesAdulthood>
+          <li>WNG_AsuranPlayerAdult</li>
+        </categoriesAdulthood>
+      </li>
+    </backstoryFiltersOverride>
   </PawnKindDef>
 </Defs>
