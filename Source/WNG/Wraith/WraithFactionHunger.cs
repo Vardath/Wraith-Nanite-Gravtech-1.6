@@ -137,58 +137,136 @@ namespace WraithNaniteGravtech
                     continue;
                 }
 
-                OpenFeedingRequest(faction, home, subjects.Count, record, ext, now);
+                OpenFeedingRequest(faction, home, subjects, record, ext, now);
                 return;
             }
         }
 
-        private void OpenFeedingRequest(Faction faction, Map home, int candidateCount, WraithFactionHungerRecord record, WraithFactionHungerExtension ext, int now)
+        private void OpenFeedingRequest(Faction faction, Map home, List<Pawn> subjects, WraithFactionHungerRecord record, WraithFactionHungerExtension ext, int now)
         {
-            int years = Math.Max(0, ext.feedingAgeYears);
-            string text = faction.Name + " is suffering a genuine feeding shortage. Their strategic hunger has reached "
-                + Math.Round(record.hunger * 100f) + "% and they are requesting controlled access to one biological prisoner.\n\n"
-                + candidateCount + " eligible prisoner" + (candidateCount == 1 ? " is" : "s are") + " available. "
-                + "The selected subject will gain " + years + " biological years and Life Drained.\n\n"
-                + "Refusing or declining this genuine request increases the chance of an attack. Ordinary Wraith Drain Life does not create this request.";
+            if (faction == null || home == null || record == null || ext == null || subjects == null || subjects.Count == 0)
+                return;
 
+            List<Pawn> involvedWraiths = ResolveInvolvedWraiths(faction, home);
+            if (involvedWraiths.Count == 0)
+            {
+                record.nextRequestTick = SafeFutureTick(now, ext.requestRetryTicks);
+                return;
+            }
+
+            int years = Math.Max(0, ext.feedingAgeYears);
+            int hungerPercent = (int)Math.Round(Clamp01(record.hunger) * 100f);
             record.nextRequestTick = SafeFutureTick(now, ext.postRequestCooldownTicks);
             requestWindowOpen = true;
+
             try
             {
-                Find.WindowStack.Add(new Dialog_MessageBox(
-                    text,
-                    "Allow feeding",
-                    () => { requestWindowOpen = false; OpenFeedingSubjectMenu(faction, home, record, ext); },
-                    "Refuse",
-                    () => { requestWindowOpen = false; RefuseRequest(faction, record, ext); },
-                    faction.Name + " — feeding request",
-                    buttonADestructive: false,
-                    acceptAction: () => { requestWindowOpen = false; OpenFeedingSubjectMenu(faction, home, record, ext); },
-                    cancelAction: () => { requestWindowOpen = false; RefuseRequest(faction, record, ext); }));
+                Find.WindowStack.Add(new Dialog_WraithFeedingSubjectSelection(
+                    faction.Name,
+                    subjects,
+                    years,
+                    hungerPercent,
+                    subject => OpenInvolvedWraithConfirmation(faction, home, subject, involvedWraiths, record, ext, years),
+                    () => FinishRefusal(faction, record, ext)));
             }
             catch (Exception ex)
             {
                 requestWindowOpen = false;
                 record.nextRequestTick = SafeFutureTick(now, ext.requestRetryTicks);
-                Log.Error("[WNG] Failed to open strategic Wraith feeding request: " + ex);
+                Log.Error("[WNG] Failed to open strategic Wraith feeding subject stage: " + ex);
             }
         }
 
-        private void OpenFeedingSubjectMenu(Faction faction, Map home, WraithFactionHungerRecord record, WraithFactionHungerExtension ext)
+        private void OpenInvolvedWraithConfirmation(
+            Faction faction,
+            Map home,
+            Pawn subject,
+            List<Pawn> involvedWraiths,
+            WraithFactionHungerRecord record,
+            WraithFactionHungerExtension ext,
+            int years)
         {
-            List<Pawn> subjects = EligibleFeedingSubjects(home).OrderBy(p => p.LabelShort).ToList();
-            if (subjects.Count == 0)
+            if (faction == null || home == null || record == null || ext == null)
             {
-                RefuseRequest(faction, record, ext);
+                requestWindowOpen = false;
                 return;
             }
 
-            int years = Math.Max(0, ext.feedingAgeYears);
-            List<FloatMenuOption> options = subjects.Select(p => new FloatMenuOption(
-                p.LabelShortCap + " — controlled feeding: +" + years + " biological years",
-                () => AcceptRequest(faction, p, years, record, ext))).ToList();
-            options.Add(new FloatMenuOption("Refuse the feeding request", () => RefuseRequest(faction, record, ext)));
-            Find.WindowStack.Add(new FloatMenu(options));
+            if (subject == null || subject.Dead || !subject.Spawned || subject.Map != home || !IsEligibleFeedingSubject(subject))
+            {
+                FinishRefusal(faction, record, ext);
+                return;
+            }
+
+            if (involvedWraiths == null || involvedWraiths.Count == 0 || involvedWraiths.Any(p => !IsValidInvolvedWraith(p, faction)))
+            {
+                requestWindowOpen = false;
+                record.nextRequestTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, ext.requestRetryTicks);
+                Messages.Message(faction.Name + " feeding request could not retain its exact Wraith roster and will be retried later.", MessageTypeDefOf.NeutralEvent, true);
+                return;
+            }
+
+            string roster = string.Join("\n", involvedWraiths.Select(p => "- " + p.LabelShortCap));
+            string text =
+                "Selected feeding subject: " + subject.LabelShortCap + "\n\n" +
+                "Involved Wraiths: " + involvedWraiths.Count + "\n" + roster + "\n\n" +
+                "Submitting authorizes the controlled feeding agreement. " + subject.LabelShortCap +
+                " will gain " + years + " biological years and Life Drained, and " + faction.Name +
+                "'s strategic hunger will be relieved. Canceling/refusing invokes the faction's existing refusal/raid consequence.";
+
+            try
+            {
+                Find.WindowStack.Add(new Dialog_MessageBox(
+                    text,
+                    "Submit",
+                    () => FinishAcceptance(faction, subject, years, record, ext),
+                    "Cancel",
+                    () => FinishRefusal(faction, record, ext),
+                    faction.Name + " — involved Wraiths",
+                    buttonADestructive: false,
+                    acceptAction: () => FinishAcceptance(faction, subject, years, record, ext),
+                    cancelAction: () => FinishRefusal(faction, record, ext)));
+            }
+            catch (Exception ex)
+            {
+                requestWindowOpen = false;
+                record.nextRequestTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, ext.requestRetryTicks);
+                Log.Error("[WNG] Failed to open strategic Wraith involved-roster stage: " + ex);
+            }
+        }
+
+        private List<Pawn> ResolveInvolvedWraiths(Faction faction, Map home)
+        {
+            List<Pawn> present = home?.mapPawns?.AllPawnsSpawned?
+                .Where(p => IsValidInvolvedWraith(p, faction))
+                .Distinct()
+                .OrderBy(p => p.LabelShort)
+                .ThenBy(p => p.thingIDNumber)
+                .ToList() ?? new List<Pawn>();
+            if (present.Count > 0)
+                return present;
+
+            Pawn leader = faction?.leader;
+            if (IsValidInvolvedWraith(leader, faction))
+                present.Add(leader);
+            return present;
+        }
+
+        private static bool IsValidInvolvedWraith(Pawn pawn, Faction faction)
+        {
+            return pawn != null && !pawn.Dead && !pawn.Destroyed && !pawn.Downed && pawn.Faction == faction && WraithLifeForceUtility.IsWraith(pawn);
+        }
+
+        private void FinishAcceptance(Faction faction, Pawn subject, int years, WraithFactionHungerRecord record, WraithFactionHungerExtension ext)
+        {
+            requestWindowOpen = false;
+            AcceptRequest(faction, subject, years, record, ext);
+        }
+
+        private void FinishRefusal(Faction faction, WraithFactionHungerRecord record, WraithFactionHungerExtension ext)
+        {
+            requestWindowOpen = false;
+            RefuseRequest(faction, record, ext);
         }
 
         private void AcceptRequest(Faction faction, Pawn subject, int years, WraithFactionHungerRecord record, WraithFactionHungerExtension ext)
