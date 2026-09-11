@@ -1,0 +1,30 @@
+name: WNG Wraith Hive Heart analysis validation
+
+on:
+  push:
+    branches:
+      - rebuild/wraith-heart-analysis-20260912
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/wraith-heart-analysis-20260912
+          fetch-depth: 0
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Validate XML and Hive Heart analysis invariants
+        run: python tools/wng_wraith_heart_analysis_validate.py
+      - name: Remove temporary validation files only
+        run: |
+          git rm .github/workflows/wng-wraith-heart-analysis.yml
+          git rm tools/wng_wraith_heart_analysis_validate.py
+          git config user.name "Vardath"
+          git config user.email "59270526+Vardath@users.noreply.github.com"
+          git commit -m "rebuild: validate Wraith Hive Heart evidence bridge"
+          git push origin HEAD:rebuild/wraith-heart-analysis-20260912
