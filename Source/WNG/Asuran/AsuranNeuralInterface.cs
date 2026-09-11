@@ -283,7 +283,8 @@ namespace WraithNaniteGravtech
                 foreach (Gene sourceGene in source.genes.GenesListForReading.ToList())
                 {
                     if (sourceGene?.def == null || copy.genes.GetGene(sourceGene.def) != null) continue;
-                    copy.genes.AddGene(sourceGene.def, sourceGene.Xenogene);
+                    bool sourceWasXenogene = source.genes.Xenogenes.Contains(sourceGene);
+                    copy.genes.AddGene(sourceGene.def, sourceWasXenogene);
                 }
             }
 
