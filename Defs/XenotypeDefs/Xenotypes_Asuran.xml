@@ -7,6 +7,9 @@
     <descriptionShort>A synthetic human form made from coordinated Replicator nanites.</descriptionShort>
     <inheritable>false</inheritable>
     <iconPath>UI/Icons/Xenotypes/Baseliner</iconPath>
-    <genes><li>WNG_AsuranNanitePhysiology</li></genes>
+    <genes>
+      <li>WNG_AsuranNanitePhysiology</li>
+      <li>WNG_AsuranLatticeLink</li>
+    </genes>
   </XenotypeDef>
 </Defs>
