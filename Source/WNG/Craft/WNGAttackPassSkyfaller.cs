@@ -31,6 +31,8 @@ namespace WraithNaniteGravtech
                 continueFlight = dartMission.ExecutePhysicalPass(map, passCell);
             else if (craft.TryGetComp<CompPuddleJumperRaidMission>() is CompPuddleJumperRaidMission jumperMission)
                 continueFlight = jumperMission.ExecutePhysicalPass(map, passCell);
+            else if (craft.TryGetComp<CompGoauldDeathGliderMission>() is CompGoauldDeathGliderMission gliderMission)
+                continueFlight = gliderMission.ExecutePhysicalPass(map, passCell);
 
             if (continueFlight)
             {
@@ -48,10 +50,15 @@ namespace WraithNaniteGravtech
 
         private static void LandExactCraft(Thing craft, Map map, IntVec3 near)
         {
-            IntVec3 landingCell = WNGShuttleFlightUtility.FindLandingCell(craft, map, near);
+            CompGoauldDeathGliderMission gliderMission = craft.TryGetComp<CompGoauldDeathGliderMission>();
+            IntVec3 landingCell = gliderMission != null
+                ? gliderMission.FindReturnLandingCell(map, near)
+                : WNGShuttleFlightUtility.FindLandingCell(craft, map, near);
+
             GenSpawn.Spawn(craft, landingCell, map, WipeMode.Vanish);
             craft.TryGetComp<CompWraithDartRaidMission>()?.NotifyPhysicallyLanded();
             craft.TryGetComp<CompPuddleJumperRaidMission>()?.NotifyPhysicallyLanded();
+            gliderMission?.NotifyPhysicallyLanded();
         }
     }
 

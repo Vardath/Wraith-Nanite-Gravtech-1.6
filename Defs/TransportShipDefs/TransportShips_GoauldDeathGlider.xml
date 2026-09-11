@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <TransportShipDef MayRequire="idolord.ONAC">
+    <defName>WNG_GoauldDeathGliderShip</defName>
+    <label>Death Glider</label>
+    <shipThing>WNG_GoauldDeathGlider</shipThing>
+    <arrivingSkyfaller>WNG_GoauldDeathGliderIncoming</arrivingSkyfaller>
+    <leavingSkyfaller>WNG_GoauldDeathGliderLeaving</leavingSkyfaller>
+    <worldObject>WNG_GoauldDeathGliderWorld</worldObject>
+    <playerShuttle>true</playerShuttle>
+  </TransportShipDef>
+</Defs>

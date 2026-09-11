@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <WorldObjectDef ParentName="ShuttleWorldObjectBase" MayRequire="idolord.ONAC">
+    <defName>WNG_GoauldDeathGliderWorld</defName>
+    <label>Death Glider</label>
+    <description>a Goa'uld Death Glider in flight.</description>
+  </WorldObjectDef>
+</Defs>
