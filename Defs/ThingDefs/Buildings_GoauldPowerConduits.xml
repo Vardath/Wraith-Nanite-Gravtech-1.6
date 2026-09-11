@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="PowerConduit" MayRequire="idolord.ONAC">
+    <defName>WNG_GoauldPowerConduit</defName><label>Ha'tak power conduit</label>
+    <description>A Goa'uld conductive trunk for distributing ordinary electrical power through a Ha'tak. It remains a genuine RimWorld power conduit and can be carried on a gravship.</description>
+    <graphicData><texPath>Things/Building/Linked/PowerConduit_Atlas</texPath><color>(0.72,0.52,0.22)</color></graphicData><uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <statBases><MaxHitPoints>125</MaxHitPoints><WorkToBuild>50</WorkToBuild><Flammability>0</Flammability><Beauty>0</Beauty></statBases>
+    <costList><ONAC_Naquadah>1</ONAC_Naquadah></costList><designationCategory>ONAC_Architect</designationCategory><designationHotKey IsNull="True" />
+    <researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites>
+  </ThingDef>
+  <ThingDef ParentName="PowerConduit" MayRequire="idolord.ONAC">
+    <defName>WNG_GoauldHiddenPowerConduit</defName><label>hidden Ha'tak power conduit</label>
+    <description>A concealed Goa'uld power trunk built into the mothership deck. It is hidden in normal map view while remaining part of RimWorld's ordinary power net.</description>
+    <graphicData><color>(0,0,0,0)</color><shaderType>Transparent</shaderType></graphicData><uiIconPath>Things/Building/Linked/HiddenConduit_MenuIcon</uiIconPath>
+    <statBases><MaxHitPoints>160</MaxHitPoints><WorkToBuild>300</WorkToBuild><Flammability>0</Flammability><Beauty>0</Beauty></statBases>
+    <costList><ONAC_Naquadah>2</ONAC_Naquadah></costList><designationCategory>ONAC_Architect</designationCategory><designationHotKey IsNull="True" />
+    <researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><constructEffect>ConstructDirt</constructEffect>
+    <building><ai_neverTrashThis>true</ai_neverTrashThis><isTargetable>false</isTargetable><expandHomeArea>false</expandHomeArea><canBeDamagedByAttacks>false</canBeDamagedByAttacks></building>
+  </ThingDef>
+</Defs>
