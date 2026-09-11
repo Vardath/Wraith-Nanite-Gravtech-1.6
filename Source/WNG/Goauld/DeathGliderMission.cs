@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 
@@ -33,6 +34,7 @@ namespace WraithNaniteGravtech
     public sealed class CompGoauldDeathGliderMission : ThingComp
     {
         private bool sortieActive;
+        private bool departAfterSortie;
         private int completedPasses;
         private int shotsFired;
         private IntVec3 returnCell = IntVec3.Invalid;
@@ -71,47 +73,24 @@ namespace WraithNaniteGravtech
                 defaultLabel = "Death Glider combat sortie",
                 defaultDesc = "Launch this exact Death Glider through a paired staff-cannon attack run and return it to its original landing cell. The native transporter must contain a real two-person combat crew.",
                 icon = ContentFinder<Texture2D>.Get("UI/Commands/LaunchShip", reportFailure: false),
-                action = TryBeginCombatSortie
+                action = () => TryBeginCombatSortie(departWhenComplete: false, showFailureMessage: true)
             };
 
-            CompTransporter transporter = Transporter;
-            CompRefuelable fuel = Fuel;
-
-            if (sortieActive)
-                sortie.Disable("This Death Glider is already committed to a combat sortie.");
-            else if (parent?.Spawned != true || parent.Map == null)
-                sortie.Disable("The Death Glider must be landed on a map.");
-            else if (transporter == null)
-                sortie.Disable("Native shuttle transporter unavailable.");
-            else if (transporter.AnythingLeftToLoad)
-                sortie.Disable("Finish loading the assigned Death Glider crew and cargo first.");
-            else if (transporter.OverMassCapacity)
-                sortie.Disable("The Death Glider is over mass capacity.");
-            else if (OperationalCrewCount < Math.Max(1, Props.requiredCrew))
-                sortie.Disable($"Load {Math.Max(1, Props.requiredCrew)} conscious humanlike crew into the Death Glider.");
-            else if (fuel == null || fuel.Fuel < Math.Max(0f, Props.sortieFuelCost))
-                sortie.Disable($"At least {Math.Max(0f, Props.sortieFuelCost):0.#} fuel is required for a combat sortie.");
-            else if (Props.projectile == null)
-                sortie.Disable("Death Glider staff-cannon projectile is unavailable.");
+            string failure = SortieFailureReason();
+            if (!failure.NullOrEmpty())
+                sortie.Disable(failure);
 
             yield return sortie;
         }
 
-        private void TryBeginCombatSortie()
+        public bool TryBeginCombatSortie(bool departWhenComplete, bool showFailureMessage)
         {
-            if (sortieActive || parent?.Spawned != true || parent.Map == null)
-                return;
-
-            CompTransporter transporter = Transporter;
-            CompRefuelable fuel = Fuel;
-            int requiredCrew = Math.Max(1, Props.requiredCrew);
-            float fuelCost = Math.Max(0f, Props.sortieFuelCost);
-
-            if (transporter == null || transporter.AnythingLeftToLoad || transporter.OverMassCapacity ||
-                OperationalCrewCount < requiredCrew || fuel == null || fuel.Fuel < fuelCost || Props.projectile == null)
+            string failure = SortieFailureReason();
+            if (!failure.NullOrEmpty())
             {
-                Messages.Message("Death Glider sortie requirements are not met.", parent, MessageTypeDefOf.RejectInput, historical: false);
-                return;
+                if (showFailureMessage)
+                    Messages.Message(failure, parent, MessageTypeDefOf.RejectInput, historical: false);
+                return false;
             }
 
             Map map = parent.Map;
@@ -119,18 +98,52 @@ namespace WraithNaniteGravtech
             completedPasses = 0;
             shotsFired = 0;
             sortieActive = true;
+            departAfterSortie = departWhenComplete;
 
             IntVec3 firstPassCell = WNGShuttleFlightUtility.FindAttackPassCell(parent, map, returnCell, oppositeSide: false);
             if (!WNGShuttleFlightUtility.TryBeginPhysicalPasses(parent, map, firstPassCell))
             {
                 sortieActive = false;
+                departAfterSortie = false;
                 returnCell = IntVec3.Invalid;
-                Messages.Message("The Death Glider could not begin its combat sortie.", parent, MessageTypeDefOf.RejectInput, historical: false);
-                return;
+                if (showFailureMessage)
+                    Messages.Message("The Death Glider could not begin its combat sortie.", parent, MessageTypeDefOf.RejectInput, historical: false);
+                return false;
             }
 
+            float fuelCost = Math.Max(0f, Props.sortieFuelCost);
             if (fuelCost > 0f)
-                fuel.ConsumeFuel(fuelCost);
+                Fuel.ConsumeFuel(fuelCost);
+            return true;
+        }
+
+        private string SortieFailureReason()
+        {
+            if (sortieActive)
+                return "This Death Glider is already committed to a combat sortie.";
+            if (parent?.Spawned != true || parent.Map == null)
+                return "The Death Glider must be landed on a map.";
+
+            CompTransporter transporter = Transporter;
+            if (transporter == null)
+                return "Native shuttle transporter unavailable.";
+            if (transporter.AnythingLeftToLoad)
+                return "Finish loading the assigned Death Glider crew and cargo first.";
+            if (transporter.OverMassCapacity)
+                return "The Death Glider is over mass capacity.";
+
+            int requiredCrew = Math.Max(1, Props.requiredCrew);
+            if (OperationalCrewCount < requiredCrew)
+                return $"Load {requiredCrew} conscious humanlike crew into the Death Glider.";
+
+            CompRefuelable fuel = Fuel;
+            float fuelCost = Math.Max(0f, Props.sortieFuelCost);
+            if (fuel == null || fuel.Fuel < fuelCost)
+                return $"At least {fuelCost:0.#} fuel is required for a combat sortie.";
+            if (Props.projectile == null)
+                return "Death Glider staff-cannon projectile is unavailable.";
+
+            return null;
         }
 
         public bool ExecutePhysicalPass(Map map, IntVec3 passCell)
@@ -156,8 +169,64 @@ namespace WraithNaniteGravtech
 
         public void NotifyPhysicallyLanded()
         {
+            bool shouldDepart = departAfterSortie;
             sortieActive = false;
+            departAfterSortie = false;
             returnCell = IntVec3.Invalid;
+
+            if (shouldDepart)
+                TryBeginNativeHostileEscape();
+        }
+
+        private bool TryBeginNativeHostileEscape()
+        {
+            if (parent?.Spawned != true || parent.Map == null)
+                return false;
+            if (parent.Faction == null || Faction.OfPlayer == null || !parent.Faction.HostileTo(Faction.OfPlayer))
+                return false;
+            if (OperationalCrewCount < Math.Max(1, Props.requiredCrew))
+                return false;
+
+            CompShuttle shuttle = parent.TryGetComp<CompShuttle>();
+            TransportShip transportShip = shuttle?.shipParent;
+            if (transportShip == null || transportShip.Disposed)
+                return false;
+
+            CompLaunchable launchable = parent.TryGetComp<CompLaunchable>();
+            CompRefuelable refuelable = Fuel;
+            float minimumFuel = Math.Max(0f, launchable?.Props?.minFuelCost ?? 0f);
+            if (refuelable != null && refuelable.Fuel < minimumFuel)
+                return false;
+
+            PlanetTile destination = FindNativeEscapeDestination(parent.Tile);
+            if (!destination.Valid)
+                return false;
+
+            ShipJob_FlyAway flyAway = (ShipJob_FlyAway)ShipJobMaker.MakeShipJob(ShipJobDefOf.FlyAway);
+            flyAway.destinationTile = destination;
+            flyAway.arrivalAction = new WNGHostileShuttleEscapeArrivalAction();
+            flyAway.dropMode = TransportShipDropMode.None;
+            transportShip.ForceJob(flyAway);
+
+            if (parent.Spawned)
+                return false;
+
+            if (refuelable != null && minimumFuel > 0f)
+                refuelable.ConsumeFuel(minimumFuel);
+            return true;
+        }
+
+        private static PlanetTile FindNativeEscapeDestination(PlanetTile origin)
+        {
+            if (!origin.Valid || Find.WorldGrid == null)
+                return PlanetTile.Invalid;
+
+            List<PlanetTile> neighbors = new List<PlanetTile>();
+            Find.WorldGrid.GetTileNeighbors(origin, neighbors);
+            if (neighbors.Count > 0)
+                return neighbors.RandomElement();
+
+            return origin;
         }
 
         private void FireStaffCannonPass(Map map, IntVec3 passCell)
@@ -211,6 +280,14 @@ namespace WraithNaniteGravtech
             return parent.Faction.HostileTo(thing.Faction);
         }
 
+        public override void Notify_Hacked(Pawn hacker)
+        {
+            sortieActive = false;
+            departAfterSortie = false;
+            returnCell = IntVec3.Invalid;
+            base.Notify_Hacked(hacker);
+        }
+
         public override string CompInspectStringExtra()
         {
             int requiredCrew = Math.Max(1, Props.requiredCrew);
@@ -227,6 +304,7 @@ namespace WraithNaniteGravtech
         {
             base.PostExposeData();
             Scribe_Values.Look(ref sortieActive, "wngDeathGliderSortieActive", false);
+            Scribe_Values.Look(ref departAfterSortie, "wngDeathGliderDepartAfterSortie", false);
             Scribe_Values.Look(ref completedPasses, "wngDeathGliderCompletedPasses", 0);
             Scribe_Values.Look(ref shotsFired, "wngDeathGliderShotsFired", 0);
             Scribe_Values.Look(ref returnCell, "wngDeathGliderReturnCell", IntVec3.Invalid);
