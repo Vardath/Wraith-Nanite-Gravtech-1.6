@@ -136,12 +136,11 @@ namespace WraithNaniteGravtech
                         case AsuranQueenRecoveryPhase.NativeEscapePending:
                             return true;
                         case AsuranQueenRecoveryPhase.Subduing:
-                            // If every exact recovery operative has been killed/removed, the old
-                            // mission can no longer succeed even if its component is still present.
-                            // A surviving Asuran operative keeps the attempt active and able to resume.
-                            if (map.mapPawns.AllPawnsSpawned.Any(p =>
-                                    p != null && !p.Dead && p.Faction == thing.Faction &&
-                                    p.kindDef?.defName == "WNG_AsuranOperative"))
+                            // BeginRecovery registers the exact generated recovery operatives as the
+                            // native shuttle's required pawns. Use that exact set, not unrelated Asurans
+                            // elsewhere on the map, when deciding whether this operation can still act.
+                            CompShuttle shuttle = thing.TryGetComp<CompShuttle>();
+                            if (shuttle?.requiredPawns?.Any(p => p != null && !p.Dead) == true)
                                 return true;
                             break;
                     }
