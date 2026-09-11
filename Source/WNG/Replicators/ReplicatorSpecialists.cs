@@ -28,13 +28,14 @@ namespace WraithNaniteGravtech
         public static bool IsAutonomous(Pawn pawn)
             => pawn != null && !pawn.Dead && pawn.Spawned && pawn.Map != null
                 && pawn.Faction != null && pawn.Faction != Faction.OfPlayer
-                && !pawn.IsColonyMechPlayerControlled && !ReplicatorEMP.IsSuppressed(pawn);
+                && !pawn.IsColonyMechPlayerControlled && !ReplicatorEMP.IsSuppressed(pawn)
+                && pawn.TryGetComp<CompReplicatorSovereignty>()?.InterferenceBlocked != true;
 
         public static bool IsReplicator(Pawn pawn)
             => pawn?.TryGetComp<CompReplicatorState>() != null;
 
         public static bool SameDomain(Pawn a, Pawn b)
-            => a != null && b != null && a.Faction == b.Faction;
+            => ReplicatorSovereigntyUtility.SameDomain(a, b);
 
         public static ReplicatorSpecialistExtension Extension(Pawn pawn)
             => pawn?.def?.GetModExtension<ReplicatorSpecialistExtension>();
@@ -119,7 +120,7 @@ namespace WraithNaniteGravtech
         {
             this.FailOnDestroyedNullOrForbidden(Target);
             this.FailOn(() => ReplicatorEMP.IsSuppressed(pawn));
-            this.FailOn(() => job.targetA.Pawn?.Faction != pawn.Faction);
+            this.FailOn(() => !ReplicatorSpecialistUtility.SameDomain(pawn, job.targetA.Pawn));
             yield return Toils_Goto.GotoThing(Target, PathEndMode.Touch);
 
             ReplicatorSpecialistExtension ext = ReplicatorSpecialistUtility.Extension(pawn);
@@ -131,7 +132,7 @@ namespace WraithNaniteGravtech
             finish.initAction = () =>
             {
                 Pawn target = job.targetA.Pawn;
-                if (target == null || target.Dead || target.Faction != pawn.Faction) return;
+                if (target == null || target.Dead || !ReplicatorSpecialistUtility.SameDomain(pawn, target)) return;
                 float remaining = Math.Max(0f, ReplicatorSpecialistUtility.Extension(pawn)?.repairAmount ?? 4f);
                 foreach (Hediff_Injury injury in target.health.hediffSet.hediffs.OfType<Hediff_Injury>()
                     .Where(i => i.Severity > 0f).OrderByDescending(i => i.Severity).ToList())
@@ -182,9 +183,6 @@ namespace WraithNaniteGravtech
             bool accessBlocker = thing is Building_Door || identity.Contains("wall") || identity.Contains("barricade") || identity.Contains("bulkhead") || identity.Contains("gate");
             if (!accessBlocker) return false;
 
-            // Outside an active retaliation/terminal-combat state, the Burrower breaches only access
-            // blockers that are preventing the swarm from reaching consumable matter. It does not
-            // treat every hostile structure as a military objective.
             if (!ReplicatorCombatPermission.CanAttack(pawn))
                 return HasConsumableMatterBeyond(pawn, thing);
 
