@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>WNG_ReplicatorSovereignSuppressed</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorSovereignSuppressed</driverClass>
+    <reportString>sovereign command disrupted.</reportString>
+    <playerInterruptible>false</playerInterruptible>
+    <checkOverrideOnDamage>Never</checkOverrideOnDamage>
+    <neverShowWeapon>true</neverShowWeapon>
+  </JobDef>
+</Defs>
