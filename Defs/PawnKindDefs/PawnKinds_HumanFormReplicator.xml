@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef>
+    <defName>WNG_HumanFormReplicatorCopy</defName>
+    <label>human-form Replicator</label>
+    <description>A human-form synthetic body reconstructed from a scanned biological person through the Neural Interface. Its exact copied identity data is applied after generation and the WNG nanite identity is layered over the preserved source pattern.</description>
+    <race>Human</race>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet><xenotypeChances><WNG_NaniteHumanoid>1</WNG_NaniteHumanoid></xenotypeChances></xenotypeSet>
+    <minGenerationAge>18</minGenerationAge>
+    <maxGenerationAge>80</maxGenerationAge>
+    <allowOldAgeInjuries>false</allowOldAgeInjuries>
+    <isFighter>true</isFighter>
+    <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
+    <combatPower>110</combatPower>
+    <initialWillRange>0~0</initialWillRange>
+    <initialResistanceRange>0~0</initialResistanceRange>
+  </PawnKindDef>
+</Defs>

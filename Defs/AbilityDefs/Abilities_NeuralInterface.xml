@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef>
+    <defName>WNG_NeuralInterface</defName>
+    <label>Neural Interface</label>
+    <description>Touch a living biological humanlike pawn with the human-form Replicator neural interface. The operator can rewrite allegiance, impose native prisoner/slave status where valid, copy skills and passions, or reconstruct a human-form nanite copy. Reconstruction preserves the scanned person's identity pattern and spends Nanite Reserve only after a viable copy is created and placed.</description>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>600~600</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <range>1.9</range>
+      <warmupTime>1.5</warmupTime>
+      <targetParams>
+        <canTargetLocations>false</canTargetLocations>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetItems>false</canTargetItems>
+        <canTargetSelf>false</canTargetSelf>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityNeuralInterface">
+        <researchPrerequisite>WNG_AsuranFabrication</researchPrerequisite>
+        <copyPawnKind>WNG_HumanFormReplicatorCopy</copyPawnKind>
+        <naniteXenotype>WNG_NaniteHumanoid</naniteXenotype>
+        <copyReserveCost>0.60</copyReserveCost>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>

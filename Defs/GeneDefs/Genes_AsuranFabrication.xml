@@ -12,7 +12,10 @@
     <foodPoisoningChanceFactor>0</foodPoisoningChanceFactor>
     <sterilize>true</sterilize>
     <biologicalAgeTickFactorFromAgeCurve><points><li>(0,0)</li><li>(1000,0)</li></points></biologicalAgeTickFactorFromAgeCurve>
-    <abilities><li>WNG_AssembleAsuranWorkshop</li></abilities>
+    <abilities>
+      <li>WNG_AssembleAsuranWorkshop</li>
+      <li>WNG_NeuralInterface</li>
+    </abilities>
     <modExtensions><li Class="WraithNaniteGravtech.AsuranNanitePhysiologyExtension">
       <reconcileIntervalTicks>120</reconcileIntervalTicks>
       <healIntervalTicks>250</healIntervalTicks>
