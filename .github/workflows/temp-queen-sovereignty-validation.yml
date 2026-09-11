@@ -1,0 +1,53 @@
+name: Temporary Replicator Queen sovereignty validation
+
+on:
+  push:
+    branches: [wng-queen-sovereignty-candidate]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Parse XML
+        run: |
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+          files = list(pathlib.Path('Defs').rglob('*.xml')) + list(pathlib.Path('Patches').rglob('*.xml'))
+          for p in files: ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+      - name: Sovereignty invariants
+        run: |
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+          race = ET.parse('Defs/ThingDefs/Races_Replicator.xml').getroot()
+          base = next(x for x in race.findall('ThingDef') if x.attrib.get('Name') == 'WNG_ReplicatorRaceBase')
+          comps = base.find('comps')
+          assert any(x.attrib.get('Class') == 'WraithNaniteGravtech.CompProperties_ReplicatorSovereignty' for x in comps), 'base block sovereignty comp missing'
+
+          jobs = ET.parse('Defs/JobDefs/Jobs_ReplicatorSovereignty.xml').getroot()
+          job = jobs.find('JobDef')
+          assert job.findtext('checkOverrideOnDamage') == 'Never'
+          assert job.findtext('neverShowWeapon') == 'true'
+
+          tree = ET.parse('Defs/ThinkTreeDefs/ThinkTree_Replicator.xml').getroot()
+          xml = ET.tostring(tree, encoding='unicode')
+          assert xml.index('JobGiver_ReplicatorSovereignSuppressed') < xml.index('ThinkNode_QueuedJob')
+
+          src = pathlib.Path('Source/WNG/Replicators/ReplicatorSovereignty.cs').read_text()
+          hierarchy = pathlib.Path('Source/WNG/Replicators/ReplicatorHierarchy.cs').read_text()
+          specialists = pathlib.Path('Source/WNG/Replicators/ReplicatorSpecialists.cs').read_text()
+          retaliation = pathlib.Path('Source/WNG/Replicators/ReplicatorRetaliation.cs').read_text()
+          assert 'enum ReplicatorControlAuthority' in src
+          assert 'QueenDomainKey' in src and 'TryAssignQueen' in src
+          assert 'CopyAuthorityFrom' in hierarchy and 'TrySovereignRecombine' in hierarchy
+          assert 'ReplicatorSovereigntyUtility.SameDomain(a, b)' in specialists
+          assert 'ReplicatorSovereigntyUtility.SameDomain(pawn, p)' in retaliation
+          print('Sovereignty invariants passed')
+          PY
