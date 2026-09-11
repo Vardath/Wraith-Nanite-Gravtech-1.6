@@ -1,0 +1,67 @@
+name: WNG Quiet Lattice foundation validation
+
+on:
+  push:
+    branches:
+      - rebuild/quiet-lattice-foundation-20260911
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/quiet-lattice-foundation-20260911
+
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+
+      - name: Parse Def and Patch XML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+
+      - name: Verify Quiet Lattice role/faction invariants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          f = Path('Defs/FactionDefs/Factions_QuietLattice.xml').read_text(encoding='utf-8')
+          p = Path('Defs/PawnKindDefs/PawnKinds_HumanFormSocieties.xml').read_text(encoding='utf-8')
+          a = Path('Defs/FactionDefs/Factions_Asuran.xml').read_text(encoding='utf-8')
+          required_f = [
+              '<defName>WNG_HumanFormEnclave</defName>',
+              '<fixedName>The Quiet Lattice</fixedName>',
+              '<permanentEnemy>false</permanentEnemy>',
+              '<naturalEnemy>false</naturalEnemy>',
+              '<WNG_NaniteHumanoid>999</WNG_NaniteHumanoid>',
+              '<kindDef>Peaceful</kindDef>',
+              '<kindDef>Settlement</kindDef>',
+              '<WNG_HumanFormEngineer>',
+              '<WNG_HumanFormSoldier>',
+              '<WNG_HumanFormCoordinator>',
+          ]
+          required_p = [
+              '<defName>WNG_HumanFormReplicator</defName>',
+              '<defName>WNG_HumanFormEngineer</defName>',
+              '<defName>WNG_HumanFormSoldier</defName>',
+              '<defName>WNG_HumanFormCoordinator</defName>',
+              '<defName>WNG_PlayerHumanFormReplicator</defName>',
+              '<defaultFactionDef>PlayerColony</defaultFactionDef>',
+              '<WNG_NaniteHumanoid>1</WNG_NaniteHumanoid>',
+          ]
+          missing = [x for x in required_f if x not in f] + [x for x in required_p if x not in p]
+          if missing:
+              raise SystemExit('Missing Quiet Lattice invariants: ' + ', '.join(missing))
+          if '<defName>WNG_AsuranLattice</defName>' not in a or '<permanentEnemy>true</permanentEnemy>' not in a:
+              raise SystemExit('Hostile Asuran Lattice must remain distinct and hostile')
+          forbidden = ['WNG_NanitePrecursor', 'WNG_PrecursorWeapon', 'WNG_PrecursorFieldArmor', 'WNG_PrecursorCommandArmor', 'WNG_HumanFormUniform']
+          used = [x for x in forbidden if x in f or x in p]
+          if used:
+              raise SystemExit('Superseded/missing historical Defs referenced: ' + ', '.join(used))
+          PY
