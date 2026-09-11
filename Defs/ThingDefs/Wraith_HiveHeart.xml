@@ -3,7 +3,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_WraithHiveHeart</defName>
     <label>wraith hive heart</label>
-    <description>The central population anchor of a mature Wraith Hive. A generated hostile Hive can bind its exact active founders, exact ordinary hibernators and finite exact feeding stock to this Heart. The recorded founding Wraith population is the demographic ceiling until a later bounded Growth Chamber layer explicitly replaces losses.</description>
+    <description>The central population anchor of a mature Wraith Hive. A generated hostile Hive can bind its exact active founders, exact ordinary hibernators and finite exact feeding stock to this Heart. The recorded founding Wraith population is the demographic ceiling; a linked Growth Chamber may replace Hunter/Warrior losses only up to that ceiling.</description>
     <thingClass>Building</thingClass>
     <tickerType>Normal</tickerType>
     <size>(3,3)</size>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Mechanics-validation placeholder graphic only. Final release requires dedicated organic Wraith art. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_WraithGrowthChamber</defName>
+    <label>Wraith growth chamber</label>
+    <description>A Wraith cloning chamber that uses a living Queen's genetic template, bio-sludge biomass and immense electrical input to replace lost Hunters and Warriors in an initialized Mature Hive. It cannot create Queens or Keepers and cannot raise the Hive above its recorded founding population ceiling.</description>
+    <thingClass>Building</thingClass>
+    <tickerType>Normal</tickerType>
+    <size>(3,2)</size>
+    <altitudeLayer>Building</altitudeLayer>
+    <fillPercent>0.55</fillPercent>
+    <useHitPoints>true</useHitPoints>
+    <passability>PassThroughOnly</passability>
+    <graphicData>
+      <texPath>Things/Building/Production/BioferriteHarvester</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(3.5,2.5)</drawSize>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>520</MaxHitPoints>
+      <Flammability>0.12</Flammability>
+      <WorkToBuild>5200</WorkToBuild>
+    </statBases>
+    <designationCategory>WNG</designationCategory>
+    <researchPrerequisites><li>WNG_WraithLivingTechnology</li></researchPrerequisites>
+    <constructionSkillPrerequisite>8</constructionSkillPrerequisite>
+    <costList>
+      <WNG_WraithBioSludge>90</WNG_WraithBioSludge>
+      <Plasteel>80</Plasteel>
+      <ComponentSpacer>3</ComponentSpacer>
+    </costList>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>4000</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Refuelable">
+        <fuelCapacity>240</fuelCapacity>
+        <targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
+        <initialConfigurableTargetFuelLevel>240</initialConfigurableTargetFuelLevel>
+        <fuelFilter><thingDefs><li>WNG_WraithBioSludge</li></thingDefs></fuelFilter>
+        <fuelLabel>Bio sludge</fuelLabel>
+        <fuelGizmoLabel>Bio sludge</fuelGizmoLabel>
+        <initialFuelPercent>0</initialFuelPercent>
+        <consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed>
+        <autoRefuelPercent>1</autoRefuelPercent>
+        <showFuelGizmo>true</showFuelGizmo>
+        <drawOutOfFuelOverlay>false</drawOutOfFuelOverlay>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithGrowthChamber">
+        <cycleTicks>60000</cycleTicks>
+        <biomassCostPerCycle>60</biomassCostPerCycle>
+        <queenLifeForceCost>0.35</queenLifeForceCost>
+        <spawnRadius>5</spawnRadius>
+        <hunterWeight>0.45</hunterWeight>
+        <checkIntervalTicks>60</checkIntervalTicks>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>
