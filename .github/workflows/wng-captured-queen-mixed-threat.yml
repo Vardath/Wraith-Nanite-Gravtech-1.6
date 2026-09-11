@@ -1,0 +1,56 @@
+name: WNG captured Queen mixed threat validation
+
+on:
+  push:
+    branches:
+      - rebuild/captured-queen-sovereign-threats-20260911
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/captured-queen-sovereign-threats-20260911
+
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+
+      - name: Parse Def and Patch XML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+
+      - name: Verify captured Queen mixed-threat invariants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s = Path('Source/WNG/Replicators/ReplicatorCapturedQueenThreats.cs').read_text(encoding='utf-8')
+          q = Path('Source/WNG/Replicators/ReplicatorSovereignty.cs').read_text(encoding='utf-8')
+          x = Path('Defs/IncidentDefs/Incidents_CapturedQueen.xml').read_text(encoding='utf-8')
+          required_source = [
+              'GameComponent_CapturedQueenThreats',
+              'nextThreatTick',
+              'TryGetCapturedQueenAsuranFaction',
+              'ResolveAutonomousSwarmFaction',
+              'TryAcquireForCapturedQueen',
+              'LordJob_AssaultColony',
+              'HasActiveCapturedQueenForce',
+              'Scribe_Values.Look(ref nextThreatTick',
+          ]
+          missing = [v for v in required_source if v not in s]
+          if missing:
+              raise SystemExit('Missing mixed-threat source invariants: ' + ', '.join(missing))
+          if 'IsExactQueenRetainedByAsuranLattice' not in q:
+              raise SystemExit('Captured Queen retention foundation missing')
+          required_xml = ['<baseChance>0</baseChance>', '<pointsScaleable>true</pointsScaleable>', 'CapturedQueenThreatExtension']
+          missing_xml = [v for v in required_xml if v not in x]
+          if missing_xml:
+              raise SystemExit('Missing mixed-threat Def invariants: ' + ', '.join(missing_xml))
+          PY
