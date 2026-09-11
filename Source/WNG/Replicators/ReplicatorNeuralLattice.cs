@@ -61,13 +61,13 @@ namespace WraithNaniteGravtech
 
             if (ReplicatorSovereigntyUtility.IsExactQueen(pawn))
             {
-                yield return new Command_Action
+                Command_Action queenNotice = new Command_Action
                 {
                     defaultLabel = "Neural lattice control",
-                    defaultDesc = "This pawn is the exact Replicator Queen and already possesses broader innate sovereign authority. The implant does not create a second overlapping control domain.",
-                    disabled = true,
-                    disabledReason = "The exact Queen uses her innate sovereign lattice."
+                    defaultDesc = "This pawn is the exact Replicator Queen and already possesses broader innate sovereign authority. The implant does not create a second overlapping control domain."
                 };
+                queenNotice.Disable("The exact Queen uses her innate sovereign lattice.");
+                yield return queenNotice;
                 yield break;
             }
 
