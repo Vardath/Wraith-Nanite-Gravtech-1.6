@@ -148,6 +148,7 @@ namespace WraithNaniteGravtech
             {
                 Pawn child = PawnGenerator.GeneratePawn(kind, parentPawn.Faction);
                 child.TryGetComp<CompReplicatorState>()?.CopyFrom(parentPawn.TryGetComp<CompReplicatorState>());
+                child.TryGetComp<CompReplicatorSovereignty>()?.CopyAuthorityFrom(parentPawn.TryGetComp<CompReplicatorSovereignty>());
                 IntVec3 cell = CellFinder.RandomClosewalkCellNear(parentPawn.Position, parentPawn.Map, 2);
                 GenSpawn.Spawn(child, cell, parentPawn.Map);
                 storedMatter -= cost;
