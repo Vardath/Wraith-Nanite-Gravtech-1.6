@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef>
+    <defName>WNG_TemporaryAsuranIntrusion</defName>
+    <label>lattice intrusion</label>
+    <description>Temporarily hijack one exact hostile block Replicator through the Asuran command lattice. The override preserves the target's previous Queen, implant or autonomous controller state and restores it when the intrusion ends. This does not grant permanent sovereignty or Replicator Queen identity.</description>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <aiCanUse>true</aiCanUse>
+    <ai_IsOffensive>true</ai_IsOffensive>
+    <ai_IsIncendiary>false</ai_IsIncendiary>
+    <cooldownTicksRange>5000~5000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <range>20</range>
+      <warmupTime>1.5</warmupTime>
+      <targetParams>
+        <canTargetLocations>false</canTargetLocations>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetItems>false</canTargetItems>
+        <canTargetAnimals>false</canTargetAnimals>
+        <canTargetHumans>false</canTargetHumans>
+        <canTargetMechs>true</canTargetMechs>
+        <canTargetSelf>false</canTargetSelf>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityTemporaryAsuranIntrusion">
+        <durationTicks>2500</durationTicks>
+        <maxIntrudedBlocks>2</maxIntrudedBlocks>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>
