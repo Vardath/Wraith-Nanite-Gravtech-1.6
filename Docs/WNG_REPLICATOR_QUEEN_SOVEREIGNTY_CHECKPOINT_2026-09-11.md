@@ -114,4 +114,11 @@ Still required later:
 
 The source/Def/API surface was checked against RimWorld 1.6 decompiled definitions for Hediff gizmos, `ThingComp.CompGetGizmosExtra`, targeting commands, `JobDefOf.Goto`, JobDef damage-override controls, faction changes and the existing WNG hierarchy/specialist/EMP/containment interfaces.
 
-No claim is made that RimWorld itself was launched in this environment.
+Temporary GitHub Actions validation run **34576583840** completed successfully:
+- `Source/WNG/WNG.csproj` C# build: **SUCCESS**;
+- all current Def/Patch XML parsed: **SUCCESS**;
+- Queen-sovereignty wiring/domain invariants: **SUCCESS**.
+
+The temporary validation workflow was removed immediately afterward and is not part of the promoted net diff.
+
+No claim is made that RimWorld itself was launched in this environment; live gameplay validation remains required.
