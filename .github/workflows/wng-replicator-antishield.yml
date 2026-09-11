@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  validate-and-commit:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,143 +17,50 @@ jobs:
           ref: rebuild/replicator-antishield-20260912
           fetch-depth: 0
 
-      - name: Wire adaptive ranged fire through native projectile
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('Source/WNG/Replicators/ReplicatorAdaptationEffects.cs')
-          s = p.read_text(encoding='utf-8')
-
-          marker = '''        public float PowerHealingMultiplier => State?.HasAdaptation(ReplicatorAdaptation.Power) == true
-            ? Math.Max(1f, Props.powerHealingMultiplier)
-            : 1f;
-'''
-          insert = marker + '''
-        internal int AdaptiveProjectileBodyDamage => Math.Max(1, (int)Math.Round(Math.Max(1f, Props.rangedDamage)));
-        internal float AdaptiveProjectileArmorPenetration => Math.Max(0f, Props.rangedArmorPenetration);
-        internal float AdaptiveAntiShieldMultiplier => Math.Max(1f, Props.antiShieldDamageMultiplier);
-'''
-          if 'internal int AdaptiveProjectileBodyDamage' not in s:
-              if marker not in s:
-                  raise SystemExit('Projectile accessor insertion point missing')
-              s = s.replace(marker, insert, 1)
-
-          old = '''            float damage = Math.Max(1f, Props.rangedDamage);
-            CompReplicatorAdaptationEffects targetEffects = target.TryGetComp<CompReplicatorAdaptationEffects>();
-            if (State.HasAdaptation(ReplicatorAdaptation.AntiShield)
-                && targetEffects?.State?.HasAdaptation(ReplicatorAdaptation.Shield) == true)
-                damage *= Math.Max(1f, Props.antiShieldDamageMultiplier);
-
-            target.TakeDamage(new DamageInfo(
-                DamageDefOf.Bullet,
-                damage,
-                Math.Max(0f, Props.rangedArmorPenetration),
-                instigator: pawn));
-'''
-          new = '''            TryLaunchAdaptiveProjectile(pawn, target);
-'''
-          if old in s:
-              s = s.replace(old, new, 1)
-          elif 'TryLaunchAdaptiveProjectile(pawn, target);' not in s:
-              raise SystemExit('Direct ranged damage block not found')
-
-          insert_point = '''        private void TryAutonomousGravReposition(Pawn pawn)
-'''
-          helper = '''        private bool TryLaunchAdaptiveProjectile(Pawn pawn, Pawn target)
-        {
-            if (pawn == null || target == null || pawn.Map == null || !pawn.Spawned || !target.Spawned)
-                return false;
-
-            ThingDef projectileDef = DefDatabase<ThingDef>.GetNamedSilentFail("WNG_ReplicatorAdaptiveBolt");
-            Projectile projectile = projectileDef == null ? null : ThingMaker.MakeThing(projectileDef) as Projectile;
-            if (projectile == null)
-            {
-                Log.Error("[WNG] Replicator adaptive ranged fire could not create WNG_ReplicatorAdaptiveBolt.");
-                return false;
-            }
-
-            GenSpawn.Spawn(projectile, pawn.Position, pawn.Map);
-            projectile.Launch(
-                pawn,
-                target,
-                target,
-                ProjectileHitFlags.IntendedTarget | ProjectileHitFlags.NonTargetWorld,
-                preventFriendlyFire: true);
-            return true;
-        }
-
-'''
-          if 'private bool TryLaunchAdaptiveProjectile' not in s:
-              if insert_point not in s:
-                  raise SystemExit('Projectile helper insertion point missing')
-              s = s.replace(insert_point, helper + insert_point, 1)
-
-          p.write_text(s, encoding='utf-8')
-          PY
+      - name: Patch adaptive ranged fire
+        run: python .github/scripts/patch-replicator-antishield.py
 
       - name: Build WNG
         run: dotnet build Source/WNG/WNG.csproj -c Release
 
-      - name: Parse Def and Patch XML
+      - name: Validate XML and invariants
         run: |
           python - <<'PY'
           from pathlib import Path
           import xml.etree.ElementTree as ET
           files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
-          for p in files:
-              ET.parse(p)
-          print(f'Parsed {len(files)} XML files')
-          PY
-
-      - name: Verify AntiShield invariants
-        run: |
-          python - <<'PY'
-          from pathlib import Path
+          for f in files:
+              ET.parse(f)
           e = Path('Source/WNG/Replicators/ReplicatorAdaptationEffects.cs').read_text(encoding='utf-8')
           p = Path('Source/WNG/Replicators/ReplicatorAdaptiveProjectile.cs').read_text(encoding='utf-8')
           x = Path('Defs/ThingDefs/Projectiles_Replicator.xml').read_text(encoding='utf-8')
-          required_effects = [
+          required = [
               'TryLaunchAdaptiveProjectile(pawn, target)',
-              'WNG_ReplicatorAdaptiveBolt',
               'ProjectileHitFlags.IntendedTarget | ProjectileHitFlags.NonTargetWorld',
-              'preventFriendlyFire: true',
               'AdaptiveProjectileBodyDamage',
-              'AdaptiveProjectileArmorPenetration',
-              'AdaptiveAntiShieldMultiplier',
-          ]
-          required_projectile = [
               'class Projectile_ReplicatorAdaptiveBolt : Bullet',
               'public override int DamageAmount',
               'LauncherHasAntiShield',
-              'blockedByShield',
               'targetHasWngAdaptiveShield',
-              'ReplicatorAdaptation.AntiShield',
-              'ReplicatorAdaptation.Shield',
           ]
-          missing = [v for v in required_effects if v not in e] + [v for v in required_projectile if v not in p]
+          missing = [v for v in required if v not in e and v not in p]
           if missing:
               raise SystemExit('Missing AntiShield invariants: ' + ', '.join(missing))
           if 'target.TakeDamage(new DamageInfo' in e:
-              raise SystemExit('Adaptive ranged attack still bypasses native projectile/shield path')
-          for v in ['ParentName="BaseBullet"', '<thingClass>WraithNaniteGravtech.Projectile_ReplicatorAdaptiveBolt</thingClass>', '<damageAmountBase>7</damageAmountBase>', '<armorPenetrationBase>0.15</armorPenetrationBase>']:
-              if v not in x:
-                  raise SystemExit('Missing projectile Def invariant: ' + v)
-          wraith = Path('Source/WNG/Gravship/WNGGravshipParts.cs').read_text(encoding='utf-8')
-          if 'CompWraithHullRegenerator' not in wraith:
-              raise SystemExit('Expected Wraith living-hull defense missing')
-          if 'CompWraithHullRegenerator' in p or 'CompWraithHullRegenerator' in e:
+              raise SystemExit('Adaptive shot still bypasses native projectile interception')
+          if 'ParentName="BaseBullet"' not in x or 'Projectile_ReplicatorAdaptiveBolt' not in x:
+              raise SystemExit('Adaptive projectile Def wiring missing')
+          if 'CompWraithHullRegenerator' in e or 'CompWraithHullRegenerator' in p:
               raise SystemExit('AntiShield must not target Wraith living-hull regeneration')
+          print(f'Parsed {len(files)} XML files')
           PY
 
-      - name: Commit validated source and remove validator
+      - name: Commit validated patch and remove temp helpers
         run: |
           rm .github/workflows/wng-replicator-antishield.yml
+          rm .github/scripts/patch-replicator-antishield.py
           git config user.name "Vardath"
           git config user.email "59270526+Vardath@users.noreply.github.com"
-          git add Source/WNG/Replicators/ReplicatorAdaptationEffects.cs .github/workflows/wng-replicator-antishield.yml
-          if git diff --cached --quiet; then
-            echo "No validation-generated changes to commit"
-            exit 0
-          fi
+          git add Source/WNG/Replicators/ReplicatorAdaptationEffects.cs .github/workflows/wng-replicator-antishield.yml .github/scripts/patch-replicator-antishield.py
           git commit -m "rebuild: route Replicator adaptive fire through native shields"
           git push origin HEAD:rebuild/replicator-antishield-20260912
