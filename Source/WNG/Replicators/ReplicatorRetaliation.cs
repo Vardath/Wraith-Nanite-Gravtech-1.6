@@ -36,7 +36,8 @@ namespace WraithNaniteGravtech
         {
             absorbed = false;
             Pawn pawn = Pawn;
-            if (pawn == null || pawn.Dead || pawn.Faction == Faction.OfPlayer || pawn.IsColonyMechPlayerControlled)
+            if (pawn == null || pawn.Dead || pawn.Faction == Faction.OfPlayer || pawn.IsColonyMechPlayerControlled ||
+                pawn.TryGetComp<CompReplicatorSovereignty>()?.InterferenceBlocked == true)
                 return;
 
             Pawn instigator = dinfo.Instigator as Pawn;
@@ -62,7 +63,8 @@ namespace WraithNaniteGravtech
         public void Provoke(Pawn target, bool signalOthers)
         {
             Pawn pawn = Pawn;
-            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null || target == null || target.Dead)
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null || target == null || target.Dead ||
+                pawn.TryGetComp<CompReplicatorSovereignty>()?.InterferenceBlocked == true)
                 return;
             int now = Find.TickManager?.TicksGame ?? 0;
             retaliationUntil = Math.Max(retaliationUntil, now + Math.Max(60, Props.retaliationTicks));
@@ -75,10 +77,12 @@ namespace WraithNaniteGravtech
             float radiusSq = radius * radius;
             int max = Math.Max(0, Props.maxNearbyResponders);
             foreach (Pawn responder in pawn.Map.mapPawns.AllPawnsSpawned
-                         .Where(p => p != null && p != pawn && !p.Dead && p.Spawned && p.Faction == pawn.Faction
+                         .Where(p => p != null && p != pawn && !p.Dead && p.Spawned
                              && p.TryGetComp<CompReplicatorState>() != null
+                             && ReplicatorSovereigntyUtility.SameDomain(pawn, p)
                              && p.Position.DistanceToSquared(pawn.Position) <= radiusSq
-                             && !ReplicatorEMP.IsSuppressed(p))
+                             && !ReplicatorEMP.IsSuppressed(p)
+                             && p.TryGetComp<CompReplicatorSovereignty>()?.InterferenceBlocked != true)
                          .OrderBy(p => p.Position.DistanceToSquared(pawn.Position))
                          .ThenBy(p => p.thingIDNumber)
                          .Take(max))
@@ -104,7 +108,8 @@ namespace WraithNaniteGravtech
         {
             if (ReplicatorTerminalUtility.IsTerminal(pawn)) return null;
             CompReplicatorRetaliation state = pawn?.TryGetComp<CompReplicatorRetaliation>();
-            if (state?.IsRetaliating != true || ReplicatorEMP.IsSuppressed(pawn))
+            if (state?.IsRetaliating != true || ReplicatorEMP.IsSuppressed(pawn) ||
+                pawn.TryGetComp<CompReplicatorSovereignty>()?.InterferenceBlocked == true)
                 return null;
 
             Pawn target = state.CurrentTarget;
@@ -119,6 +124,7 @@ namespace WraithNaniteGravtech
     {
         public static bool CanAttack(Pawn pawn)
             => pawn?.Faction == Faction.OfPlayer || pawn?.IsColonyMechPlayerControlled == true
+                || ReplicatorSovereigntyUtility.IsOperationallyControlled(pawn)
                 || ReplicatorTerminalUtility.IsTerminal(pawn)
                 || pawn?.TryGetComp<CompReplicatorRetaliation>()?.IsRetaliating == true;
     }
