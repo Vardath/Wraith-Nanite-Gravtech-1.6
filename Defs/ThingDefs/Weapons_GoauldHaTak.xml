@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <!--
-    Ha'tak shipboard weapon slice. Stargate Ha'taks use heavy directed-energy weapons against
-    other vessels and planetary targets. This Def provides the real on-map gravship weapon role;
-    true cross-map/orbital bombardment is deliberately tracked separately rather than faked here.
+    Ha'tak shipboard weapon family. Stargate Ha'taks use heavy directed-energy weapons against
+    other vessels and planetary targets. The same physical battery provides ordinary on-map
+    gravship combat and, while mounted on a real powered Goa'uld Odyssey gravship in Orbit, a
+    separate cross-map orbital-bombardment command backed by Royalty's native Bombardment Thing.
     Final Goa'uld production art/audio remains a later presentation pass.
   -->
   <ThingDef ParentName="BuildingBase" MayRequire="idolord.ONAC">
     <defName>WNG_GoauldHeavyPlasmaBattery</defName>
     <label>Ha'tak heavy plasma battery</label>
-    <description>A shipboard Goa'uld energy-weapon battery scaled for RimWorld combat. Ha'tak motherships use powerful directed-energy weapons against vessels and planetary targets; this powered battery provides that on-map combat role while true cross-map/orbital bombardment remains a separate later system.</description>
+    <description>A shipboard Goa'uld energy-weapon battery scaled for RimWorld gravship combat. On a surface or local combat map it acts as a powered heavy plasma turret. When the same battery is powered on connected Goa'uld Ha'tak substructure on Odyssey's Orbit layer, it can designate a separate generated surface map for a true cross-map orbital bombardment using RimWorld's native orbital-strike machinery.</description>
     <thingClass>Building_TurretGun</thingClass>
     <tickerType>Normal</tickerType>
     <graphicData>
@@ -53,6 +54,16 @@
       <li Class="CompProperties_Flickable" />
       <li Class="RimWorld.CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme"><theme>Goauld</theme></li>
+      <li Class="WraithNaniteGravtech.CompProperties_GoauldHatakOrbitalBombardment">
+        <maxWorldRangeTiles>12</maxWorldRangeTiles>
+        <cooldownTicks>60000</cooldownTicks>
+        <impactAreaRadius>14</impactAreaRadius>
+        <explosionRadiusRange>(4.5,6.5)</explosionRadiusRange>
+        <bombIntervalTicks>18</bombIntervalTicks>
+        <warmupTicks>90</warmupTicks>
+        <explosionCount>18</explosionCount>
+        <randomFireRadius>18</randomFireRadius>
+      </li>
     </comps>
     <building>
       <turretGunDef>WNG_Gun_GoauldHeavyPlasmaCannon</turretGunDef>

@@ -34,8 +34,8 @@ A Ha'tak is a long-deployment Goa'uld capital ship carrying Jaffa, transport rin
 - The generated ship layout has mechanics-first placeholder art and a compact game-scale deck; final central-pyramid/outer-superstructure Ha'tak visual treatment remains part of the production-art pass.
 - The hull perimeter deliberately leaves boarding/service gaps instead of inventing a Goa'uld door Def in this slice.
 - Native facility/fuel/power behavior still requires live RimWorld + ONAC validation; source/static reasoning is not a live-game test.
-- True cross-map/orbital bombardment is still separate unfinished work. The current heavy plasma batteries remain on-map gravship weapons.
+- Player-controlled true cross-map/orbital Ha'tak bombardment is now implemented separately on the physical heavy plasma battery; the landed hostile carrier does not yet autonomously take off into orbit or use that system as world AI.
 
 ## Next Ha'tak mechanical slice
 
-Implement/reconcile **true cross-map/orbital Ha'tak bombardment** using Odyssey/world-layer mechanics where possible. Do not merely rename an on-map explosion or turret shot as "orbital".
+Reconcile **hostile carrier takeoff/retreat/pursuit and hostile use of orbital fire** only through genuine Odyssey gravship/world mechanics. Do not replace the landed carrier with an abstract world proxy merely to claim that it moved.

@@ -3,9 +3,13 @@
 Date: **2026-09-11**  
 Author/design authority: **Vardath**
 
+## RimWorld content dependency
+
+Vardath requires WNG 1.6 to depend on the complete RimWorld DLC set: **Royalty, Ideology, Biotech, Anomaly and Odyssey**. WNG does not have to use every DLC in every subsystem, but any of their native mechanics may be used where they produce the correct implementation.
+
 ## Stargate identity
 
-A Ha'tak is a Goa'uld mothership/capital warship, not a shuttle. Its WNG representation is a RimWorld-scale Odyssey gravship family preserving the recognizable Goa'uld role: pel'tac command deck, strong energy shields, Jaffa/transport capacity, internal transport rings, sublight propulsion, heavy energy weapons and carried Death Glider fighters.
+A Ha'tak is a Goa'uld mothership/capital warship, not a shuttle. Its WNG representation is a RimWorld-scale Odyssey gravship family preserving the recognizable Goa'uld role: pel'tac command deck, strong energy shields, Jaffa/transport capacity, internal transport rings, sublight propulsion, heavy energy weapons, carried Death Glider fighters and orbital/planetary fire support.
 
 Transport rings are canonically used inside Goa'uld motherships between decks and are expected internal Ha'tak equipment in WNG. A Ha'tak can also land on a planetary surface. WNG's hostile carrier encounter therefore uses a landed world site rather than labeling a generic ground raid as an orbital mothership.
 
@@ -26,9 +30,24 @@ Implemented as ONAC-backed WNG-owned technology:
 - visible/hidden Goa'uld power conduits;
 - same-family fuel-pipe enforcement and technology-family isolation on the shared native engine;
 - `WNG_GoauldHeavyPlasmaBattery`, a powered on-map heavy shipboard energy battery for gravship combat;
+- `CompGoauldHatakOrbitalBombardment`, allowing that exact powered battery on a connected Goa'uld Odyssey gravship in `PlanetLayerDefOf.Orbit` to target a separate generated Surface-layer map and deliver Royalty's exact native `Bombardment` entity there;
 - `WNG_GoauldDeathGlider`, a real native-boardable two-seat fighter with short non-hyperdrive world range, ONAC liquid-Naquadria fuel, physical paired staff-cannon combat sorties and hacking/capture support;
 - `WNG_GoauldDeathGliderStrike`, a bounded optional hostile strike using exact existing System-Lord factions and exact RimGate Biotech Jaffa crew, followed by real native shuttle withdrawal when possible;
 - `WNG_GoauldHatakCarrier`, a bounded landed hostile carrier site built from Odyssey's exact native GravEngine/GravshipHull, real WNG Goa'uld substructure/facilities, exact Jaffa defenders and physically parked exact Death Gliders that perform a bounded defensive sortie.
+
+## Orbital bombardment boundary
+
+Orbital fire is deliberately separate from ordinary on-map turret combat:
+- the physical source is the exact `WNG_GoauldHeavyPlasmaBattery`;
+- the source map must be Odyssey Orbit, not merely a surface map described as orbital;
+- the battery must be powered and on connected substructure belonging to a Goa'uld-themed exact native `GravEngine`;
+- the world target must be a different generated Surface-layer `MapParent` within layer-aware world range;
+- the exact impact cell is selected on the target map;
+- the target map receives Royalty's real `ThingDefOf.Bombardment` / `Bombardment` Thing;
+- WNG configures that native bombardment from author-tunable Def values;
+- no same-map turret shot or generic local explosion is relabeled as orbital bombardment.
+
+Current orbital scope targets already generated surface maps. Generating an unloaded settlement/site map solely for bombardment is not claimed by this slice.
 
 ## Death Glider / Ha'tak carrier relationship
 
@@ -56,12 +75,12 @@ Do **not** invent uranium/chemfuel or another arbitrary standalone substitute. A
 ## Explicitly unfinished Ha'tak dependencies
 
 These are required and must not be forgotten:
-- true cross-map/orbital bombardment distinct from the implemented on-map heavy plasma battery;
 - final Goa'uld sensors/other Odyssey equivalents only where Stargate function justifies them;
-- final hostile-carrier world behavior beyond a landed bounded site (takeoff/retreat/pursuit) only if it can be implemented through genuine native gravship/world mechanics rather than a proxy;
+- final hostile-carrier world behavior beyond a landed bounded site (takeoff/retreat/pursuit and hostile use of orbital fire) only if it can be implemented through genuine native gravship/world mechanics rather than a proxy;
+- optional future support for bombarding an otherwise-unloaded settlement/site only if its map generation and consequences can be handled without faking map damage;
 - final Goa'uld/Ha'tak/Death-Glider textures, central-pyramid/outer-superstructure visual treatment, hull/deck/pipe/conduit connection art, shield effects and audio;
-- live RimWorld testing with ONAC present, including Def load, storyteller incidents, exact external faction/crew binding, carrier-site generation, native engine/facility links, Death Glider launch/return, fuel/power networks, shield/turret operation, gravship launch/travel and save-load.
+- live RimWorld testing with the complete DLC set and ONAC present, including Def load, storyteller incidents, exact external faction/crew binding, carrier-site generation, native engine/facility links, Death Glider launch/return, fuel/power networks, shield/turret operation, gravship launch/travel, orbital bombardment world/cell targeting, save-load and actual impact behavior.
 
 ## Validation status
 
-The carrier-site slice is written only against APIs and patterns already used by the current rebuild (`SitePartWorker`, `SiteMaker`, native `GravEngine`, native `GravshipHull`, `TerrainGrid.SetFoundation`, `CompRefuelable`, `LordJob_DefendBase`, exact native shuttle comps). The current environment cannot run RimWorld itself, so this is **not** a claim of live-game validation.
+The current Ha'tak source uses APIs/patterns verified against current RimWorld 1.6 source for Odyssey gravships/world layers and Royalty orbital bombardment. This is source/API validation, not a claim of live-game validation.
