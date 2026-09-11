@@ -4,7 +4,7 @@ Author/final design authority: **Vardath**.
 
 ## Status
 
-**Candidate implementation only until compile/XML/reference validation passes and the candidate is promoted to public `main`. Live RimWorld validation is still separately required.**
+The implementation described here has passed the candidate C# / XML / narrow wiring validation described below. It is not a claim of live RimWorld gameplay validation.
 
 ## Stargate identity / extrapolation boundary
 
@@ -29,7 +29,7 @@ The implant bearer is **not** the Replicator Queen.
 
 ## Physical implant / acquisition
 
-The candidate adds a tangible `WNG_SovereignNeuralLattice` health item.
+The implementation adds a tangible `WNG_SovereignNeuralLattice` health item.
 
 It is manufactured only at `WNG_AsuranWorkshop`, in accordance with the Asuran production contract, using:
 - one real `WNG_ReplicatorCoreFragment` as the recovered command-lattice source;
@@ -75,7 +75,7 @@ Current first-build tuning is Def-driven:
 
 The implant does **not** receive the Queen's nearby-swarm seizure command. Acquisition is exact-target only.
 
-At this candidate stage, 24 cells is the acquisition range; after acquisition, controller validity uses the shared physical-presence rule (same map or same caravan), matching the live sovereignty transaction model. This boundary is subject to reconciliation before promotion if ongoing signal range is required for the implant to remain meaningfully more bounded than Queen authority.
+The 24-cell value is the current **acquisition range**. After acquisition, controller validity uses the shared physical-presence rule (same map or same caravan). This keeps ordinary move/attack orders from silently severing a valid implant domain while still making the implant materially weaker than Queen control through shorter acquisition range, exact-target-only acquisition and a much smaller normal acquisition cap. Vardath may change this after live testing.
 
 ## EMP / containment
 
@@ -103,7 +103,7 @@ The configured acquisition cap governs new acquisitions; genuine hierarchy break
 
 ## Presentation boundary
 
-The candidate item currently uses RimWorld's vanilla health-item graphic as a **mechanics placeholder only**.
+The item currently uses RimWorld's vanilla health-item graphic as a **mechanics placeholder only**.
 
 No art was generated. Dedicated final Sovereign Neural Lattice item/UI presentation remains required for the later professional art pass.
 
@@ -116,13 +116,16 @@ No art was generated. Dedicated final Sovereign Neural Lattice item/UI presentat
 - broader Neural Interface copy/reconstruction operations;
 - live RimWorld validation of implant fabrication, surgery, save/load, acquisition, EMP/containment, split/recombine and removal/release.
 
-## Validation boundary
+## Validation
 
-Before promotion this candidate must at minimum:
-- compile `Source/WNG/WNG.csproj` against the current RimWorld 1.6 references;
-- parse all Def/Patch XML;
-- verify physical item/Hediff/research/fabrication/install/remove wiring;
-- verify the exact `NeuralLattice` authority path still shares the validated sovereignty/domain/hierarchy architecture;
-- remove any temporary validation workflow afterward.
+Temporary GitHub Actions run **34580535936** exposed one concrete C# defect before promotion: the candidate attempted to set protected `Gizmo.disabled` directly for the Queen-only explanatory command. That was corrected to RimWorld's public `Command.Disable(...)` API.
+
+Corrected temporary run **34580647197** then completed successfully:
+- `Source/WNG/WNG.csproj` C# build: **SUCCESS**;
+- all current Def/Patch XML parsed: **SUCCESS**;
+- physical item/Hediff/research/fabrication/install/remove wiring checks: **SUCCESS**;
+- `NeuralLattice` controller-domain/hierarchy wiring checks: **SUCCESS**.
+
+The temporary workflow is removed before promotion and is not part of the intended net mod diff.
 
 Static validation is not live RimWorld gameplay validation.
