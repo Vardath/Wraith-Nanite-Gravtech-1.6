@@ -52,6 +52,10 @@ namespace WraithNaniteGravtech
             ? Math.Max(1f, Props.powerHealingMultiplier)
             : 1f;
 
+        internal int AdaptiveProjectileBodyDamage => Math.Max(1, (int)Math.Round(Math.Max(1f, Props.rangedDamage)));
+        internal float AdaptiveProjectileArmorPenetration => Math.Max(0f, Props.rangedArmorPenetration);
+        internal float AdaptiveAntiShieldMultiplier => Math.Max(1f, Props.antiShieldDamageMultiplier);
+
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
@@ -91,17 +95,30 @@ namespace WraithNaniteGravtech
                 .FirstOrDefault();
             if (target == null) return;
 
-            float damage = Math.Max(1f, Props.rangedDamage);
-            CompReplicatorAdaptationEffects targetEffects = target.TryGetComp<CompReplicatorAdaptationEffects>();
-            if (State.HasAdaptation(ReplicatorAdaptation.AntiShield)
-                && targetEffects?.State?.HasAdaptation(ReplicatorAdaptation.Shield) == true)
-                damage *= Math.Max(1f, Props.antiShieldDamageMultiplier);
+            TryLaunchAdaptiveProjectile(pawn, target);
+        }
 
-            target.TakeDamage(new DamageInfo(
-                DamageDefOf.Bullet,
-                damage,
-                Math.Max(0f, Props.rangedArmorPenetration),
-                instigator: pawn));
+        private bool TryLaunchAdaptiveProjectile(Pawn pawn, Pawn target)
+        {
+            if (pawn == null || target == null || pawn.Map == null || !pawn.Spawned || !target.Spawned)
+                return false;
+
+            ThingDef projectileDef = DefDatabase<ThingDef>.GetNamedSilentFail("WNG_ReplicatorAdaptiveBolt");
+            Projectile projectile = projectileDef == null ? null : ThingMaker.MakeThing(projectileDef) as Projectile;
+            if (projectile == null)
+            {
+                Log.Error("[WNG] Replicator adaptive ranged fire could not create WNG_ReplicatorAdaptiveBolt.");
+                return false;
+            }
+
+            GenSpawn.Spawn(projectile, pawn.Position, pawn.Map);
+            projectile.Launch(
+                pawn,
+                target,
+                target,
+                ProjectileHitFlags.IntendedTarget | ProjectileHitFlags.NonTargetWorld,
+                preventFriendlyFire: true);
+            return true;
         }
 
         private void TryAutonomousGravReposition(Pawn pawn)
