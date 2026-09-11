@@ -3,12 +3,13 @@
   <ResearchProjectDef>
     <defName>WNG_ReplicatorStudy</defName>
     <label>replicator study</label>
-    <description>Study recovered Replicator blocks, control lattices and their modular reassembly logic.</description>
+    <description>Study recovered Replicator blocks, control lattices and their modular reassembly logic. The colony must first analyze recovered Replicator blocks before this project can begin.</description>
     <baseCost>1000</baseCost>
     <techLevel>Industrial</techLevel>
     <researchViewX>9</researchViewX>
     <researchViewY>12.8</researchViewY>
     <prerequisites><li>Machining</li></prerequisites>
+    <requiredAnalyzed><li>WNG_ReplicatorMatter</li></requiredAnalyzed>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
