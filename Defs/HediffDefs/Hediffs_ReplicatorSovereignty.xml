@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <HediffDef>
+    <defName>WNG_ReplicatorQueenSovereignty</defName>
+    <label>Replicator sovereign lattice</label>
+    <description>The unique command lattice of the exact Replicator Queen. It permits genuine controller-domain ownership of compatible block Replicators while preserving their separate matter, adaptation, EMP and containment systems.</description>
+    <hediffClass>WraithNaniteGravtech.Hediff_ReplicatorQueenSovereignty</hediffClass>
+    <isBad>false</isBad>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <everCurableByItem>false</everCurableByItem>
+    <modExtensions>
+      <li Class="WraithNaniteGravtech.ReplicatorQueenSovereigntyExtension">
+        <directControlRange>40</directControlRange>
+        <swarmControlRadius>24</swarmControlRadius>
+        <maxControlledBlocks>12</maxControlledBlocks>
+      </li>
+    </modExtensions>
+  </HediffDef>
+</Defs>
