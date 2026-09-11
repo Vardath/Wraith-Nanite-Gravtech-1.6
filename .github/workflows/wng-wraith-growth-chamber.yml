@@ -16,109 +16,19 @@ jobs:
         with:
           ref: rebuild/wraith-growth-chamber-20260912
           fetch-depth: 0
-
-      - name: Add bounded Hive replacement registration API
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          p = Path('Source/WNG/Wraith/WraithMatureHive.cs')
-          s = p.read_text(encoding='utf-8')
-          marker = '''        public bool Initialized => initialized;
-        public int FoundingPopulationCap => foundingPopulationCap;
-        public int LivingDemographicCount => demographicMembers.Count(p => p != null && !p.Dead);
-'''
-          insert = marker + '''
-        public bool CanAcceptGrowthReplacement => initialized && foundingPopulationCap > 0 && LivingDemographicCount < foundingPopulationCap;
-
-        public bool TryRegisterGrowthReplacement(Pawn pawn)
-        {
-            if (!CanAcceptGrowthReplacement || pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map != parent.Map || pawn.Faction != parent.Faction)
-                return false;
-            if (!WraithLifeForceUtility.IsWraith(pawn))
-                return false;
-            string kind = pawn.kindDef?.defName;
-            if (kind != "WNG_WraithHunter" && kind != "WNG_WraithWarrior")
-                return false;
-            if (demographicMembers.Contains(pawn))
-                return false;
-            demographicMembers.Add(pawn);
-            return true;
-        }
-'''
-          if 'TryRegisterGrowthReplacement' not in s:
-              if marker not in s:
-                  raise SystemExit('Hive population API insertion point missing')
-              s = s.replace(marker, insert, 1)
-          p.write_text(s, encoding='utf-8')
-
-          h = Path('Defs/ThingDefs/Wraith_HiveHeart.xml')
-          x = h.read_text(encoding='utf-8')
-          x = x.replace(
-              'The recorded founding Wraith population is the demographic ceiling until a later bounded Growth Chamber layer explicitly replaces losses.',
-              'The recorded founding Wraith population is the demographic ceiling; a linked Growth Chamber may replace Hunter/Warrior losses only up to that ceiling.'
-          )
-          h.write_text(x, encoding='utf-8')
-          PY
-
+      - name: Patch mature Hive population API
+        run: python tools/wng_growth_patch.py
       - name: Build WNG
         run: dotnet build Source/WNG/WNG.csproj -c Release
-
-      - name: Parse XML and verify Growth Chamber invariants
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import xml.etree.ElementTree as ET
-
-          files = list(Path('Defs').rglob('*.xml')) + list(Path('Patches').rglob('*.xml'))
-          for p in files:
-              ET.parse(p)
-
-          g = Path('Source/WNG/Wraith/WraithGrowthChamber.cs').read_text(encoding='utf-8')
-          m = Path('Source/WNG/Wraith/WraithMatureHive.cs').read_text(encoding='utf-8')
-          x = Path('Defs/ThingDefs/Wraith_GrowthChamber.xml').read_text(encoding='utf-8')
-          site = Path('Source/WNG/Wraith/WraithMatureHiveSite.cs').read_text(encoding='utf-8')
-
-          required_g = [
-              'CompProperties_WraithGrowthChamber',
-              'TryRegisterGrowthReplacement',
-              'WNG_WraithHiveHeart',
-              'WNG_WraithQueen',
-              'WNG_WraithHunter',
-              'WNG_WraithWarrior',
-              'WraithLifeForceUtility.Offset',
-              'Biomass.ConsumeFuel',
-              'Power.PowerOn',
-          ]
-          required_m = [
-              'CanAcceptGrowthReplacement',
-              'TryRegisterGrowthReplacement(Pawn pawn)',
-              'kind != "WNG_WraithHunter" && kind != "WNG_WraithWarrior"',
-          ]
-          required_x = [
-              '<defName>WNG_WraithGrowthChamber</defName>',
-              '<basePowerConsumption>4000</basePowerConsumption>',
-              '<li>WNG_WraithBioSludge</li>',
-              '<cycleTicks>60000</cycleTicks>',
-              '<biomassCostPerCycle>60</biomassCostPerCycle>',
-              '<queenLifeForceCost>0.35</queenLifeForceCost>',
-              '<li>WNG_WraithLivingTechnology</li>',
-          ]
-          missing = [v for v in required_g if v not in g] + [v for v in required_m if v not in m] + [v for v in required_x if v not in x]
-          if missing:
-              raise SystemExit('Missing Growth Chamber invariants: ' + ', '.join(missing))
-          if 'WNG_WraithGrowthChamber' in site:
-              raise SystemExit('Generated Mature Hive site must not receive an inert unpowered Growth Chamber before a ground Wraith power source is implemented')
-          if 'WNG_WraithKeeper' in g and 'GetNamedSilentFail("WNG_WraithKeeper")' in g:
-              raise SystemExit('Growth Chamber must not clone Keepers')
-          print(f'Parsed {len(files)} XML files and verified bounded Growth Chamber invariants')
-          PY
-
-      - name: Commit validated API and remove temporary validator
+      - name: Validate XML and invariants
+        run: python tools/wng_growth_validate.py
+      - name: Commit validated patch and remove temporary helpers
         run: |
           rm .github/workflows/wng-wraith-growth-chamber.yml
+          rm tools/wng_growth_patch.py
+          rm tools/wng_growth_validate.py
           git config user.name "Vardath"
           git config user.email "59270526+Vardath@users.noreply.github.com"
-          git add Source/WNG/Wraith/WraithMatureHive.cs Defs/ThingDefs/Wraith_HiveHeart.xml .github/workflows/wng-wraith-growth-chamber.yml
+          git add Source/WNG/Wraith/WraithMatureHive.cs Defs/ThingDefs/Wraith_HiveHeart.xml .github/workflows/wng-wraith-growth-chamber.yml tools/wng_growth_patch.py tools/wng_growth_validate.py
           git commit -m "rebuild: bind Growth Chamber to Mature Hive demographic cap"
           git push origin HEAD:rebuild/wraith-growth-chamber-20260912
