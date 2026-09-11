@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -71,7 +70,7 @@ namespace WraithNaniteGravtech
             int subdualStunTicks,
             int boardingTimeoutTicks)
         {
-            if (exactQueen == null || queen != exactQueen || exactQueen.Dead)
+            if (exactQueen == null || queen != exactQueen || exactQueen.Dead || status != ReplicatorQueenStatus.Dormant)
                 return false;
 
             status = ReplicatorQueenStatus.Released;
@@ -96,17 +95,19 @@ namespace WraithNaniteGravtech
 
         public bool CommitAsuranCapture(Pawn exactQueen, Faction captor, Pawn kidnapper)
         {
-            if (exactQueen == null || queen != exactQueen || exactQueen.Dead || captor == null)
+            if (exactQueen == null || queen != exactQueen || exactQueen.Dead || captor?.kidnapped == null)
                 return false;
 
-            if (!captor.kidnapped.KidnappedPawnsListForReading.Contains(exactQueen))
-                captor.kidnapped.Kidnap(exactQueen, kidnapper);
+            KidnappedPawnsTracker kidnapped = captor.kidnapped;
+            if (!kidnapped.KidnappedPawnsListForReading.Contains(exactQueen))
+                kidnapped.Kidnap(exactQueen, kidnapper);
 
-            if (!captor.kidnapped.KidnappedPawnsListForReading.Contains(exactQueen))
+            if (!kidnapped.KidnappedPawnsListForReading.Contains(exactQueen))
                 return false;
 
             status = ReplicatorQueenStatus.CapturedByAsurans;
             vaultSiteId = -1;
+            recoveryTick = -1;
             return true;
         }
 
@@ -215,7 +216,7 @@ namespace WraithNaniteGravtech
 
             if (state.Queen != null)
             {
-                if (state.Queen.Spawned && state.Queen.Map == map)
+                if (state.Status == ReplicatorQueenStatus.Dormant && state.Queen.Spawned && state.Queen.Map == map)
                     map.GetComponent<MapComponent_ReplicatorQueenRecovery>()?.ArmExistingQueen(state.Queen);
                 return;
             }
@@ -345,8 +346,18 @@ namespace WraithNaniteGravtech
             if (queen == null || queen.Dead)
                 return;
 
-            if (!releaseHandled && queen.Spawned && queen.Map == map)
+            if (!releaseHandled &&
+                state.Status == ReplicatorQueenStatus.Dormant &&
+                queen.Spawned && queen.Map == map && IsQueenVaultMap())
+            {
                 HandleRelease(state);
+            }
+        }
+
+        private bool IsQueenVaultMap()
+        {
+            Site site = map.Parent as Site;
+            return site?.parts?.Any(p => p?.def?.defName == "WNG_ReplicatorQueenVault") == true;
         }
 
         private void HandleRelease(GameComponent_ReplicatorQueenState state)
@@ -420,6 +431,8 @@ namespace WraithNaniteGravtech
                 return false;
 
             Thing jumper = ThingMaker.MakeThing(jumperDef);
+            if (jumper == null)
+                return false;
             jumper.SetFaction(asurans);
             GenSpawn.Spawn(jumper, entryCell, map, Rot4.North);
 
@@ -430,9 +443,11 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
-            int count = Math.Max(1, operativeCount);
-            List<Pawn> operatives = new List<Pawn>();
-            for (int i = 0; i < count; i++)
+            int requiredCount = Math.Max(1, operativeCount);
+            List<Pawn> operatives = new List<Pawn>(requiredCount);
+            HashSet<IntVec3> usedCells = new HashSet<IntVec3>();
+
+            for (int i = 0; i < requiredCount; i++)
             {
                 PawnGenerationRequest operativeRequest = new PawnGenerationRequest(
                     operativeKind,
@@ -446,23 +461,34 @@ namespace WraithNaniteGravtech
                     mustBeCapableOfViolence: true,
                     allowPregnant: false,
                     dontGiveWeapon: true);
+
                 Pawn operative = PawnGenerator.GeneratePawn(operativeRequest);
                 if (operative == null)
-                    continue;
+                {
+                    CleanupPartialRecovery(jumper, operatives);
+                    return false;
+                }
+
                 IntVec3 cell = CellFinder.RandomClosewalkCellNear(
-                    entryCell, map, 7, c => c.InBounds(map) && c.Standable(map) && !c.Fogged(map));
+                    entryCell,
+                    map,
+                    7,
+                    c => c.InBounds(map) && c.Standable(map) && !c.Fogged(map) && !usedCells.Contains(c));
                 if (!cell.IsValid)
                 {
                     operative.Destroy(DestroyMode.Vanish);
-                    continue;
+                    CleanupPartialRecovery(jumper, operatives);
+                    return false;
                 }
+
+                usedCells.Add(cell);
                 GenSpawn.Spawn(operative, cell, map);
                 operatives.Add(operative);
             }
 
-            if (operatives.Count == 0)
+            if (operatives.Count != requiredCount)
             {
-                jumper.Destroy(DestroyMode.Vanish);
+                CleanupPartialRecovery(jumper, operatives);
                 return false;
             }
 
@@ -473,12 +499,33 @@ namespace WraithNaniteGravtech
                 Math.Max(60, subdualStunTicks),
                 Math.Max(300, boardingTimeoutTicks));
 
+            if (mission.Phase != AsuranQueenRecoveryPhase.Subduing)
+            {
+                CleanupPartialRecovery(jumper, operatives);
+                return false;
+            }
+
             Find.LetterStack.ReceiveLetter(
                 "Asuran recovery team",
-                operatives.Count + " human-form Asuran recovery operative(s) have arrived with a physical Asuran Jumper. Their objective is the exact Replicator Queen. They will attempt to stun her, carry her into the Jumper and leave. Capture is not committed unless that same craft physically leaves the map with her aboard.",
+                requiredCount + " human-form Asuran recovery operatives have arrived with a physical Asuran Jumper. Their objective is the exact Replicator Queen. They will attempt to stun her, carry her into the Jumper and leave. Capture is not committed unless that same craft physically leaves the map with her aboard.",
                 LetterDefOf.ThreatBig,
                 jumper);
             return true;
+        }
+
+        private static void CleanupPartialRecovery(Thing jumper, IEnumerable<Pawn> operatives)
+        {
+            if (operatives != null)
+            {
+                foreach (Pawn operative in operatives.Where(p => p != null).Distinct().ToList())
+                {
+                    if (!operative.Destroyed)
+                        operative.Destroy(DestroyMode.Vanish);
+                }
+            }
+
+            if (jumper != null && !jumper.Destroyed)
+                jumper.Destroy(DestroyMode.Vanish);
         }
 
         private static Faction ResolveOrCreateAsuranFaction()
@@ -617,7 +664,7 @@ namespace WraithNaniteGravtech
                 Pawn loader = available.FirstOrDefault(p => p.CurJobDef?.defName == "WNG_AsuranLoadReplicatorQueen");
                 if (loader == null)
                 {
-                    loader = available.FirstOrDefault();
+                    loader = available.First();
                     Job load = JobMaker.MakeJob(
                         DefDatabase<JobDef>.GetNamed("WNG_AsuranLoadReplicatorQueen"),
                         queen,
@@ -633,7 +680,7 @@ namespace WraithNaniteGravtech
             Pawn subduer = available.FirstOrDefault(p => p.CurJobDef?.defName == "WNG_AsuranSubdueReplicatorQueen");
             if (subduer == null)
             {
-                subduer = available.FirstOrDefault();
+                subduer = available.First();
                 Job subdue = JobMaker.MakeJob(
                     DefDatabase<JobDef>.GetNamed("WNG_AsuranSubdueReplicatorQueen"),
                     queen);
@@ -650,13 +697,13 @@ namespace WraithNaniteGravtech
         {
             if (operative == null || operative.Dead || operative.Downed || !operative.Spawned)
                 return;
-            if (operative.CurJobDef == JobDefOf.Wait)
+            if (operative.CurJobDef?.defName == "WNG_AsuranHoldQueenRecovery")
                 return;
 
-            Job wait = JobMaker.MakeJob(JobDefOf.Wait, operative.Position);
-            wait.expiryInterval = 120;
-            wait.checkOverrideOnExpire = true;
-            operative.jobs.StartJob(wait, JobCondition.InterruptForced);
+            JobDef holdDef = DefDatabase<JobDef>.GetNamed("WNG_AsuranHoldQueenRecovery");
+            Job hold = JobMaker.MakeJob(holdDef);
+            hold.count = 120;
+            operative.jobs.StartJob(hold, JobCondition.InterruptForced);
         }
 
         private void BeginBoarding(int now)
@@ -909,6 +956,16 @@ namespace WraithNaniteGravtech
             };
             load.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return load;
+        }
+    }
+
+    public sealed class JobDriver_AsuranHoldRecovery : JobDriver
+    {
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            yield return Toils_General.Wait(Math.Max(60, job.count));
         }
     }
 
