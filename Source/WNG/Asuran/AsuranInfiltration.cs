@@ -35,8 +35,9 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Save-persistent conceal/reveal state on the exact pawn. Reveal is permanent in the current
-    /// design; the pawn is never replaced, recreated or proxied.
+    /// Save-persistent conceal/reveal state on the exact pawn. A covert visitor may temporarily
+    /// assume a non-hostile human faction identity, but its exact true Asuran source faction is
+    /// retained here and restored on exposure/activation. The pawn itself is never recreated.
     /// </summary>
     public sealed class Hediff_AsuranInfiltration : Hediff
     {
@@ -45,8 +46,17 @@ namespace WraithNaniteGravtech
         private int revealedTick = -1;
         private string revealReason;
 
+        private Faction trueFaction;
+        private Faction coverFaction;
+        private bool covertPresence;
+        private bool activationDeferred;
+
         public bool Revealed => revealed;
         public float Suspicion => suspicion;
+        public Faction TrueFaction => trueFaction;
+        public Faction CoverFaction => coverFaction;
+        public bool CovertPresence => covertPresence;
+        public bool ActivationDeferred => activationDeferred;
         public override bool Visible => revealed && base.Visible;
 
         public override string LabelInBrackets
@@ -57,6 +67,29 @@ namespace WraithNaniteGravtech
                     return null;
                 return revealReason.NullOrEmpty() ? "revealed" : "revealed: " + revealReason;
             }
+        }
+
+        public void BeginCovertPresence(Faction exactTrueFaction, Faction assumedCoverFaction)
+        {
+            if (revealed || exactTrueFaction == null || assumedCoverFaction == null)
+                return;
+
+            trueFaction = exactTrueFaction;
+            coverFaction = assumedCoverFaction;
+            covertPresence = true;
+            activationDeferred = false;
+        }
+
+        public void MarkCoverBroken()
+        {
+            covertPresence = false;
+            activationDeferred = false;
+        }
+
+        public void DeferActivation()
+        {
+            if (trueFaction != null)
+                activationDeferred = true;
         }
 
         public void AddRepairSuspicion(float healedAmount)
@@ -80,6 +113,7 @@ namespace WraithNaniteGravtech
             revealReason = reason.NullOrEmpty() ? "synthetic identity exposed" : reason;
             revealedTick = Find.TickManager?.TicksGame ?? 0;
             AsuranInfiltrationUtility.CommitRevealedIdentity(pawn);
+            AsuranCovertPresenceUtility.TryActivateRevealedPawn(pawn, this);
 
             if (pawn.Spawned)
             {
@@ -93,6 +127,15 @@ namespace WraithNaniteGravtech
             return true;
         }
 
+        public override void PostTickInterval(int delta)
+        {
+            base.PostTickInterval(delta);
+            if (!revealed || !activationDeferred || pawn == null || pawn.Dead)
+                return;
+            if (pawn.IsHashIntervalTick(250, delta))
+                AsuranCovertPresenceUtility.TryActivateRevealedPawn(pawn, this);
+        }
+
         public override void ExposeData()
         {
             base.ExposeData();
@@ -100,6 +143,10 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref suspicion, "wngAsuranInfiltratorSuspicion", 0f);
             Scribe_Values.Look(ref revealedTick, "wngAsuranInfiltratorRevealedTick", -1);
             Scribe_Values.Look(ref revealReason, "wngAsuranInfiltratorRevealReason");
+            Scribe_References.Look(ref trueFaction, "wngAsuranInfiltratorTrueFaction");
+            Scribe_References.Look(ref coverFaction, "wngAsuranInfiltratorCoverFaction");
+            Scribe_Values.Look(ref covertPresence, "wngAsuranInfiltratorCovertPresence", false);
+            Scribe_Values.Look(ref activationDeferred, "wngAsuranInfiltratorActivationDeferred", false);
         }
     }
 
@@ -131,6 +178,12 @@ namespace WraithNaniteGravtech
         {
             Hediff_AsuranInfiltration state = State(pawn);
             return state != null && state.Revealed;
+        }
+
+        public static bool IsActiveCovertPresence(Pawn pawn)
+        {
+            Hediff_AsuranInfiltration state = State(pawn);
+            return state != null && !state.Revealed && state.CovertPresence && state.TrueFaction != null;
         }
 
         public static AsuranInfiltrationExtension ExtensionFor(Pawn pawn)
