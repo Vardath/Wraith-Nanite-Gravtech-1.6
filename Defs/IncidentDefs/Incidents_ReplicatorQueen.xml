@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_ReplicatorQueenVaultDiscovered</defName>
+    <label>Replicator vault located</label>
+    <targetTags><li>World</li></targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_ReplicatorQueenVaultDiscovery</workerClass>
+    <baseChance>0.08</baseChance>
+    <minRefireDays>20</minRefireDays>
+    <category>Misc</category>
+    <pointsScaleable>false</pointsScaleable>
+    <letterDef>PositiveEvent</letterDef>
+    <letterLabel>Replicator vault located</letterLabel>
+    <letterText>Long-range analysis has identified a precursor vault containing a unique human-form Replicator signal held in cryptosleep.</letterText>
+    <modExtensions>
+      <li Class="WraithNaniteGravtech.ReplicatorQueenVaultIncidentExtension">
+        <minSiteDistance>8</minSiteDistance>
+        <maxSiteDistance>24</maxSiteDistance>
+        <maxActiveSites>1</maxActiveSites>
+      </li>
+    </modExtensions>
+  </IncidentDef>
+</Defs>

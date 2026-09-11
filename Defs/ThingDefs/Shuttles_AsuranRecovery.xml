@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_AsuranRecoveryJumper</defName>
+    <label>Asuran recovery Jumper</label>
+    <description>An Asuran-operated Puddle Jumper used for physical recovery operations. It uses RimWorld/Odyssey's native shuttle, transporter and flight machinery; the vanilla shuttle graphic and temporary chemfuel abstraction are mechanics placeholders pending the final Ancient/Asuran art and power pass.</description>
+    <thingClass>Building_PassengerShuttle</thingClass>
+    <preventDroppingThingsOn>true</preventDroppingThingsOn>
+    <size>(4,5)</size><rotatable>true</rotatable>
+    <graphicData><texPath>Things/Building/Misc/Shuttle</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(4,5)</drawSize></graphicData>
+    <defaultPlacingRot>North</defaultPlacingRot>
+    <pathCost>50</pathCost><drawOffscreen>true</drawOffscreen><fillPercent>0.45</fillPercent><passability>PassThroughOnly</passability>
+    <stealable>false</stealable><altitudeLayer>Building</altitudeLayer><receivesSignals>true</receivesSignals><neverMultiSelect>true</neverMultiSelect>
+    <statBases><MaxHitPoints>2200</MaxHitPoints><Mass>240</Mass><Flammability>0.10</Flammability><Comfort>0.8</Comfort></statBases>
+    <hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-3)</interactionCellOffset><selectable>true</selectable>
+    <terrainAffordanceNeeded>Light</terrainAffordanceNeeded><soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
+    <preventSkyfallersLandingOn>true</preventSkyfallersLandingOn><drawerType>RealtimeOnly</drawerType><repairEffect>ConstructMetal</repairEffect>
+    <building><claimable>false</claimable><destroySound>BuildingDestroyed_Metal_Big</destroySound><isInert>true</isInert></building>
+    <comps>
+      <li Class="CompProperties_Shuttle"><shipDef>WNG_AsuranRecoveryJumperShip</shipDef></li>
+      <li Class="CompProperties_Launchable">
+        <fuelPerTile>2.4</fuelPerTile><minFuelCost>45</minFuelCost>
+        <skyfallerLeaving>WNG_AsuranRecoveryJumperLeaving</skyfallerLeaving>
+        <worldObjectDef>WNG_AsuranRecoveryJumperWorld</worldObjectDef>
+        <cooldownTicks>2500</cooldownTicks><fixedLaunchDistanceMax>120</fixedLaunchDistanceMax>
+        <cooldownEndedMessage>{0} is ready to launch again.</cooldownEndedMessage>
+      </li>
+      <li Class="CompProperties_Transporter">
+        <massCapacity>700</massCapacity><max1PerGroup>true</max1PerGroup>
+        <canChangeAssignedThingsAfterStarting>true</canChangeAssignedThingsAfterStarting>
+        <pawnLoadedSound>Shuttle_PawnLoaded</pawnLoadedSound><pawnExitSound>Shuttle_PawnExit</pawnExitSound>
+        <showMassInInspectString>true</showMassInInspectString>
+      </li>
+      <li Class="CompProperties_Refuelable">
+        <fuelCapacity>800</fuelCapacity><targetFuelLevelConfigurable>false</targetFuelLevelConfigurable>
+        <fuelFilter><thingDefs><li>Chemfuel</li></thingDefs></fuelFilter>
+        <initialFuelPercent>1</initialFuelPercent><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed>
+        <showFuelGizmo>false</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_AsuranQueenRecoveryMission" />
+    </comps>
+    <inspectorTabs><li>ITab_ContentsTransporter</li></inspectorTabs>
+    <placeWorkers><li>PlaceWorker_NotUnderRoof</li></placeWorkers>
+  </ThingDef>
+</Defs>

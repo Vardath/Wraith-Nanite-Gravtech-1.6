@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef>
+    <defName>WNG_ReplicatorQueen</defName>
+    <label>Replicator Queen</label>
+    <description>The unique sovereign human-form Replicator tracked through WNG's Queen storyline. Her sovereignty is an exact-individual control layer, not a property shared by ordinary Asurans.</description>
+    <race>Human</race>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet><xenotypeChances><WNG_NaniteHumanoid>1</WNG_NaniteHumanoid></xenotypeChances></xenotypeSet>
+    <minGenerationAge>13</minGenerationAge>
+    <maxGenerationAge>13</maxGenerationAge>
+    <allowOldAgeInjuries>false</allowOldAgeInjuries>
+    <isFighter>false</isFighter>
+    <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
+    <combatPower>120</combatPower>
+    <initialWillRange>0~0</initialWillRange>
+    <initialResistanceRange>0~0</initialResistanceRange>
+  </PawnKindDef>
+</Defs>

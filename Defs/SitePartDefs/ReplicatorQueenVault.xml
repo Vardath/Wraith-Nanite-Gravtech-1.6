@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <SitePartDef>
+    <defName>WNG_ReplicatorQueenVault</defName>
+    <label>precursor Replicator vault</label>
+    <description>A neutral precursor vault containing one exact human-form Replicator Queen in a real RimWorld cryptosleep casket. Releasing her recruits that exact pawn and triggers a physical Asuran recovery attempt.</description>
+    <workerClass>WraithNaniteGravtech.SitePartWorker_ReplicatorQueenVault</workerClass>
+    <siteTexture>World/WorldObjects/Sites/GenericSite</siteTexture>
+    <expandingIconTexture>World/WorldObjects/Expanding/Sites/ItemStash</expandingIconTexture>
+    <requiresFaction>false</requiresFaction>
+    <wantsThreatPoints>false</wantsThreatPoints>
+    <handlesWorldObjectTimeoutInspectString>false</handlesWorldObjectTimeoutInspectString>
+    <tags><li>WNG_ReplicatorQueenVault</li></tags>
+    <modExtensions>
+      <li Class="WraithNaniteGravtech.ReplicatorQueenVaultExtension">
+        <recoveryDelayTicks>1800</recoveryDelayTicks>
+        <operativeCount>4</operativeCount>
+        <subdualWarmupTicks>120</subdualWarmupTicks>
+        <subdualStunTicks>1500</subdualStunTicks>
+        <boardingTimeoutTicks>1800</boardingTimeoutTicks>
+      </li>
+    </modExtensions>
+  </SitePartDef>
+</Defs>
