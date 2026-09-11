@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Mechanics placeholder only. Final release requires dedicated Sovereign Neural Lattice art. -->
+  <ThingDef ParentName="BodyPartBase">
+    <defName>WNG_SovereignNeuralLattice</defName>
+    <label>sovereign neural lattice</label>
+    <description>A surgically implantable Asuran-derived nanite command lattice reconstructed around a Replicator control-core fragment. It gives a non-Queen bearer bounded target-specific command access to compatible block Replicators without granting the Replicator Queen's innate sovereign identity.</description>
+    <techLevel>Ultra</techLevel>
+    <graphicData>
+      <texPath>Things/Item/Health/HealthItem</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.8</drawSize>
+    </graphicData>
+    <thingCategories>
+      <li>BodyPartsBionic</li>
+    </thingCategories>
+    <techHediffsTags>
+      <li>Advanced</li>
+    </techHediffsTags>
+    <statBases>
+      <MarketValue>1800</MarketValue>
+      <Mass>0.12</Mass>
+      <Flammability>0</Flammability>
+    </statBases>
+  </ThingDef>
+</Defs>
