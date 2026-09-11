@@ -21,7 +21,9 @@ Newest explicit Vardath instruction overrides older notes.
 A dedicated WNG Asuran nanite workshop is the Asuran production bench.
 
 - It should expose **all current player-craftable Asuran/Precursor nanite-engineered recipes** as those recipes are rebuilt.
-- Default acquisition is through a player-controlled Asuran/human-form Replicator ability that assembles the workshop by spending **Nanite Reserve**.
+- Default acquisition is through a player-controlled Asuran/human-form Replicator ability that assembles the workshop by spending the caster's **Nanite Reserve**.
+- **2026-09-11 Vardath correction:** Nanite Reserve is the human-form pawn's renamed native food need. Eating ordinary edible matter refills the same reserve; repair and fabrication spend it. There is no second Gene_Resource reserve bar.
+- This personal matter-reserve rule is specific to human-form nanite bodies and does not turn block Replicators into hunger-driven pawns.
 - The workshop build operation must spend the reserve only after a valid placement succeeds; failed/cancelled placement spends nothing.
 - The workshop itself is not normally present in the Architect menu.
 - When the same WNG direct-bootstrap/bypass option is enabled, the Asuran workshop additionally becomes directly buildable from the **WNG Architect** category after its research prerequisite.
@@ -63,5 +65,5 @@ Do not silently use FabricationBench/MachiningTable/ElectricSmelter as generic d
 ## Lore reconciliation
 
 - Wraith technology is organic/living and should be grown/cultivated; the workbench is a RimWorld abstraction for Wraith living-technology production.
-- Asurans are human-form Replicators built from programmable nanites and Ancient-derived technology; spending a finite Nanite Reserve to assemble infrastructure is consistent with their material reconstruction identity.
+- Asurans are human-form Replicators built from programmable nanites and Ancient-derived technology. Their food-as-matter personal reserve is a WNG gameplay extrapolation explicitly approved by Vardath; it uses native RimWorld food behavior as the matter-input interface while keeping block Replicator mass consumption separate.
 - Historical WNG implementations are reference evidence only. For this fresh branch, the requirements above are authoritative.

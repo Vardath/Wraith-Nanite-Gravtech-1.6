@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <PawnKindDef Name="WNG_AsuranPawnBase" Abstract="True">
+    <race>Human</race><useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet><xenotypeChances><WNG_NaniteHumanoid>1</WNG_NaniteHumanoid></xenotypeChances></xenotypeSet>
+    <minGenerationAge>18</minGenerationAge><maxGenerationAge>200</maxGenerationAge><allowOldAgeInjuries>false</allowOldAgeInjuries>
+    <isFighter>true</isFighter><apparelIgnoreSeasons>true</apparelIgnoreSeasons><gearHealthRange>0.85~1</gearHealthRange><itemQuality>Good</itemQuality>
+    <initialWillRange>16~28</initialWillRange><initialResistanceRange>20~34</initialResistanceRange>
+    <weaponMoney>900~1500</weaponMoney><weaponTags><li>SpacerGun</li></weaponTags>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_AsuranPawnBase">
+    <defName>WNG_AsuranOperative</defName><label>Asuran operative</label><combatPower>185</combatPower>
+    <description>A human-form Asuran combat and recovery operative built from a coordinated nanite lattice. This is an ordinary Lattice combat role, not sovereign Queen authority.</description>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_AsuranPawnBase">
+    <defName>WNG_AsuranTechnician</defName><label>Asuran technician</label><combatPower>155</combatPower><itemQuality>Excellent</itemQuality>
+    <description>An Asuran technical specialist used for nanite engineering, recovery operations and Ancient-derived systems.</description>
+  </PawnKindDef>
+
+  <PawnKindDef ParentName="WNG_AsuranPawnBase">
+    <defName>WNG_AsuranCommander</defName><label>Asuran commander</label><combatPower>270</combatPower><itemQuality>Excellent</itemQuality>
+    <description>A senior Asuran field commander coordinating Lattice operations. Command rank is not the same as the unique Replicator Queen's sovereign block-Replicator authority.</description>
+    <initialWillRange>24~36</initialWillRange><initialResistanceRange>30~44</initialResistanceRange>
+  </PawnKindDef>
+</Defs>

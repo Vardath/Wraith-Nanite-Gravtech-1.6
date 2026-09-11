@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_AsuranLattice</defName>
+    <label>Asuran lattice</label><fixedName>The Asuran Lattice</fixedName>
+    <description>A hostile operational network of Pegasus human-form Replicators descended from Ancient nanite technology. Its humanoid members are synthetic nanite bodies; ordinary operatives do not possess the unique Replicator Queen's sovereign authority over block Replicators.</description>
+    <basicMemberKind>WNG_AsuranOperative</basicMemberKind>
+    <pawnSingular>Asuran</pawnSingular><pawnsPlural>Asurans</pawnsPlural><leaderTitle>commander</leaderTitle>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart><maxCountAtGameStart>1</maxCountAtGameStart><maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation>
+    <canMakeRandomly>false</canMakeRandomly><settlementGenerationWeight>0</settlementGenerationWeight><hidden>true</hidden>
+    <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath><factionIconPath>World/WorldObjects/Expanding/Sites/MechCluster</factionIconPath>
+    <factionNameMaker>NamerFactionOutlander</factionNameMaker><settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+    <techLevel>Ultra</techLevel><humanlikeFaction>true</humanlikeFaction><permanentEnemy>true</permanentEnemy><hostileToFactionlessHumanlikes>true</hostileToFactionlessHumanlikes>
+    <autoFlee>false</autoFlee><canSiege>true</canSiege><canStageAttacks>true</canStageAttacks><rescueesCanJoin>false</rescueesCanJoin>
+    <allowedArrivalTemperatureRange>-100~200</allowedArrivalTemperatureRange>
+    <xenotypeSet><xenotypeChances><WNG_NaniteHumanoid>999</WNG_NaniteHumanoid></xenotypeChances></xenotypeSet>
+    <pawnGroupMakers>
+      <li><kindDef>Combat</kindDef><commonality>100</commonality><options>
+        <WNG_AsuranOperative>12</WNG_AsuranOperative><WNG_AsuranTechnician>3</WNG_AsuranTechnician><WNG_AsuranCommander>1</WNG_AsuranCommander>
+      </options></li>
+    </pawnGroupMakers>
+  </FactionDef>
+</Defs>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <NeedDef>
+    <defName>WNG_NaniteMatterReserve</defName>
+    <label>nanite reserve</label>
+    <description>Stored matter available to this human-form Replicator's nanite body. RimWorld's native food and nutrition machinery drives this reserve: eating edible matter refills it, normal operation consumes it, and reconstruction or nanite fabrication can spend additional reserve.</description>
+    <needClass>Need_Food</needClass>
+    <minIntelligence>Humanlike</minIntelligence>
+    <onlyIfCausedByGene>true</onlyIfCausedByGene>
+    <major>true</major>
+    <listPriority>100</listPriority>
+    <showForCaravanMembers>true</showForCaravanMembers>
+  </NeedDef>
+</Defs>

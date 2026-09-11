@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <XenotypeDef>
+    <defName>WNG_NaniteHumanoid</defName>
+    <label>nanite humanoid</label>
+    <description>A human-form Replicator body assembled from microscopic nanites. Pegasus Asurans and compatible human-form Replicator individuals use this synthetic identity; political role, faction allegiance and sovereign authority are separate layers. Ordinary food is processed as matter feedstock for the body's Nanite Reserve.</description>
+    <descriptionShort>A synthetic human form made from coordinated Replicator nanites.</descriptionShort>
+    <inheritable>false</inheritable>
+    <genes><li>WNG_AsuranNanitePhysiology</li></genes>
+  </XenotypeDef>
+</Defs>

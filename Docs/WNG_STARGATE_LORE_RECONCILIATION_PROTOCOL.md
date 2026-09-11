@@ -48,8 +48,9 @@ Implementation convenience must never silently override the first four.
 ## Lore fidelity rules
 
 - Never convert a non-biological Stargate behavior into a biological need unless Stargate or the current plan actually supports that need.
-- Do not turn Replicator resource consumption into hunger or survival fuel. Their resource consumption exists to reproduce, construct, adapt, and increase mass/forms.
-- Wraith hunger/Life Force is a Wraith biological/faction system and must remain separate from Replicator resource consumption.
+- **Block Replicators:** do not turn their consumed material into hunger or survival fuel. Their map-matter economy exists to reproduce, construct, adapt and increase mass/forms.
+- **Human-form Replicators/Asurans — explicit Vardath exception (2026-09-11):** their personal body reserve uses RimWorld's native food system as a renamed Nanite Reserve. Edible matter refuels their microscopic nanite body, while repair/fabrication spends that same reserve. This does not alter the block-Replicator economy.
+- Wraith hunger/Life Force is a Wraith biological/faction system and must remain separate from both Replicator systems.
 - Craft should preserve their Stargate role: e.g. Wraith Darts are culling/interceptor craft with culling-beam storage; Puddle Jumpers are Ancient gate-capable shuttles with Ancient control/drone technology.
 - Asuran technology should derive from their Lantean/Ancient technological lineage rather than becoming unrelated generic nanite technology.
 - If a WNG extension goes beyond canon, record the extrapolation and why it is consistent with the source setting.
@@ -61,6 +62,12 @@ Implementation convenience must never silently override the first four.
 - WNG plan: consume map matter, reproduce, combine into larger forms, inherit material phenotype, retaliate locally when provoked, then enter terminal attack behavior after roughly 90–95% of eligible map matter has been stripped.
 - Historical code: useful reference for assimilation, adaptation, block reformation, hierarchy, specialists, and containment, but not authoritative.
 - Fresh implementation rule: no starvation/hunger/fuel-to-survive model.
+
+### Human-form Replicators / Asurans
+- Stargate basis: humanoid Replicators and Pegasus Asurans are human-form bodies composed of microscopic nanites rather than block-machine bodies; Asurans derive from Ancient anti-Wraith nanite technology.
+- WNG direction: use a finite personal Nanite Reserve represented by native Need_Food, refilled through edible matter and spent by repair/fabrication.
+- This food-as-matter behavior is an explicit WNG gameplay extrapolation approved by Vardath, not a claim that Stargate canon depicts Asurans eating ordinary meals.
+- Queen sovereignty, infiltration and block-control authority remain separate later systems.
 
 ### Wraith Dart
 - Stargate basis: single-pilot gate-capable Wraith culling/interceptor craft; culling beam dematerializes and stores captured people aboard the craft.

@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <GeneDef>
-    <defName>WNG_NaniteReserve</defName>
-    <label>nanite reserve</label>
-    <description>A visible reserve of converted nanite feedstock used by Asuran and human-form Replicator reconstruction and fabrication. It does not drain merely because time passes; explicit repair or construction operations spend it.</description>
-    <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
-    <resourceLabel>Nanite reserve</resourceLabel>
-    <resourceDescription>Stored nanite feedstock used by Asuran reconstruction and fabrication.</resourceDescription>
-    <resourceGizmoThresholds><li>0.10</li><li>0.25</li><li>0.60</li></resourceGizmoThresholds>
-    <showGizmoOnWorldView>true</showGizmoOnWorldView>
-    <showGizmoWhenDrafted>true</showGizmoWhenDrafted>
-    <showGizmoOnMultiSelect>false</showGizmoOnMultiSelect>
+    <defName>WNG_AsuranNanitePhysiology</defName>
+    <label>nanite physiology</label>
+    <description>This humanoid is a synthetic body composed of coordinated microscopic nanites. Its ordinary RimWorld food need is replaced by a Nanite Reserve: ingested food is treated as matter feedstock, normal operation drains the reserve, and reconstruction or fabrication spends it directly. At critically low reserve the body weakens and can shut down rather than suffering biological malnutrition. EMP disrupts the lattice and suspends self-repair.</description>
+    <geneClass>WraithNaniteGravtech.Gene_AsuranNanitePhysiology</geneClass>
+    <enablesNeeds><li>WNG_NaniteMatterReserve</li></enablesNeeds>
+    <disablesNeeds><li>Food</li></disablesNeeds>
+    <makeImmuneTo><li>Malnutrition</li></makeImmuneTo>
+    <dontMindRawFood>true</dontMindRawFood>
+    <foodPoisoningChanceFactor>0</foodPoisoningChanceFactor>
+    <sterilize>true</sterilize>
+    <biologicalAgeTickFactorFromAgeCurve><points><li>(0,0)</li><li>(1000,0)</li></points></biologicalAgeTickFactorFromAgeCurve>
     <abilities><li>WNG_AssembleAsuranWorkshop</li></abilities>
-    <biostatCpx>2</biostatCpx>
-    <biostatMet>0</biostatMet>
+    <modExtensions><li Class="WraithNaniteGravtech.AsuranNanitePhysiologyExtension">
+      <reconcileIntervalTicks>120</reconcileIntervalTicks>
+      <healIntervalTicks>250</healIntervalTicks>
+      <baseHealAmount>0.12</baseHealAmount>
+      <reserveCostPerHealPoint>0.004</reserveCostPerHealPoint>
+      <depletionThreshold>0.15</depletionThreshold>
+      <empSuppressionTicks>1800</empSuppressionTicks>
+    </li></modExtensions>
+    <biostatCpx>4</biostatCpx><biostatMet>0</biostatMet>
   </GeneDef>
 </Defs>

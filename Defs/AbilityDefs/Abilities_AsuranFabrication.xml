@@ -3,7 +3,7 @@
   <AbilityDef>
     <defName>WNG_AssembleAsuranWorkshop</defName>
     <label>assemble Asuran workshop</label>
-    <description>Use a portion of the caster's Nanite Reserve to assemble a permanent Asuran nanite workshop at the chosen cell. Invalid or cancelled placement spends no reserve.</description>
+    <description>Convert 60% of the caster's Nanite Reserve into a permanent Asuran nanite workshop at the chosen cell. Human-form Replicators refill this same reserve by ingesting ordinary edible matter through RimWorld's native food system. Invalid or cancelled placement spends no reserve.</description>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
     <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
