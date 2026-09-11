@@ -34,11 +34,9 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Persistent authority metadata attached to every real WNG block Replicator. Authority is
-    /// separate from learned adaptation and stored matter. The current implementation activates the
-    /// Queen authority path; Neural Lattice and temporary Asuran authority are reserved enum/domain
-    /// values so later layers can use the same persistence/transaction model instead of inventing a
-    /// competing controller system.
+    /// Persistent authority metadata attached to every real WNG block Replicator. Queen authority,
+    /// Sovereign Neural Lattice authority and future temporary Asuran intrusion share one physical
+    /// transaction model without becoming the same identity/domain.
     /// </summary>
     public sealed class CompReplicatorSovereignty : ThingComp
     {
@@ -61,12 +59,19 @@ namespace WraithNaniteGravtech
         public string DomainKey => domainKey;
         public bool HasAuthority => authority != ReplicatorControlAuthority.None;
         public bool IsQueenControlled => authority == ReplicatorControlAuthority.Queen && controller != null;
+        public bool IsNeuralLatticeControlled => authority == ReplicatorControlAuthority.NeuralLattice && controller != null;
         public bool AuthorityValid => HasAuthority && ReplicatorSovereigntyUtility.IsAuthorityValid(this);
         public bool InterferenceBlocked => HasAuthority && ReplicatorSovereigntyUtility.IsInterferenceBlocking(this);
         public bool Operational => AuthorityValid && !InterferenceBlocked;
 
         public bool IsQueenControlledBy(Pawn exactQueen)
             => IsQueenControlled && controller == exactQueen && !string.IsNullOrEmpty(domainKey);
+
+        public bool IsNeuralLatticeControlledBy(Pawn exactBearer)
+            => IsNeuralLatticeControlled && controller == exactBearer && !string.IsNullOrEmpty(domainKey);
+
+        public bool IsControlledBy(Pawn exactController)
+            => HasAuthority && controller == exactController && !string.IsNullOrEmpty(domainKey);
 
         public bool TryAssignQueen(Pawn exactQueen, out string rejection)
         {
@@ -77,31 +82,15 @@ namespace WraithNaniteGravtech
                 rejection = "Only the exact Replicator Queen has innate sovereign authority.";
                 return false;
             }
-            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null)
-            {
-                rejection = "The target Replicator is not physically available.";
+            if (!ValidatePhysicalTarget(pawn, exactQueen, out rejection))
                 return false;
-            }
-            if (!ReplicatorSovereigntyUtility.SharesPhysicalPresence(exactQueen, pawn))
-            {
-                rejection = "The Queen and target Replicator must be physically present together.";
-                return false;
-            }
             if (ReplicatorSovereigntyUtility.IsQueenSignalDisrupted(exactQueen))
             {
                 rejection = "The Queen's nanite lattice is disrupted by EMP.";
                 return false;
             }
-            if (ReplicatorEMP.IsSuppressed(pawn))
-            {
-                rejection = "The target Replicator is disrupted by EMP.";
+            if (!ValidateAcquisitionInterference(pawn, exactQueen, out rejection))
                 return false;
-            }
-            if (ReplicatorContainmentUtility.IsContained(pawn.Map, pawn.Position))
-            {
-                rejection = "An active Replicator containment field is blocking sovereign acquisition.";
-                return false;
-            }
             if (HasAuthority && !IsQueenControlledBy(exactQueen))
             {
                 rejection = "That Replicator already belongs to a different control domain.";
@@ -115,18 +104,114 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
-            originalFaction = pawn.Faction;
-            controlFaction = exactQueen.Faction;
-            controller = exactQueen;
-            authority = ReplicatorControlAuthority.Queen;
-            domainKey = ReplicatorSovereigntyUtility.QueenDomainKey(exactQueen);
+            AssignAuthority(
+                exactQueen,
+                exactQueen.Faction,
+                ReplicatorControlAuthority.Queen,
+                ReplicatorSovereigntyUtility.QueenDomainKey(exactQueen));
+            return true;
+        }
+
+        public bool TryAssignNeuralLattice(Pawn exactBearer, out string rejection)
+        {
+            rejection = null;
+            Pawn pawn = Pawn;
+            if (ReplicatorSovereigntyUtility.IsExactQueen(exactBearer))
+            {
+                rejection = "The exact Replicator Queen uses her innate sovereign authority rather than an implant control domain.";
+                return false;
+            }
+            if (!ReplicatorSovereigntyUtility.HasSovereignNeuralLattice(exactBearer))
+            {
+                rejection = "The controller does not have an active Sovereign Neural Lattice implant.";
+                return false;
+            }
+            if (!ValidatePhysicalTarget(pawn, exactBearer, out rejection))
+                return false;
+            if (ReplicatorSovereigntyUtility.IsNeuralLatticeSignalDisrupted(exactBearer))
+            {
+                rejection = "The Sovereign Neural Lattice is disrupted by EMP.";
+                return false;
+            }
+            if (!ValidateAcquisitionInterference(pawn, exactBearer, out rejection))
+                return false;
+            if (HasAuthority && !IsNeuralLatticeControlledBy(exactBearer))
+            {
+                rejection = "That Replicator already belongs to a different control domain.";
+                return false;
+            }
+            if (IsNeuralLatticeControlledBy(exactBearer))
+                return true;
+            if (exactBearer.Faction == null)
+            {
+                rejection = "The implant bearer has no active faction authority.";
+                return false;
+            }
+
+            AssignAuthority(
+                exactBearer,
+                exactBearer.Faction,
+                ReplicatorControlAuthority.NeuralLattice,
+                ReplicatorSovereigntyUtility.NeuralLatticeDomainKey(exactBearer));
+            return true;
+        }
+
+        private static bool ValidatePhysicalTarget(Pawn pawn, Pawn exactController, out string rejection)
+        {
+            rejection = null;
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null)
+            {
+                rejection = "The target Replicator is not physically available.";
+                return false;
+            }
+            if (!ReplicatorSovereigntyUtility.SharesPhysicalPresence(exactController, pawn))
+            {
+                rejection = "The controller and target Replicator must be physically present together.";
+                return false;
+            }
+            return true;
+        }
+
+        private static bool ValidateAcquisitionInterference(Pawn pawn, Pawn exactController, out string rejection)
+        {
+            rejection = null;
+            if (ReplicatorEMP.IsSuppressed(pawn))
+            {
+                rejection = "The target Replicator is disrupted by EMP.";
+                return false;
+            }
+            if (ReplicatorContainmentUtility.IsContained(pawn.Map, pawn.Position))
+            {
+                rejection = "An active Replicator containment field is blocking control acquisition.";
+                return false;
+            }
+            if (exactController?.Spawned == true && exactController.Map != null &&
+                ReplicatorContainmentUtility.IsContained(exactController.Map, exactController.Position))
+            {
+                rejection = "An active Replicator containment field is blocking the controller's signal.";
+                return false;
+            }
+            return true;
+        }
+
+        private void AssignAuthority(
+            Pawn exactController,
+            Faction exactControlFaction,
+            ReplicatorControlAuthority exactAuthority,
+            string exactDomainKey)
+        {
+            Pawn pawn = Pawn;
+            originalFaction = pawn?.Faction;
+            controlFaction = exactControlFaction;
+            controller = exactController;
+            authority = exactAuthority;
+            domainKey = exactDomainKey;
             temporaryUntil = -1;
             lastInterferenceBlocked = false;
 
-            if (pawn.Faction != controlFaction)
-                pawn.SetFaction(controlFaction, exactQueen);
-            pawn.jobs?.EndCurrentJob(JobCondition.InterruptForced);
-            return true;
+            if (pawn != null && pawn.Faction != controlFaction)
+                pawn.SetFaction(controlFaction, exactController);
+            pawn?.jobs?.EndCurrentJob(JobCondition.InterruptForced);
         }
 
         public void CopyAuthorityFrom(CompReplicatorSovereignty other)
@@ -214,18 +299,28 @@ namespace WraithNaniteGravtech
                 yield return gizmo;
 
             Pawn pawn = Pawn;
-            if (pawn == null || !IsQueenControlled || controller?.Faction != Faction.OfPlayer || pawn.Faction != Faction.OfPlayer)
+            if (pawn == null || !HasAuthority || controller?.Faction != Faction.OfPlayer ||
+                pawn.Faction != Faction.OfPlayer || controlFaction != Faction.OfPlayer)
                 yield break;
 
+            bool playerCommandDomain = authority == ReplicatorControlAuthority.Queen ||
+                                       authority == ReplicatorControlAuthority.NeuralLattice;
+            if (!playerCommandDomain)
+                yield break;
+
+            string commandLabel = authority == ReplicatorControlAuthority.Queen ? "Sovereign" : "Lattice";
+            string authorityDescription = authority == ReplicatorControlAuthority.Queen
+                ? "Queen-controlled"
+                : "Neural-Lattice-controlled";
             bool blocked = !AuthorityValid || InterferenceBlocked;
             string blockedReason = !AuthorityValid
-                ? "The Queen is no longer physically present as this Replicator's sovereign controller."
-                : "Sovereign command is blocked by EMP or an active containment field.";
+                ? "The recorded controller is no longer physically present as this Replicator's valid authority source."
+                : "Control is blocked by EMP or an active containment field.";
 
             Command_Target move = new Command_Target
             {
-                defaultLabel = "Sovereign move",
-                defaultDesc = "Order this Queen-controlled Replicator to move to a chosen cell without requiring a mechanitor overseer.",
+                defaultLabel = commandLabel + " move",
+                defaultDesc = $"Order this {authorityDescription} Replicator to move to a chosen cell without requiring a mechanitor overseer.",
                 targetingParams = TargetingParameters.ForCell(),
                 action = target => IssueMove(target.Cell)
             };
@@ -234,8 +329,8 @@ namespace WraithNaniteGravtech
 
             Command_Target attack = new Command_Target
             {
-                defaultLabel = "Sovereign attack",
-                defaultDesc = "Order this Queen-controlled Replicator to attack an exact hostile target.",
+                defaultLabel = commandLabel + " attack",
+                defaultDesc = $"Order this {authorityDescription} Replicator to attack an exact hostile target.",
                 targetingParams = TargetingParameters.ForAttackAny(),
                 action = IssueAttack
             };
@@ -259,8 +354,8 @@ namespace WraithNaniteGravtech
                 };
                 Command_Target repair = new Command_Target
                 {
-                    defaultLabel = "Sovereign repair",
-                    defaultDesc = "Order this Repairer to repair an exact Replicator in the same sovereign domain.",
+                    defaultLabel = commandLabel + " repair",
+                    defaultDesc = "Order this Repairer to repair an exact Replicator in the same controller domain.",
                     targetingParams = repairParams,
                     action = IssueRepair
                 };
@@ -280,7 +375,7 @@ namespace WraithNaniteGravtech
                 };
                 Command_Target breach = new Command_Target
                 {
-                    defaultLabel = "Sovereign breach",
+                    defaultLabel = commandLabel + " breach",
                     defaultDesc = "Order this Burrower to use its real breaching job against a selected structure.",
                     targetingParams = breachParams,
                     action = IssueBreach
@@ -294,8 +389,8 @@ namespace WraithNaniteGravtech
             {
                 Command_Action recombine = new Command_Action
                 {
-                    defaultLabel = "Sovereign recombine",
-                    defaultDesc = "Explicitly order nearby same-domain Replicators of this form to perform their normal upward hierarchy transaction. Stored matter, adaptations and sovereign authority are conserved.",
+                    defaultLabel = commandLabel + " recombine",
+                    defaultDesc = "Explicitly order nearby same-domain Replicators of this form to perform their normal upward hierarchy transaction. Stored matter, adaptations and controller authority are conserved.",
                     action = delegate
                     {
                         if (!hierarchy.TrySovereignRecombine(controller, out string reason) && !reason.NullOrEmpty())
@@ -308,8 +403,8 @@ namespace WraithNaniteGravtech
 
             yield return new Command_Action
             {
-                defaultLabel = "Release sovereign control",
-                defaultDesc = "Return this block Replicator to its pre-Queen autonomous faction/domain.",
+                defaultLabel = "Release controller authority",
+                defaultDesc = "Return this block Replicator to its pre-control faction/domain.",
                 action = delegate { ReleaseAuthority(); }
             };
         }
@@ -337,7 +432,7 @@ namespace WraithNaniteGravtech
                 return;
             if (!pawn.HostileTo(thing))
             {
-                Messages.Message("Choose a target hostile to the Queen's current faction.", thing, MessageTypeDefOf.RejectInput, historical: false);
+                Messages.Message("Choose a target hostile to the controller's current faction.", thing, MessageTypeDefOf.RejectInput, historical: false);
                 return;
             }
 
@@ -394,7 +489,7 @@ namespace WraithNaniteGravtech
                 return null;
             string controllerLabel = controller?.LabelShort ?? "unresolved controller";
             string status = !AuthorityValid ? "authority lost" : InterferenceBlocked ? "signal disrupted" : "operational";
-            return $"Replicator control: {authority} — {controllerLabel}\nSovereign signal: {status}";
+            return $"Replicator control: {authority} — {controllerLabel}\nController signal: {status}";
         }
 
         public override void PostExposeData()
@@ -422,6 +517,15 @@ namespace WraithNaniteGravtech
         public static string QueenDomainKey(Pawn queen)
             => queen == null ? null : "Queen:" + queen.GetUniqueLoadID();
 
+        public static string NeuralLatticeDomainKey(Pawn bearer)
+            => bearer == null ? null : "NeuralLattice:" + bearer.GetUniqueLoadID();
+
+        public static Hediff_SovereignNeuralLattice GetSovereignNeuralLattice(Pawn pawn)
+            => pawn?.health?.hediffSet?.hediffs?.OfType<Hediff_SovereignNeuralLattice>().FirstOrDefault();
+
+        public static bool HasSovereignNeuralLattice(Pawn pawn)
+            => pawn != null && !pawn.Dead && GetSovereignNeuralLattice(pawn) != null;
+
         public static bool IsQueenSignalDisrupted(Pawn queen)
         {
             if (queen?.health?.hediffSet == null)
@@ -429,6 +533,9 @@ namespace WraithNaniteGravtech
             HediffDef disrupted = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_AsuranEMPDisrupted");
             return disrupted != null && queen.health.hediffSet.HasHediff(disrupted);
         }
+
+        public static bool IsNeuralLatticeSignalDisrupted(Pawn bearer)
+            => GetSovereignNeuralLattice(bearer)?.SignalDisrupted != false;
 
         public static bool SharesPhysicalPresence(Pawn controller, Pawn block)
         {
@@ -462,6 +569,8 @@ namespace WraithNaniteGravtech
                 case ReplicatorControlAuthority.Queen:
                     return IsExactQueen(controller) && comp.DomainKey == QueenDomainKey(controller);
                 case ReplicatorControlAuthority.NeuralLattice:
+                    return !IsExactQueen(controller) && HasSovereignNeuralLattice(controller) &&
+                           comp.DomainKey == NeuralLatticeDomainKey(controller);
                 case ReplicatorControlAuthority.TemporaryAsuran:
                     return !string.IsNullOrEmpty(comp.DomainKey);
                 default:
@@ -480,6 +589,8 @@ namespace WraithNaniteGravtech
             if (block.Spawned && block.Map != null && ReplicatorContainmentUtility.IsContained(block.Map, block.Position))
                 return true;
             if (comp.Authority == ReplicatorControlAuthority.Queen && IsQueenSignalDisrupted(controller))
+                return true;
+            if (comp.Authority == ReplicatorControlAuthority.NeuralLattice && IsNeuralLatticeSignalDisrupted(controller))
                 return true;
             if (controller?.Spawned == true && controller.Map != null && ReplicatorContainmentUtility.IsContained(controller.Map, controller.Position))
                 return true;
@@ -518,25 +629,15 @@ namespace WraithNaniteGravtech
                 rejection = "The Queen's nanite lattice is disrupted by EMP.";
                 return false;
             }
-            if (!IsBlockReplicator(block) || block.Dead || !block.Spawned || block.Map != queen.Map)
-            {
-                rejection = "Choose a living WNG block Replicator on the Queen's map.";
+            if (!ValidateAcquisitionTarget(queen, block, range, out rejection))
                 return false;
-            }
-            float allowed = Math.Max(1f, range);
-            if (queen.Position.DistanceToSquared(block.Position) > allowed * allowed)
-            {
-                rejection = "That Replicator is outside the Queen's sovereign command range.";
-                return false;
-            }
 
             CompReplicatorSovereignty comp = block.TryGetComp<CompReplicatorSovereignty>();
             if (comp.IsQueenControlledBy(queen))
                 return true;
 
             int cap = Math.Max(1, maxControlled);
-            int controlled = queen.Map.mapPawns.AllPawnsSpawned.Count(p =>
-                p?.TryGetComp<CompReplicatorSovereignty>()?.IsQueenControlledBy(queen) == true);
+            int controlled = CountControllerDomainOnMap(queen, ReplicatorControlAuthority.Queen);
             if (controlled >= cap)
             {
                 rejection = "The Queen's current sovereign control limit has been reached.";
@@ -546,17 +647,112 @@ namespace WraithNaniteGravtech
             return comp.TryAssignQueen(queen, out rejection);
         }
 
-        public static int ReleaseQueenDomain(Pawn queen)
+        public static bool TryAcquireForNeuralLattice(Pawn bearer, Pawn block, float range, int maxControlled, out string rejection)
         {
-            if (queen == null || Find.Maps == null)
-                return 0;
-            int released = 0;
-            foreach (Map map in Find.Maps)
+            rejection = null;
+            if (bearer == null || bearer.Dead || bearer.Faction != Faction.OfPlayer || !bearer.Spawned || bearer.Map == null)
             {
-                foreach (Pawn pawn in map.mapPawns.AllPawnsSpawned.ToList())
+                rejection = "The Sovereign Neural Lattice bearer must be physically present and player-aligned.";
+                return false;
+            }
+            if (IsExactQueen(bearer))
+            {
+                rejection = "The exact Replicator Queen uses her innate sovereign authority rather than an implant control domain.";
+                return false;
+            }
+            if (!HasSovereignNeuralLattice(bearer))
+            {
+                rejection = "This pawn does not have an active Sovereign Neural Lattice implant.";
+                return false;
+            }
+            if (IsNeuralLatticeSignalDisrupted(bearer))
+            {
+                rejection = "The Sovereign Neural Lattice is disrupted by EMP.";
+                return false;
+            }
+            if (ReplicatorContainmentUtility.IsContained(bearer.Map, bearer.Position))
+            {
+                rejection = "An active Replicator containment field is blocking the implant's control signal.";
+                return false;
+            }
+            if (!ValidateAcquisitionTarget(bearer, block, range, out rejection))
+                return false;
+
+            CompReplicatorSovereignty comp = block.TryGetComp<CompReplicatorSovereignty>();
+            if (comp.IsNeuralLatticeControlledBy(bearer))
+                return true;
+
+            int cap = Math.Max(1, maxControlled);
+            int controlled = CountControllerDomainOnMap(bearer, ReplicatorControlAuthority.NeuralLattice);
+            if (controlled >= cap)
+            {
+                rejection = "This Sovereign Neural Lattice has reached its current block-control limit.";
+                return false;
+            }
+
+            return comp.TryAssignNeuralLattice(bearer, out rejection);
+        }
+
+        private static bool ValidateAcquisitionTarget(Pawn controller, Pawn block, float range, out string rejection)
+        {
+            rejection = null;
+            if (!IsBlockReplicator(block) || block.Dead || !block.Spawned || block.Map != controller.Map)
+            {
+                rejection = "Choose a living WNG block Replicator on the controller's map.";
+                return false;
+            }
+            float allowed = Math.Max(1f, range);
+            if (controller.Position.DistanceToSquared(block.Position) > allowed * allowed)
+            {
+                rejection = "That Replicator is outside the controller's command range.";
+                return false;
+            }
+            return true;
+        }
+
+        private static int CountControllerDomainOnMap(Pawn controller, ReplicatorControlAuthority exactAuthority)
+        {
+            if (controller?.Map?.mapPawns?.AllPawnsSpawned == null)
+                return 0;
+            return controller.Map.mapPawns.AllPawnsSpawned.Count(p =>
+            {
+                CompReplicatorSovereignty comp = p?.TryGetComp<CompReplicatorSovereignty>();
+                return comp?.Authority == exactAuthority && comp.Controller == controller;
+            });
+        }
+
+        public static int ReleaseQueenDomain(Pawn queen)
+            => ReleaseControllerDomain(queen, ReplicatorControlAuthority.Queen);
+
+        public static int ReleaseControllerDomain(Pawn exactController, ReplicatorControlAuthority exactAuthority)
+        {
+            if (exactController == null)
+                return 0;
+
+            int released = 0;
+            HashSet<int> handled = new HashSet<int>();
+            if (Find.Maps != null)
+            {
+                foreach (Map map in Find.Maps)
+                {
+                    foreach (Pawn pawn in map.mapPawns.AllPawnsSpawned.ToList())
+                    {
+                        CompReplicatorSovereignty comp = pawn?.TryGetComp<CompReplicatorSovereignty>();
+                        if (comp?.Authority == exactAuthority && comp.Controller == exactController &&
+                            handled.Add(pawn.thingIDNumber) && comp.ReleaseAuthority())
+                            released++;
+                    }
+                }
+            }
+
+            Caravan caravan = exactController.GetCaravan();
+            if (caravan != null)
+            {
+                foreach (Pawn pawn in caravan.PawnsListForReading.ToList())
                 {
                     CompReplicatorSovereignty comp = pawn?.TryGetComp<CompReplicatorSovereignty>();
-                    if (comp?.IsQueenControlledBy(queen) == true && comp.ReleaseAuthority())
+                    if (comp?.Authority == exactAuthority && comp.Controller == exactController &&
+                        handled.Add(pawn.thingIDNumber) && comp.ReleaseAuthority())
                         released++;
                 }
             }
@@ -669,7 +865,7 @@ namespace WraithNaniteGravtech
             yield return new Command_Action
             {
                 defaultLabel = "Release sovereign swarm",
-                defaultDesc = "Release all currently spawned block Replicators controlled by this exact Queen and restore their pre-control faction/domain.",
+                defaultDesc = "Release all currently present block Replicators controlled by this exact Queen and restore their pre-control faction/domain.",
                 action = delegate
                 {
                     int released = ReplicatorSovereigntyUtility.ReleaseQueenDomain(pawn);
