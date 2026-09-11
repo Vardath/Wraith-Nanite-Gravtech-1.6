@@ -1,0 +1,75 @@
+name: Temporary Sovereign Neural Lattice validation
+
+on:
+  push:
+    branches: [wng-neural-lattice-candidate]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Parse XML
+        run: |
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+          files = list(pathlib.Path('Defs').rglob('*.xml')) + list(pathlib.Path('Patches').rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'Parsed {len(files)} XML files')
+          PY
+      - name: Neural Lattice invariants
+        run: |
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+
+          item_root = ET.parse('Defs/ThingDefs/Things_ReplicatorNeuralLattice.xml').getroot()
+          item = next(x for x in item_root.findall('ThingDef') if x.findtext('defName') == 'WNG_SovereignNeuralLattice')
+          assert item.attrib.get('ParentName') == 'BodyPartBase'
+
+          hediff_root = ET.parse('Defs/HediffDefs/Hediffs_ReplicatorNeuralLattice.xml').getroot()
+          hediff = next(x for x in hediff_root.findall('HediffDef') if x.findtext('defName') == 'WNG_SovereignNeuralLattice')
+          assert hediff.findtext('hediffClass') == 'WraithNaniteGravtech.Hediff_SovereignNeuralLattice'
+          assert hediff.findtext('spawnThingOnRemoved') == 'WNG_SovereignNeuralLattice'
+          ext = hediff.find('modExtensions/li')
+          assert ext is not None and ext.attrib.get('Class') == 'WraithNaniteGravtech.SovereignNeuralLatticeExtension'
+          assert float(ext.findtext('directControlRange')) < 40
+          assert int(ext.findtext('maxControlledBlocks')) < 12
+
+          research_root = ET.parse('Defs/ResearchProjectDefs/Research_ReplicatorNeuralLattice.xml').getroot()
+          research = next(x for x in research_root.findall('ResearchProjectDef') if x.findtext('defName') == 'WNG_SovereignNeuralLatticeResearch')
+          prereqs = [x.text for x in research.find('prerequisites')]
+          assert 'WNG_ReplicatorStudy' in prereqs and 'WNG_AsuranFabrication' in prereqs
+
+          recipes_root = ET.parse('Defs/RecipeDefs/Recipes_ReplicatorNeuralLattice.xml').getroot()
+          recipes = {x.findtext('defName'): x for x in recipes_root.findall('RecipeDef')}
+          fab = recipes['WNG_FabricateSovereignNeuralLattice']
+          assert fab.find('products').findtext('WNG_SovereignNeuralLattice') == '1'
+          ingredient_xml = ET.tostring(fab.find('ingredients'), encoding='unicode')
+          assert 'WNG_ReplicatorCoreFragment' in ingredient_xml and 'WNG_NaniteSludge' in ingredient_xml
+          install = recipes['WNG_InstallSovereignNeuralLattice']
+          assert install.findtext('workerClass') == 'Recipe_InstallImplant'
+          assert install.findtext('addsHediff') == 'WNG_SovereignNeuralLattice'
+          assert 'Brain' in [x.text for x in install.find('appliedOnFixedBodyParts')]
+          remove = recipes['WNG_RemoveSovereignNeuralLattice']
+          assert remove.findtext('workerClass') == 'Recipe_RemoveImplant'
+          assert remove.findtext('removesHediff') == 'WNG_SovereignNeuralLattice'
+
+          workshop = ET.parse('Defs/ThingDefs/Buildings_AsuranWorkshop.xml').getroot()
+          bench = next(x for x in workshop.findall('ThingDef') if x.findtext('defName') == 'WNG_AsuranWorkshop')
+          assert 'WNG_FabricateSovereignNeuralLattice' in [x.text for x in bench.find('recipes')]
+
+          src = pathlib.Path('Source/WNG/Replicators/ReplicatorSovereignty.cs').read_text()
+          lattice_src = pathlib.Path('Source/WNG/Replicators/ReplicatorNeuralLattice.cs').read_text()
+          hierarchy = pathlib.Path('Source/WNG/Replicators/ReplicatorHierarchy.cs').read_text()
+          assert 'NeuralLattice' in src and 'TryAssignNeuralLattice' in src and 'TryAcquireForNeuralLattice' in src
+          assert 'Hediff_SovereignNeuralLattice' in lattice_src and 'ReleaseControllerDomain' in lattice_src
+          assert 'sovereignty.Controller != controller' in hierarchy
+          assert 'SameDomain(anchor, s)' in hierarchy
+          print('Sovereign Neural Lattice invariants passed')
+          PY
