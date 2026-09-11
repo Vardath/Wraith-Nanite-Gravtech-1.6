@@ -23,5 +23,6 @@
     <defName>WNG_AsuranCommander</defName><label>Asuran commander</label><combatPower>270</combatPower><itemQuality>Excellent</itemQuality>
     <description>A senior Asuran field commander coordinating Lattice operations. Command rank is not the same as the unique Replicator Queen's sovereign block-Replicator authority.</description>
     <initialWillRange>24~36</initialWillRange><initialResistanceRange>30~44</initialResistanceRange>
+    <abilities><li>WNG_TemporaryAsuranIntrusion</li></abilities>
   </PawnKindDef>
 </Defs>
