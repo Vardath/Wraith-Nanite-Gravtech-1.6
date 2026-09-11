@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>WNG_FabricateSovereignNeuralLattice</defName>
+    <label>fabricate sovereign neural lattice</label>
+    <description>Reconstruct a bounded Replicator command interface from a recovered control-core fragment and Asuran nanite engineering material.</description>
+    <jobString>Fabricating sovereign neural lattice.</jobString>
+    <workAmount>5200</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements>
+      <Crafting>10</Crafting>
+    </skillRequirements>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>WNG_ReplicatorCoreFragment</li></thingDefs></filter>
+        <count>1</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>WNG_NaniteSludge</li></thingDefs></filter>
+        <count>20</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>Plasteel</li></thingDefs></filter>
+        <count>12</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter>
+        <count>2</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>WNG_ReplicatorCoreFragment</li>
+        <li>WNG_NaniteSludge</li>
+        <li>Plasteel</li>
+        <li>ComponentSpacer</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <products>
+      <WNG_SovereignNeuralLattice>1</WNG_SovereignNeuralLattice>
+    </products>
+    <researchPrerequisite>WNG_SovereignNeuralLatticeResearch</researchPrerequisite>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_InstallSovereignNeuralLattice</defName>
+    <label>install sovereign neural lattice</label>
+    <description>Surgically install a Sovereign Neural Lattice into the brain. The bearer gains bounded target-specific access to compatible block Replicators but does not become the Replicator Queen.</description>
+    <workerClass>Recipe_InstallImplant</workerClass>
+    <jobString>Installing sovereign neural lattice.</jobString>
+    <workAmount>4800</workAmount>
+    <effectWorking>Surgery</effectWorking>
+    <soundWorking>Recipe_Surgery</soundWorking>
+    <workSpeedStat>MedicalOperationSpeed</workSpeedStat>
+    <workSkill>Medicine</workSkill>
+    <skillRequirements>
+      <Medicine>10</Medicine>
+    </skillRequirements>
+    <ingredients>
+      <li>
+        <filter><categories><li>Medicine</li></categories></filter>
+        <count>2</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>WNG_SovereignNeuralLattice</li></thingDefs></filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <categories><li>Medicine</li></categories>
+      <thingDefs><li>WNG_SovereignNeuralLattice</li></thingDefs>
+    </fixedIngredientFilter>
+    <appliedOnFixedBodyParts>
+      <li>Brain</li>
+    </appliedOnFixedBodyParts>
+    <addsHediff>WNG_SovereignNeuralLattice</addsHediff>
+    <recipeUsers>
+      <li>Human</li>
+    </recipeUsers>
+    <researchPrerequisite>WNG_SovereignNeuralLatticeResearch</researchPrerequisite>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_RemoveSovereignNeuralLattice</defName>
+    <label>remove sovereign neural lattice</label>
+    <description>Surgically remove the Sovereign Neural Lattice. Removing the implant releases every block Replicator still bound to that exact implant-controller domain.</description>
+    <workerClass>Recipe_RemoveImplant</workerClass>
+    <jobString>Removing sovereign neural lattice.</jobString>
+    <workAmount>3600</workAmount>
+    <effectWorking>Surgery</effectWorking>
+    <soundWorking>Recipe_Surgery</soundWorking>
+    <workSpeedStat>MedicalOperationSpeed</workSpeedStat>
+    <workSkill>Medicine</workSkill>
+    <skillRequirements>
+      <Medicine>8</Medicine>
+    </skillRequirements>
+    <ingredients>
+      <li>
+        <filter><categories><li>Medicine</li></categories></filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <categories><li>Medicine</li></categories>
+    </fixedIngredientFilter>
+    <appliedOnFixedBodyParts>
+      <li>Brain</li>
+    </appliedOnFixedBodyParts>
+    <removesHediff>WNG_SovereignNeuralLattice</removesHediff>
+    <recipeUsers>
+      <li>Human</li>
+    </recipeUsers>
+  </RecipeDef>
+</Defs>
