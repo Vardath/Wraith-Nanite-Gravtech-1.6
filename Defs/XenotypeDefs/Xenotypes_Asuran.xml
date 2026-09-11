@@ -10,6 +10,7 @@
     <genes>
       <li>WNG_AsuranNanitePhysiology</li>
       <li>WNG_AsuranLatticeLink</li>
+      <li>WNG_AsuranEvidenceTrace</li>
     </genes>
   </XenotypeDef>
 
@@ -22,6 +23,7 @@
     <iconPath>UI/Icons/Xenotypes/Baseliner</iconPath>
     <genes>
       <li>WNG_AsuranInfiltratorPhysiologyMask</li>
+      <li>WNG_AsuranEvidenceTrace</li>
     </genes>
   </XenotypeDef>
 </Defs>
