@@ -1,0 +1,44 @@
+name: Temporary nanite reserve migration validation
+
+on:
+  push:
+    branches:
+      - rebuild/nanite-reserve-oldsave-migration-20260912
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Parse Def and patch XML
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem Defs -Recurse -Filter *.xml) + @(Get-ChildItem Patches -Recurse -Filter *.xml)
+          foreach ($file in $files) { [xml](Get-Content $file.FullName -Raw) | Out-Null }
+          Write-Host "Parsed $($files.Count) XML files"
+      - name: Check conservative one-shot migration contract
+        shell: pwsh
+        run: |
+          [xml]$legacyXml = Get-Content 'Defs/GeneDefs/Genes_AsuranLegacyMigration.xml' -Raw
+          $legacy = $legacyXml.Defs.GeneDef
+          if ($legacy.defName -ne 'WNG_NaniteReserve') { throw 'Legacy DefName no longer matches old saves' }
+          if ($legacy.geneClass -ne 'WraithNaniteGravtech.Gene_Resource_NaniteReserve') { throw 'Legacy gene class cannot deserialize old resource state' }
+          if ($legacy.canGenerateInGeneSet -ne 'false') { throw 'Legacy reserve can generate in current gameplay' }
+          if ($legacy.abilities) { throw 'Legacy compatibility gene grants gameplay abilities' }
+
+          $source = Get-Content 'Source/WNG/Asuran/AsuranNaniteReserveMigration.cs' -Raw
+          if (-not $source.Contains('LegacyGeneDefName = "WNG_NaniteReserve"')) { throw 'Migration is not keyed to the exact legacy WNG gene' }
+          if ($source.Contains('NeedDefOf.Food')) { throw 'Migration is using generic Food as an identity selector' }
+          if (-not $source.Contains('legacy.Value / legacy.Max')) { throw 'Legacy percentage is not preserved' }
+          if (-not $source.Contains('reserve.CurLevelPercentage = legacyFraction;')) { throw 'Legacy percentage is not copied to the current reserve' }
+          $copy = $source.IndexOf('reserve.CurLevelPercentage = legacyFraction;')
+          $remove = $source.IndexOf('pawn.genes.RemoveGene(legacy);')
+          if ($copy -lt 0 -or $remove -le $copy) { throw 'Legacy gene can be removed before the reserve copy completes' }
+          if (-not $source.Contains('completedMigrationVersion')) { throw 'Game-level one-shot migration version is not persisted' }
+          if (-not $source.Contains('PawnsFinder.All_AliveOrDead')) { throw 'Migration does not cover map/world/caravan/travelling pawns' }
+          Write-Host 'Conservative one-shot Nanite Reserve migration contract OK'
