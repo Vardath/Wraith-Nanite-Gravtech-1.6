@@ -166,6 +166,163 @@ namespace WraithNaniteGravtech
         }
     }
 
+    public sealed class CompProperties_ReplicatorSpecialistGrowth : CompProperties
+    {
+        public int checkIntervalTicks = 1200;
+        public int lightMatterCost = 10;
+        public int heavyMatterCost = 20;
+        public int controllerMinDomainPopulation = 8;
+
+        public CompProperties_ReplicatorSpecialistGrowth()
+        {
+            compClass = typeof(CompReplicatorSpecialistGrowth);
+        }
+    }
+
+    public sealed class CompReplicatorSpecialistGrowth : ThingComp
+    {
+        private static bool transformInProgress;
+        private int nextCheckTick;
+        private CompProperties_ReplicatorSpecialistGrowth Props => (CompProperties_ReplicatorSpecialistGrowth)props;
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            if (!respawningAfterLoad && nextCheckTick <= 0)
+                nextCheckTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, Math.Max(250, Props.checkIntervalTicks));
+        }
+
+        public override void CompTick()
+        {
+            base.CompTick();
+            Pawn pawn = parent as Pawn;
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null || pawn.Faction == null || pawn.Faction == Faction.OfPlayer ||
+                transformInProgress || pawn.TryGetComp<CompReplicatorSpecialist>() != null)
+                return;
+
+            int now = Find.TickManager.TicksGame;
+            if (now < nextCheckTick)
+                return;
+            nextCheckTick = SafeFutureTick(now, Math.Max(250, Props.checkIntervalTicks));
+
+            CompReplicatorState state = pawn.TryGetComp<CompReplicatorState>();
+            if (state == null || state.EMPSuppressed || string.IsNullOrEmpty(state.ControlDomainId))
+                return;
+            if (!TryChoose(pawn, state, out PawnKindDef targetKind, out int matterCost) || state.StoredMatter < matterCost)
+                return;
+
+            Transform(pawn, state, targetKind, matterCost);
+        }
+
+        private bool TryChoose(Pawn pawn, CompReplicatorState state, out PawnKindDef kind, out int cost)
+        {
+            kind = null;
+            cost = 0;
+            bool drone = pawn.def?.defName == "WNG_ReplicatorDrone";
+            bool hunter = pawn.def?.defName == "WNG_ReplicatorHunter";
+            if (!drone && !hunter)
+                return false;
+
+            int population = CountDomain(pawn, state);
+            ReplicatorAdaptationFlags learned = state.Adaptations;
+
+            if (hunter && population >= Math.Max(2, Props.controllerMinDomainPopulation) && Has(learned, ReplicatorAdaptationFlags.Power) &&
+                Has(learned, ReplicatorAdaptationFlags.Material) && CountRole(pawn, state, ReplicatorSpecialistRole.Controller) == 0)
+                return Resolve("WNG_ReplicatorController", Props.heavyMatterCost, out kind, out cost);
+
+            if (hunter && Has(learned, ReplicatorAdaptationFlags.Ranged) &&
+                CountRole(pawn, state, ReplicatorSpecialistRole.Artillery) < Math.Max(1, population / 10))
+                return Resolve("WNG_ReplicatorArtillery", Props.heavyMatterCost, out kind, out cost);
+
+            if (drone && Has(learned, ReplicatorAdaptationFlags.Power) &&
+                CountRole(pawn, state, ReplicatorSpecialistRole.Repairer) < Math.Max(1, population / 8))
+                return Resolve("WNG_ReplicatorRepairer", Props.lightMatterCost, out kind, out cost);
+
+            if (drone && Has(learned, ReplicatorAdaptationFlags.Material) && Has(learned, ReplicatorAdaptationFlags.Armor) &&
+                CountRole(pawn, state, ReplicatorSpecialistRole.Burrower) < Math.Max(1, population / 8))
+                return Resolve("WNG_ReplicatorBurrower", Props.lightMatterCost, out kind, out cost);
+
+            return false;
+        }
+
+        private static bool Has(ReplicatorAdaptationFlags flags, ReplicatorAdaptationFlags flag) => (flags & flag) != ReplicatorAdaptationFlags.None;
+
+        private static bool Resolve(string defName, int requestedCost, out PawnKindDef kind, out int cost)
+        {
+            kind = DefDatabase<PawnKindDef>.GetNamedSilentFail(defName);
+            cost = Math.Max(1, requestedCost);
+            return kind?.race != null;
+        }
+
+        private static int CountDomain(Pawn pawn, CompReplicatorState state)
+        {
+            return pawn.Map.mapPawns.AllPawnsSpawned.Count(other =>
+                other != null && !other.Dead && other.Spawned && other.Faction == pawn.Faction &&
+                state.SameControlDomain(other.TryGetComp<CompReplicatorState>()));
+        }
+
+        private static int CountRole(Pawn pawn, CompReplicatorState state, ReplicatorSpecialistRole role)
+        {
+            return pawn.Map.mapPawns.AllPawnsSpawned.Count(other =>
+                other != null && !other.Dead && other.Spawned && other.Faction == pawn.Faction &&
+                other.TryGetComp<CompReplicatorSpecialist>()?.Role == role &&
+                state.SameControlDomain(other.TryGetComp<CompReplicatorState>()));
+        }
+
+        private static void Transform(Pawn source, CompReplicatorState sourceState, PawnKindDef targetKind, int matterCost)
+        {
+            Pawn replacement = null;
+            try
+            {
+                transformInProgress = true;
+                replacement = PawnGenerator.GeneratePawn(new PawnGenerationRequest(targetKind, source.Faction, PawnGenerationContext.NonPlayer, source.Map.Tile));
+                if (replacement == null)
+                    return;
+
+                replacement.TryGetComp<CompReplicatorState>()?.InheritFrom(sourceState, Math.Max(0, sourceState.StoredMatter - matterCost));
+                GenSpawn.Spawn(replacement, source.Position, source.Map);
+                if (!replacement.Spawned)
+                {
+                    if (!replacement.Destroyed)
+                        replacement.Destroy(DestroyMode.Vanish);
+                    return;
+                }
+
+                ReplicatorHierarchyTransaction.Begin(source);
+                try { source.Destroy(DestroyMode.Vanish); }
+                finally { ReplicatorHierarchyTransaction.End(source); }
+
+                if (!source.Destroyed && !replacement.Destroyed)
+                {
+                    replacement.Destroy(DestroyMode.Vanish);
+                    Log.Error("[WNG] Replicator specialist transform failed closed because the source body remained.");
+                }
+            }
+            catch (Exception ex)
+            {
+                if (replacement != null && !replacement.Destroyed)
+                    replacement.Destroy(DestroyMode.Vanish);
+                Log.Error($"[WNG] Replicator specialist transform failed: {ex}");
+            }
+            finally
+            {
+                transformInProgress = false;
+            }
+        }
+
+        private static int SafeFutureTick(int now, int delay)
+        {
+            long result = (long)Math.Max(0, now) + Math.Max(0, delay);
+            return result >= int.MaxValue ? int.MaxValue : (int)result;
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look(ref nextCheckTick, "wngReplicatorSpecialistGrowthNextTick", 0);
+        }
+    }
+
     internal static class ReplicatorSpecialistUtility
     {
         public static CompReplicatorSpecialist Specialist(Pawn pawn)
