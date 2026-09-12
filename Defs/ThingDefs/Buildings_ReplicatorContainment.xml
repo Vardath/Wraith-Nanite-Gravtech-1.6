@@ -3,7 +3,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_ReplicatorContainmentField</defName>
     <label>replicator containment cradle</label>
-    <description>A powered one-cell storage cradle that continuously disrupts the coordination field inside loose Replicator Matter. Matter stored here has its self-assembly exposure reset while power remains on; loss of power immediately resumes normal exposure.</description>
+    <description>A powered one-cell storage cradle tuned around a recovered Replicator control-lattice fragment. It continuously disrupts the coordination field inside loose Replicator Matter. Matter stored here has its self-assembly exposure reset while power remains on; loss of power immediately resumes normal exposure.</description>
     <thingClass>Building_Storage</thingClass>
     <category>Building</category>
     <altitudeLayer>Building</altitudeLayer>
@@ -30,6 +30,7 @@
     <costList>
       <Steel>60</Steel>
       <ComponentIndustrial>2</ComponentIndustrial>
+      <WNG_ReplicatorCoreFragment>1</WNG_ReplicatorCoreFragment>
     </costList>
     <designationCategory>Furniture</designationCategory>
     <thingCategories><li>BuildingsFurniture</li></thingCategories>
