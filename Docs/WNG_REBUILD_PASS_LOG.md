@@ -62,10 +62,18 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Native OxygenPump graphics remain mechanics-validation placeholders; live RimWorld atmosphere behavior remains pending.
 
-10. **Wraith native orbital-sensor organ** — branch `rebuild/wraith-orbital-scanner-20260912`.
+10. **Wraith native orbital-sensor organ** — main `b7a4ce8d37d5ef3247d7283d70b01fdc5d1e3074`.
    - Added `WNG_WraithOrbitalSensor`, a cultivated living sensor using RimWorld 1.6 Odyssey's native `CompOrbitalScanner` rather than custom orbital-discovery code.
    - Native source confirms the scanner uses `CompPowerTrader` and the base game's orbital-signal/quest discovery component.
    - Uses Wraith bio-sludge construction material, requires `WNG_WraithGravships`, remains outdoors as required by the native scanner pattern, and carries the Wraith technology-family marker.
    - Repository file was fetched back; XML parsing and targeted contract assertions passed.
    - No C# changed in this pass; no redundant C# compile was run.
    - Native OrbitalScanner graphics remain mechanics-validation placeholders; live RimWorld signal-discovery behavior remains pending.
+
+11. **Wraith native vacuum membrane** — branch `rebuild/wraith-vac-barrier-20260912`.
+   - Added `WNG_WraithVacuumMembrane`, a living free-passage pressure membrane using RimWorld 1.6 Odyssey's native `Building_VacBarrier` rather than custom vacuum logic.
+   - Native source confirms powered barriers allow free pawn passage while blocking vacuum exchange; power loss reopens vacuum exchange.
+   - Requires gravship Substructure, Wraith bio-sludge construction material, `WNG_WraithGravships`, native power, and the Wraith technology-family marker.
+   - Repository file was fetched back; XML/native-contract assertions passed.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Native VacBarrier graphics remain mechanics-validation placeholders; live RimWorld vacuum behavior remains pending.
