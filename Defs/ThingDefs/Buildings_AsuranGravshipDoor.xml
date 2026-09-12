@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Physical Asuran gravship door using RimWorld 1.6's native Building_Door vacuum contract.
+    Building.isAirtight makes the closed door block vacuum exchange; Building_Door then permits
+    exchange only while the door is actually open. This is distinct from WNG_AsuranVacBarrier,
+    which is a powered free-passage pressure field and provides no security barrier.
+
+    Native autodoor graphics are mechanics-validation art only. Final Asuran door art remains part
+    of the dedicated presentation pass and is not generated/replaced here.
+  -->
+  <ThingDef ParentName="DoorBase">
+    <defName>WNG_AsuranAirtightDoor</defName>
+    <label>Asuran gravship door</label>
+    <description>An Ancient-derived powered bulkhead reconstructed by Asuran nanites. Closed, it is airtight and blocks vacuum exchange; when a pawn opens it, RimWorld's native door and vacuum systems allow atmosphere through the opening normally. Unlike a vacuum barrier, it is a real physical security door.</description>
+    <thingClass>Building_Door</thingClass>
+    <graphicData>
+      <texPath>Things/Building/Door/Autodoor_Mover</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <color>(0.62,0.82,1)</color>
+    </graphicData>
+    <uiIconPath>Things/Building/Door/Autodoor_MenuIcon</uiIconPath>
+    <useBlueprintGraphicAsGhost>true</useBlueprintGraphicAsGhost>
+    <statBases>
+      <MaxHitPoints>360</MaxHitPoints>
+      <WorkToBuild>2600</WorkToBuild>
+      <Flammability>0</Flammability>
+      <DoorOpenSpeed>1.45</DoorOpenSpeed>
+    </statBases>
+    <stuffCategories Inherit="False" />
+    <costList>
+      <WNG_NaniteSludge>10</WNG_NaniteSludge>
+      <Plasteel>45</Plasteel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+    </costList>
+    <useStuffTerrainAffordance>false</useStuffTerrainAffordance>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <designationCategory>WNG</designationCategory>
+    <researchPrerequisites><li>WNG_AsuranGravships</li></researchPrerequisites>
+    <constructionSkillPrerequisite>7</constructionSkillPrerequisite>
+    <building>
+      <isAirtight>true</isAirtight>
+      <isSupportDoor>true</isSupportDoor>
+    </building>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>50</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Breakdownable" />
+      <li Class="CompProperties_Flickable" />
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme"><theme>Asuran</theme></li>
+    </comps>
+    <uiOrder>2405</uiOrder>
+  </ThingDef>
+</Defs>
