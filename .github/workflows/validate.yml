@@ -105,3 +105,23 @@ jobs:
         run: |
           test -f Assemblies/WraithNaniteGravtech.dll
           test $(stat -c%s Assemblies/WraithNaniteGravtech.dll) -gt 1024
+
+      - name: Assemble playable candidate
+        run: |
+          rm -rf dist
+          mkdir -p dist/Wraith-Nanite-Gravtech-1.6
+          cp -R About Assemblies Defs Textures dist/Wraith-Nanite-Gravtech-1.6/
+          cd dist
+          zip -qr Wraith-Nanite-Gravtech-1.6-playable.zip Wraith-Nanite-Gravtech-1.6
+          sha256sum Wraith-Nanite-Gravtech-1.6-playable.zip > Wraith-Nanite-Gravtech-1.6-playable.sha256
+          test -s Wraith-Nanite-Gravtech-1.6-playable.zip
+
+      - name: Upload playable candidate
+        uses: actions/upload-artifact@v7
+        with:
+          name: WNG-playable-${{ github.sha }}
+          path: |
+            dist/Wraith-Nanite-Gravtech-1.6-playable.zip
+            dist/Wraith-Nanite-Gravtech-1.6-playable.sha256
+          if-no-files-found: error
+          retention-days: 30
