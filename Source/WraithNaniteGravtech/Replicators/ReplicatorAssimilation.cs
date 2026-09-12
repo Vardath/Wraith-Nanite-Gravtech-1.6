@@ -137,6 +137,31 @@ namespace WraithNaniteGravtech
             return learned;
         }
 
+        public static int ShareAdaptations(Pawn source, ReplicatorAdaptationFlags learned)
+        {
+            if (source?.Map == null || source.Faction == null || source.Faction == Faction.OfPlayer || learned == ReplicatorAdaptationFlags.None)
+                return 0;
+
+            CompReplicatorState sourceState = source.TryGetComp<CompReplicatorState>();
+            if (sourceState == null || sourceState.EMPSuppressed)
+                return 0;
+
+            int recipients = 0;
+            foreach (Pawn recipient in source.Map.mapPawns.AllPawnsSpawned)
+            {
+                if (recipient == null || recipient.Dead || !recipient.Spawned || recipient.Faction != source.Faction)
+                    continue;
+
+                CompReplicatorState recipientState = recipient.TryGetComp<CompReplicatorState>();
+                if (recipientState == null || recipientState.EMPSuppressed || !sourceState.SameControlDomain(recipientState))
+                    continue;
+
+                recipientState.Learn(learned);
+                recipients++;
+            }
+            return recipients;
+        }
+
         public static int CountBlockReplicators(Map map, Faction faction)
         {
             if (map?.mapPawns == null || faction == null)
@@ -302,7 +327,7 @@ namespace WraithNaniteGravtech
 
                 IntVec3 cell = target.Position;
                 state.AddMatter(matter);
-                state.Learn(learned);
+                ReplicatorAssimilationUtility.ShareAdaptations(pawn, learned);
                 target.Destroy(DestroyMode.Vanish);
                 ReplicatorAssimilationUtility.SpendMatterOnOffspring(pawn, cell, 2);
             };
