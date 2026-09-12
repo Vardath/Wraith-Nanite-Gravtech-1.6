@@ -86,10 +86,18 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Native GravcorePowerCell graphics remain mechanics-validation placeholders; live RimWorld power behavior remains pending.
 
-13. **Wraith native visible/hidden power conduits** — branch `rebuild/wraith-native-power-conduits-20260912`.
+13. **Wraith native visible/hidden power conduits** — main `8a419389a8f394956083520299c57a61e8b6ceb6`.
    - Added `WNG_WraithBioelectricConduit` and `WNG_WraithHiddenBioelectricConduit` as Wraith-themed presentations of RimWorld's native `PowerConduit` contract.
    - Both inherit the native `CompPowerTransmitter` network behavior and transmitter link grammar; no parallel WNG electrical network is introduced.
    - Both require gravship Substructure and `WNG_WraithGravships`; visible conduit uses Wraith bio-sludge/steel and the hidden variant preserves the native hidden-conduit interaction pattern.
    - Repository file was fetched back; XML parsing and targeted inheritance/link/research/material assertions passed.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Native conduit atlas/icon art remains mechanics-validation presentation; live RimWorld power-link visuals and replacement behavior remain pending.
+
+14. **Asuran native visible/hidden power conduits** — branch `rebuild/asuran-native-power-conduits-20260912`.
+   - Added `WNG_AsuranPowerConduit` and `WNG_AsuranHiddenPowerConduit` as Asuran/Ancient-derived presentations of RimWorld's native `PowerConduit` contract.
+   - Both inherit native `CompPowerTransmitter` behavior and transmitter linking; no parallel nanite electrical network is introduced.
+   - Both require gravship Substructure, `WNG_AsuranGravships`, and nanite-sludge/Plasteel construction; the hidden variant preserves native concealed-conduit interaction flags.
+   - Repository file was fetched back; XML parsing and targeted inheritance/link/research/material/hidden-visibility assertions passed.
    - No C# changed in this pass; no redundant C# compile was run.
    - Native conduit atlas/icon art remains mechanics-validation presentation; live RimWorld power-link visuals and replacement behavior remain pending.
