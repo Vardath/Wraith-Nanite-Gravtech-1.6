@@ -109,9 +109,15 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Live RimWorld conduit networking and family-inspection presentation remain pending.
 
-16. **Asuran power-conduit family marker** — branch `rebuild/asuran-power-conduit-theme-marker-20260912`.
+16. **Asuran power-conduit family marker** — main `de13608773c1c4ad487b4cb691201892985f1fc8`.
    - Added explicit `CompProperties_WNGGravshipPartTheme` with `Asuran` theme to both visible and hidden Asuran power conduits.
    - Native `PowerConduit` / `CompPowerTransmitter` behavior remains inherited unchanged while the conduits become explicit Asuran family members for WNG inspection/isolation logic.
    - Repository file was fetched back; XML structure and both Asuran theme markers were verified.
    - No C# changed in this pass; no redundant C# compile was run.
    - Live RimWorld conduit networking and family-inspection presentation remain pending.
+
+17. **Replicator hierarchy split/recombine contract verification** — branch `rebuild/verify-replicator-split-chain-20260912`.
+   - Verified the configured hierarchy from the current Defs: Siege Mass -> 2 Titans -> 2 Bulwarks -> 2 Hunters -> 2 base Drones; Drone is the irreducible form.
+   - Verified upward assembly uses an explicit transaction guard around `DestroyMode.Vanish`, so intentional source consumption is not interpreted as a breakdown event.
+   - Verified resulting smaller forms inherit Replicator state, divided stored matter, controller authority, and the configured recombination lockout.
+   - No gameplay code was changed because the current static implementation already matches the required hierarchy contract; live in-game split/recombine acceptance testing remains pending.
