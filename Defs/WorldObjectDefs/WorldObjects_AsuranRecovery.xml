@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Defs>
-  <WorldObjectDef ParentName="ShuttleWorldObjectBase">
-    <defName>WNG_AsuranRecoveryJumperWorld</defName>
-    <label>Asuran recovery Jumper</label>
-    <description>An Asuran recovery Jumper in native RimWorld/Odyssey world flight.</description>
-  </WorldObjectDef>
-</Defs>

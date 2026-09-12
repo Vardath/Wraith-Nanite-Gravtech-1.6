@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Defs>
-  <WorldObjectDef ParentName="ShuttleWorldObjectBase"><defName>WNG_WraithDartWorld</defName><label>Wraith Dart</label><description>a Wraith Dart in flight.</description></WorldObjectDef>
-  <WorldObjectDef ParentName="ShuttleWorldObjectBase"><defName>WNG_WraithScoutWorld</defName><label>Wraith scout craft</label><description>a Wraith scout craft in flight.</description></WorldObjectDef>
-  <WorldObjectDef ParentName="ShuttleWorldObjectBase"><defName>WNG_WraithCruiserWorld</defName><label>Wraith cruiser transport</label><description>a Wraith cruiser transport in flight.</description></WorldObjectDef>
-  <WorldObjectDef ParentName="ShuttleWorldObjectBase"><defName>WNG_PuddleJumperWorld</defName><label>Puddle Jumper</label><description>a Puddle Jumper in flight.</description></WorldObjectDef>
-  <WorldObjectDef ParentName="ShuttleWorldObjectBase" MayRequire="idolord.ONAC"><defName>WNG_AlkeshWorld</defName><label>Al'kesh transport</label><description>an Al'kesh transport in flight.</description></WorldObjectDef>
-</Defs>
