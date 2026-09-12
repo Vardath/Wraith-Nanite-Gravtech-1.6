@@ -7,6 +7,7 @@
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorState" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorEMPReceiver"><suppressionTicks>1800</suppressionTicks></li>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorRegeneration"><intervalTicks>600</intervalTicks><healAmount>0.20</healAmount></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><irreducibleMatterYield>4</irreducibleMatterYield><coreFragmentChance>0.12</coreFragmentChance></li>
     </comps>
   </ThingDef>
   <ThingDef ParentName="WNG_ReplicatorRaceBase"><defName>WNG_ReplicatorDrone</defName><label>replicator</label><description>The irreducible base block Replicator. Two compatible units can reorganize into a Hunter.</description><statBases><MarketValue>520</MarketValue><MoveSpeed>4.1</MoveSpeed><ArmorRating_Blunt>0.12</ArmorRating_Blunt><ArmorRating_Sharp>0.24</ArmorRating_Sharp><ArmorRating_Heat>0.18</ArmorRating_Heat></statBases><race><baseBodySize>0.55</baseBodySize></race><tools Inherit="False"><li><label>cutting limbs</label><capacities><li>Cut</li><li>Blunt</li></capacities><power>7.5</power><cooldownTime>1.7</cooldownTime></li></tools><comps><li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy"><upgradePawnKind>WNG_ReplicatorHunter</upgradePawnKind><unitsRequired>2</unitsRequired><assemblyRadius>7</assemblyRadius><assemblyCheckTicks>2500</assemblyCheckTicks></li></comps></ThingDef>
