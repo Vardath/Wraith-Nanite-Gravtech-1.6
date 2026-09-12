@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Save-compatibility shim only. This exact DefName existed before WNG moved human-form nanite
+    bodies from a Gene_Resource bar to the native Need_Food-backed Nanite Reserve on 2026-09-11.
+    It must remain resolvable long enough to deserialize old saves, after which the migration game
+    component transfers its saved percentage and removes this gene from the pawn.
+  -->
+  <GeneDef>
+    <defName>WNG_NaniteReserve</defName>
+    <label>legacy nanite reserve</label>
+    <description>Compatibility state from an older WNG save. It is automatically converted into the current Nanite Reserve and is not available through normal gameplay.</description>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
+    <resourceLabel>Legacy nanite reserve</resourceLabel>
+    <resourceDescription>Compatibility-only saved nanite feedstock awaiting one-shot migration.</resourceDescription>
+    <resourceGizmoThresholds><li>0.10</li><li>0.25</li><li>0.60</li></resourceGizmoThresholds>
+    <showGizmoOnWorldView>false</showGizmoOnWorldView>
+    <showGizmoWhenDrafted>false</showGizmoWhenDrafted>
+    <showGizmoOnMultiSelect>false</showGizmoOnMultiSelect>
+    <canGenerateInGeneSet>false</canGenerateInGeneSet>
+    <biostatCpx>0</biostatCpx>
+    <biostatMet>0</biostatMet>
+  </GeneDef>
+</Defs>
