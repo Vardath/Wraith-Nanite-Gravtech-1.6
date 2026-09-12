@@ -6,8 +6,9 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Technical identity gene shared by public and concealed human-form Asurans so the exact pawn
     /// can leave recoverable fabrication evidence on a physical map death. The gene itself does not
-    /// decide allegiance: only the hostile Asuran Lattice, including a covert pawn whose persisted
-    /// true faction is that Lattice, is an evidence source.
+    /// decide allegiance: only a pawn currently belonging to the hostile Asuran Lattice, or an
+    /// unrevealed active covert visitor whose persisted true faction is that Lattice, is an evidence
+    /// source. Player-aligned former infiltrators therefore cannot become a residue-farming path.
     /// </summary>
     public sealed class Gene_AsuranEvidenceResidue : Gene
     {
@@ -43,7 +44,10 @@ namespace WraithNaniteGravtech
                 return true;
 
             Hediff_AsuranInfiltration infiltration = AsuranInfiltrationUtility.State(source);
-            return infiltration?.TrueFaction?.def?.defName == "WNG_AsuranLattice";
+            return infiltration != null
+                && !infiltration.Revealed
+                && infiltration.CovertPresence
+                && infiltration.TrueFaction?.def?.defName == "WNG_AsuranLattice";
         }
     }
 }
