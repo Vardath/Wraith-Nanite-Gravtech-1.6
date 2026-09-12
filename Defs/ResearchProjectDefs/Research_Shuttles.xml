@@ -14,10 +14,13 @@
   <ResearchProjectDef>
     <defName>WNG_WraithShuttles</defName>
     <label>Wraith flight systems</label>
-    <description>Reverse-engineer Wraith organic flight controls, culling storage and living propulsion sufficiently to construct and operate Darts, scout craft and cruiser transports.</description>
+    <description>Reverse-engineer Wraith organic flight controls, culling storage and living propulsion after first establishing the principles of Wraith-grown technology from analyzed Hive Heart evidence, sufficiently to construct and operate Darts, scout craft and cruiser transports.</description>
     <baseCost>3600</baseCost>
     <techLevel>Spacer</techLevel>
-    <prerequisites><li>WNG_ShuttleEngineering</li></prerequisites>
+    <prerequisites>
+      <li>WNG_ShuttleEngineering</li>
+      <li>WNG_WraithLivingTechnology</li>
+    </prerequisites>
     <researchViewX>19</researchViewX>
     <researchViewY>11.5</researchViewY>
   </ResearchProjectDef>
