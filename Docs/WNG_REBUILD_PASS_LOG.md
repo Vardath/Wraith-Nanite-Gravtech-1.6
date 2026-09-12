@@ -55,9 +55,17 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Live RimWorld pressure/door behavior remains pending.
 
-9. **Wraith native atmosphere-support organ** — branch `rebuild/wraith-oxygen-organ-20260912`.
+9. **Wraith native atmosphere-support organ** — main `c155babaaab0e19451bebd4797a568374561d2a6`.
    - Added `WNG_WraithAtmosphericOrgan`, a living Wraith atmospheric component using Odyssey's native `CompProperties_OxygenPusher` rather than a custom atmosphere simulation.
    - Requires native power, drops to low idle power outside vacuum, attaches to walls, uses Wraith bio-sludge construction material, requires `WNG_WraithGravships`, and carries the Wraith technology-family marker.
    - Repository file was fetched back; XML parsing and targeted contract assertions passed.
    - No C# changed in this pass; no redundant C# compile was run.
    - Native OxygenPump graphics remain mechanics-validation placeholders; live RimWorld atmosphere behavior remains pending.
+
+10. **Wraith native orbital-sensor organ** — branch `rebuild/wraith-orbital-scanner-20260912`.
+   - Added `WNG_WraithOrbitalSensor`, a cultivated living sensor using RimWorld 1.6 Odyssey's native `CompOrbitalScanner` rather than custom orbital-discovery code.
+   - Native source confirms the scanner uses `CompPowerTrader` and the base game's orbital-signal/quest discovery component.
+   - Uses Wraith bio-sludge construction material, requires `WNG_WraithGravships`, remains outdoors as required by the native scanner pattern, and carries the Wraith technology-family marker.
+   - Repository file was fetched back; XML parsing and targeted contract assertions passed.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Native OrbitalScanner graphics remain mechanics-validation placeholders; live RimWorld signal-discovery behavior remains pending.
