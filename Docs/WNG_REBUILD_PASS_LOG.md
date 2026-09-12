@@ -70,10 +70,18 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Native OrbitalScanner graphics remain mechanics-validation placeholders; live RimWorld signal-discovery behavior remains pending.
 
-11. **Wraith native vacuum membrane** — branch `rebuild/wraith-vac-barrier-20260912`.
+11. **Wraith native vacuum membrane** — main `1185fbd725375f9b9f2a4fd9bd49b55b004f1254`.
    - Added `WNG_WraithVacuumMembrane`, a living free-passage pressure membrane using RimWorld 1.6 Odyssey's native `Building_VacBarrier` rather than custom vacuum logic.
    - Native source confirms powered barriers allow free pawn passage while blocking vacuum exchange; power loss reopens vacuum exchange.
    - Requires gravship Substructure, Wraith bio-sludge construction material, `WNG_WraithGravships`, native power, and the Wraith technology-family marker.
    - Repository file was fetched back; XML/native-contract assertions passed.
    - No C# changed in this pass; no redundant C# compile was run.
    - Native VacBarrier graphics remain mechanics-validation placeholders; live RimWorld vacuum behavior remains pending.
+
+12. **Wraith native bioelectric gravship power organ** — branch `rebuild/wraith-bioelectric-power-20260912`.
+   - Added `WNG_WraithBioelectricOrgan`, a living Wraith power generator using Odyssey's native `CompPowerPlantGravcore` rather than a custom electrical system.
+   - Native source confirms power output is forced to zero whenever the organ is not standing on gravship substructure.
+   - Produces 2,200 W into RimWorld's native power network, uses Wraith bio-sludge construction material, requires `WNG_WraithGravships`, and carries the Wraith technology-family marker.
+   - Repository file was fetched back; XML parsing and targeted contract assertions passed.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Native GravcorePowerCell graphics remain mechanics-validation placeholders; live RimWorld power behavior remains pending.
