@@ -48,7 +48,9 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - Closed airtight door uses RimWorld 1.6 native vacuum blocking; open door permits exchange normally.
    - One-file XML/native-contract verification completed; live pressure/door behavior remains pending.
 
-## Current pass
-
 8. **Wraith physical living airtight gravship door** — branch `rebuild/wraith-living-door-20260912`.
-   - In progress.
+   - Added a real native `DoorBase`/`Building_Door` Wraith living bulkhead, distinct in presentation from the Asuran technological door.
+   - Uses `isAirtight=true`, native Substructure placement, `WNG_WraithGravships` gating, Wraith bio-sludge construction material, native power-net support, and the Wraith technology-family marker.
+   - Repository file was fetched back; XML parsing and targeted contract assertions passed.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Live RimWorld pressure/door behavior remains pending.
