@@ -9,9 +9,13 @@ namespace WraithNaniteGravtech
     public sealed class AsuranNanitePhysiologyExtension : DefModExtension
     {
         public int reconcileIntervalTicks = 120;
-        public int healIntervalTicks = 250;
+        public int healIntervalTicks = 450;
         public float baseHealAmount = 0.12f;
-        public float reserveCostPerHealPoint = 0.004f;
+        public float reserveFractionPerHealPulse = 0.015f;
+        public int depletedHealIntervalTicks = 1800;
+        public int missingPartIntervalTicks = 30000;
+        public float reserveFractionPerRestoredPart = 0.25f;
+        public int depletedMissingPartIntervalTicks = 90000;
         public float depletionThreshold = 0.15f;
         public int empSuppressionTicks = 1800;
     }
@@ -73,28 +77,6 @@ namespace WraithNaniteGravtech
             if (reserve.CurLevel + 0.0001f < cost)
                 return false;
             reserve.CurLevel = Math.Max(0f, reserve.CurLevel - cost);
-            return true;
-        }
-
-        public static bool TrySpendForRepair(Pawn pawn, float healAmount, float reserveFractionPerHealPoint, out float affordableHeal)
-        {
-            affordableHeal = 0f;
-            Need_Food reserve = Reserve(pawn);
-            if (reserve == null || healAmount <= 0f)
-                return false;
-
-            float costPerPoint = Math.Max(0f, reserveFractionPerHealPoint) * reserve.MaxLevel;
-            if (costPerPoint <= 0f)
-            {
-                affordableHeal = healAmount;
-                return true;
-            }
-
-            affordableHeal = Math.Min(healAmount, reserve.CurLevel / costPerPoint);
-            if (affordableHeal <= 0.0001f)
-                return false;
-
-            reserve.CurLevel = Math.Max(0f, reserve.CurLevel - affordableHeal * costPerPoint);
             return true;
         }
     }
@@ -210,13 +192,16 @@ namespace WraithNaniteGravtech
 
     /// <summary>
     /// Persistent nanite-lattice state for a human-form Replicator/Asuran. EMP disruption and
-    /// self-repair are attached to the exact pawn and survive save/load. Repair spends the same
-    /// native Need_Food matter reserve that ordinary ingestion refills.
+    /// self-repair are attached to the exact pawn and survive save/load. Canonical WNG repair uses
+    /// fixed reserve costs per successful repair transaction rather than scaling the reserve charge
+    /// with HP healed. If the reserve cannot pay, much slower emergency repair/reconstruction remains
+    /// possible without a reserve charge.
     /// </summary>
     public sealed class Hediff_AsuranNaniteLattice : Hediff
     {
         private int suppressedUntil;
         private int nextHealTick;
+        private int nextMissingPartTick;
 
         private Gene_AsuranNanitePhysiology Physiology => AsuranNaniteUtility.GetPhysiology(pawn);
         private AsuranNanitePhysiologyExtension Extension => Physiology?.Extension;
@@ -280,33 +265,102 @@ namespace WraithNaniteGravtech
             if (EmpSuppressed)
             {
                 nextHealTick = Math.Max(nextHealTick, suppressedUntil);
+                nextMissingPartTick = Math.Max(nextMissingPartTick, suppressedUntil);
                 return;
             }
-            if (now < nextHealTick)
-                return;
 
-            nextHealTick = now + Math.Max(30, Extension?.healIntervalTicks ?? 250);
+            TickInjuryRepair(now);
+            TickMissingPartReconstruction(now);
+        }
+
+        private void TickInjuryRepair(int now)
+        {
             Hediff_Injury injury = pawn.health.hediffSet.hediffs
                 .OfType<Hediff_Injury>()
                 .Where(x => x.CanHealNaturally() && x.Severity > 0f)
                 .OrderByDescending(x => x.Severity)
                 .FirstOrDefault();
+
             if (injury == null)
-                return;
-
-            float desiredHeal = Math.Min(injury.Severity, Math.Max(0f, Extension?.baseHealAmount ?? 0.12f));
-            if (!AsuranNaniteUtility.TrySpendForRepair(
-                    pawn,
-                    desiredHeal,
-                    Math.Max(0f, Extension?.reserveCostPerHealPoint ?? 0.004f),
-                    out float affordableHeal))
-                return;
-
-            if (affordableHeal > 0f)
             {
-                injury.Heal(affordableHeal);
-                AsuranInfiltrationUtility.NotifySelfRepair(pawn, affordableHeal);
+                nextHealTick = 0;
+                return;
             }
+
+            float reserveCost = Mathf.Clamp01(Extension?.reserveFractionPerHealPulse ?? 0.015f);
+            bool reservePowered = AsuranNaniteUtility.CanSpendFraction(pawn, reserveCost);
+            int interval = reservePowered
+                ? Math.Max(30, Extension?.healIntervalTicks ?? 450)
+                : Math.Max(30, Extension?.depletedHealIntervalTicks ?? 1800);
+
+            if (nextHealTick <= 0)
+            {
+                nextHealTick = SafeFutureTick(now, interval);
+                return;
+            }
+            if (now < nextHealTick)
+                return;
+
+            float healAmount = Math.Min(injury.Severity, Math.Max(0f, Extension?.baseHealAmount ?? 0.12f));
+            if (healAmount <= 0f)
+            {
+                nextHealTick = 0;
+                return;
+            }
+
+            if (reservePowered && !AsuranNaniteUtility.TrySpendFraction(pawn, reserveCost))
+            {
+                reservePowered = false;
+                interval = Math.Max(30, Extension?.depletedHealIntervalTicks ?? 1800);
+            }
+
+            injury.Heal(healAmount);
+            AsuranInfiltrationUtility.NotifySelfRepair(pawn, healAmount);
+            nextHealTick = SafeFutureTick(now, interval);
+        }
+
+        private void TickMissingPartReconstruction(int now)
+        {
+            Hediff_MissingPart missing = pawn.health.hediffSet
+                .GetMissingPartsCommonAncestors()
+                .FirstOrDefault(x => x?.Part != null && !pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(x.Part));
+
+            if (missing == null)
+            {
+                nextMissingPartTick = 0;
+                return;
+            }
+
+            float reserveCost = Mathf.Clamp01(Extension?.reserveFractionPerRestoredPart ?? 0.25f);
+            bool reservePowered = AsuranNaniteUtility.CanSpendFraction(pawn, reserveCost);
+            int interval = reservePowered
+                ? Math.Max(60, Extension?.missingPartIntervalTicks ?? 30000)
+                : Math.Max(60, Extension?.depletedMissingPartIntervalTicks ?? 90000);
+
+            if (nextMissingPartTick <= 0)
+            {
+                nextMissingPartTick = SafeFutureTick(now, interval);
+                return;
+            }
+            if (now < nextMissingPartTick)
+                return;
+
+            if (reservePowered && !AsuranNaniteUtility.TrySpendFraction(pawn, reserveCost))
+            {
+                reservePowered = false;
+                interval = Math.Max(60, Extension?.depletedMissingPartIntervalTicks ?? 90000);
+            }
+
+            BodyPartRecord part = missing.Part;
+            pawn.health.RestorePart(part);
+            AsuranInfiltrationUtility.Reveal(pawn, "nanite reconstruction exposed synthetic structure");
+            nextMissingPartTick = SafeFutureTick(now, interval);
+        }
+
+        private static int SafeFutureTick(int now, int delay)
+        {
+            long value = (long)Math.Max(0, now) + Math.Max(1, delay);
+            return value >= int.MaxValue ? int.MaxValue : (int)value;
         }
 
         private void SyncEmpDisruptionHediff()
@@ -332,6 +386,7 @@ namespace WraithNaniteGravtech
             base.ExposeData();
             Scribe_Values.Look(ref suppressedUntil, "wngAsuranEmpUntil", 0);
             Scribe_Values.Look(ref nextHealTick, "wngAsuranNextHealTick", 0);
+            Scribe_Values.Look(ref nextMissingPartTick, "wngAsuranNextMissingPartTick", 0);
         }
     }
 
