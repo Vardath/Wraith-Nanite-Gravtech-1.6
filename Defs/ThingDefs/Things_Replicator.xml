@@ -3,13 +3,13 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_ReplicatorMatter</defName>
     <label>replicator blocks</label>
-    <description>Loose blocks recovered from a destroyed Replicator body. A sufficiently large uncontained pile remains inert for half a day, then gains an increasing chance to reform hostile Replicators. Powered Replicator containment resets and suppresses that danger clock. Recovered blocks can be analyzed at a research bench to establish the colony's first practical understanding of Replicator technology.</description>
+    <description>Loose blocks recovered from a destroyed Replicator body. A sufficiently large uncontained pile remains inert for one full day, then gains an increasing chance to reform hostile Replicators. Powered Replicator containment resets and suppresses that danger clock. Recovered blocks can be analyzed at a research bench to establish the colony's first practical understanding of Replicator technology.</description>
     <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <stackLimit>250</stackLimit><alwaysHaulable>true</alwaysHaulable><thingCategories><li>ResourcesRaw</li></thingCategories><tickerType>Rare</tickerType>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorMatterReassembly">
         <factionDefName>WNG_ReplicatorSwarm</factionDefName><pawnKindDefName>WNG_ReplicatorDrone</pawnKindDefName>
-        <minimumStack>10</minimumStack><consumePerPawn>10</consumePerPawn><dormantTicks>30000</dormantTicks><retryTicks>2500</retryTicks><chancePerCheck>0.05</chancePerCheck><chanceGrowthPerDay>0.10</chanceGrowthPerDay><maxChancePerCheck>0.85</maxChancePerCheck><maxPawnsPerWake>2</maxPawnsPerWake><maxHostileReplicatorsPerMap>120</maxHostileReplicatorsPerMap>
+        <minimumStack>10</minimumStack><consumePerPawn>10</consumePerPawn><dormantTicks>60000</dormantTicks><retryTicks>2500</retryTicks><chancePerCheck>0.05</chancePerCheck><chanceGrowthPerDay>0.10</chanceGrowthPerDay><maxChancePerCheck>0.85</maxChancePerCheck><maxPawnsPerWake>2</maxPawnsPerWake><maxHostileReplicatorsPerMap>120</maxHostileReplicatorsPerMap>
       </li>
       <li Class="CompProperties_CompAnalyzableUnlockResearch">
         <analysisID>160912001</analysisID>
