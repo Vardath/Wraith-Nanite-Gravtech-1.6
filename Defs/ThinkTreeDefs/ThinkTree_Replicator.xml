@@ -14,6 +14,7 @@
           <subNodes><li Class="ThinkNode_Tagger"><tagToGive>DraftedOrder</tagToGive><subNodes><li Class="JobGiver_MoveToStandable" /><li Class="JobGiver_Orders" /></subNodes></li></subNodes>
         </li>
 
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
         <li Class="ThinkNode_Subtree"><treeDef>LordDuty</treeDef></li>
 
