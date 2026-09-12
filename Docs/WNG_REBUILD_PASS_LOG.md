@@ -122,8 +122,8 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - Verified resulting smaller forms inherit Replicator state, divided stored matter, controller authority, and the configured recombination lockout.
    - No gameplay code was changed because the current static implementation already matches the required hierarchy contract; live in-game split/recombine acceptance testing remains pending.
 
-18. **Replicator Matter half-day reformation dormancy** — branch `rebuild/replicator-matter-halfday-20260912`.
-   - Restored the accepted dangerous-matter timing: an uncontained pile of at least 10 Replicator blocks remains dormant for 30,000 ticks (half a RimWorld day) before hostile self-reformation checks begin.
-   - The existing containment reset/suppression behavior, 10-block floor, 10-block pawn cost, retry cadence, growth chance and hostile-map cap were left unchanged.
-   - Repository XML was fetched back and verified with `minimumStack=10` and `dormantTicks=30000`; description now matches the half-day rule.
-   - No C# changed in this pass; live RimWorld reformation timing remains pending acceptance testing.
+18. **Replicator Matter one-day dormancy correction** — branch `rebuild/correct-replicator-matter-oneday-20260912`.
+   - Corrected the immediately preceding mistaken half-day change. The authoritative rule is one full RimWorld day: `dormantTicks=60000` before an uncontained pile can begin hostile self-reformation checks.
+   - The dangerous floor remains 10 blocks; containment reset/suppression and the existing reformation chance/cap behavior remain unchanged.
+   - The ThingDef description was restored to “one full day” so player-facing text and mechanics agree.
+   - This correction supersedes the erroneous half-day interpretation; live RimWorld timing remains pending acceptance testing.
