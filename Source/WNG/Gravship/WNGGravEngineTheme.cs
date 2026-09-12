@@ -28,12 +28,15 @@ namespace WraithNaniteGravtech
     /// rather than substituting a parallel fake one.
     ///
     /// Odyssey's facility linking is Def-based and has no concept of WNG technology families. Once
-    /// an engine is themed, every linked gravship facility must therefore carry the same WNG theme.
-    /// This rejects both another WNG family and unthemed vanilla fuel/controls/thrusters, preventing
-    /// chemfuel or mixed-family hardware from satisfying a Wraith, Asuran or Goa'uld ship.
+    /// an engine is themed, linked gravship facilities therefore normally need the same WNG theme.
+    /// The one deliberate exception is Odyssey's native PilotSubpersonaCore: it is a rare, shared
+    /// quest-reward flight-assist module rather than a fuel/control/thruster technology family, so
+    /// WNG themed ships may use it without turning it into a constructible faction reskin.
     /// </summary>
     public sealed class CompWNGGravEngineTheme : ThingComp
     {
+        private const string SharedPilotSubpersonaCoreDefName = "PilotSubpersonaCore";
+
         private WNGGravshipTheme theme;
 
         public WNGGravshipTheme Theme => theme;
@@ -71,6 +74,9 @@ namespace WraithNaniteGravtech
                 if (partTheme != null && partTheme.Theme == theme)
                     continue;
 
+                if (IsSharedNativeFacility(facilityThing))
+                    continue;
+
                 CompFacility facility = facilityThing.TryGetComp<CompFacility>();
                 if (facility != null && facility.LinkedBuildings.Contains(engine))
                     facility.Notify_LinkRemoved(engine);
@@ -78,6 +84,11 @@ namespace WraithNaniteGravtech
                 if (affected.LinkedFacilitiesListForReading.Contains(facilityThing))
                     affected.Notify_LinkRemoved(facilityThing);
             }
+        }
+
+        private static bool IsSharedNativeFacility(Thing facilityThing)
+        {
+            return facilityThing?.def?.defName == SharedPilotSubpersonaCoreDefName;
         }
 
         public override string CompInspectStringExtra()
