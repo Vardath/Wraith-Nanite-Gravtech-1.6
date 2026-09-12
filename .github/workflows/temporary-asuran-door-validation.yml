@@ -1,0 +1,38 @@
+name: Temporary Asuran airtight door validation
+
+on:
+  push:
+    branches:
+      - rebuild/asuran-airtight-door-20260912
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Parse Def and patch XML
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem Defs -Recurse -Filter *.xml) + @(Get-ChildItem Patches -Recurse -Filter *.xml)
+          foreach ($file in $files) { [xml](Get-Content $file.FullName -Raw) | Out-Null }
+          Write-Host "Parsed $($files.Count) XML files"
+      - name: Check Asuran airtight-door contract
+        shell: pwsh
+        run: |
+          [xml]$xml = Get-Content 'Defs/ThingDefs/Buildings_AsuranGravshipDoor.xml' -Raw
+          $door = $xml.Defs.ThingDef
+          if ($door.ParentName -ne 'DoorBase') { throw 'Asuran door does not inherit RimWorld DoorBase' }
+          if ($door.thingClass -ne 'Building_Door') { throw 'Asuran door is not using native Building_Door behavior' }
+          if ($door.building.isAirtight -ne 'true') { throw 'Asuran door is not airtight while closed' }
+          if ($door.building.isSupportDoor -ne 'true') { throw 'Asuran door is not classified as a support door' }
+          if ($door.terrainAffordanceNeeded -ne 'Substructure') { throw 'Asuran gravship door is not constrained to ship substructure' }
+          if ($door.researchPrerequisites.li -ne 'WNG_AsuranGravships') { throw 'Asuran door bypasses gravship research' }
+          if (-not $door.costList.WNG_NaniteSludge) { throw 'Asuran door does not use Asuran nanite-sludge construction material' }
+          $theme = @($door.comps.li) | Where-Object { $_.Class -eq 'WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme' }
+          if ($theme.Count -ne 1 -or $theme.theme -ne 'Asuran') { throw 'Asuran door lacks Asuran technology-family identity' }
+          Write-Host 'Asuran airtight-door contract OK'
