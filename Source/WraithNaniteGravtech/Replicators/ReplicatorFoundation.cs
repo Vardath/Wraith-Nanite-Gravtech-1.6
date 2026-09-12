@@ -77,7 +77,18 @@ namespace WraithNaniteGravtech
         {
             if (other == null || controlKind != other.controlKind)
                 return false;
-            return string.Equals(ControlDomainId, other.ControlDomainId, StringComparison.Ordinal);
+
+            string ownDomain = ControlDomainId;
+            string otherDomain = other.ControlDomainId;
+            if (controlKind != ReplicatorControlKind.Autonomous &&
+                (string.IsNullOrEmpty(ownDomain) || string.IsNullOrEmpty(otherDomain)))
+                return false;
+
+            if (string.IsNullOrEmpty(ownDomain) || string.IsNullOrEmpty(otherDomain))
+                return controlKind == ReplicatorControlKind.Autonomous &&
+                       string.IsNullOrEmpty(ownDomain) && string.IsNullOrEmpty(otherDomain);
+
+            return string.Equals(ownDomain, otherDomain, StringComparison.Ordinal);
         }
 
         public void InheritFrom(CompReplicatorState source, int matterOverride = -1)
