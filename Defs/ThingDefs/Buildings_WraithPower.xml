@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Wraith living electrical generation using Odyssey's native gravcore power-plant contract. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_WraithBioelectricOrgan</defName>
+    <label>Wraith bioelectric organ</label>
+    <description>A cultivated Wraith power organ that converts the ship's living metabolic activity into electrical current for the native RimWorld power network. It uses Odyssey's gravcore power-plant behavior, so generation falls to zero unless the organ is standing on gravship substructure.</description>
+    <tickerType>Normal</tickerType>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/GravcorePowerCell</texPath>
+      <drawSize>(2,2)</drawSize>
+      <color>(0.38,0.18,0.28)</color>
+    </graphicData>
+    <size>(2,2)</size>
+    <fillPercent>0.5</fillPercent>
+    <passability>PassThroughOnly</passability>
+    <pathCost>20</pathCost>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <designationCategory>WNG</designationCategory>
+    <constructionSkillPrerequisite>7</constructionSkillPrerequisite>
+    <researchPrerequisites><li>WNG_WraithGravships</li></researchPrerequisites>
+    <statBases>
+      <MaxHitPoints>300</MaxHitPoints>
+      <Flammability>0.15</Flammability>
+      <Mass>52</Mass>
+      <WorkToBuild>9500</WorkToBuild>
+    </statBases>
+    <costList>
+      <WNG_WraithBioSludge>45</WNG_WraithBioSludge>
+      <Plasteel>90</Plasteel>
+      <ComponentSpacer>3</ComponentSpacer>
+    </costList>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerPlantGravcore</compClass>
+        <basePowerConsumption>-2200</basePowerConsumption>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme"><theme>Wraith</theme></li>
+    </comps>
+    <uiOrder>2440</uiOrder>
+  </ThingDef>
+</Defs>
