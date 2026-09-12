@@ -94,10 +94,17 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Native conduit atlas/icon art remains mechanics-validation presentation; live RimWorld power-link visuals and replacement behavior remain pending.
 
-14. **Asuran native visible/hidden power conduits** — branch `rebuild/asuran-native-power-conduits-20260912`.
+14. **Asuran native visible/hidden power conduits** — main `f92b39aa0a5c68f9142bcfe7298a8ce40313c25e`.
    - Added `WNG_AsuranPowerConduit` and `WNG_AsuranHiddenPowerConduit` as Asuran/Ancient-derived presentations of RimWorld's native `PowerConduit` contract.
    - Both inherit native `CompPowerTransmitter` behavior and transmitter linking; no parallel nanite electrical network is introduced.
    - Both require gravship Substructure, `WNG_AsuranGravships`, and nanite-sludge/Plasteel construction; the hidden variant preserves native concealed-conduit interaction flags.
    - Repository file was fetched back; XML parsing and targeted inheritance/link/research/material/hidden-visibility assertions passed.
    - No C# changed in this pass; no redundant C# compile was run.
    - Native conduit atlas/icon art remains mechanics-validation presentation; live RimWorld power-link visuals and replacement behavior remain pending.
+
+15. **Wraith power-conduit family marker** — branch `rebuild/wraith-power-conduit-theme-marker-20260912`.
+   - Added explicit `CompProperties_WNGGravshipPartTheme` with `Wraith` theme to both visible and hidden Wraith bioelectric conduits.
+   - This keeps native `PowerConduit` / `CompPowerTransmitter` behavior intact while making the structures explicit participants in WNG's gravship-family identity and inspection contract.
+   - Repository file was fetched back; XML structure and both Wraith theme markers were verified.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Live RimWorld conduit networking and family-inspection presentation remain pending.
