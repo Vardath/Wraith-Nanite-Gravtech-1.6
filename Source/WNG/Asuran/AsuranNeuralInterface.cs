@@ -253,6 +253,8 @@ namespace WraithNaniteGravtech
                 copy.ageTracker.AgeChronologicalTicks = source.ageTracker.AgeChronologicalTicks;
             }
 
+            CopyGenomeExactly(source, copy);
+
             if (source.story != null && copy.story != null)
             {
                 copy.story.Childhood = source.story.Childhood;
@@ -265,12 +267,24 @@ namespace WraithNaniteGravtech
                 copy.story.HairColor = source.story.HairColor;
                 copy.story.SkinColorBase = source.story.SkinColorBase;
                 copy.story.skinColorOverride = source.story.skinColorOverride;
+                copy.story.favoriteColor = source.story.favoriteColor;
+                copy.story.furDef = source.story.furDef;
 
                 copy.story.traits.allTraits.Clear();
                 foreach (Trait trait in source.story.traits.allTraits)
                 {
                     if (trait?.def == null) continue;
                     copy.story.traits.GainTrait(new Trait(trait.def, trait.Degree, trait.ScenForced));
+                }
+            }
+
+            if (source.style != null && copy.style != null)
+            {
+                copy.style.beardDef = source.style.beardDef;
+                if (ModsConfig.IdeologyActive)
+                {
+                    copy.style.FaceTattoo = source.style.FaceTattoo;
+                    copy.style.BodyTattoo = source.style.BodyTattoo;
                 }
             }
 
@@ -288,17 +302,28 @@ namespace WraithNaniteGravtech
                 }
             }
 
-            if (source.genes != null && copy.genes != null)
-            {
-                foreach (Gene sourceGene in source.genes.GenesListForReading.ToList())
-                {
-                    if (sourceGene?.def == null || copy.genes.GetGene(sourceGene.def) != null) continue;
-                    bool sourceWasXenogene = source.genes.Xenogenes.Contains(sourceGene);
-                    copy.genes.AddGene(sourceGene.def, sourceWasXenogene);
-                }
-            }
-
             copy.Drawer?.renderer?.SetAllGraphicsDirty();
+        }
+
+        private static void CopyGenomeExactly(Pawn source, Pawn copy)
+        {
+            if (source?.genes == null || copy?.genes == null)
+                return;
+
+            List<(GeneDef Def, bool Xenogene)> sourceGenome = source.genes.GenesListForReading
+                .Where(g => g?.def != null)
+                .Select(g => (g.def, source.genes.Xenogenes.Contains(g)))
+                .ToList();
+
+            // The generated synthetic PawnKind is only a construction shell. None of its randomly
+            // generated/template genes may survive into an exact-person copy. Remove that genome
+            // completely, restore the source gene set with the original endogene/xenogene split,
+            // then LayerNaniteIdentity adds WNG's synthetic layer as a separate final step.
+            foreach (Gene generatedGene in copy.genes.GenesListForReading.ToList())
+                copy.genes.RemoveGene(generatedGene);
+
+            foreach ((GeneDef geneDef, bool xenogene) in sourceGenome)
+                copy.genes.AddGene(geneDef, xenogene);
         }
 
         private static void LayerNaniteIdentity(Pawn copy, XenotypeDef naniteXenotype)
@@ -309,6 +334,10 @@ namespace WraithNaniteGravtech
                 if (geneDef == null || copy.genes.GetGene(geneDef) != null) continue;
                 copy.genes.AddGene(geneDef, true);
             }
+
+            // The finished body is a WNG nanite humanoid even though its underlying biological
+            // genome was copied exactly from the source before the synthetic genes were layered in.
+            copy.genes.SetXenotypeDirect(naniteXenotype);
         }
 
         private static bool Revalidate(Pawn caster, Pawn subject)
