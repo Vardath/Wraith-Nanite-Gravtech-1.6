@@ -47,7 +47,16 @@ namespace WraithNaniteGravtech
         public string ControlDomainId => controlDomainId ?? string.Empty;
         public bool EMPSuppressed => (Find.TickManager?.TicksGame ?? 0) < empSuppressedUntilTick;
 
-        public void AddMatter(int amount) => storedMatter = Math.Max(0, storedMatter + amount);
+        public void AddMatter(int amount)
+        {
+            long next = (long)storedMatter + amount;
+            if (next <= 0L)
+                storedMatter = 0;
+            else if (next >= int.MaxValue)
+                storedMatter = int.MaxValue;
+            else
+                storedMatter = (int)next;
+        }
 
         public void SetController(ReplicatorControlKind kind, string domainId)
         {
