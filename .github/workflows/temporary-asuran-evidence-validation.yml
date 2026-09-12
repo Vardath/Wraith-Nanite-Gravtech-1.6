@@ -1,0 +1,59 @@
+name: Temporary Asuran evidence validation
+
+on:
+  push:
+    branches:
+      - rebuild/asuran-evidence-analysis-20260912
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Parse Def and patch XML
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import xml.etree.ElementTree as ET
+          files = list(pathlib.Path('Defs').rglob('*.xml')) + list(pathlib.Path('Patches').rglob('*.xml'))
+          for path in files:
+              ET.parse(path)
+          print(f'Parsed {len(files)} XML files')
+          PY
+      - name: Check Asuran evidence bridge invariants
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          gene = Path('Defs/GeneDefs/Genes_AsuranEvidence.xml').read_text(encoding='utf-8')
+          thing = Path('Defs/ThingDefs/Things_AsuranEvidence.xml').read_text(encoding='utf-8')
+          xeno = Path('Defs/XenotypeDefs/Xenotypes_Asuran.xml').read_text(encoding='utf-8')
+          research = Path('Defs/ResearchProjectDefs/Research_AsuranFabrication.xml').read_text(encoding='utf-8')
+          source = Path('Source/WNG/Asuran/AsuranNaniteEvidence.cs').read_text(encoding='utf-8')
+
+          assert 'WNG_AsuranEvidenceTrace' in gene
+          assert '<analysisID>160912003</analysisID>' in thing
+          assert '<destroyedOnAnalyzed>false</destroyedOnAnalyzed>' in thing
+          assert xeno.count('WNG_AsuranEvidenceTrace') == 2
+          assert '<analyzedThings><li>WNG_AsuranNaniteResidue</li></analyzedThings>' in research
+          assert 'source.Faction?.def?.defName == "WNG_AsuranLattice"' in source
+          assert '!infiltration.Revealed' in source
+          assert 'infiltration.CovertPresence' in source
+          assert 'infiltration.TrueFaction?.def?.defName == "WNG_AsuranLattice"' in source
+
+          ids = []
+          for path in Path('Defs').rglob('*.xml'):
+              root = ET.parse(path).getroot()
+              for elem in root.iter('analysisID'):
+                  if elem.text:
+                      ids.append((elem.text.strip(), str(path)))
+          matches = [p for i,p in ids if i == '160912003']
+          assert len(matches) == 1, matches
+          print('Asuran evidence bridge invariants OK')
+          PY
