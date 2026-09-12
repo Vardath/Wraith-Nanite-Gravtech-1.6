@@ -9,5 +9,14 @@
     <comps><li Class="WraithNaniteGravtech.CompProperties_ReplicatorMatterReassembly"><minimumStack>10</minimumStack><consumePerReplicator>10</consumePerReplicator><dormantTicks>60000</dormantTicks><baseChancePerRareTick>0.0007</baseChancePerRareTick><hostilePopulationCap>120</hostilePopulationCap></li></comps>
     <statBases><MarketValue>3</MarketValue><Mass>0.08</Mass><Flammability>0</Flammability></statBases>
   </ThingDef>
-  <ThingDef ParentName="ResourceBase"><defName>WNG_ReplicatorCoreFragment</defName><label>replicator core fragment</label><description>A partially intact control-lattice fragment recovered from a destroyed Replicator.</description><graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData><stackLimit>25</stackLimit><statBases><MarketValue>90</MarketValue><Mass>0.35</Mass><Flammability>0</Flammability></statBases></ThingDef>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_ReplicatorCoreFragment</defName>
+    <label>replicator core fragment</label>
+    <description>A partially intact control-lattice fragment recovered from a destroyed Replicator. Its surviving field geometry can be used as the reference element in a powered Replicator containment cradle.</description>
+    <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <stackLimit>25</stackLimit>
+    <thingCategories><li>ResourcesRaw</li></thingCategories>
+    <alwaysHaulable>true</alwaysHaulable>
+    <statBases><MarketValue>90</MarketValue><Mass>0.35</Mass><Flammability>0</Flammability></statBases>
+  </ThingDef>
 </Defs>
