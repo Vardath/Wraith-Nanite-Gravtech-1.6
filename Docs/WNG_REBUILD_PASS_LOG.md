@@ -116,8 +116,14 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Live RimWorld conduit networking and family-inspection presentation remain pending.
 
-17. **Replicator hierarchy split/recombine contract verification** — branch `rebuild/verify-replicator-split-chain-20260912`.
+17. **Replicator hierarchy split/recombine contract verification** — main `45bd77b0c98e5eee19a96d01ebdc13fa9ef8eafb`.
    - Verified the configured hierarchy from the current Defs: Siege Mass -> 2 Titans -> 2 Bulwarks -> 2 Hunters -> 2 base Drones; Drone is the irreducible form.
    - Verified upward assembly uses an explicit transaction guard around `DestroyMode.Vanish`, so intentional source consumption is not interpreted as a breakdown event.
    - Verified resulting smaller forms inherit Replicator state, divided stored matter, controller authority, and the configured recombination lockout.
    - No gameplay code was changed because the current static implementation already matches the required hierarchy contract; live in-game split/recombine acceptance testing remains pending.
+
+18. **Replicator Matter half-day reformation dormancy** — branch `rebuild/replicator-matter-halfday-20260912`.
+   - Restored the accepted dangerous-matter timing: an uncontained pile of at least 10 Replicator blocks remains dormant for 30,000 ticks (half a RimWorld day) before hostile self-reformation checks begin.
+   - The existing containment reset/suppression behavior, 10-block floor, 10-block pawn cost, retry cadence, growth chance and hostile-map cap were left unchanged.
+   - Repository XML was fetched back and verified with `minimumStack=10` and `dormantTicks=30000`; description now matches the half-day rule.
+   - No C# changed in this pass; live RimWorld reformation timing remains pending acceptance testing.
