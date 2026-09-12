@@ -5,6 +5,7 @@
     <race><body>Mech_Light</body><intelligence>ToolUser</intelligence><thinkTreeMain>WNG_Replicator</thinkTreeMain><mechWeightClass>Light</mechWeightClass><hasCorpse>false</hasCorpse><hasMeat>false</hasMeat></race>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorState" />
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorAutonomousDomain" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorEMPReceiver"><suppressionTicks>1800</suppressionTicks></li>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorRegeneration"><intervalTicks>600</intervalTicks><healAmount>0.20</healAmount></li>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorAdaptationEffects"><armorDeflectionChance>0.12</armorDeflectionChance><shieldRechargeTicks>1800</shieldRechargeTicks></li>
