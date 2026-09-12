@@ -146,7 +146,7 @@ namespace WraithNaniteGravtech
                 return;
 
             Faction swarm = ResolveSwarmFaction();
-            if (swarm == null || CountBlockReplicators(parent.Map, swarm) >= Math.Max(1, Props.hostilePopulationCap))
+            if (swarm == null || CountActiveNonPlayerBlocks(parent.Map) >= Math.Max(1, Props.hostilePopulationCap))
                 return;
 
             float stackScale = Math.Max(0.5f, parent.stackCount / 20f);
@@ -177,17 +177,19 @@ namespace WraithNaniteGravtech
             return def == null ? null : Find.FactionManager?.AllFactions?.FirstOrDefault(f => f?.def == def);
         }
 
-        private static int CountBlockReplicators(Map map, Faction faction)
+        private static int CountActiveNonPlayerBlocks(Map map)
         {
-            if (map == null || faction == null)
+            if (map?.mapPawns == null)
                 return 0;
-            return map.mapPawns.AllPawnsSpawned.Count(p => p != null && !p.Dead && p.Faction == faction && p.TryGetComp<CompReplicatorState>() != null);
+            return map.mapPawns.AllPawnsSpawned.Count(p =>
+                p != null && !p.Dead && p.Spawned && p.Faction != null && p.Faction != Faction.OfPlayer &&
+                p.TryGetComp<CompReplicatorState>() != null);
         }
 
         private void TryReassemble(Map map, IntVec3 position, Faction swarm)
         {
             PawnKindDef kind = DefDatabase<PawnKindDef>.GetNamedSilentFail("WNG_ReplicatorDrone");
-            if (kind == null || CountBlockReplicators(map, swarm) >= Math.Max(1, Props.hostilePopulationCap))
+            if (kind == null || CountActiveNonPlayerBlocks(map) >= Math.Max(1, Props.hostilePopulationCap))
                 return;
 
             Pawn pawn = null;
