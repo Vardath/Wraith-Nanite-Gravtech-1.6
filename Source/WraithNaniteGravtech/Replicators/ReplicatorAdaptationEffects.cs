@@ -9,6 +9,7 @@ namespace WraithNaniteGravtech
     {
         public float armorDeflectionChance = 0.12f;
         public int shieldRechargeTicks = 1800;
+        public float energyDamageFactor = 0.35f;
 
         public CompProperties_ReplicatorAdaptationEffects()
         {
@@ -17,11 +18,13 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Turns learned flags into local, save-safe body behavior. Material learning is consumed by
-    /// the assimilation job, Power by regeneration/specialist timing, Ranged by artillery,
-    /// Grav by hierarchy reach, and this comp supplies the Armor and Shield body responses.
-    /// The approved adaptation artwork is also rendered as compact status overlays so learned
-    /// capabilities are visible on the physical block body that carries them.
+    /// Supplies the block-form baseline energy absorption plus learned adaptation behavior.
+    /// Conventional Bullet/Cut/Blunt damage is deliberately left untouched by the baseline so
+    /// projectile weapons remain useful. Heat/beam/laser/plasma/pulse-style DamageDefs are reduced
+    /// without depending on any optional Stargate mod's exact Def names. EMP is never absorbed.
+    /// Material learning is consumed by assimilation, Power by regeneration/specialist timing,
+    /// Ranged by artillery, Grav by hierarchy reach, and this comp supplies Armor/Shield responses
+    /// plus the approved visible adaptation overlays.
     /// </summary>
     public sealed class CompReplicatorAdaptationEffects : ThingComp
     {
@@ -48,6 +51,12 @@ namespace WraithNaniteGravtech
                 return;
             }
 
+            if (IsEnergyLikeDamage(dinfo.Def) && dinfo.Amount > 0f)
+            {
+                float factor = Math.Max(0.05f, Math.Min(1f, Props.energyDamageFactor));
+                dinfo.SetAmount(dinfo.Amount * factor);
+            }
+
             if (state.EMPSuppressed)
                 return;
 
@@ -69,6 +78,23 @@ namespace WraithNaniteGravtech
         private static bool IsPhysicalDamage(DamageDef def)
         {
             return def == DamageDefOf.Bullet || def == DamageDefOf.Cut || def == DamageDefOf.Blunt;
+        }
+
+        private static bool IsEnergyLikeDamage(DamageDef def)
+        {
+            if (def == null || def == DamageDefOf.EMP || IsPhysicalDamage(def))
+                return false;
+
+            string armorCategory = def.armorCategory?.defName ?? string.Empty;
+            if (string.Equals(armorCategory, "Heat", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            string name = def.defName ?? string.Empty;
+            return name.IndexOf("laser", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   name.IndexOf("beam", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   name.IndexOf("energy", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   name.IndexOf("plasma", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   name.IndexOf("pulse", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         public override void PostDraw()
