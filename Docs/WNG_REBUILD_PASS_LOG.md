@@ -102,9 +102,16 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - No C# changed in this pass; no redundant C# compile was run.
    - Native conduit atlas/icon art remains mechanics-validation presentation; live RimWorld power-link visuals and replacement behavior remain pending.
 
-15. **Wraith power-conduit family marker** — branch `rebuild/wraith-power-conduit-theme-marker-20260912`.
+15. **Wraith power-conduit family marker** — main `7a1de9b11bceb3d2ea9db801d451d4ea33b10576`.
    - Added explicit `CompProperties_WNGGravshipPartTheme` with `Wraith` theme to both visible and hidden Wraith bioelectric conduits.
    - This keeps native `PowerConduit` / `CompPowerTransmitter` behavior intact while making the structures explicit participants in WNG's gravship-family identity and inspection contract.
    - Repository file was fetched back; XML structure and both Wraith theme markers were verified.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Live RimWorld conduit networking and family-inspection presentation remain pending.
+
+16. **Asuran power-conduit family marker** — branch `rebuild/asuran-power-conduit-theme-marker-20260912`.
+   - Added explicit `CompProperties_WNGGravshipPartTheme` with `Asuran` theme to both visible and hidden Asuran power conduits.
+   - Native `PowerConduit` / `CompPowerTransmitter` behavior remains inherited unchanged while the conduits become explicit Asuran family members for WNG inspection/isolation logic.
+   - Repository file was fetched back; XML structure and both Asuran theme markers were verified.
    - No C# changed in this pass; no redundant C# compile was run.
    - Live RimWorld conduit networking and family-inspection presentation remain pending.

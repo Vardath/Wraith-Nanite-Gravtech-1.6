@@ -14,6 +14,9 @@
       <damageData><rect>(0,0.35,1,0.3)</rect></damageData>
     </graphicData>
     <costList><WNG_NaniteSludge>1</WNG_NaniteSludge><Plasteel>1</Plasteel></costList>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme"><theme>Asuran</theme></li>
+    </comps>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <designationCategory>WNG</designationCategory>
     <uiOrder>2460</uiOrder>
@@ -36,6 +39,9 @@
     <uiIconPath>Things/Building/Linked/HiddenConduit_MenuIcon</uiIconPath>
     <statBases><MaxHitPoints>140</MaxHitPoints><WorkToBuild>280</WorkToBuild><Flammability>0</Flammability><Beauty>0</Beauty></statBases>
     <costList><WNG_NaniteSludge>2</WNG_NaniteSludge><Plasteel>1</Plasteel></costList>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme"><theme>Asuran</theme></li>
+    </comps>
     <building>
       <isPowerConduit>true</isPowerConduit>
       <ai_chillDestination>false</ai_chillDestination>
