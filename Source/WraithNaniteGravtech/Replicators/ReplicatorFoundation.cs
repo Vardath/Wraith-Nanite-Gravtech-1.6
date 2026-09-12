@@ -170,7 +170,11 @@ namespace WraithNaniteGravtech
             if (state?.EMPSuppressed == true)
                 return;
 
-            float radiusSq = Props.assemblyRadius * Props.assemblyRadius;
+            float radius = Math.Max(1f, Props.assemblyRadius);
+            if (state != null && (state.Adaptations & ReplicatorAdaptationFlags.Grav) != 0)
+                radius *= 1.35f;
+            float radiusSq = radius * radius;
+
             List<Pawn> candidates = pawn.Map.mapPawns.AllPawnsSpawned
                 .Where(p => p != null && !p.Dead && p.Spawned && p.def == pawn.def && p.Faction == pawn.Faction &&
                             p.Position.DistanceToSquared(pawn.Position) <= radiusSq &&

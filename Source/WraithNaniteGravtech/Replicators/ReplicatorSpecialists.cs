@@ -40,6 +40,11 @@ namespace WraithNaniteGravtech
         public bool ControllerActive => Props.role == ReplicatorSpecialistRole.Controller && !Suppressed;
         public bool Suppressed => parent.TryGetComp<CompReplicatorState>()?.EMPSuppressed == true;
 
+        private bool HasAdaptation(ReplicatorAdaptationFlags flag)
+        {
+            return (parent.TryGetComp<CompReplicatorState>()?.Adaptations & flag) != 0;
+        }
+
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
@@ -81,7 +86,10 @@ namespace WraithNaniteGravtech
                     TryRepairAlly(pawn);
                     break;
                 case ReplicatorSpecialistRole.Artillery:
-                    nextActionTick = now + Math.Max(60, Props.artilleryCooldownTicks);
+                    int cooldown = Math.Max(60, Props.artilleryCooldownTicks);
+                    if (HasAdaptation(ReplicatorAdaptationFlags.Power))
+                        cooldown = Math.Max(60, (int)Math.Round(cooldown * 0.75f));
+                    nextActionTick = now + cooldown;
                     if (now <= retaliationUntilTick)
                         TryRetaliate(pawn);
                     break;
@@ -113,13 +121,20 @@ namespace WraithNaniteGravtech
             if (injury == null)
                 return;
 
-            injury.Heal(Math.Max(0.01f, Props.repairAmount));
+            float repair = Math.Max(0.01f, Props.repairAmount);
+            if (HasAdaptation(ReplicatorAdaptationFlags.Power))
+                repair *= 1.35f;
+            injury.Heal(repair);
             FleckMaker.Static(target.TrueCenter(), target.Map, FleckDefOf.MicroSparks, 0.45f);
         }
 
         private void TryRetaliate(Pawn pawn)
         {
-            float radiusSq = Props.artilleryRange * Props.artilleryRange;
+            float range = Math.Max(1f, Props.artilleryRange);
+            if (HasAdaptation(ReplicatorAdaptationFlags.Ranged))
+                range *= 1.20f;
+            float radiusSq = range * range;
+
             Pawn target = pawn.Map.mapPawns.AllPawnsSpawned
                 .Where(p => p != null && !p.Dead && p.Spawned && p.Faction != null && pawn.Faction != null && pawn.Faction.HostileTo(p.Faction))
                 .Where(p => p.Position.DistanceToSquared(pawn.Position) <= radiusSq)
@@ -130,8 +145,16 @@ namespace WraithNaniteGravtech
             if (target == null)
                 return;
 
-            target.TakeDamage(new DamageInfo(DamageDefOf.Bullet, Math.Max(1f, Props.artilleryDamage), 0.25f, -1f, pawn));
-            FleckMaker.Static(target.TrueCenter(), target.Map, FleckDefOf.ExplosionFlash, 0.55f);
+            float damage = Math.Max(1f, Props.artilleryDamage);
+            if (HasAdaptation(ReplicatorAdaptationFlags.Ranged))
+                damage *= 1.25f;
+            target.TakeDamage(new DamageInfo(DamageDefOf.Bullet, damage, 0.25f, -1f, pawn));
+
+            if (!target.Destroyed && HasAdaptation(ReplicatorAdaptationFlags.AntiShield))
+                target.TakeDamage(new DamageInfo(DamageDefOf.EMP, 8f, 0f, -1f, pawn));
+
+            if (!target.Destroyed && target.Spawned)
+                FleckMaker.Static(target.TrueCenter(), target.Map, FleckDefOf.ExplosionFlash, 0.55f);
         }
 
         public override void PostExposeData()

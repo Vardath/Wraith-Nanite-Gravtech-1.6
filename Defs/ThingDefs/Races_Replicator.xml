@@ -7,6 +7,7 @@
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorState" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorEMPReceiver"><suppressionTicks>1800</suppressionTicks></li>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorRegeneration"><intervalTicks>600</intervalTicks><healAmount>0.20</healAmount></li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorAdaptationEffects"><armorDeflectionChance>0.12</armorDeflectionChance><shieldRechargeTicks>1800</shieldRechargeTicks></li>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSalvage"><irreducibleMatterYield>4</irreducibleMatterYield><coreFragmentChance>0.12</coreFragmentChance></li>
     </comps>
   </ThingDef>

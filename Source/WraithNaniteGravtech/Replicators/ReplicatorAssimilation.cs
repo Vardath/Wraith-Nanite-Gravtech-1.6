@@ -105,24 +105,33 @@ namespace WraithNaniteGravtech
 
         public static ReplicatorAdaptationFlags AdaptationsFrom(Thing target)
         {
-            if (target == null)
+            if (target?.def == null)
                 return ReplicatorAdaptationFlags.None;
 
             ReplicatorAdaptationFlags learned = ReplicatorAdaptationFlags.Material;
-            string name = target.def?.defName ?? string.Empty;
+            string name = target.def.defName ?? string.Empty;
 
-            if (target.def?.category == ThingCategory.Building)
+            if (target.def.category == ThingCategory.Building)
                 learned |= ReplicatorAdaptationFlags.Armor;
-            if (target.TryGetComp<CompPowerTrader>() != null || name.IndexOf("power", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (target.TryGetComp<CompPowerTrader>() != null || target.TryGetComp<CompPowerBattery>() != null ||
+                name.IndexOf("power", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("generator", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("battery", StringComparison.OrdinalIgnoreCase) >= 0)
                 learned |= ReplicatorAdaptationFlags.Power;
-            if (name.IndexOf("turret", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            if (target.def.building?.turretGunDef != null ||
+                name.IndexOf("turret", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 name.IndexOf("gun", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 name.IndexOf("rifle", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("cannon", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 name.IndexOf("launcher", StringComparison.OrdinalIgnoreCase) >= 0)
                 learned |= ReplicatorAdaptationFlags.Ranged;
-            if (name.IndexOf("shield", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (name.IndexOf("shield", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                target.def.comps?.Any(c => c is CompProperties_ProjectileInterceptor) == true)
                 learned |= ReplicatorAdaptationFlags.Shield;
-            if (name.IndexOf("grav", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (name.IndexOf("grav", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("thruster", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("shuttle", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("puddlejumper", StringComparison.OrdinalIgnoreCase) >= 0)
                 learned |= ReplicatorAdaptationFlags.Grav;
 
             return learned;
@@ -286,8 +295,11 @@ namespace WraithNaniteGravtech
 
                 int matter = ReplicatorAssimilationUtility.MatterYield(target);
                 ReplicatorAdaptationFlags learned = ReplicatorAssimilationUtility.AdaptationsFrom(target);
-                IntVec3 cell = target.Position;
+                if ((learned & ReplicatorAdaptationFlags.Shield) != 0 &&
+                    (state.Adaptations & ReplicatorAdaptationFlags.Shield) != 0)
+                    learned |= ReplicatorAdaptationFlags.AntiShield;
 
+                IntVec3 cell = target.Position;
                 state.AddMatter(matter);
                 state.Learn(learned);
                 target.Destroy(DestroyMode.Vanish);

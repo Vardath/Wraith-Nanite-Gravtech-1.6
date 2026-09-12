@@ -60,9 +60,13 @@ namespace WraithNaniteGravtech
             int now = Find.TickManager.TicksGame;
             if (now < nextHealTick)
                 return;
-            nextHealTick = now + Math.Max(60, Props.intervalTicks);
 
-            if (pawn.TryGetComp<CompReplicatorState>()?.EMPSuppressed == true)
+            CompReplicatorState state = pawn.TryGetComp<CompReplicatorState>();
+            bool powerAdapted = state != null && (state.Adaptations & ReplicatorAdaptationFlags.Power) != 0;
+            int interval = Math.Max(60, powerAdapted ? (int)Math.Round(Props.intervalTicks * 0.65f) : Props.intervalTicks);
+            nextHealTick = now + interval;
+
+            if (state?.EMPSuppressed == true)
                 return;
 
             Hediff_Injury injury = pawn.health?.hediffSet?.hediffs
@@ -70,7 +74,11 @@ namespace WraithNaniteGravtech
                 .Where(h => h != null && !h.IsPermanent() && h.Severity > 0f)
                 .OrderByDescending(h => h.Severity)
                 .FirstOrDefault();
-            injury?.Heal(Math.Max(0.01f, Props.healAmount));
+            if (injury == null)
+                return;
+
+            float amount = Math.Max(0.01f, Props.healAmount) * (powerAdapted ? 1.35f : 1f);
+            injury.Heal(amount);
         }
 
         public override void PostExposeData()
