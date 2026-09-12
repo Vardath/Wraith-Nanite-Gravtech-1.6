@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase"><defName>WNG_ReplicatorMatter</defName><label>replicator matter</label><description>Dense standardized machine matter recovered from block Replicators.</description><graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath><graphicClass>Graphic_Single</graphicClass></graphicData><stackLimit>250</stackLimit><alwaysHaulable>true</alwaysHaulable><thingCategories><li>ResourcesRaw</li></thingCategories><statBases><MarketValue>3</MarketValue><Mass>0.08</Mass><Flammability>0</Flammability></statBases></ThingDef>
+  <ThingDef ParentName="ResourceBase"><defName>WNG_ReplicatorCoreFragment</defName><label>replicator core fragment</label><description>A partially intact control-lattice fragment recovered from a destroyed Replicator.</description><graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData><stackLimit>25</stackLimit><statBases><MarketValue>90</MarketValue><Mass>0.35</Mass><Flammability>0</Flammability></statBases></ThingDef>
+</Defs>

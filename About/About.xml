@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Wraith &amp; Nanite Gravtech</name>
+  <author>Vardath</author>
+  <packageId>vardath.wraithnanitegravtech</packageId>
+  <supportedVersions><li>1.6</li></supportedVersions>
+  <modDependencies>
+    <li><packageId>ludeon.rimworld.royalty</packageId><displayName>Royalty</displayName></li>
+    <li><packageId>ludeon.rimworld.ideology</packageId><displayName>Ideology</displayName></li>
+    <li><packageId>ludeon.rimworld.biotech</packageId><displayName>Biotech</displayName></li>
+    <li><packageId>ludeon.rimworld.anomaly</packageId><displayName>Anomaly</displayName></li>
+    <li><packageId>ludeon.rimworld.odyssey</packageId><displayName>Odyssey</displayName></li>
+  </modDependencies>
+  <loadAfter>
+    <li>ccyt.stargatesmod</li>
+    <li>CraveMode.RimGateJaffaKreeBiotech</li>
+    <li>idolord.ONAC</li>
+  </loadAfter>
+  <description>Unofficial, non-commercial fan-made RimWorld 1.6 mod inspired by Stargate Atlantis and SG-1. The rebuilt foundation begins with autonomous block Replicators and expands through Wraith, Asuran and gravtech systems. CatCraft's Stargates!, ONAC and RimGate integrations are optional.</description>
+</ModMetaData>
