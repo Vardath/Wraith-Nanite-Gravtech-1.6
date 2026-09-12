@@ -36,7 +36,7 @@ jobs:
           if (-not $thing.Contains('<analysisID>160912003</analysisID>')) { throw 'Wrong/missing Asuran analysis ID' }
           if (-not $thing.Contains('<destroyedOnAnalyzed>false</destroyedOnAnalyzed>')) { throw 'Residue destruction behavior changed' }
           if (($xeno.Split('WNG_AsuranEvidenceTrace').Count - 1) -ne 2) { throw 'Evidence trace must be present in exactly two Asuran xenotype definitions' }
-          if (-not $research.Contains('<analyzedThings><li>WNG_AsuranNaniteResidue</li></analyzedThings>')) { throw 'Research gate missing residue requirement' }
+          if (-not $research.Contains('<requiredAnalyzed><li>WNG_AsuranNaniteResidue</li></requiredAnalyzed>')) { throw 'Research gate missing residue requirement' }
           if (-not $source.Contains('source.Faction?.def?.defName == "WNG_AsuranLattice"')) { throw 'Current hostile faction predicate missing' }
           if (-not $source.Contains('!infiltration.Revealed')) { throw 'Revealed infiltrator guard missing' }
           if (-not $source.Contains('infiltration.CovertPresence')) { throw 'Covert-presence guard missing' }
