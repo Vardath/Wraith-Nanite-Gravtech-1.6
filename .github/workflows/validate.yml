@@ -7,13 +7,16 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -91,7 +94,7 @@ jobs:
           print(f'Parsed {len(parsed)} Def XML files; {len(def_names)} typed defs; {len(custom_classes)} custom classes; {len(tex_paths)} texture paths.')
           PY
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '8.0.x'
 
