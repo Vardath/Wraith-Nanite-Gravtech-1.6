@@ -2,7 +2,7 @@
 <Defs>
   <ThingDef Name="WNG_ReplicatorRaceBase" ParentName="LightMechanoid" Abstract="True">
     <description>A modular autonomous machine assembled from self-replicating blocks.</description>
-    <race><body>Mech_Light</body><intelligence>ToolUser</intelligence><mechWeightClass>Light</mechWeightClass><hasCorpse>false</hasCorpse><hasMeat>false</hasMeat></race>
+    <race><body>Mech_Light</body><intelligence>ToolUser</intelligence><thinkTreeMain>WNG_Replicator</thinkTreeMain><mechWeightClass>Light</mechWeightClass><hasCorpse>false</hasCorpse><hasMeat>false</hasMeat></race>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorState" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorEMPReceiver"><suppressionTicks>1800</suppressionTicks></li>
