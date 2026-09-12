@@ -92,15 +92,22 @@ namespace WraithNaniteGravtech
             try { marketValue = target.GetStatValue(StatDefOf.MarketValue); }
             catch { marketValue = 0f; }
 
+            double yield;
             if (target.def.category == ThingCategory.Item)
             {
-                float value = Math.Max(1f, marketValue) * Math.Max(1, target.stackCount);
-                return Math.Max(1, (int)Math.Ceiling(value * 0.02f));
+                double value = Math.Max(1f, marketValue) * (double)Math.Max(1, target.stackCount);
+                yield = Math.Ceiling(value * 0.02d);
+            }
+            else
+            {
+                double structure = Math.Max(1, target.MaxHitPoints) * 0.025d;
+                double technology = Math.Max(0f, marketValue) * 0.01d;
+                yield = Math.Ceiling(structure + technology);
             }
 
-            float structure = Math.Max(1, target.MaxHitPoints) * 0.025f;
-            float technology = Math.Max(0f, marketValue) * 0.01f;
-            return Math.Max(1, (int)Math.Ceiling(structure + technology));
+            if (double.IsNaN(yield) || yield <= 1d)
+                return 1;
+            return yield >= int.MaxValue ? int.MaxValue : (int)yield;
         }
 
         public static ReplicatorAdaptationFlags AdaptationsFrom(Thing target)
@@ -162,11 +169,13 @@ namespace WraithNaniteGravtech
             return recipients;
         }
 
-        public static int CountBlockReplicators(Map map, Faction faction)
+        public static int CountHostileBlockReplicators(Map map)
         {
-            if (map?.mapPawns == null || faction == null)
+            if (map?.mapPawns == null)
                 return 0;
-            return map.mapPawns.AllPawnsSpawned.Count(p => p != null && !p.Dead && p.Spawned && p.Faction == faction && p.TryGetComp<CompReplicatorState>() != null);
+            return map.mapPawns.AllPawnsSpawned.Count(p =>
+                p != null && !p.Dead && p.Spawned && p.Faction != null && p.Faction != Faction.OfPlayer &&
+                p.TryGetComp<CompReplicatorState>() != null);
         }
 
         public static int SpendMatterOnOffspring(Pawn parent, IntVec3 nearCell, int requested = 2)
@@ -183,7 +192,7 @@ namespace WraithNaniteGravtech
             int maximum = Math.Max(0, Math.Min(2, requested));
             for (int i = 0; i < maximum; i++)
             {
-                if (state.StoredMatter < OffspringMatterCost || CountBlockReplicators(parent.Map, parent.Faction) >= PopulationCap)
+                if (state.StoredMatter < OffspringMatterCost || CountHostileBlockReplicators(parent.Map) >= PopulationCap)
                     break;
 
                 Pawn child = null;
