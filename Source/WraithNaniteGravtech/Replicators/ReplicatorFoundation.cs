@@ -60,7 +60,8 @@ namespace WraithNaniteGravtech
         public void SuppressByEMP(int ticks)
         {
             int now = Find.TickManager?.TicksGame ?? 0;
-            empSuppressedUntilTick = Math.Max(empSuppressedUntilTick, now + Math.Max(0, ticks));
+            long until = (long)now + Math.Max(0, ticks);
+            empSuppressedUntilTick = Math.Max(empSuppressedUntilTick, until >= int.MaxValue ? int.MaxValue : (int)until);
         }
 
         public bool SameControlDomain(CompReplicatorState other)
@@ -86,7 +87,12 @@ namespace WraithNaniteGravtech
             List<CompReplicatorState> states = sources?.Where(s => s != null).ToList() ?? new List<CompReplicatorState>();
             if (states.Count == 0)
                 return;
-            storedMatter = states.Sum(s => Math.Max(0, s.storedMatter));
+
+            long matter = 0;
+            foreach (CompReplicatorState state in states)
+                matter = Math.Min(int.MaxValue, matter + Math.Max(0, state.storedMatter));
+
+            storedMatter = (int)matter;
             adaptationFlags = states.Aggregate(0, (value, state) => value | state.adaptationFlags);
             controlKind = states[0].controlKind;
             controlDomainId = states[0].controlDomainId;
@@ -142,12 +148,12 @@ namespace WraithNaniteGravtech
             if (pawn?.Spawned == true)
                 lastKnownPosition = pawn.Position;
             if (!respawningAfterLoad && !string.IsNullOrEmpty(Props.upgradePawnKind))
-                nextAssemblyTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(250, Props.assemblyCheckTicks);
+                nextAssemblyTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, Math.Max(250, Props.assemblyCheckTicks));
         }
 
         public void BlockRecombinationForTicks(int ticks)
         {
-            int until = (Find.TickManager?.TicksGame ?? 0) + Math.Max(0, ticks);
+            int until = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, Math.Max(0, ticks));
             recombinationBlockedUntilTick = Math.Max(recombinationBlockedUntilTick, until);
             nextAssemblyTick = Math.Max(nextAssemblyTick, until);
         }
@@ -164,14 +170,14 @@ namespace WraithNaniteGravtech
             int now = Find.TickManager.TicksGame;
             if (now < nextAssemblyTick || now < recombinationBlockedUntilTick)
                 return;
-            nextAssemblyTick = now + Math.Max(250, Props.assemblyCheckTicks);
+            nextAssemblyTick = SafeFutureTick(now, Math.Max(250, Props.assemblyCheckTicks));
 
             CompReplicatorState state = pawn.TryGetComp<CompReplicatorState>();
             if (state?.EMPSuppressed == true)
                 return;
 
             float radius = Math.Max(1f, Props.assemblyRadius);
-            if (state != null && (state.Adaptations & ReplicatorAdaptationFlags.Grav) != 0)
+            if (state != null && (state.Adaptations & ReplicatorAdaptationFlags.Grav) != ReplicatorAdaptationFlags.None)
                 radius *= 1.35f;
             float radiusSq = radius * radius;
 
@@ -193,7 +199,9 @@ namespace WraithNaniteGravtech
 
             List<Pawn> consumed = candidates.Take(Props.unitsRequired).ToList();
             Pawn upgraded = null;
-            bool commitStarted = false;
+            bool upgradedSpawned = false;
+            bool sourceFailure = false;
+
             try
             {
                 assemblyInProgress = true;
@@ -202,20 +210,45 @@ namespace WraithNaniteGravtech
                     faction: pawn.Faction,
                     context: PawnGenerationContext.NonPlayer,
                     tile: pawn.Map.Tile));
+                if (upgraded == null)
+                    return;
+
                 upgraded.TryGetComp<CompReplicatorState>()?.InheritMerged(consumed.Select(p => p.TryGetComp<CompReplicatorState>()));
                 GenSpawn.Spawn(upgraded, pawn.Position, pawn.Map);
-                commitStarted = true;
+                upgradedSpawned = upgraded.Spawned;
+                if (!upgradedSpawned)
+                    return;
 
                 foreach (Pawn source in consumed)
                 {
                     ReplicatorHierarchyTransaction.Begin(source);
-                    try { source.Destroy(DestroyMode.Vanish); }
-                    finally { ReplicatorHierarchyTransaction.End(source); }
+                    try
+                    {
+                        source.Destroy(DestroyMode.Vanish);
+                        if (!source.Destroyed)
+                            sourceFailure = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        sourceFailure = true;
+                        Log.Error($"[WNG] Failed to consume Replicator source {source.thingIDNumber} during recombination: {ex}");
+                    }
+                    finally
+                    {
+                        ReplicatorHierarchyTransaction.End(source);
+                    }
+                }
+
+                if (sourceFailure || consumed.Any(source => source != null && !source.Destroyed))
+                {
+                    if (upgraded != null && !upgraded.Destroyed)
+                        upgraded.Destroy(DestroyMode.Vanish);
+                    Log.Error($"[WNG] Replicator recombination for {pawn.def?.defName} failed closed to prevent duplicated matter.");
                 }
             }
             catch (Exception ex)
             {
-                if (!commitStarted && upgraded != null && !upgraded.Destroyed)
+                if (upgraded != null && !upgraded.Destroyed)
                     upgraded.Destroy(DestroyMode.Vanish);
                 Log.Error($"[WNG] Replicator hierarchy recombination failed for {pawn.def?.defName}: {ex}");
             }
@@ -223,6 +256,12 @@ namespace WraithNaniteGravtech
             {
                 assemblyInProgress = false;
             }
+        }
+
+        private static int SafeFutureTick(int now, int delay)
+        {
+            long result = (long)Math.Max(0, now) + Math.Max(0, delay);
+            return result >= int.MaxValue ? int.MaxValue : (int)result;
         }
 
         private bool CanRecombineNow(int now) => now >= recombinationBlockedUntilTick;
@@ -253,9 +292,10 @@ namespace WraithNaniteGravtech
 
             CompReplicatorState parentState = pawn.TryGetComp<CompReplicatorState>();
             int totalMatter = parentState?.StoredMatter ?? 0;
-            int baseShare = Props.splitCount > 0 ? totalMatter / Props.splitCount : 0;
-            int remainder = Props.splitCount > 0 ? totalMatter % Props.splitCount : 0;
-            int spawned = 0;
+            int baseShare = totalMatter / Props.splitCount;
+            int remainder = totalMatter % Props.splitCount;
+            List<Pawn> spawnedChildren = new List<Pawn>();
+            bool failed = false;
 
             for (int i = 0; i < Props.splitCount; i++)
             {
@@ -267,23 +307,49 @@ namespace WraithNaniteGravtech
                         faction: pawn.Faction,
                         context: PawnGenerationContext.NonPlayer,
                         tile: map.Tile));
+                    if (child == null)
+                    {
+                        failed = true;
+                        break;
+                    }
+
                     int share = baseShare + (i < remainder ? 1 : 0);
                     child.TryGetComp<CompReplicatorState>()?.InheritFrom(parentState, share);
                     child.TryGetComp<CompReplicatorHierarchy>()?.BlockRecombinationForTicks(Props.splitRecombineDelayTicks);
                     IntVec3 cell = CellFinder.RandomClosewalkCellNear(origin, map, 2);
                     GenSpawn.Spawn(child, cell, map);
-                    spawned++;
+                    if (!child.Spawned)
+                    {
+                        failed = true;
+                        if (!child.Destroyed)
+                            child.Destroy(DestroyMode.Vanish);
+                        break;
+                    }
+
+                    spawnedChildren.Add(child);
                 }
                 catch (Exception ex)
                 {
-                    if (child != null && !child.Destroyed && !child.Spawned)
+                    failed = true;
+                    if (child != null && !child.Destroyed)
                         child.Destroy(DestroyMode.Vanish);
                     Log.Error($"[WNG] Replicator death split failed for {pawn.def?.defName}: {ex}");
+                    break;
                 }
             }
 
-            if (spawned == Props.splitCount)
-                deathSplitEmitted = true;
+            if (failed || spawnedChildren.Count != Props.splitCount)
+            {
+                foreach (Pawn child in spawnedChildren)
+                {
+                    if (child != null && !child.Destroyed)
+                        child.Destroy(DestroyMode.Vanish);
+                }
+                Log.Error($"[WNG] Replicator death split for {pawn.def?.defName} rolled back to avoid a partial mass transform.");
+                return;
+            }
+
+            deathSplitEmitted = true;
         }
 
         public override void PostExposeData()
