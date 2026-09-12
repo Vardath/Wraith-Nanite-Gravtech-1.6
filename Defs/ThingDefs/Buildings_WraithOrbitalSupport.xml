@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Wraith living orbital sensor using Odyssey's native scanner contract. -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_WraithOrbitalSensor</defName>
+    <label>Wraith orbital sensor organ</label>
+    <description>A cultivated Wraith sensory organ adapted to Odyssey's native orbital-scanner system. While powered it listens for orbital signals and uses the base game's discovery workflow rather than a parallel custom scanner.</description>
+    <graphicData>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <texPath>Things/Building/OrbitalScanner/OrbitalScanner</texPath>
+      <drawSize>(3,3)</drawSize>
+      <color>(0.38,0.18,0.28)</color>
+    </graphicData>
+    <size>(2,2)</size>
+    <tickerType>Normal</tickerType>
+    <castEdgeShadows>false</castEdgeShadows>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <statBases>
+      <MaxHitPoints>250</MaxHitPoints>
+      <WorkToBuild>10500</WorkToBuild>
+      <Flammability>0.15</Flammability>
+      <Beauty>-1</Beauty>
+    </statBases>
+    <costList>
+      <WNG_WraithBioSludge>35</WNG_WraithBioSludge>
+      <Plasteel>120</Plasteel>
+      <ComponentIndustrial>4</ComponentIndustrial>
+      <ComponentSpacer>2</ComponentSpacer>
+    </costList>
+    <building><destroySound>BuildingDestroyed_Metal_Big</destroySound></building>
+    <comps>
+      <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>450</basePowerConsumption></li>
+      <li Class="CompProperties_Flickable" />
+      <li><compClass>CompOrbitalScanner</compClass></li>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipPartTheme"><theme>Wraith</theme></li>
+    </comps>
+    <placeWorkers>
+      <li>PlaceWorker_NotUnderRoof</li>
+      <li>PlaceWorker_PreventInteractionSpotOverlap</li>
+    </placeWorkers>
+    <altitudeLayer>Building</altitudeLayer>
+    <canBeUsedUnderRoof>false</canBeUsedUnderRoof>
+    <fillPercent>0.4</fillPercent>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <designationCategory>WNG</designationCategory>
+    <researchPrerequisites><li>WNG_WraithGravships</li></researchPrerequisites>
+    <constructionSkillPrerequisite>7</constructionSkillPrerequisite>
+    <uiOrder>2435</uiOrder>
+  </ThingDef>
+</Defs>
