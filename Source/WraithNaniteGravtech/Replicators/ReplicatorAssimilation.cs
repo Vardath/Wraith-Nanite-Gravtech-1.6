@@ -272,7 +272,8 @@ namespace WraithNaniteGravtech
             CompReplicatorSpecialist specialist = pawn.TryGetComp<CompReplicatorSpecialist>();
             if (specialist?.Role == ReplicatorSpecialistRole.Burrower && Target?.def?.category == ThingCategory.Building)
                 workTicks = 180;
-            if ((pawn.TryGetComp<CompReplicatorState>()?.Adaptations & ReplicatorAdaptationFlags.Material) != 0)
+            CompReplicatorState currentState = pawn.TryGetComp<CompReplicatorState>();
+            if (currentState != null && (currentState.Adaptations & ReplicatorAdaptationFlags.Material) != ReplicatorAdaptationFlags.None)
                 workTicks = Math.Max(120, (int)Math.Round(workTicks * 0.85f));
 
             Toil assimilate = ToilMaker.MakeToil("WNG_ReplicatorAssimilate");
@@ -295,8 +296,8 @@ namespace WraithNaniteGravtech
 
                 int matter = ReplicatorAssimilationUtility.MatterYield(target);
                 ReplicatorAdaptationFlags learned = ReplicatorAssimilationUtility.AdaptationsFrom(target);
-                if ((learned & ReplicatorAdaptationFlags.Shield) != 0 &&
-                    (state.Adaptations & ReplicatorAdaptationFlags.Shield) != 0)
+                if ((learned & ReplicatorAdaptationFlags.Shield) != ReplicatorAdaptationFlags.None &&
+                    (state.Adaptations & ReplicatorAdaptationFlags.Shield) != ReplicatorAdaptationFlags.None)
                     learned |= ReplicatorAdaptationFlags.AntiShield;
 
                 IntVec3 cell = target.Position;

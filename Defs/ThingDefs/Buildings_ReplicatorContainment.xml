@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_ReplicatorContainmentField</defName>
+    <label>replicator containment cradle</label>
+    <description>A powered one-cell storage cradle that continuously disrupts the coordination field inside loose Replicator Matter. Matter stored here has its self-assembly exposure reset while power remains on; loss of power immediately resumes normal exposure.</description>
+    <thingClass>Building_Storage</thingClass>
+    <category>Building</category>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.35</fillPercent>
+    <pathCost>30</pathCost>
+    <size>(1,1)</size>
+    <rotatable>false</rotatable>
+    <selectable>true</selectable>
+    <drawerType>MapMeshOnly</drawerType>
+    <graphicData>
+      <texPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.9</drawSize>
+    </graphicData>
+    <uiIconPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</uiIconPath>
+    <statBases>
+      <MaxHitPoints>180</MaxHitPoints>
+      <Mass>12</Mass>
+      <WorkToBuild>1800</WorkToBuild>
+      <Flammability>0.15</Flammability>
+      <Beauty>1</Beauty>
+    </statBases>
+    <costList>
+      <Steel>60</Steel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+    </costList>
+    <designationCategory>Furniture</designationCategory>
+    <thingCategories><li>BuildingsFurniture</li></thingCategories>
+    <minifiedDef>MinifiedThing</minifiedDef>
+    <surfaceType>Item</surfaceType>
+    <building>
+      <preventDeteriorationOnTop>true</preventDeteriorationOnTop>
+      <ignoreStoredThingsBeauty>true</ignoreStoredThingsBeauty>
+      <defaultStorageSettings>
+        <priority>Important</priority>
+        <filter>
+          <thingDefs>
+            <li>WNG_ReplicatorMatter</li>
+            <li>WNG_ReplicatorCoreFragment</li>
+          </thingDefs>
+        </filter>
+      </defaultStorageSettings>
+    </building>
+    <inspectorTabs><li>ITab_Storage</li></inspectorTabs>
+    <researchPrerequisites><li>Electricity</li></researchPrerequisites>
+    <comps Inherit="False">
+      <li Class="CompProperties_Flickable" />
+      <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>250</basePowerConsumption></li>
+    </comps>
+  </ThingDef>
+</Defs>

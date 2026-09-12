@@ -42,7 +42,8 @@ namespace WraithNaniteGravtech
 
         private bool HasAdaptation(ReplicatorAdaptationFlags flag)
         {
-            return (parent.TryGetComp<CompReplicatorState>()?.Adaptations & flag) != 0;
+            CompReplicatorState state = parent.TryGetComp<CompReplicatorState>();
+            return state != null && (state.Adaptations & flag) != ReplicatorAdaptationFlags.None;
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
