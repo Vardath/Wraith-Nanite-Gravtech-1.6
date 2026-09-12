@@ -1,0 +1,103 @@
+name: WNG Rebuild Validation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate XML and cross-references
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          root = Path('.')
+          def_files = sorted((root / 'Defs').rglob('*.xml'))
+          if not def_files:
+              raise SystemExit('No Def XML files found')
+
+          parsed = []
+          def_names = {}
+          pawn_kinds = set()
+          custom_classes = set()
+          tex_paths = set()
+
+          for path in def_files:
+              tree = ET.parse(path)
+              parsed.append(path)
+              for node in tree.getroot().iter():
+                  def_name = node.findtext('defName')
+                  if def_name:
+                      if def_name in def_names:
+                          raise SystemExit(f'Duplicate defName {def_name}: {def_names[def_name]} and {path}')
+                      def_names[def_name] = path
+                      if node.tag == 'PawnKindDef':
+                          pawn_kinds.add(def_name)
+
+                  cls = node.attrib.get('Class')
+                  if cls and cls.startswith('WraithNaniteGravtech.'):
+                      custom_classes.add(cls.split('.')[-1])
+
+                  if node.tag == 'driverClass' and node.text and node.text.startswith('WraithNaniteGravtech.'):
+                      custom_classes.add(node.text.split('.')[-1])
+
+                  if node.tag == 'texPath' and node.text:
+                      tex_paths.add(node.text.strip())
+
+          ET.parse(root / 'About' / 'About.xml')
+
+          source_text = '\n'.join(
+              p.read_text(encoding='utf-8')
+              for p in sorted((root / 'Source').rglob('*.cs'))
+          )
+          for cls in sorted(custom_classes):
+              if not re.search(r'\bclass\s+' + re.escape(cls) + r'\b', source_text):
+                  raise SystemExit(f'XML references missing custom class: {cls}')
+
+          for path in def_files:
+              tree = ET.parse(path)
+              for node in tree.getroot().iter():
+                  for child_name in ('upgradePawnKind', 'splitChildPawnKind'):
+                      child = node.find(child_name)
+                      if child is not None and child.text and child.text not in pawn_kinds:
+                          raise SystemExit(f'{path}: missing PawnKindDef {child.text} referenced by {child_name}')
+
+          for tex in sorted(tex_paths):
+              base = root / 'Textures' / tex
+              candidates = [
+                  Path(str(base) + '.png'),
+                  Path(str(base) + '_north.png'),
+                  Path(str(base) + '_south.png'),
+                  Path(str(base) + '_east.png'),
+                  Path(str(base) + '_west.png'),
+              ]
+              if not any(p.exists() for p in candidates):
+                  raise SystemExit(f'Missing texture for texPath: {tex}')
+
+          print(f'Parsed {len(parsed)} Def XML files; {len(def_names)} defs; {len(custom_classes)} custom classes; {len(tex_paths)} texture paths.')
+          PY
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build WNG assembly
+        run: dotnet build Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj -c Release
+
+      - name: Verify runtime DLL
+        run: |
+          test -f Assemblies/WraithNaniteGravtech.dll
+          test $(stat -c%s Assemblies/WraithNaniteGravtech.dll) -gt 1024
