@@ -5,6 +5,36 @@ using Verse;
 
 namespace WraithNaniteGravtech
 {
+    public sealed class CompProperties_ReplicatorAutonomousDomain : CompProperties
+    {
+        public CompProperties_ReplicatorAutonomousDomain()
+        {
+            compClass = typeof(CompReplicatorAutonomousDomain);
+        }
+    }
+
+    /// <summary>
+    /// Assigns a controller domain when a hostile autonomous block first appears. Explicit Queen,
+    /// lattice, Asuran or captured-Queen domains are never overwritten.
+    /// </summary>
+    public sealed class CompReplicatorAutonomousDomain : ThingComp
+    {
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            Pawn pawn = parent as Pawn;
+            CompReplicatorState state = pawn?.TryGetComp<CompReplicatorState>();
+            if (pawn == null || !pawn.Spawned || pawn.Map == null || pawn.Faction == null || pawn.Faction == Faction.OfPlayer ||
+                state == null || state.ControlKind != ReplicatorControlKind.Autonomous || !string.IsNullOrEmpty(state.ControlDomainId))
+                return;
+
+            string domain = pawn.Map.GetComponent<MapComponent_ReplicatorAutonomousDomains>()?.ResolveDomain(pawn);
+            if (string.IsNullOrEmpty(domain))
+                domain = $"auto:{pawn.Map.Tile}:{pawn.thingIDNumber}";
+            state.SetController(ReplicatorControlKind.Autonomous, domain);
+        }
+    }
+
     /// <summary>
     /// Assigns autonomous block Replicators to local swarm domains instead of treating an entire
     /// faction as one controller. Newly spawned autonomous blocks join the nearest compatible
