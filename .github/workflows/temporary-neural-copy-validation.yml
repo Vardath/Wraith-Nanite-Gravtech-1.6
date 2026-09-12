@@ -1,0 +1,41 @@
+name: Temporary Neural Interface exact-copy validation
+
+on:
+  push:
+    branches:
+      - rebuild/neural-interface-exact-copy-20260912
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build WNG
+        run: dotnet build Source/WNG/WNG.csproj -c Release
+      - name: Parse Def and patch XML
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem Defs -Recurse -Filter *.xml) + @(Get-ChildItem Patches -Recurse -Filter *.xml)
+          foreach ($file in $files) { [xml](Get-Content $file.FullName -Raw) | Out-Null }
+          Write-Host "Parsed $($files.Count) XML files"
+      - name: Check exact copy ordering and appearance
+        shell: pwsh
+        run: |
+          $source = Get-Content 'Source/WNG/Asuran/AsuranNeuralInterface.cs' -Raw
+          if (-not $source.Contains('CopyGenomeExactly(source, copy);')) { throw 'Exact source genome copy helper is not called' }
+          if (-not $source.Contains('foreach (Gene generatedGene in copy.genes.GenesListForReading.ToList())')) { throw 'Generated template genome is not cleared' }
+          if (-not $source.Contains('copy.genes.RemoveGene(generatedGene);')) { throw 'Generated template genes survive exact copying' }
+          if (-not $source.Contains('source.genes.Xenogenes.Contains(g)')) { throw 'Source endogene/xenogene split is not preserved' }
+          if (-not $source.Contains('copy.genes.AddGene(geneDef, xenogene);')) { throw 'Source genome is not restored with original gene type' }
+          $snapshot = $source.IndexOf('ApplyExactPersonSnapshot(subject, copy);')
+          $layer = $source.IndexOf('LayerNaniteIdentity(copy, naniteXenotype);')
+          if ($snapshot -lt 0 -or $layer -le $snapshot) { throw 'WNG nanite identity is layered before exact source snapshot' }
+          if (-not $source.Contains('copy.style.beardDef = source.style.beardDef;')) { throw 'Beard appearance is not copied' }
+          if (-not $source.Contains('copy.style.FaceTattoo = source.style.FaceTattoo;')) { throw 'Face tattoo is not copied' }
+          if (-not $source.Contains('copy.style.BodyTattoo = source.style.BodyTattoo;')) { throw 'Body tattoo is not copied' }
+          if (-not $source.Contains('copy.story.favoriteColor = source.story.favoriteColor;')) { throw 'Favourite colour is not copied' }
+          if (-not $source.Contains('copy.genes.SetXenotypeDirect(naniteXenotype);')) { throw 'Finished copy is not classified as the WNG nanite xenotype' }
+          Write-Host 'Neural Interface exact-copy contract OK'
