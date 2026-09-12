@@ -48,9 +48,16 @@ Purpose: persistent continuity record for the current public RimWorld 1.6 rebuil
    - Closed airtight door uses RimWorld 1.6 native vacuum blocking; open door permits exchange normally.
    - One-file XML/native-contract verification completed; live pressure/door behavior remains pending.
 
-8. **Wraith physical living airtight gravship door** — branch `rebuild/wraith-living-door-20260912`.
+8. **Wraith physical living airtight gravship door** — main `957f3a2d6e637ddb66aec41ec0d3f778b3dbda1d`.
    - Added a real native `DoorBase`/`Building_Door` Wraith living bulkhead, distinct in presentation from the Asuran technological door.
    - Uses `isAirtight=true`, native Substructure placement, `WNG_WraithGravships` gating, Wraith bio-sludge construction material, native power-net support, and the Wraith technology-family marker.
    - Repository file was fetched back; XML parsing and targeted contract assertions passed.
    - No C# changed in this pass; no redundant C# compile was run.
    - Live RimWorld pressure/door behavior remains pending.
+
+9. **Wraith native atmosphere-support organ** — branch `rebuild/wraith-oxygen-organ-20260912`.
+   - Added `WNG_WraithAtmosphericOrgan`, a living Wraith atmospheric component using Odyssey's native `CompProperties_OxygenPusher` rather than a custom atmosphere simulation.
+   - Requires native power, drops to low idle power outside vacuum, attaches to walls, uses Wraith bio-sludge construction material, requires `WNG_WraithGravships`, and carries the Wraith technology-family marker.
+   - Repository file was fetched back; XML parsing and targeted contract assertions passed.
+   - No C# changed in this pass; no redundant C# compile was run.
+   - Native OxygenPump graphics remain mechanics-validation placeholders; live RimWorld atmosphere behavior remains pending.
