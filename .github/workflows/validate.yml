@@ -41,9 +41,10 @@ jobs:
               for node in tree.getroot().iter():
                   def_name = node.findtext('defName')
                   if def_name:
-                      if def_name in def_names:
-                          raise SystemExit(f'Duplicate defName {def_name}: {def_names[def_name]} and {path}')
-                      def_names[def_name] = path
+                      key = (node.tag, def_name)
+                      if key in def_names:
+                          raise SystemExit(f'Duplicate {node.tag} defName {def_name}: {def_names[key]} and {path}')
+                      def_names[key] = path
                       if node.tag == 'PawnKindDef':
                           pawn_kinds.add(def_name)
 
@@ -87,7 +88,7 @@ jobs:
               if not any(p.exists() for p in candidates):
                   raise SystemExit(f'Missing texture for texPath: {tex}')
 
-          print(f'Parsed {len(parsed)} Def XML files; {len(def_names)} defs; {len(custom_classes)} custom classes; {len(tex_paths)} texture paths.')
+          print(f'Parsed {len(parsed)} Def XML files; {len(def_names)} typed defs; {len(custom_classes)} custom classes; {len(tex_paths)} texture paths.')
           PY
 
       - uses: actions/setup-dotnet@v4
