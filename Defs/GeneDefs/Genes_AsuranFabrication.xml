@@ -3,7 +3,7 @@
   <GeneDef>
     <defName>WNG_AsuranNanitePhysiology</defName>
     <label>nanite physiology</label>
-    <description>This humanoid is a synthetic body composed of coordinated microscopic nanites. Its ordinary RimWorld food need is replaced by a Nanite Reserve: ingested food is treated as matter feedstock, normal operation drains the reserve, and reconstruction or fabrication spends it directly. At critically low reserve the body weakens and can shut down rather than suffering biological malnutrition. EMP disrupts the lattice and suspends self-repair.</description>
+    <description>This humanoid is a synthetic body composed of coordinated microscopic nanites. Its ordinary RimWorld food need is replaced by a Nanite Reserve: ingested food is treated as matter feedstock, normal operation drains the reserve, and reconstruction or fabrication spends it directly. At critically low reserve the body weakens and falls back to slower emergency repair rather than biological malnutrition. Missing body parts can be reconstructed over time. EMP disrupts the lattice and suspends self-repair and reconstruction.</description>
     <geneClass>WraithNaniteGravtech.Gene_AsuranNanitePhysiology</geneClass>
     <enablesNeeds><li>WNG_NaniteMatterReserve</li></enablesNeeds>
     <disablesNeeds><li>Food</li></disablesNeeds>
@@ -18,9 +18,13 @@
     </abilities>
     <modExtensions><li Class="WraithNaniteGravtech.AsuranNanitePhysiologyExtension">
       <reconcileIntervalTicks>120</reconcileIntervalTicks>
-      <healIntervalTicks>250</healIntervalTicks>
+      <healIntervalTicks>450</healIntervalTicks>
       <baseHealAmount>0.12</baseHealAmount>
-      <reserveCostPerHealPoint>0.004</reserveCostPerHealPoint>
+      <reserveFractionPerHealPulse>0.015</reserveFractionPerHealPulse>
+      <depletedHealIntervalTicks>1800</depletedHealIntervalTicks>
+      <missingPartIntervalTicks>30000</missingPartIntervalTicks>
+      <reserveFractionPerRestoredPart>0.25</reserveFractionPerRestoredPart>
+      <depletedMissingPartIntervalTicks>90000</depletedMissingPartIntervalTicks>
       <depletionThreshold>0.15</depletionThreshold>
       <empSuppressionTicks>1800</empSuppressionTicks>
     </li></modExtensions>
