@@ -38,7 +38,7 @@
     <rotatable>true</rotatable>
     <hasInteractionCell>true</hasInteractionCell>
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
-    <tickerType>Rare</tickerType>
+    <tickerType>Normal</tickerType>
     <statBases>
       <WorkToBuild>5000</WorkToBuild>
       <MaxHitPoints>600</MaxHitPoints>
@@ -49,6 +49,12 @@
     <inspectorTabs>
       <li>ITab_Bills</li>
     </inspectorTabs>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGAmbientLoop">
+        <sound>WNG_LivingForgeAmbient</sound>
+        <repeatTicks>360</repeatTicks>
+      </li>
+    </comps>
     <building>
       <spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
     </building>

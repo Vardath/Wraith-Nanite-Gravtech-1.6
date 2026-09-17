@@ -356,7 +356,20 @@ namespace WraithNaniteGravtech
                 return;
 
             pawn.health.RestorePart(partToRestore);
-            lifeForce.TrySpend(cost);
+            if (!lifeForce.TrySpend(cost))
+                return;
+
+            // Presentation is fail-soft and commits only after the exact missing part and Life Force transaction.
+            try
+            {
+                if (pawn.Spawned && pawn.Map != null)
+                    DefDatabase<SoundDef>.GetNamedSilentFail("WNG_WraithReturnLife")
+                        ?.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Wraith return-life sound failed: " + ex.Message);
+            }
         }
     }
 }
