@@ -537,6 +537,7 @@
       <li Class="WraithNaniteGravtech.CompProperties_WNGThruster">
         <family>Wraith</family>
         <requiresFamilyPower>true</requiresFamilyPower>
+        <launchSound>WNG_OrganicGravThruster</launchSound>
         <statOffsets>
           <GravshipRange>10</GravshipRange>
         </statOffsets>
@@ -606,6 +607,7 @@
       <li Class="WraithNaniteGravtech.CompProperties_WNGThruster">
         <family>Wraith</family>
         <requiresFamilyPower>true</requiresFamilyPower>
+        <launchSound>WNG_OrganicGravThruster</launchSound>
         <statOffsets>
           <GravshipRange>16</GravshipRange>
         </statOffsets>
@@ -1290,6 +1292,7 @@
       <li Class="WraithNaniteGravtech.CompProperties_WNGThruster">
         <family>Asuran</family>
         <requiresFamilyPower>true</requiresFamilyPower>
+        <launchSound>WNG_PrecursorGravThruster</launchSound>
         <statOffsets>
           <GravshipRange>10</GravshipRange>
         </statOffsets>
@@ -1360,6 +1363,7 @@
       <li Class="WraithNaniteGravtech.CompProperties_WNGThruster">
         <family>Asuran</family>
         <requiresFamilyPower>true</requiresFamilyPower>
+        <launchSound>WNG_PrecursorGravThruster</launchSound>
         <statOffsets>
           <GravshipRange>16</GravshipRange>
         </statOffsets>

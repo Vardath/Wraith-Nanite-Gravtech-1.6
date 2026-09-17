@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
+using Verse.Sound;
 
 namespace WraithNaniteGravtech
 {
@@ -512,6 +513,7 @@ namespace WraithNaniteGravtech
     {
         public WNGGravshipFamily family = WNGGravshipFamily.None;
         public bool requiresFamilyPower = true;
+        public SoundDef launchSound;
 
         public CompProperties_WNGThruster()
         {
@@ -521,6 +523,8 @@ namespace WraithNaniteGravtech
 
     public sealed class CompGravshipThruster_WNGFamily : CompGravshipThruster
     {
+        private static int lastFamilyLaunchSoundTick = -1;
+
         private CompProperties_WNGThruster WNGProps => (CompProperties_WNGThruster)props;
 
         public override bool CanBeActive
@@ -541,6 +545,43 @@ namespace WraithNaniteGravtech
             if (parent.Spawned && !WNGFamilyFuelUtility.HasRoleConnection(parent, WNGProps.family, WNGFuelEndpointRole.Tank))
                 return native.NullOrEmpty() ? "Same-family fuel feed disconnected." : native + "\nSame-family fuel feed disconnected.";
             return native;
+        }
+
+        public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
+        {
+            Building_GravEngine linkedEngine = engine;
+            IntVec3 soundPosition = parent != null ? parent.Position : IntVec3.Invalid;
+            SoundDef launchSound = WNGProps.launchSound;
+            int now = Find.TickManager?.TicksGame ?? -1;
+
+            // Native launch commits fuel/cooldown before the gravship capture despawns its facilities.
+            // Landing does not take this path, and ordinary deconstruction/reinstall is excluded by
+            // the active gravship-cutscene requirement.
+            bool committedTakeoffCapture =
+                launchSound != null &&
+                linkedEngine != null &&
+                map != null &&
+                soundPosition.IsValid &&
+                soundPosition.InBounds(map) &&
+                WorldComponent_GravshipController.CutsceneInProgress &&
+                linkedEngine.cooldownCompleteTick > now;
+
+            base.PostDeSpawn(map, mode);
+
+            // GenerateGravship despawns every attached thruster synchronously in the same game tick.
+            // Emit one family drive cue for the whole craft, not one voice per physical thruster.
+            if (!committedTakeoffCapture || now < 0 || lastFamilyLaunchSoundTick == now)
+                return;
+
+            lastFamilyLaunchSoundTick = now;
+            try
+            {
+                launchSound.PlayOneShot(new TargetInfo(soundPosition, map));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Gravship family launch sound failed: " + ex.Message);
+            }
         }
     }
 
