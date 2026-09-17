@@ -13,6 +13,7 @@ namespace WraithNaniteGravtech
     {
         public const string QuietFactionDefName = "WNG_HumanFormEnclave";
         public const string StargateArrivalModeDefName = "StargateMod_StargateEnterMode";
+        public const string StargateThingClassName = "StargatesMod.Building_Stargate";
         public const string HumanFormKindDefName = "WNG_HumanFormReplicator";
         public const string EngineerKindDefName = "WNG_PrecursorEngineer";
         public const string CourierDefName = "WNG_PuddleJumper_NPC";
@@ -32,6 +33,23 @@ namespace WraithNaniteGravtech
         public static PawnsArrivalModeDef StargateArrivalMode =>
             DefDatabase<PawnsArrivalModeDef>.GetNamedSilentFail(StargateArrivalModeDefName);
 
+        public static bool IsResolvedHomeMapStargate(Map map, IntVec3 spawnCenter)
+        {
+            if (map == null || !spawnCenter.IsValid || !spawnCenter.InBounds(map))
+                return false;
+
+            List<Thing> things = map.thingGrid.ThingsListAtFast(spawnCenter);
+            for (int i = 0; i < things.Count; i++)
+            {
+                Thing thing = things[i];
+                if (thing?.Map != map)
+                    continue;
+                if (string.Equals(thing.def?.thingClass?.FullName, StargateThingClassName, StringComparison.Ordinal))
+                    return true;
+            }
+            return false;
+        }
+
         public static bool HasUsableStargate(Map map, Faction faction)
         {
             PawnsArrivalModeDef mode = StargateArrivalMode;
@@ -47,7 +65,13 @@ namespace WraithNaniteGravtech
 
             try
             {
-                return mode.Worker.TryResolveRaidSpawnCenter(probe) && probe.raidArrivalMode == mode;
+                if (!mode.Worker.TryResolveRaidSpawnCenter(probe) || probe.raidArrivalMode != mode)
+                    return false;
+
+                // CatCraft intentionally includes linked pocket maps when it resolves a Stargate.
+                // This WNG incident promises arrival on the requested player-home map, so reject a
+                // linked-map gate instead of waiting forever for pawns to emerge on the wrong map.
+                return IsResolvedHomeMapStargate(map, probe.spawnCenter);
             }
             catch (Exception ex)
             {
@@ -104,6 +128,8 @@ namespace WraithNaniteGravtech
             {
                 if (!stargateMode.Worker.TryResolveRaidSpawnCenter(parms) || parms.raidArrivalMode != stargateMode)
                     return false; // CatCraft fell back to edge arrival: do not mislabel it a Stargate visit.
+                if (!QuietLatticeStargateVisitUtility.IsResolvedHomeMapStargate(map, parms.spawnCenter))
+                    return false; // CatCraft resolved a linked pocket-map Stargate, not this home map.
             }
             catch (Exception ex)
             {
@@ -118,26 +144,21 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
-            Lord lord = null;
             try
             {
+                // CatCraft now owns these exact Pawn objects in its receive buffer. Do not create a
+                // Lord until they physically emerge; Lord ownership of buffered pawns is unsafe.
                 stargateMode.Worker.Arrive(visitors, parms);
-                IntVec3 chillSpot = CellFinder.RandomClosewalkCellNear(map.Center, map, 18);
-                lord = LordMaker.MakeNewLord(
-                    quiet,
-                    new LordJob_VisitColony(quiet, chillSpot, 60000),
-                    map,
-                    visitors);
 
                 int duration = Rand.RangeInclusive(12000, 18000);
-                if (!component.TryBeginVisit(visitors, lord, duration))
+                if (!component.TryBeginVisit(visitors, duration))
                     throw new InvalidOperationException("Map visit component rejected a newly committed delegation.");
             }
             catch (Exception ex)
             {
-                // CatCraft may already own buffered visitors once Arrive succeeds. Never generate
-                // replacement pawns or silently retry the same transaction in this execution.
-                Log.Warning("[WNG] Quiet Lattice Stargate visit failed during commit; exact generated visitors were not replaced: " + ex.Message);
+                // Arrive may already have transferred one or more exact pawns into CatCraft's
+                // receive buffer. Never destroy or replace them after this transaction boundary.
+                Log.Warning("[WNG] Quiet Lattice Stargate visit failed during CatCraft commit; exact generated visitors were not replaced: " + ex.Message);
                 return true;
             }
 
@@ -204,13 +225,13 @@ namespace WraithNaniteGravtech
             (visitors != null && visitors.Any(p => p != null && !p.Dead && !p.Destroyed)) ||
             (courier != null && !courier.Destroyed);
 
-        public bool TryBeginVisit(List<Pawn> exactVisitors, Lord lord, int durationTicks)
+        public bool TryBeginVisit(List<Pawn> exactVisitors, int durationTicks)
         {
-            if (HasActiveVisit || exactVisitors == null || exactVisitors.Count == 0 || lord == null)
+            if (HasActiveVisit || exactVisitors == null || exactVisitors.Count == 0)
                 return false;
 
             visitors = new List<Pawn>(exactVisitors);
-            visitorLord = lord;
+            visitorLord = null;
             courier = null;
             visitDurationTicks = Math.Max(6000, durationTicks);
             visitStartedTick = -1;
@@ -226,6 +247,7 @@ namespace WraithNaniteGravtech
             if (!map.IsHashIntervalTick(60) || visitors == null || visitors.Count == 0)
                 return;
 
+            // Dead delegates must not hold the receive-buffer transaction open forever.
             visitors.RemoveAll(p => p == null || p.Dead || p.Destroyed);
             if (visitors.Count == 0)
             {
@@ -236,12 +258,41 @@ namespace WraithNaniteGravtech
             int now = Find.TickManager?.TicksGame ?? 0;
             List<Pawn> spawnedHere = visitors.Where(p => p.Spawned && p.Map == map).ToList();
 
-            // CatCraft buffers the exact Pawn objects during its dial sequence. Start the visit
-            // clock only once all still-living delegation members have physically emerged.
-            if (visitStartedTick < 0)
+            // CatCraft buffers the exact Pawn objects during its dial sequence. Assign their
+            // ordinary visitor Lord only after every still-living delegate has physically emerged.
+            if (visitorLord == null)
             {
                 if (spawnedHere.Count != visitors.Count)
                     return;
+
+                Faction visitFaction = QuietLatticeStargateVisitUtility.QuietFaction ?? visitors[0].Faction;
+                if (visitFaction == null)
+                {
+                    ClearVisit();
+                    return;
+                }
+
+                try
+                {
+                    IntVec3 chillSpot = CellFinder.RandomClosewalkCellNear(map.Center, map, 18);
+                    visitorLord = LordMaker.MakeNewLord(
+                        visitFaction,
+                        new LordJob_VisitColony(visitFaction, chillSpot, 60000),
+                        map,
+                        spawnedHere);
+                    visitStartedTick = now;
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning("[WNG] Quiet Lattice delegates emerged but could not enter native visitor behavior: " + ex.Message);
+                    RestoreNativeExitForStrandedVisitors(spawnedHere, visitFaction);
+                    ClearVisit();
+                    return;
+                }
+            }
+            else if (visitStartedTick < 0)
+            {
+                // Save-compatibility guard for a Lord reference restored without the start tick.
                 visitStartedTick = now;
             }
 
@@ -282,16 +333,16 @@ namespace WraithNaniteGravtech
             }
 
             CompTransporter transporter = courier.TryGetComp<CompTransporter>();
-            if (transporter == null)
+            CompShuttle shuttle = courier.TryGetComp<CompShuttle>();
+            if (transporter == null || shuttle == null)
                 return;
 
-            bool allBoardableLoaded = visitors
-                .Where(p => EligibleForCourier(p) && !p.Downed)
-                .All(p => transporter.GetDirectlyHeldThings().Contains(p));
+            ThingOwner held = transporter.GetDirectlyHeldThings();
+            bool allRequiredLoaded = shuttle.requiredPawns.All(p => p != null && held.Contains(p));
             bool graceExpired = boardingStartedTick >= 0 && now - boardingStartedTick >= QuietLatticeStargateVisitUtility.BoardingGraceTicks;
 
-            if (allBoardableLoaded || graceExpired)
-                TryLaunchCourier(transporter);
+            if (allRequiredLoaded || graceExpired)
+                TryLaunchCourier(transporter, graceExpired);
         }
 
         private bool TryStageCourier(Faction faction, List<Pawn> spawnedVisitors, int now)
@@ -323,7 +374,9 @@ namespace WraithNaniteGravtech
                 shuttle.requiredPawns.Clear();
                 foreach (Pawn pawn in spawnedVisitors)
                 {
-                    if (EligibleForCourier(pawn))
+                    // Downed/stranded delegates remain under ordinary visitor-exit ownership;
+                    // never make a non-boardable pawn a hard shuttle requirement.
+                    if (EligibleForCourier(pawn) && !pawn.Downed)
                         shuttle.requiredPawns.AddUnique(pawn);
                 }
                 TransporterUtility.InitiateLoading(Gen.YieldSingle(transporter));
@@ -341,8 +394,12 @@ namespace WraithNaniteGravtech
             nextBoardingOrderTick = now;
             launchIssued = false;
 
+            CompShuttle stagedShuttle = courier.TryGetComp<CompShuttle>();
             foreach (Pawn pawn in spawnedVisitors)
-                pawn.GetLord()?.RemovePawn(pawn);
+            {
+                if (stagedShuttle != null && stagedShuttle.requiredPawns.Contains(pawn))
+                    pawn.GetLord()?.RemovePawn(pawn);
+            }
 
             try
             {
@@ -365,49 +422,80 @@ namespace WraithNaniteGravtech
             if (courier == null || courier.Destroyed || !courier.Spawned)
                 return;
 
+            CompShuttle shuttle = courier.TryGetComp<CompShuttle>();
+            if (shuttle == null)
+                return;
+
             foreach (Pawn pawn in visitors)
             {
-                if (!EligibleForCourier(pawn) || pawn.Downed || pawn.jobs == null)
+                if (!EligibleForCourier(pawn) || pawn.Downed || pawn.jobs == null || !shuttle.requiredPawns.Contains(pawn))
                     continue;
                 if (pawn.CurJobDef == JobDefOf.EnterTransporter && pawn.CurJob?.targetA.Thing == courier)
                     continue;
 
                 Job board = JobMaker.MakeJob(JobDefOf.EnterTransporter, courier);
                 board.playerForced = true;
-                pawn.jobs.TryTakeOrderedJob(board, JobTag.Misc);
+                if (!pawn.jobs.TryTakeOrderedJob(board, JobTag.Misc))
+                {
+                    // A failed order never leaves the native shuttle permanently waiting for a
+                    // pawn it cannot load. Return that exact pawn to ordinary visitor exit.
+                    shuttle.requiredPawns.Remove(pawn);
+                    RestoreNativeExitForStrandedVisitors(
+                        new List<Pawn> { pawn },
+                        QuietLatticeStargateVisitUtility.QuietFaction ?? pawn.Faction);
+                }
             }
         }
 
-        private void TryLaunchCourier(CompTransporter transporter)
+        private void TryLaunchCourier(CompTransporter transporter, bool graceExpired)
         {
             if (courier == null || courier.Destroyed || !courier.Spawned || transporter == null || launchIssued)
                 return;
 
             CompShuttle shuttle = courier.TryGetComp<CompShuttle>();
-            if (shuttle == null)
-                return;
-
             CompLaunchable launchable = courier.TryGetComp<CompLaunchable>();
-            if (launchable == null || !launchable.CanLaunch().Accepted)
+            if (shuttle == null || launchable == null)
                 return;
 
-            // Any living visitor who is still physically on the colony map at the actual launch
-            // boundary must not be abandoned without a Lord. This normally means a downed
-            // visitor, or a healthy delegate that failed to board before the grace timeout.
+            ThingOwner held = transporter.GetDirectlyHeldThings();
+
+            // At the grace boundary, any required pawn that never reached the transporter becomes
+            // an ordinary stranded visitor instead of blocking or being silently deleted.
+            if (graceExpired)
+            {
+                List<Pawn> expiredRequirements = shuttle.requiredPawns
+                    .Where(p => p == null || !held.Contains(p))
+                    .Where(p => p != null)
+                    .ToList();
+                foreach (Pawn pawn in expiredRequirements)
+                    shuttle.requiredPawns.Remove(pawn);
+                RestoreNativeExitForStrandedVisitors(
+                    expiredRequirements.Where(EligibleForCourier).ToList(),
+                    QuietLatticeStargateVisitUtility.QuietFaction ?? expiredRequirements.FirstOrDefault()?.Faction);
+            }
+
+            // A launch is valid only when every remaining exact native requirement is physically
+            // inside the transporter. This is independent of CompLaunchable's broader NPC check.
+            if (shuttle.requiredPawns.Any(p => p == null || !held.Contains(p)))
+                return;
+
             List<Pawn> stranded = visitors
-                .Where(p => EligibleForCourier(p) && !transporter.GetDirectlyHeldThings().Contains(p))
+                .Where(p => EligibleForCourier(p) && !held.Contains(p))
                 .ToList();
             if (stranded.Count > 0)
             {
-                RestoreNativeExitForStrandedVisitors(stranded,
+                foreach (Pawn pawn in stranded)
+                    shuttle.requiredPawns.Remove(pawn);
+                RestoreNativeExitForStrandedVisitors(
+                    stranded,
                     QuietLatticeStargateVisitUtility.QuietFaction ?? stranded[0].Faction);
             }
 
-            shuttle.SetPawnToLeaveBehind(p =>
-                p == null || p.Dead || p.Downed || !transporter.GetDirectlyHeldThings().Contains(p));
+            if (!launchable.CanLaunch().Accepted)
+                return;
 
             List<Pawn> boardedBeforeLaunch = visitors
-                .Where(p => p != null && transporter.GetDirectlyHeldThings().Contains(p))
+                .Where(p => p != null && held.Contains(p))
                 .ToList();
             PlanetTile destination = FindDepartureDestination();
             IntVec3 departureCell = courier.Position;
@@ -422,12 +510,10 @@ namespace WraithNaniteGravtech
                 launchException = ex;
             }
 
-            // Match the existing exact-Queen carrier boundary: a launch only commits when the
-            // physical shuttle has left and every visitor that was aboard has moved out of the
-            // old map transporter into native flight/transit ownership.
+            // A launch only commits when the physical shuttle has left and every exact visitor
+            // that was aboard has moved out of the old map transporter into native flight/transit.
             bool departedWithBoardedVisitors = !courier.Spawned && boardedBeforeLaunch.All(p =>
-                p != null && !p.Spawned && p.ParentHolder != null &&
-                !transporter.GetDirectlyHeldThings().Contains(p));
+                p != null && !p.Spawned && p.ParentHolder != null && !held.Contains(p));
             if (!departedWithBoardedVisitors)
             {
                 launchIssued = false;
@@ -504,8 +590,8 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Off-map cleanup for the NPC visitor flight. The exact Pawns are removed from the active
-    /// transporter and handed to the world-pawn manager; no proxy visitors are generated.
+    /// Off-map cleanup for the NPC visitor flight. Exact Pawns leave native flight ownership by
+    /// reference; the hidden courier is removed with ActiveTransporterInfo's native shuttle API.
     /// </summary>
     public sealed class TransportersArrivalAction_QuietLatticeDeparture : TransportersArrivalAction
     {
@@ -516,15 +602,37 @@ namespace WraithNaniteGravtech
             foreach (ActiveTransporterInfo info in transporters ?? new List<ActiveTransporterInfo>())
             {
                 ThingOwner contents = info?.innerContainer;
-                if (contents == null)
+                if (info == null || contents == null)
                     continue;
+
+                // Native launch already calls Pawn.ExitMap, so these pawns are normally already
+                // registered as WorldPawns. Remove the exact references from flight ownership first
+                // and only use PassToWorld as a defensive fallback.
                 foreach (Pawn pawn in contents.OfType<Pawn>().ToList())
                 {
                     contents.Remove(pawn);
                     if (!Find.WorldPawns.Contains(pawn))
                         Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.Decide);
                 }
-                contents.ClearAndDestroyContents();
+
+                // The scripted NPC courier must not become player cargo or be handed to the world.
+                // Use the native shuttle removal contract before disposing of the exact hidden craft.
+                Thing hiddenShuttle = info.GetShuttle();
+                if (hiddenShuttle != null)
+                {
+                    hiddenShuttle = info.RemoveShuttle();
+                    if (hiddenShuttle != null && !hiddenShuttle.Destroyed)
+                        hiddenShuttle.Destroy(DestroyMode.Vanish);
+                }
+
+                // The courier is not intended to carry arbitrary cargo. Clean any unexpected
+                // non-pawn leftovers only after all exact pawn and shuttle references are detached.
+                foreach (Thing thing in contents.ToList())
+                {
+                    contents.Remove(thing);
+                    if (thing != null && !thing.Destroyed)
+                        thing.Destroy(DestroyMode.Vanish);
+                }
             }
         }
 
