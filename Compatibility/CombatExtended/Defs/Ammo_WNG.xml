@@ -51,7 +51,7 @@
     <defName>WNG_CE_Ammo_WraithStunStaffCharge</defName>
     <label>stun-staff biocharge</label>
     <description>A sealed living electrocyte pack grown to recharge a Wraith stun staff under Combat Extended. Wraith weapons do not require ammunition when Combat Extended is absent.</description>
-    <graphicData><texPath>Things/Item/Ammo/Wraith/WNG_WraithBiochargePack</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/WNG_Biomass</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.025</Mass><Bulk>0.02</Bulk></statBases>
     <ammoClass>Charged</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_WraithStunStaff</cookOffProjectile>
@@ -60,7 +60,7 @@
     <defName>WNG_CE_Ammo_WraithStunnerCharge</defName>
     <label>stunner biocharge</label>
     <description>A compact living bioelectric charge grown for the Wraith stunner under Combat Extended.</description>
-    <graphicData><texPath>Things/Item/Ammo/Wraith/WNG_WraithBiochargePack</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/WNG_Biomass</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.018</Mass><Bulk>0.015</Bulk></statBases>
     <ammoClass>Charged</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_WraithStunner</cookOffProjectile>
@@ -69,7 +69,7 @@
     <defName>WNG_CE_Ammo_WraithCarbineCharge</defName>
     <label>carbine biocharge</label>
     <description>A dense electro-organ charge grown for a Wraith living carbine under Combat Extended.</description>
-    <graphicData><texPath>Things/Item/Ammo/Wraith/WNG_WraithBiochargePack</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/WNG_Biomass</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.022</Mass><Bulk>0.018</Bulk></statBases>
     <ammoClass>Charged</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_WraithCarbine</cookOffProjectile>
@@ -78,7 +78,7 @@
     <defName>WNG_CE_Ammo_WraithHeavyCharge</defName>
     <label>heavy biocharge</label>
     <description>A reinforced high-output living charge grown for a Wraith heavy bio-weapon under Combat Extended.</description>
-    <graphicData><texPath>Things/Item/Ammo/Wraith/WNG_WraithBiochargePack</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/WNG_Biomass</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.065</Mass><Bulk>0.045</Bulk></statBases>
     <ammoClass>Charged</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_WraithHeavy</cookOffProjectile>
@@ -89,7 +89,7 @@
     <defName>WNG_CE_Ammo_ReplicatorPulseCell</defName>
     <label>Replicator pulse cell</label>
     <description>A compact matrix of Replicator Blocks configured as consumable pulse-emitter feedstock for Combat Extended.</description>
-    <graphicData><texPath>Things/Item/Ammo/Replicator/WNG_ReplicatorChargeCell</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.018</Mass><Bulk>0.012</Bulk></statBases>
     <ammoClass>Charged</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_ReplicatorPulse</cookOffProjectile>
@@ -98,7 +98,7 @@
     <defName>WNG_CE_Ammo_ReplicatorDisruptorCell</defName>
     <label>Replicator disruption cell</label>
     <description>A phase-tuned Replicator cell configured to feed a specialist shield-disruption emitter under Combat Extended.</description>
-    <graphicData><texPath>Things/Item/Ammo/Replicator/WNG_ReplicatorChargeCell</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.03</Mass><Bulk>0.02</Bulk></statBases>
     <ammoClass>Ionized</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_ReplicatorDisruptor</cookOffProjectile>
@@ -107,7 +107,7 @@
     <defName>WNG_CE_Ammo_ReplicatorArtilleryCell</defName>
     <label>Replicator artillery cell</label>
     <description>A dense Replicator charge matrix configured for the Artillery body's long-range pulse array under Combat Extended.</description>
-    <graphicData><texPath>Things/Item/Ammo/Replicator/WNG_ReplicatorChargeCell</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.075</Mass><Bulk>0.05</Bulk></statBases>
     <ammoClass>ChargedAP</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_ReplicatorArtillery</cookOffProjectile>
