@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <IncidentDef>
+    <defName>WNG_ReplicatorConsumedRuinDiscovery</defName>
+    <label>Replicator-consumed ruin discovery</label>
+    <category>Misc</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>WraithNaniteGravtech.IncidentWorker_ReplicatorConsumedRuinDiscovery</workerClass>
+    <baseChance>0.12</baseChance>
+    <earliestDay>12</earliestDay>
+    <minRefireDays>24</minRefireDays>
+    <populationEffect>None</populationEffect>
+    <pointsScaleable>false</pointsScaleable>
+  </IncidentDef>
+</Defs>

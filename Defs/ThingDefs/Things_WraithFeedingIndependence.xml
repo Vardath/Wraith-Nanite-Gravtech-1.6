@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_FeedingIndependenceVector</defName>
+    <label>feeding-independence gene vector</label>
+    <description>An unstable late-generation retroviral vector carrying Iratus-queen regenerative controls and Wraith enzyme stabilisers. In a Wraith it can permanently replace Life Force metabolism with ordinary digestion, but systemic rejection remains dangerously common.</description>
+    <graphicData>
+      <texPath>Things/Item/Drug/GoJuice</texPath>
+      <graphicClass>Graphic_StackCount</graphicClass>
+      <color>(0.58,0.82,0.74)</color>
+    </graphicData>
+    <stackLimit>10</stackLimit>
+    <rotatable>false</rotatable>
+    <statBases>
+      <MarketValue>950</MarketValue>
+      <Mass>0.08</Mass>
+      <MaxHitPoints>50</MaxHitPoints>
+    </statBases>
+    <techLevel>Spacer</techLevel>
+    <recipeMaker>
+      <researchPrerequisite>WNG_WraithFeedingIndependence</researchPrerequisite>
+      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <workAmount>4200</workAmount>
+      <workSkill>Intellectual</workSkill>
+      <effectWorking>Cook</effectWorking>
+      <soundWorking>Recipe_Drug</soundWorking>
+      <skillRequirements><Intellectual>12</Intellectual></skillRequirements>
+      <displayPriority>1930</displayPriority>
+    </recipeMaker>
+    <costList>
+      <WNG_WraithRetrovirusDose>1</WNG_WraithRetrovirusDose>
+      <WNG_IratusQueenExtract>1</WNG_IratusQueenExtract>
+      <WNG_RefinedWraithEnzyme>2</WNG_RefinedWraithEnzyme>
+      <Neutroamine>8</Neutroamine>
+      <ComponentSpacer>1</ComponentSpacer>
+    </costList>
+    <tradeability>Sellable</tradeability>
+    <tradeTags><li>ExoticMisc</li></tradeTags>
+  </ThingDef>
+</Defs>

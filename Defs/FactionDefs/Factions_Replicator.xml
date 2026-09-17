@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <FactionDef ParentName="FactionBase">
+    <defName>WNG_ReplicatorSwarm</defName>
+    <label>replicator swarm</label>
+    <description>An autonomous network of self-organizing Replicator machines. The swarm remains hidden as a world polity; its physical infestations emerge through dedicated WNG encounters rather than ordinary humanlike faction settlements.</description>
+    <pawnSingular>replicator</pawnSingular>
+    <pawnsPlural>replicators</pawnsPlural>
+    <requiredCountAtGameStart>1</requiredCountAtGameStart>
+    <factionNameMaker>NamerFactionMechanoid</factionNameMaker>
+    <humanlikeFaction>false</humanlikeFaction>
+    <hidden>true</hidden>
+    <autoFlee>false</autoFlee>
+    <canUseAvoidGrid>false</canUseAvoidGrid>
+    <techLevel>Ultra</techLevel>
+    <permanentEnemy>true</permanentEnemy>
+    <hostileToFactionlessHumanlikes>true</hostileToFactionlessHumanlikes>
+    <colorSpectrum>
+      <li>(0.38, 0.48, 0.52)</li>
+    </colorSpectrum>
+  </FactionDef>
+</Defs>

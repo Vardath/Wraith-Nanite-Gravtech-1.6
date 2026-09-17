@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    WNGv1 Wraith biology is intentionally layered. These first genes own only the
+    biological Life Force/regeneration contract and native appearance constraints.
+    Telepathy, host cultivation, faction hunger, living technology and caste gear are
+    separate later subsystems and are not hidden dependencies of the core xenotype.
+  -->
+  <GeneDef>
+    <defName>WNG_LifeForceMetabolism</defName>
+    <label>life-force metabolism</label>
+    <description>This Wraith does not survive on ordinary food. Its tissues store stolen biological vitality as Life Force, which drains over time and is spent by regeneration. Severe depletion causes weakness and eventually life-force torpor; deliberate hibernation greatly slows the drain.</description>
+    <iconPath>UI/Icons/Genes/Gene_Hemogenic</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_LifeForce</geneClass>
+    <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_LifeForce</resourceGizmoType>
+    <resourceLabel>life force</resourceLabel>
+    <resourceDescription>{PAWN_nameDef} stores biological vitality drained from living prey. Life Force decays over time and powers Wraith regeneration. Low reserves weaken regeneration; complete depletion causes torpor. Deliberate hibernation reduces the passive drain to a tiny fraction of normal.</resourceDescription>
+    <resourceLossPerDay>0.0666667</resourceLossPerDay>
+    <resourceGizmoThresholds>
+      <li>0.15</li>
+      <li>0.40</li>
+      <li>0.70</li>
+    </resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView>
+    <disablesNeeds>
+      <li>Food</li>
+    </disablesNeeds>
+    <abilities>
+      <li>WNG_LifeDrain</li>
+      <li>WNG_PartialFeed</li>
+    </abilities>
+    <biostatCpx>3</biostatCpx>
+    <biostatMet>2</biostatMet>
+    <modExtensions>
+      <li Class="WraithNaniteGravtech.WraithLifeForceSettingsExtension">
+        <!-- One full reserve lasts about one quadrum when otherwise idle. -->
+        <hibernationDrainFactor>0.02</hibernationDrainFactor>
+        <starvedThreshold>0.15</starvedThreshold>
+        <torporThreshold>0.001</torporThreshold>
+        <torporRecoveryThreshold>0.08</torporRecoveryThreshold>
+
+        <!-- Regeneration scaling by current reserve. -->
+        <lowReserveThreshold>0.40</lowReserveThreshold>
+        <highReserveThreshold>0.70</highReserveThreshold>
+        <depletedRegenerationFactor>0.05</depletedRegenerationFactor>
+        <starvingRegenerationFactor>0.25</starvingRegenerationFactor>
+        <lowRegenerationFactor>0.60</lowRegenerationFactor>
+        <healthyRegenerationFactor>1.00</healthyRegenerationFactor>
+        <highRegenerationFactor>1.60</highRegenerationFactor>
+        <hibernatingRegenerationFactor>0.12</hibernatingRegenerationFactor>
+
+        <!-- Ordinary injury repair is real resource expenditure, not free healing. -->
+        <injuryHealIntervalTicks>2500</injuryHealIntervalTicks>
+        <baseInjuryHealAmount>1.5</baseInjuryHealAmount>
+        <injuryLifeForceCostPerSeverity>0.0025</injuryLifeForceCostPerSeverity>
+
+        <!-- Missing-part recovery is deliberately expensive and requires a healthy reserve. -->
+        <limbRegrowthIntervalTicks>60000</limbRegrowthIntervalTicks>
+        <limbRegrowthMinimumReserve>0.70</limbRegrowthMinimumReserve>
+        <limbRegrowthLifeForceCost>0.25</limbRegrowthLifeForceCost>
+      </li>
+    </modExtensions>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_WraithRegeneration</defName>
+    <label>wraith regeneration</label>
+    <description>Wraith tissues rebuild injury aggressively when sufficient Life Force is available. Routine healing consumes reserve in proportion to repaired injury. With a high reserve, even missing anatomy can eventually be reconstructed at substantial Life Force cost.</description>
+    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_WraithRegeneration</geneClass>
+    <biostatCpx>3</biostatCpx>
+    <biostatMet>-3</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HostCultivator</defName>
+    <label>host cultivator</label>
+    <description>Wraith regenerative tissues can be directed into a technological seed that consumes a biological host or corpse and grows into a Living Forge.</description>
+    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <abilities>
+      <li>WNG_HostSeedGestation</li>
+    </abilities>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>-1</biostatMet>
+  </GeneDef>
+  <GeneDef>
+    <defName>WNG_WraithTelepathy</defName>
+    <label>wraith telepathy</label>
+    <description>Wraith nervous tissue is naturally sensitive to other minds and to the shared psychic signals of the Hive. This grants basic Hive Sense and provides the biological substrate used by stronger caste-specific telepathic abilities.</description>
+    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <abilities>
+      <li>WNG_HiveSense</li>
+    </abilities>
+    <statOffsets>
+      <PsychicSensitivity>0.20</PsychicSensitivity>
+      <PsychicEntropyRecoveryRate>0.05</PsychicEntropyRecoveryRate>
+    </statOffsets>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>-1</biostatMet>
+  </GeneDef>
+
+</Defs>

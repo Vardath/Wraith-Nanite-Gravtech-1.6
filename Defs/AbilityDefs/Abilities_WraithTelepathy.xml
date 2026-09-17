@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Defs>
+  <AbilityDef ParentName="PsycastBase">
+    <defName>WNG_HiveSense</defName>
+    <label>hive sense</label>
+    <description>Extend the Wraith's natural telepathic awareness across the local area, sensing other Wraith-linked minds without revealing their exact position. This is biological Hive perception expressed through Royalty's psychic machinery, not an implanted psylink.</description>
+    <level>0</level>
+    <iconPath>UI/Abilities/Focus</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <targetRequired>false</targetRequired>
+    <hostile>false</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>1800~1800</cooldownTicksRange>
+    <showPsycastEffects>false</showPsycastEffects>
+    <soundCast>WNG_WraithHiveSense</soundCast>
+    <statBases>
+      <Ability_EntropyGain>8</Ability_EntropyGain>
+      <Ability_PsyfocusCost>0</Ability_PsyfocusCost>
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.5</warmupTime>
+      <range>-1</range>
+      <drawAimPie>false</drawAimPie>
+      <requireLineOfSight>false</requireLineOfSight>
+      <targetParams>
+        <canTargetSelf>true</canTargetSelf>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityHiveSense">
+        <radius>40</radius>
+      </li>
+    </comps>
+  </AbilityDef>
+  <AbilityDef ParentName="PsycastBase">
+    <defName>WNG_PredatorsPresence</defName>
+    <label>predator's presence</label>
+    <description>Press the Wraith's predatory awareness into another mind, burdening movement and concentration for a short time. Psychic sensitivity governs how strongly the target is affected.</description>
+    <level>0</level>
+    <iconPath>UI/Abilities/Burden</iconPath>
+    <writeCombatLog>true</writeCombatLog>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>1200~1200</cooldownTicksRange>
+    <soundCast>WNG_WraithHallucination</soundCast>
+    <statBases>
+      <Ability_EntropyGain>10</Ability_EntropyGain>
+      <Ability_PsyfocusCost>0</Ability_PsyfocusCost>
+      <Ability_Duration>12</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.25</warmupTime>
+      <range>19.9</range>
+      <targetParams>
+        <canTargetAnimals>true</canTargetAnimals>
+        <neverTargetIncapacitated>true</neverTargetIncapacitated>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
+        <hediffDef>PsychicBurden</hediffDef>
+        <durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>true</psychic>
+        <goodwillImpact>-15</goodwillImpact>
+        <applyGoodwillImpactToLodgers>false</applyGoodwillImpactToLodgers>
+      </li>
+      <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDef>PsycastPsychicEffect</fleckDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  <AbilityDef ParentName="PsycastBase">
+    <defName>WNG_Compulsion</defName>
+    <label>compulsion</label>
+    <description>Impose a brief telepathic command that forces a susceptible target to approach the Wraith. The influence is short-lived and remains subject to ordinary psychic resistance.</description>
+    <level>0</level>
+    <iconPath>UI/Abilities/Beckon</iconPath>
+    <writeCombatLog>true</writeCombatLog>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>2500~2500</cooldownTicksRange>
+    <soundCast>WNG_WraithTelepathicProbe</soundCast>
+    <statBases>
+      <Ability_EntropyGain>18</Ability_EntropyGain>
+      <Ability_PsyfocusCost>0</Ability_PsyfocusCost>
+      <Ability_Duration>6</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.5</warmupTime>
+      <range>17.9</range>
+      <targetParams>
+        <canTargetAnimals>true</canTargetAnimals>
+        <neverTargetIncapacitated>true</neverTargetIncapacitated>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="CompProperties_AbilityForceJob">
+        <compClass>CompAbilityEffect_ForceJob</compClass>
+        <jobDef>GotoMindControlled</jobDef>
+        <destination>Caster</destination>
+        <durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>true</psychic>
+      </li>
+      <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDef>PsycastPsychicEffect</fleckDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  <AbilityDef ParentName="PsycastBase">
+    <defName>WNG_QueensCommand</defName>
+    <label>queen's command</label>
+    <description>Broadcast a Queen's sovereign Hive impulse to nearby allied Wraith-linked minds. The command briefly sharpens movement, combat coordination and resistance to pain without changing faction, ownership or individual identity.</description>
+    <level>0</level>
+    <iconPath>UI/Abilities/Focus</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <targetRequired>false</targetRequired>
+    <hostile>false</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>5000~5000</cooldownTicksRange>
+    <showPsycastEffects>false</showPsycastEffects>
+    <statBases>
+      <Ability_EntropyGain>32</Ability_EntropyGain>
+      <Ability_PsyfocusCost>0</Ability_PsyfocusCost>
+    </statBases>
+    <verbProperties>
+      <warmupTime>1</warmupTime>
+      <range>-1</range>
+      <drawAimPie>false</drawAimPie>
+      <requireLineOfSight>false</requireLineOfSight>
+      <targetParams>
+        <canTargetSelf>true</canTargetSelf>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityQueensCommand">
+        <radius>10</radius>
+        <commandHediff>WNG_QueensCommanded</commandHediff>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>

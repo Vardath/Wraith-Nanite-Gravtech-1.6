@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_WraithRetrovirusDose</defName>
+    <label>Wraith retrovirus dose</label>
+    <description>A cultured retroviral injection engineered to suppress the Iratus-derived portions of Wraith biology while leaving the treated individual's identity intact. One dose initiates humanization; it does not maintain the state without the separate suppression drug.</description>
+    <graphicData>
+      <texPath>Things/Item/Drug/GoJuice</texPath>
+      <graphicClass>Graphic_StackCount</graphicClass>
+      <color>(0.55,0.72,0.82)</color>
+    </graphicData>
+    <stackLimit>10</stackLimit>
+    <rotatable>false</rotatable>
+    <statBases>
+      <MarketValue>360</MarketValue>
+      <Mass>0.06</Mass>
+      <MaxHitPoints>50</MaxHitPoints>
+    </statBases>
+    <techLevel>Spacer</techLevel>
+    <recipeMaker>
+      <researchPrerequisite>WNG_WraithRetroviralTherapy</researchPrerequisite>
+      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <workAmount>2400</workAmount>
+      <workSkill>Intellectual</workSkill>
+      <effectWorking>Cook</effectWorking>
+      <soundWorking>Recipe_Drug</soundWorking>
+      <skillRequirements><Intellectual>10</Intellectual></skillRequirements>
+      <displayPriority>1840</displayPriority>
+    </recipeMaker>
+    <costList>
+      <WNG_IratusGlandExtract>1</WNG_IratusGlandExtract>
+      <WNG_RefinedWraithEnzyme>1</WNG_RefinedWraithEnzyme>
+      <Neutroamine>6</Neutroamine>
+      <MedicineIndustrial>1</MedicineIndustrial>
+    </costList>
+    <tradeability>Sellable</tradeability>
+    <tradeTags><li>ExoticMisc</li></tradeTags>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>WNG_WraithSuppressionDose</defName>
+    <label>Wraith suppression injection</label>
+    <description>A maintenance drug used after Wraith retroviral humanization. It suppresses re-emergence of the Wraith phenotype for a little more than one day. Doses do not stack into long-term immunity: treatment must remain regular.</description>
+    <graphicData>
+      <texPath>Things/Item/Drug/GoJuice</texPath>
+      <graphicClass>Graphic_StackCount</graphicClass>
+      <color>(0.70,0.82,0.92)</color>
+    </graphicData>
+    <stackLimit>20</stackLimit>
+    <rotatable>false</rotatable>
+    <statBases>
+      <MarketValue>95</MarketValue>
+      <Mass>0.04</Mass>
+      <MaxHitPoints>45</MaxHitPoints>
+    </statBases>
+    <techLevel>Spacer</techLevel>
+    <recipeMaker>
+      <researchPrerequisite>WNG_WraithRetroviralTherapy</researchPrerequisite>
+      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <workAmount>1600</workAmount>
+      <workSkill>Intellectual</workSkill>
+      <effectWorking>Cook</effectWorking>
+      <soundWorking>Recipe_Drug</soundWorking>
+      <skillRequirements><Intellectual>9</Intellectual></skillRequirements>
+      <productCount>4</productCount>
+      <displayPriority>1830</displayPriority>
+    </recipeMaker>
+    <costList>
+      <WNG_RefinedWraithEnzyme>1</WNG_RefinedWraithEnzyme>
+      <Neutroamine>4</Neutroamine>
+      <MedicineIndustrial>1</MedicineIndustrial>
+    </costList>
+    <tradeability>Sellable</tradeability>
+    <tradeTags><li>ExoticMisc</li></tradeTags>
+  </ThingDef>
+</Defs>

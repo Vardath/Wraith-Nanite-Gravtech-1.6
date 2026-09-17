@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Four player starts recovered from the accepted pre-clean-rebuild WNG scenario set and
+    reconciled against the current WNGv1 architecture.
+
+    Wraith changes from archaeology:
+    - use the current WNG_WraithHunter caste PawnKind rather than the obsolete generic player kind;
+    - unlock WNG_BiologicalCultivation so the current host/corpse-grown Living Forge bootstrap is usable;
+    - do not restore the obsolete loose Living Forge seed item.
+
+    Human-form changes from archaeology:
+    - use the current player-specific WNG_PlayerHumanFormReplicator PawnKind;
+    - retain the accepted human-form Replicator xenotype and precursor starting equipment.
+  -->
+
+  <ScenarioDef ParentName="ScenarioBase">
+    <defName>WNG_WraithLandfall</defName>
+    <label>Wraith: Landfall</label>
+    <description>A small Wraith hunting cell has made landfall on a rimworld with living weapons and cultivated biomass, but no established Hive.</description>
+    <scenario>
+      <summary>Three player-aligned Wraith begin on the surface.</summary>
+      <playerFaction><factionDef>PlayerColony</factionDef></playerFaction>
+      <parts Inherit="False">
+        <li Class="ScenPart_ConfigPage_ConfigureStartingPawns_Xenotypes">
+          <def>ConfigurePawnsXenotypes</def>
+          <pawnChoiceCount>8</pawnChoiceCount>
+          <customSummary>Start with three player-aligned Wraith hunters.</customSummary>
+          <overrideKinds>
+            <li><xenotype>WNG_Wraith</xenotype><pawnKind>WNG_PlayerWraithHunter</pawnKind></li>
+          </overrideKinds>
+          <xenotypeCounts>
+            <li><xenotype>WNG_Wraith</xenotype><count>3</count><requiredAtStart>true</requiredAtStart><allowedDevelopmentalStages>Adult</allowedDevelopmentalStages></li>
+          </xenotypeCounts>
+        </li>
+        <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Standing</method></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_BiologicalCultivation</project></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithCarbine</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithStunner</thingDef></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_Biomass</thingDef><count>100</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>MedicineIndustrial</thingDef><count>12</count></li>
+        <li Class="ScenPart_GameStartDialog">
+          <def>GameStartDialog</def>
+          <text>Your hunting cell has landed far from an established Hive. Feed carefully, cultivate biomass, and grow your first Living Forge through a biological humanlike host or corpse. From there, grow the living infrastructure you need from local material.</text>
+          <closeSound>GameStartSting</closeSound>
+        </li>
+      </parts>
+    </scenario>
+  </ScenarioDef>
+
+  <ScenarioDef ParentName="ScenarioBase">
+    <defName>WNG_WraithOrbit</defName>
+    <label>Wraith: In Orbit</label>
+    <description>A Wraith cell begins in orbit aboard an Odyssey gravship platform with living material and Wraith bio-fluid for a native organic refit.</description>
+    <scenario>
+      <summary>Three player-aligned Wraith begin in orbit with a gravship.</summary>
+      <playerFaction><factionDef>PlayerColony</factionDef></playerFaction>
+      <parts Inherit="False">
+        <li Class="ScenPart_PlanetLayer">
+          <def>PlanetLayerFixed</def><tag>Orbit</tag><layer>Orbit</layer><settingsDef>Orbit</settingsDef><hide>true</hide>
+          <connections><Surface><zoomMode>ZoomIn</zoomMode></Surface></connections>
+        </li>
+        <li Class="ScenPart_ConfigPage_ConfigureStartingPawns_Xenotypes">
+          <def>ConfigurePawnsXenotypes</def>
+          <pawnChoiceCount>8</pawnChoiceCount>
+          <customSummary>Start with three player-aligned Wraith hunters in orbit.</customSummary>
+          <overrideKinds>
+            <li><xenotype>WNG_Wraith</xenotype><pawnKind>WNG_PlayerWraithHunter</pawnKind></li>
+          </overrideKinds>
+          <xenotypeCounts>
+            <li><xenotype>WNG_Wraith</xenotype><count>3</count><requiredAtStart>true</requiredAtStart><allowedDevelopmentalStages>Adult</allowedDevelopmentalStages></li>
+          </xenotypeCounts>
+        </li>
+        <li Class="ScenPart_ForcedMap"><def>ForcedMap</def><mapGenerator>OrbitalRelay</mapGenerator><layerDef>Orbit</layerDef></li>
+        <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Gravship</method></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_BiologicalCultivation</project></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithCarbine</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithStunner</thingDef></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_Biomass</thingDef><count>140</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithBiofluidFuel</thingDef><count>160</count></li>
+        <li Class="ScenPart_GameStartDialog">
+          <def>GameStartDialog</def>
+          <text>You begin above the rimworld with a functioning gravship. Refit it toward Wraith living gravtech, descend to feed and harvest, and cultivate a first Living Forge through a biological host or corpse when you establish a foothold.</text>
+          <closeSound>GameStartSting</closeSound>
+        </li>
+      </parts>
+    </scenario>
+  </ScenarioDef>
+
+  <ScenarioDef ParentName="ScenarioBase">
+    <defName>WNG_HumanFormReplicatorLandfall</defName>
+    <label>Human-form Replicators: Landfall</label>
+    <description>Three player-aligned human-form Replicators begin on the surface with precursor equipment and nanite reconstruction capability.</description>
+    <scenario>
+      <summary>Three player human-form Replicators begin on the surface.</summary>
+      <playerFaction><factionDef>PlayerColony</factionDef></playerFaction>
+      <parts Inherit="False">
+        <li Class="ScenPart_ConfigPage_ConfigureStartingPawns_Xenotypes">
+          <def>ConfigurePawnsXenotypes</def>
+          <pawnChoiceCount>8</pawnChoiceCount>
+          <customSummary>Start with three player human-form Replicators.</customSummary>
+          <overrideKinds>
+            <li><xenotype>WNG_HumanFormReplicator</xenotype><pawnKind>WNG_PlayerHumanFormReplicator</pawnKind></li>
+          </overrideKinds>
+          <xenotypeCounts>
+            <li><xenotype>WNG_HumanFormReplicator</xenotype><count>3</count><requiredAtStart>true</requiredAtStart><allowedDevelopmentalStages>Adult</allowedDevelopmentalStages></li>
+          </xenotypeCounts>
+        </li>
+        <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Standing</method></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_PrecursorPulseRifle</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_HumanFormCombatArmor</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>Plasteel</thingDef><count>180</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>ComponentSpacer</thingDef><count>6</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>ComponentIndustrial</thingDef><count>20</count></li>
+        <li Class="ScenPart_GameStartDialog">
+          <def>GameStartDialog</def>
+          <text>You have arrived intact but without an established city or Pattern Archive. Build deliberately, feed your Nanite Reserves, and decide how this world fits into your collective.</text>
+          <closeSound>GameStartSting</closeSound>
+        </li>
+      </parts>
+    </scenario>
+  </ScenarioDef>
+
+  <ScenarioDef ParentName="ScenarioBase">
+    <defName>WNG_HumanFormReplicatorOrbit</defName>
+    <label>Human-form Replicators: In Orbit</label>
+    <description>Three player-aligned human-form Replicators begin in orbit with an Odyssey gravship and precursor material for an Asuran-style refit.</description>
+    <scenario>
+      <summary>Three player human-form Replicators begin in orbit with a gravship.</summary>
+      <playerFaction><factionDef>PlayerColony</factionDef></playerFaction>
+      <parts Inherit="False">
+        <li Class="ScenPart_PlanetLayer">
+          <def>PlanetLayerFixed</def><tag>Orbit</tag><layer>Orbit</layer><settingsDef>Orbit</settingsDef><hide>true</hide>
+          <connections><Surface><zoomMode>ZoomIn</zoomMode></Surface></connections>
+        </li>
+        <li Class="ScenPart_ConfigPage_ConfigureStartingPawns_Xenotypes">
+          <def>ConfigurePawnsXenotypes</def>
+          <pawnChoiceCount>8</pawnChoiceCount>
+          <customSummary>Start with three player human-form Replicators in orbit.</customSummary>
+          <overrideKinds>
+            <li><xenotype>WNG_HumanFormReplicator</xenotype><pawnKind>WNG_PlayerHumanFormReplicator</pawnKind></li>
+          </overrideKinds>
+          <xenotypeCounts>
+            <li><xenotype>WNG_HumanFormReplicator</xenotype><count>3</count><requiredAtStart>true</requiredAtStart><allowedDevelopmentalStages>Adult</allowedDevelopmentalStages></li>
+          </xenotypeCounts>
+        </li>
+        <li Class="ScenPart_ForcedMap"><def>ForcedMap</def><mapGenerator>OrbitalRelay</mapGenerator><layerDef>Orbit</layerDef></li>
+        <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Gravship</method></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_PrecursorPulseRifle</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_HumanFormCombatArmor</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>Plasteel</thingDef><count>220</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>ComponentSpacer</thingDef><count>10</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_AsuranNaniteSlurry</thingDef><count>160</count></li>
+        <li Class="ScenPart_GameStartDialog">
+          <def>GameStartDialog</def>
+          <text>Your group begins in orbit with a functioning gravship and enough advanced material to refit it toward Asuran gravtech. Land when useful, remain above the world when safer, and expand deliberately.</text>
+          <closeSound>GameStartSting</closeSound>
+        </li>
+      </parts>
+    </scenario>
+  </ScenarioDef>
+</Defs>

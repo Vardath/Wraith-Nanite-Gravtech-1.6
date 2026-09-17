@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <XenotypeDef>
+    <defName>WNG_WhispersHybrid</defName>
+    <label>Whispers hybrid</label>
+    <description>An abandoned early-generation hybrid from Michael's experiments. Human captives were irreversibly altered with Iratus/Wraith and additional predatory traits. These creatures are blind, hunt by sound, and emit a predatory fog from neck gills.</description>
+    <descriptionShort>A blind, sound-hunting early Michael hybrid that cloaks its approach in fog.</descriptionShort>
+    <iconPath>UI/Icons/Xenotypes/Sanguophage</iconPath>
+    <genes>
+      <li>WNG_WhispersPredatorBiology</li>
+      <li>Skin_LightGray</li>
+      <li>Hair_BaldOnly</li>
+      <li>Beard_NoBeardOnly</li>
+    </genes>
+  </XenotypeDef>
+</Defs>

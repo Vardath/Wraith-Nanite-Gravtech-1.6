@@ -1,0 +1,717 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Verse;
+
+namespace WraithNaniteGravtech
+{
+    public enum WNGGravshipFamily
+    {
+        None,
+        Wraith,
+        Asuran,
+        Goauld
+    }
+
+    public enum WNGFamilyPowerRole
+    {
+        Conduit,
+        Coupler,
+        Generator,
+        Consumer
+    }
+
+    public enum WNGFuelEndpointRole
+    {
+        Conduit,
+        Tank,
+        Thruster
+    }
+
+    public sealed class CompProperties_WNGFamilyPowerNode : CompProperties
+    {
+        public WNGGravshipFamily family = WNGGravshipFamily.None;
+        public WNGFamilyPowerRole role = WNGFamilyPowerRole.Conduit;
+        public float capacityWatts;
+        public float demandWatts;
+
+        public CompProperties_WNGFamilyPowerNode()
+        {
+            compClass = typeof(CompWNGFamilyPowerNode);
+        }
+    }
+
+    public sealed class CompWNGFamilyPowerNode : ThingComp
+    {
+        public CompProperties_WNGFamilyPowerNode Props => (CompProperties_WNGFamilyPowerNode)props;
+
+        public bool Powered => WNGFamilyPowerUtility.IsPowered(parent, Props.family);
+
+        public override void CompTick()
+        {
+            base.CompTick();
+            if (parent == null || !parent.Spawned || !parent.IsHashIntervalTick(60))
+                return;
+
+            if (Props.role == WNGFamilyPowerRole.Coupler)
+            {
+                CompPowerTrader power = parent.TryGetComp<CompPowerTrader>();
+                if (power != null)
+                {
+                    float demand = WNGFamilyPowerUtility.NetworkDemand(parent, Props.family);
+                    float draw = Math.Min(Math.Max(0f, Props.capacityWatts), Math.Max(0f, demand));
+                    power.PowerOutput = -draw;
+                }
+            }
+            else if (Props.role == WNGFamilyPowerRole.Generator)
+            {
+                if (WNGFamilyPowerUtility.NetworkDemand(parent, Props.family) > 0.01f)
+                {
+                    CompRefuelable fuel = parent.TryGetComp<CompRefuelable>();
+                    if (fuel != null && fuel.HasFuel && fuel.Props.fuelConsumptionRate > 0f)
+                    {
+                        float amount = fuel.Props.fuelConsumptionRate * 60f / GenDate.TicksPerDay;
+                        fuel.ConsumeFuel(Math.Min(amount, fuel.Fuel));
+                    }
+                }
+            }
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            if (parent == null || !parent.Spawned || Props.family == WNGGravshipFamily.None)
+                return null;
+
+            List<CompWNGFamilyPowerNode> network = WNGFamilyPowerUtility.NetworkNodes(parent, Props.family);
+            float supply = WNGFamilyPowerUtility.NetworkSupply(network);
+            float demand = WNGFamilyPowerUtility.NetworkDemand(network);
+            string label = Props.family == WNGGravshipFamily.Wraith ? "Wraith neural grid"
+                : Props.family == WNGGravshipFamily.Asuran ? "Asuran power lattice"
+                : Props.family == WNGGravshipFamily.Goauld ? "Goa'uld ship power grid"
+                : "gravship power grid";
+            return label + ": " + supply.ToString("0") + " / " + demand.ToString("0") + " W"
+                + (WNGFamilyPowerUtility.NetworkPowered(network) ? "" : " (insufficient)");
+        }
+    }
+
+    internal static class WNGFamilyPowerUtility
+    {
+        internal static List<CompWNGFamilyPowerNode> NetworkNodes(Thing origin, WNGGravshipFamily family)
+        {
+            List<CompWNGFamilyPowerNode> result = new List<CompWNGFamilyPowerNode>();
+            if (origin == null || !origin.Spawned || origin.Map == null || family == WNGGravshipFamily.None)
+                return result;
+
+            Queue<Thing> open = new Queue<Thing>();
+            HashSet<Thing> visited = new HashSet<Thing>();
+            open.Enqueue(origin);
+            visited.Add(origin);
+
+            while (open.Count > 0)
+            {
+                Thing thing = open.Dequeue();
+                CompWNGFamilyPowerNode node = thing.TryGetComp<CompWNGFamilyPowerNode>();
+                if (node == null || node.Props.family != family)
+                    continue;
+
+                result.Add(node);
+                foreach (IntVec3 occupied in thing.OccupiedRect())
+                {
+                    foreach (IntVec3 cell in GenAdj.CardinalDirections.Select(d => occupied + d).Prepend(occupied))
+                    {
+                        if (!cell.InBounds(thing.Map))
+                            continue;
+                        foreach (Thing next in thing.Map.thingGrid.ThingsListAt(cell))
+                        {
+                            if (next == null || next.Destroyed || !visited.Add(next))
+                                continue;
+                            CompWNGFamilyPowerNode nextNode = next.TryGetComp<CompWNGFamilyPowerNode>();
+                            if (nextNode != null && nextNode.Props.family == family)
+                                open.Enqueue(next);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        internal static float NetworkDemand(Thing origin, WNGGravshipFamily family)
+        {
+            return NetworkDemand(NetworkNodes(origin, family));
+        }
+
+        internal static float NetworkDemand(IEnumerable<CompWNGFamilyPowerNode> network)
+        {
+            return network.Where(n => n?.Props.role == WNGFamilyPowerRole.Consumer)
+                .Sum(n => Math.Max(0f, n.Props.demandWatts));
+        }
+
+        internal static float NetworkSupply(IEnumerable<CompWNGFamilyPowerNode> network)
+        {
+            float supply = 0f;
+            foreach (CompWNGFamilyPowerNode node in network)
+            {
+                if (node == null || node.parent == null || !node.parent.Spawned)
+                    continue;
+
+                if (node.Props.role == WNGFamilyPowerRole.Generator)
+                {
+                    CompRefuelable fuel = node.parent.TryGetComp<CompRefuelable>();
+                    if ((fuel == null || fuel.HasFuel) && FlickUtility.WantsToBeOn(node.parent))
+                        supply += Math.Max(0f, node.Props.capacityWatts);
+                }
+                else if (node.Props.role == WNGFamilyPowerRole.Coupler)
+                {
+                    CompPowerTrader power = node.parent.TryGetComp<CompPowerTrader>();
+                    if (power != null && power.PowerOn && FlickUtility.WantsToBeOn(node.parent))
+                        supply += Math.Max(0f, node.Props.capacityWatts);
+                }
+            }
+            return supply;
+        }
+
+        internal static bool NetworkPowered(IEnumerable<CompWNGFamilyPowerNode> network)
+        {
+            List<CompWNGFamilyPowerNode> list = network?.ToList() ?? new List<CompWNGFamilyPowerNode>();
+            float demand = NetworkDemand(list);
+            return demand <= 0.01f || NetworkSupply(list) + 0.01f >= demand;
+        }
+
+        internal static bool IsPowered(Thing origin, WNGGravshipFamily family)
+        {
+            List<CompWNGFamilyPowerNode> network = NetworkNodes(origin, family);
+            return network.Count > 0 && NetworkPowered(network);
+        }
+
+        internal static bool ShouldPowerLinkTo(IntVec3 cell, Thing parent, WNGGravshipFamily family)
+        {
+            if (parent?.Map == null || !cell.InBounds(parent.Map))
+                return false;
+            foreach (Thing thing in parent.Map.thingGrid.ThingsListAt(cell))
+            {
+                CompWNGFamilyPowerNode node = thing?.TryGetComp<CompWNGFamilyPowerNode>();
+                if (node != null && node.Props.family == family)
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public abstract class Graphic_LinkedWNGFamilyPower : Graphic_Linked
+    {
+        protected abstract WNGGravshipFamily Family { get; }
+
+        public override bool ShouldLinkWith(IntVec3 c, Thing parent)
+        {
+            return WNGFamilyPowerUtility.ShouldPowerLinkTo(c, parent, Family);
+        }
+    }
+
+    public sealed class Graphic_LinkedWraithFamilyPower : Graphic_LinkedWNGFamilyPower
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Wraith;
+
+        public override Graphic GetColoredVersion(Shader newShader, UnityEngine.Color newColor, UnityEngine.Color newColorTwo)
+        {
+            return new Graphic_LinkedWraithFamilyPower
+            {
+                subGraphic = subGraphic.GetColoredVersion(newShader, newColor, newColorTwo),
+                data = data
+            };
+        }
+    }
+
+    public sealed class Graphic_LinkedAsuranFamilyPower : Graphic_LinkedWNGFamilyPower
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Asuran;
+
+        public override Graphic GetColoredVersion(Shader newShader, UnityEngine.Color newColor, UnityEngine.Color newColorTwo)
+        {
+            return new Graphic_LinkedAsuranFamilyPower
+            {
+                subGraphic = subGraphic.GetColoredVersion(newShader, newColor, newColorTwo),
+                data = data
+            };
+        }
+    }
+
+    public sealed class Graphic_LinkedGoauldFamilyPower : Graphic_LinkedWNGFamilyPower
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Goauld;
+
+        public override Graphic GetColoredVersion(Shader newShader, UnityEngine.Color newColor, UnityEngine.Color newColorTwo)
+        {
+            return new Graphic_LinkedGoauldFamilyPower
+            {
+                subGraphic = subGraphic.GetColoredVersion(newShader, newColor, newColorTwo),
+                data = data
+            };
+        }
+    }
+
+    public sealed class CompProperties_WNGFuelEndpoint : CompProperties
+    {
+        public WNGGravshipFamily family = WNGGravshipFamily.None;
+        public WNGFuelEndpointRole role = WNGFuelEndpointRole.Conduit;
+
+        public CompProperties_WNGFuelEndpoint()
+        {
+            compClass = typeof(CompWNGFuelEndpoint);
+        }
+    }
+
+    public sealed class CompWNGFuelEndpoint : ThingComp
+    {
+        public CompProperties_WNGFuelEndpoint Props => (CompProperties_WNGFuelEndpoint)props;
+    }
+
+    internal static class WNGFamilyFuelUtility
+    {
+        internal static List<CompWNGFuelEndpoint> NetworkNodes(Thing origin, WNGGravshipFamily family)
+        {
+            List<CompWNGFuelEndpoint> result = new List<CompWNGFuelEndpoint>();
+            if (origin == null || !origin.Spawned || origin.Map == null || family == WNGGravshipFamily.None)
+                return result;
+
+            Queue<Thing> open = new Queue<Thing>();
+            HashSet<Thing> visited = new HashSet<Thing>();
+            open.Enqueue(origin);
+            visited.Add(origin);
+
+            while (open.Count > 0)
+            {
+                Thing thing = open.Dequeue();
+                CompWNGFuelEndpoint node = thing.TryGetComp<CompWNGFuelEndpoint>();
+                if (node == null || node.Props.family != family)
+                    continue;
+
+                result.Add(node);
+                foreach (IntVec3 occupied in thing.OccupiedRect())
+                {
+                    foreach (IntVec3 cell in GenAdj.CardinalDirections.Select(d => occupied + d).Prepend(occupied))
+                    {
+                        if (!cell.InBounds(thing.Map))
+                            continue;
+                        foreach (Thing next in thing.Map.thingGrid.ThingsListAt(cell))
+                        {
+                            if (next == null || next.Destroyed || !visited.Add(next))
+                                continue;
+                            CompWNGFuelEndpoint nextNode = next.TryGetComp<CompWNGFuelEndpoint>();
+                            if (nextNode != null && nextNode.Props.family == family)
+                                open.Enqueue(next);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        internal static bool HasRoleConnection(Thing origin, WNGGravshipFamily family, WNGFuelEndpointRole role)
+        {
+            return NetworkNodes(origin, family).Any(n => n != null && n.parent != origin && n.Props.role == role);
+        }
+
+        internal static bool ShouldFuelLinkTo(IntVec3 cell, Thing parent, WNGGravshipFamily family)
+        {
+            if (parent?.Map == null || !cell.InBounds(parent.Map))
+                return false;
+            foreach (Thing thing in parent.Map.thingGrid.ThingsListAt(cell))
+            {
+                CompWNGFuelEndpoint node = thing?.TryGetComp<CompWNGFuelEndpoint>();
+                if (node != null && node.Props.family == family)
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public abstract class Graphic_LinkedWNGFuelConduit : Graphic_Linked
+    {
+        protected abstract WNGGravshipFamily Family { get; }
+
+        public override bool ShouldLinkWith(IntVec3 c, Thing parent)
+        {
+            return WNGFamilyFuelUtility.ShouldFuelLinkTo(c, parent, Family);
+        }
+    }
+
+    public sealed class Graphic_LinkedWraithFuelConduit : Graphic_LinkedWNGFuelConduit
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Wraith;
+
+        public override Graphic GetColoredVersion(Shader newShader, UnityEngine.Color newColor, UnityEngine.Color newColorTwo)
+        {
+            return new Graphic_LinkedWraithFuelConduit
+            {
+                subGraphic = subGraphic.GetColoredVersion(newShader, newColor, newColorTwo),
+                data = data
+            };
+        }
+    }
+
+    public sealed class Graphic_LinkedAsuranFuelConduit : Graphic_LinkedWNGFuelConduit
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Asuran;
+
+        public override Graphic GetColoredVersion(Shader newShader, UnityEngine.Color newColor, UnityEngine.Color newColorTwo)
+        {
+            return new Graphic_LinkedAsuranFuelConduit
+            {
+                subGraphic = subGraphic.GetColoredVersion(newShader, newColor, newColorTwo),
+                data = data
+            };
+        }
+    }
+
+    public sealed class Graphic_LinkedGoauldFuelConduit : Graphic_LinkedWNGFuelConduit
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Goauld;
+
+        public override Graphic GetColoredVersion(Shader newShader, UnityEngine.Color newColor, UnityEngine.Color newColorTwo)
+        {
+            return new Graphic_LinkedGoauldFuelConduit
+            {
+                subGraphic = subGraphic.GetColoredVersion(newShader, newColor, newColorTwo),
+                data = data
+            };
+        }
+    }
+
+    internal static class WNGGravshipFamilyUtility
+    {
+        internal static string EngineDefName(WNGGravshipFamily family)
+        {
+            if (family == WNGGravshipFamily.Wraith) return "WNG_WraithGravEngine";
+            if (family == WNGGravshipFamily.Asuran) return "WNG_AsuranGravEngine";
+            if (family == WNGGravshipFamily.Goauld) return "WNG_GoauldGravEngine";
+            return null;
+        }
+
+        internal static bool ExactEngineLinkIsValid(CompGravshipFacility facility, WNGGravshipFamily family, bool requiresPower)
+        {
+            if (!ModsConfig.OdysseyActive || facility?.parent?.Spawned != true || facility.parent.Map == null)
+                return false;
+
+            Building_GravEngine engine = facility.engine;
+            string exactName = EngineDefName(family);
+            if (engine == null || engine.Destroyed || !engine.Spawned || engine.Map != facility.parent.Map ||
+                engine.def?.defName != exactName || !facility.LinkedBuildings.Contains(engine))
+                return false;
+
+            if (facility.parent.Faction != null && engine.Faction != null && facility.parent.Faction != engine.Faction)
+                return false;
+
+            bool linked = facility.Props.onlyRequiresLooseConnection
+                ? engine.LooselyConnectedToGravEngine(facility.parent)
+                : engine.OnValidSubstructure(facility.parent);
+            if (!linked)
+                return false;
+
+            if (requiresPower)
+            {
+                CompWNGFamilyPowerNode power = facility.parent.TryGetComp<CompWNGFamilyPowerNode>();
+                if (power != null && !power.Powered)
+                    return false;
+            }
+
+            return true;
+        }
+
+        internal static AcceptanceReport RequireFamilySubstructure(
+            IntVec3 loc, Rot4 rot, BuildableDef checkingDef, Map map,
+            WNGGravshipFamily family, Thing thingToIgnore = null)
+        {
+            foreach (IntVec3 cell in GenAdj.OccupiedRect(loc, rot, checkingDef.Size))
+            {
+                TerrainDef foundation = map.terrainGrid.FoundationAt(cell);
+                string required = family == WNGGravshipFamily.Wraith
+                    ? "WNG_WraithGravshipSubstructure"
+                    : family == WNGGravshipFamily.Asuran
+                        ? "WNG_AsuranGravshipSubstructure"
+                        : "WNG_GoauldGravshipSubstructure";
+                string familyLabel = family == WNGGravshipFamily.Wraith ? "Wraith"
+                    : family == WNGGravshipFamily.Asuran ? "Asuran"
+                    : "Goa'uld";
+                if (foundation?.defName != required)
+                    return familyLabel + " gravship systems require same-family gravship substructure.";
+            }
+            return AcceptanceReport.WasAccepted;
+        }
+    }
+
+    public sealed class CompProperties_WNGPilotConsole : CompProperties_GravshipFacility
+    {
+        public WNGGravshipFamily family = WNGGravshipFamily.None;
+        public bool requiresFamilyPower = true;
+
+        public CompProperties_WNGPilotConsole()
+        {
+            compClass = typeof(CompPilotConsole_WNGFamily);
+        }
+    }
+
+    public sealed class CompPilotConsole_WNGFamily : CompPilotConsole
+    {
+        private CompProperties_WNGPilotConsole WNGProps => (CompProperties_WNGPilotConsole)props;
+
+        public override bool CanBeActive =>
+            WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower);
+    }
+
+    public sealed class CompProperties_WNGGravshipFacility : CompProperties_GravshipFacility
+    {
+        public WNGGravshipFamily family = WNGGravshipFamily.None;
+        public bool requiresFamilyPower;
+
+        public CompProperties_WNGGravshipFacility()
+        {
+            compClass = typeof(CompGravshipFacility_WNGFamily);
+        }
+    }
+
+    public class CompGravshipFacility_WNGFamily : CompGravshipFacility
+    {
+        protected CompProperties_WNGGravshipFacility WNGProps => (CompProperties_WNGGravshipFacility)props;
+
+        public override bool CanBeActive =>
+            WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower);
+    }
+
+    public sealed class CompProperties_WNGFuelTankFacility : CompProperties_GravshipFacility
+    {
+        public WNGGravshipFamily family = WNGGravshipFamily.None;
+        public bool requiresFamilyPower;
+
+        public CompProperties_WNGFuelTankFacility()
+        {
+            compClass = typeof(CompGravshipFuelTank_WNGFamily);
+        }
+    }
+
+    public sealed class CompGravshipFuelTank_WNGFamily : CompGravshipFacility
+    {
+        private CompProperties_WNGFuelTankFacility WNGProps => (CompProperties_WNGFuelTankFacility)props;
+
+        public override bool CanBeActive =>
+            WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower) &&
+            WNGFamilyFuelUtility.HasRoleConnection(parent, WNGProps.family, WNGFuelEndpointRole.Thruster);
+
+        public override string CompInspectStringExtra()
+        {
+            string native = base.CompInspectStringExtra();
+            if (parent.Spawned && !WNGFamilyFuelUtility.HasRoleConnection(parent, WNGProps.family, WNGFuelEndpointRole.Thruster))
+                return native.NullOrEmpty() ? "Same-family drive feed disconnected." : native + "\nSame-family drive feed disconnected.";
+            return native;
+        }
+    }
+
+    public sealed class CompProperties_WNGThruster : CompProperties_GravshipThruster
+    {
+        public WNGGravshipFamily family = WNGGravshipFamily.None;
+        public bool requiresFamilyPower = true;
+
+        public CompProperties_WNGThruster()
+        {
+            compClass = typeof(CompGravshipThruster_WNGFamily);
+        }
+    }
+
+    public sealed class CompGravshipThruster_WNGFamily : CompGravshipThruster
+    {
+        private CompProperties_WNGThruster WNGProps => (CompProperties_WNGThruster)props;
+
+        public override bool CanBeActive
+        {
+            get
+            {
+                if (!CanLink() || Breakdownable.BrokenDown || Blocked || LinkedBuildings.NullOrEmpty())
+                    return false;
+                if (!WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower))
+                    return false;
+                return WNGFamilyFuelUtility.HasRoleConnection(parent, WNGProps.family, WNGFuelEndpointRole.Tank);
+            }
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            string native = base.CompInspectStringExtra();
+            if (parent.Spawned && !WNGFamilyFuelUtility.HasRoleConnection(parent, WNGProps.family, WNGFuelEndpointRole.Tank))
+                return native.NullOrEmpty() ? "Same-family fuel feed disconnected." : native + "\nSame-family fuel feed disconnected.";
+            return native;
+        }
+    }
+
+    public sealed class PlaceWorker_RequireWraithGravshipSubstructure : PlaceWorker
+    {
+        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore = null, Thing thing = null)
+        {
+            return WNGGravshipFamilyUtility.RequireFamilySubstructure(loc, rot, checkingDef, map, WNGGravshipFamily.Wraith, thingToIgnore);
+        }
+    }
+
+    public sealed class PlaceWorker_RequireAsuranGravshipSubstructure : PlaceWorker
+    {
+        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore = null, Thing thing = null)
+        {
+            return WNGGravshipFamilyUtility.RequireFamilySubstructure(loc, rot, checkingDef, map, WNGGravshipFamily.Asuran, thingToIgnore);
+        }
+    }
+
+    public sealed class PlaceWorker_RequireGoauldGravshipSubstructure : PlaceWorker
+    {
+        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore = null, Thing thing = null)
+        {
+            return WNGGravshipFamilyUtility.RequireFamilySubstructure(loc, rot, checkingDef, map, WNGGravshipFamily.Goauld, thingToIgnore);
+        }
+    }
+
+    public abstract class PlaceWorker_InRangeOfFamilyGravEngine : PlaceWorker
+    {
+        protected abstract WNGGravshipFamily Family { get; }
+
+        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore = null, Thing thing = null)
+        {
+            string defName = WNGGravshipFamilyUtility.EngineDefName(Family);
+            ThingDef engineDef = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+            if (engineDef == null)
+                return "Missing family grav engine definition.";
+            foreach (Thing engine in map.listerThings.ThingsOfDef(engineDef))
+            {
+                if (engine != null && engine.Spawned && engine.Position.InHorDistOf(loc, 18.9f))
+                    return AcceptanceReport.WasAccepted;
+            }
+            return "Must be placed within the field of the matching grav engine.";
+        }
+    }
+
+    public sealed class PlaceWorker_InRangeOfWraithGravEngine : PlaceWorker_InRangeOfFamilyGravEngine
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Wraith;
+    }
+
+    public sealed class PlaceWorker_InRangeOfAsuranGravEngine : PlaceWorker_InRangeOfFamilyGravEngine
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Asuran;
+    }
+
+    public sealed class PlaceWorker_InRangeOfGoauldGravEngine : PlaceWorker_InRangeOfFamilyGravEngine
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Goauld;
+    }
+
+
+
+    public sealed class CompProperties_WraithGravshipMetabolicRepair : CompProperties
+    {
+        public int pulseIntervalTicks = 480;
+        public float radius = 30f;
+        public int maxTargetsPerPulse = 5;
+        public int healPerTarget = 8;
+        public float biomassPerPulse = 1f;
+
+        public CompProperties_WraithGravshipMetabolicRepair()
+        {
+            compClass = typeof(CompWraithGravshipMetabolicRepair);
+        }
+    }
+
+    public sealed class CompWraithGravshipMetabolicRepair : ThingComp
+    {
+        private CompProperties_WraithGravshipMetabolicRepair Props => (CompProperties_WraithGravshipMetabolicRepair)props;
+
+        public override void CompTick()
+        {
+            base.CompTick();
+            if (parent == null || !parent.Spawned || parent.Map == null ||
+                !parent.IsHashIntervalTick(Math.Max(60, Props.pulseIntervalTicks)))
+                return;
+
+            CompRefuelable fuel = parent.TryGetComp<CompRefuelable>();
+            if (fuel == null || fuel.Fuel + 0.0001f < Math.Max(0f, Props.biomassPerPulse))
+                return;
+
+            List<Thing> damaged = GenRadial.RadialDistinctThingsAround(parent.Position, parent.Map, Props.radius, true)
+                .Where(t => t != null && t.Spawned && t != parent && t.Faction == parent.Faction &&
+                            t.def != null && (t.def.defName.StartsWith("WNG_Wraith", StringComparison.Ordinal) ||
+                                              t.def.defName.StartsWith("WNG_Organic", StringComparison.Ordinal)) &&
+                            t.HitPoints > 0 && t.HitPoints < t.MaxHitPoints)
+                .OrderBy(t => (float)t.HitPoints / Math.Max(1, t.MaxHitPoints))
+                .Take(Math.Max(1, Props.maxTargetsPerPulse))
+                .ToList();
+
+            if (damaged.Count == 0)
+                return;
+
+            fuel.ConsumeFuel(Math.Min(fuel.Fuel, Math.Max(0f, Props.biomassPerPulse)));
+            foreach (Thing target in damaged)
+                target.HitPoints = Math.Min(target.MaxHitPoints, target.HitPoints + Math.Max(1, Props.healPerTarget));
+        }
+    }
+
+    public abstract class PlaceWorker_WNGFamilySubstructure : PlaceWorker
+    {
+        protected abstract WNGGravshipFamily Family { get; }
+        protected abstract string ExtenderDefName { get; }
+
+        public override AcceptanceReport AllowsPlacing(BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore = null, Thing thing = null)
+        {
+            string engineName = WNGGravshipFamilyUtility.EngineDefName(Family);
+            ThingDef engineDef = DefDatabase<ThingDef>.GetNamedSilentFail(engineName);
+            if (engineDef != null)
+            {
+                foreach (Thing engine in map.listerThings.ThingsOfDef(engineDef))
+                    if (engine != null && engine.Spawned && engine.Position.InHorDistOf(loc, 18.9f))
+                        return AcceptanceReport.WasAccepted;
+            }
+
+            ThingDef extenderDef = DefDatabase<ThingDef>.GetNamedSilentFail(ExtenderDefName);
+            if (extenderDef != null)
+            {
+                foreach (Thing extender in map.listerThings.ThingsOfDef(extenderDef))
+                    if (extender != null && extender.Spawned && extender.Position.InHorDistOf(loc, 16.9f))
+                        return AcceptanceReport.WasAccepted;
+            }
+
+            return "This deck must remain inside the matching grav engine or field-extender footprint.";
+        }
+    }
+
+    public sealed class PlaceWorker_WraithGravshipSubstructure : PlaceWorker_WNGFamilySubstructure
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Wraith;
+        protected override string ExtenderDefName => "WNG_WraithGravFieldExtender";
+    }
+
+    public sealed class PlaceWorker_AsuranGravshipSubstructure : PlaceWorker_WNGFamilySubstructure
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Asuran;
+        protected override string ExtenderDefName => "WNG_AsuranGravFieldExtender";
+    }
+
+    public sealed class PlaceWorker_GoauldGravshipSubstructure : PlaceWorker_WNGFamilySubstructure
+    {
+        protected override WNGGravshipFamily Family => WNGGravshipFamily.Goauld;
+        protected override string ExtenderDefName => "WNG_GoauldGravFieldProjector";
+    }
+
+    public sealed class MinifiedAsuranGravEngine : MinifiedThing
+    {
+        public override void PostMake()
+        {
+            base.PostMake();
+            if (InnerThing != null)
+                return;
+            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail("WNG_AsuranGravEngine");
+            if (def == null)
+            {
+                Log.ErrorOnce("[WNG] Asuran grav engine Def is missing; minified engine could not initialize.", 205901337);
+                return;
+            }
+            InnerThing = ThingMaker.MakeThing(def);
+        }
+    }
+
+}

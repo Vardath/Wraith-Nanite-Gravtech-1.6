@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!--
+    Universal-crafting escape-hatch recipes are intentionally separate from the normal
+    acquisition recipes. The global option is OFF by default; the worker is the sole
+    availability authority for these fallback bills, so normal research/faction/worker
+    restrictions remain untouched when the override is disabled.
+  -->
+  <RecipeDef>
+    <defName>WNG_UniversalMake_AsuranSleeperStatue</defName>
+    <label>make Asuran lattice sculpture (universal fallback)</label>
+    <description>Universal-crafting fallback for the Asuran lattice sculpture. It uses the same physical materials, Artistic skill and work as the normal Asuran-only fabrication route, but is available to ordinary sculptors only while Enable universal WNG crafting is turned on.</description>
+    <jobString>Making Asuran lattice sculpture.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>32000</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Artistic</workSkill>
+    <skillRequirements><Artistic>6</Artistic></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>35</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>1</count></li>
+      <li><filter><thingDefs><li>WNG_AsuranNaniteSlurry</li></thingDefs></filter><count>30</count></li>
+      <li><filter><thingDefs><li>Silver</li></thingDefs></filter><count>100</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_AsuranNaniteSlurry</li><li>Silver</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AsuranSleeperStatue>1</WNG_AsuranSleeperStatue></products>
+    <recipeUsers><li>TableSculpting</li></recipeUsers>
+    <effectWorking>Sculpt</effectWorking>
+    <soundWorking>Recipe_Sculpt</soundWorking>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_UniversalMake_AsuranFeederStatue</defName>
+    <label>make Asuran shadow sculpture (universal fallback)</label>
+    <description>Universal-crafting fallback for the Asuran shadow sculpture. It preserves the normal material, Artistic-skill and work costs while bypassing the Asuran-worker restriction only when Enable universal WNG crafting is turned on.</description>
+    <jobString>Making Asuran shadow sculpture.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>36000</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Artistic</workSkill>
+    <skillRequirements><Artistic>6</Artistic></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>2</count></li>
+      <li><filter><thingDefs><li>WNG_AsuranNaniteSlurry</li></thingDefs></filter><count>50</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_AsuranNaniteSlurry</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AsuranFeederStatue>1</WNG_AsuranFeederStatue></products>
+    <recipeUsers><li>TableSculpting</li></recipeUsers>
+    <effectWorking>Sculpt</effectWorking>
+    <soundWorking>Recipe_Sculpt</soundWorking>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_UniversalMake_AsuranReplicatorReliquary</defName>
+    <label>make Asuran reliquary sculpture (universal fallback)</label>
+    <description>Universal-crafting fallback for the Asuran Replicator reliquary. It preserves the normal material, Artistic-skill and work costs while bypassing the Asuran-worker restriction only when Enable universal WNG crafting is turned on.</description>
+    <jobString>Making Asuran reliquary sculpture.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>42000</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Artistic</workSkill>
+    <skillRequirements><Artistic>6</Artistic></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>50</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>3</count></li>
+      <li><filter><thingDefs><li>WNG_AsuranNaniteSlurry</li></thingDefs></filter><count>70</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_AsuranNaniteSlurry</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AsuranReplicatorReliquary>1</WNG_AsuranReplicatorReliquary></products>
+    <recipeUsers><li>TableSculpting</li></recipeUsers>
+    <effectWorking>Sculpt</effectWorking>
+    <soundWorking>Recipe_Sculpt</soundWorking>
+  </RecipeDef>
+
+
+  <!--
+    Precursor/Ancient universal fallbacks use the vanilla fabrication bench because the
+    normal recipes are physically manufactured technology whose only special station is
+    WNG_PrecursorFabricator. Inputs, output counts, work and skill requirements mirror
+    the current clean normal recipes; only the research/station gate is bypassed while
+    the global universal-crafting option is enabled.
+  -->
+  <RecipeDef>
+    <defName>WNG_Universal_ReconstructAncientDrone</defName>
+    <label>reconstruct Ancient drone (universal fallback)</label>
+    <description>Universal-crafting fallback for one stable Ancient drone weapon. Uses the same physical inputs and work as the normal Asuran-fabricator route.</description>
+    <jobString>Reconstructing Ancient drone.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>5500</workAmount>
+    <workSkill>Crafting</workSkill>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>20</count></li>
+      <li><filter><thingDefs><li>Uranium</li></thingDefs></filter><count>5</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>1</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AncientDrone>1</WNG_AncientDrone></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_Universal_ReconstructVacuumEnergyModule</defName>
+    <label>reconstruct vacuum-energy module (universal fallback)</label>
+    <description>Universal-crafting fallback for one finite Ancient vacuum-energy module. Uses the same physical inputs and work as the normal Asuran-fabricator route.</description>
+    <jobString>Reconstructing vacuum-energy module.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>18000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>120</count></li>
+      <li><filter><thingDefs><li>Uranium</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>6</count></li>
+      <li><filter><thingDefs><li>Gold</li></thingDefs></filter><count>30</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li><li>Gold</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_VacuumEnergyModule>1</WNG_VacuumEnergyModule></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_Universal_FabricateAncientNeuralInterface</defName>
+    <label>fabricate Ancient control interface (universal fallback)</label>
+    <description>Universal-crafting fallback for an Ancient control interface. Uses the same physical inputs and work as the normal Asuran-fabricator route.</description>
+    <jobString>Building an Ancient control interface.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>6500</workAmount>
+    <workSkill>Crafting</workSkill>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>Uranium</li></thingDefs></filter><count>10</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>3</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AncientNeuralInterface>1</WNG_AncientNeuralInterface></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_Universal_StabilizeAsuranNaniteSlurry</defName>
+    <label>stabilize Asuran nanite slurry (universal fallback)</label>
+    <description>Universal-crafting fallback for controlled Asuran nanite slurry. Converts the same physical Replicator Blocks at the same work and skill as the normal Asuran-fabricator route.</description>
+    <jobString>Stabilizing Asuran nanite slurry.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>1800</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>8</Crafting></skillRequirements>
+    <ingredients><li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>10</count></li></ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_AsuranNaniteSlurry>20</WNG_AsuranNaniteSlurry></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_Universal_SynthesizeAsuranGravEngine</defName>
+    <label>synthesize Asuran grav engine (universal fallback)</label>
+    <description>Universal-crafting fallback for a complete minified Asuran grav engine. Uses the same finite Replicator material, Plasteel, advanced components, work and skill as the normal Asuran-fabricator route.</description>
+    <jobString>Synthesizing an Asuran grav engine.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>32000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>10</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>60</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>140</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>6</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_MinifiedAsuranGravEngine>1</WNG_MinifiedAsuranGravEngine></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_Universal_FabricateSovereignNeuralLattice</defName>
+    <label>fabricate sovereign neural lattice (universal fallback)</label>
+    <description>Universal-crafting fallback for a physical Sovereign Neural Lattice. Uses the same mechlink, Replicator material, core fragment, work and skill as the normal Asuran-fabricator route.</description>
+    <jobString>Fabricating sovereign neural lattice.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>26000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>10</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Mechlink</li></thingDefs></filter><count>1</count></li>
+      <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>20</count></li>
+      <li><filter><thingDefs><li>WNG_ReplicatorCoreFragment</li></thingDefs></filter><count>1</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Mechlink</li><li>WNG_ReplicatorMatter</li><li>WNG_ReplicatorCoreFragment</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_SovereignNeuralLattice>1</WNG_SovereignNeuralLattice></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_UniversalMake_PrecursorPulseRifle</defName>
+    <label>make precursor pulse rifle (universal fallback)</label>
+    <description>Universal-crafting fallback for the precursor pulse rifle. Uses the same Plasteel, advanced-component, work and Crafting requirements as the normal Asuran-fabricator route.</description>
+    <jobString>Making precursor pulse rifle.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>42000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>8</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>45</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>2</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_PrecursorPulseRifle>1</WNG_PrecursorPulseRifle></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_UniversalMake_HumanFormCombatArmor</defName>
+    <label>make human-form replicator combat armor (universal fallback)</label>
+    <description>Universal-crafting fallback for human-form Replicator combat armor. Uses the same Plasteel, advanced-component, work and Crafting requirements as the normal Asuran-fabricator route.</description>
+    <jobString>Making human-form Replicator combat armor.</jobString>
+    <workerClass>WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly</workerClass>
+    <workAmount>52000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <skillRequirements><Crafting>8</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>80</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>3</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_HumanFormCombatArmor>1</WNG_HumanFormCombatArmor></products>
+    <recipeUsers><li>FabricationBench</li></recipeUsers>
+  </RecipeDef>
+
+</Defs>

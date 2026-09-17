@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Accepted human-form combat shell recovered for the player human-form starts. -->
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_HumanFormCombatArmor</defName>
+    <label>human-form replicator combat armor</label>
+    <description>A close-fitted combat shell of plasteel, field mesh and self-repairing precursor composites.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <statBases>
+      <MaxHitPoints>340</MaxHitPoints><WorkToMake>52000</WorkToMake><Mass>7.5</Mass><EquipDelay>3</EquipDelay>
+      <ArmorRating_Sharp>1.58</ArmorRating_Sharp><ArmorRating_Blunt>0.68</ArmorRating_Blunt><ArmorRating_Heat>0.9</ArmorRating_Heat>
+    </statBases>
+    <costList><Plasteel>80</Plasteel><ComponentSpacer>3</ComponentSpacer></costList>
+    <apparel>
+      <bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
+      <layers><li>Shell</li></layers>
+      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</wornGraphicPath>
+      <tags><li>WNG_HumanFormArmor</li><li>WNG_PrecursorArmor</li></tags>
+      <defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
+    </apparel>
+    <recipeMaker>
+      <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
+      <workSkill>Crafting</workSkill><skillRequirements><Crafting>8</Crafting></skillRequirements>
+      <recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers>
+    </recipeMaker>
+  </ThingDef>
+</Defs>

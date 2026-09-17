@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Defs>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_LifeDrain</defName>
+    <label>feed deeply</label>
+    <description>Make full feeding contact with a living biological target. The victim loses about fifty biological years of vitality and receives the life-drained state; the Wraith restores its Life Force and becomes about five biological years younger, never below age eighteen. A second full feeding on a target that has not recovered is lethal.</description>
+    <iconPath>UI/Icons/Genes/Gene_Bloodfeeder</iconPath>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>2500~2500</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <range>-1</range>
+      <warmupTime>2</warmupTime>
+      <drawAimPie>false</drawAimPie>
+      <stunTargetOnCastStart>true</stunTargetOnCastStart>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+      <soundCast>WNG_WraithLifeDrain</soundCast>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityLifeDrain">
+        <lifeForceGain>1</lifeForceGain>
+        <victimAgeYears>50</victimAgeYears>
+        <casterRejuvenationYears>5</casterRejuvenationYears>
+        <minimumCasterAgeYears>18</minimumCasterAgeYears>
+        <killIfAlreadyDrained>true</killIfAlreadyDrained>
+        <addLifeDrainedHediff>true</addLifeDrainedHediff>
+        <addFedRecentlyHediff>true</addFedRecentlyHediff>
+      </li>
+    </comps>
+  </AbilityDef>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_PartialFeed</defName>
+    <label>take a partial feeding</label>
+    <description>Take a limited portion of a biological target's vitality instead of a full feeding. The victim ages about ten biological years and is temporarily weakened, while the Wraith restores roughly one third of its Life Force and becomes about one year younger, with the same age-eighteen floor.</description>
+    <iconPath>UI/Icons/Genes/Gene_Bloodfeeder</iconPath>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>1500~1500</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <range>-1</range>
+      <warmupTime>1.25</warmupTime>
+      <drawAimPie>false</drawAimPie>
+      <stunTargetOnCastStart>true</stunTargetOnCastStart>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+      <soundCast>WNG_WraithPartialFeed</soundCast>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityLifeDrain">
+        <lifeForceGain>0.34</lifeForceGain>
+        <victimAgeYears>10</victimAgeYears>
+        <casterRejuvenationYears>1</casterRejuvenationYears>
+        <minimumCasterAgeYears>18</minimumCasterAgeYears>
+        <killIfAlreadyDrained>false</killIfAlreadyDrained>
+        <addLifeDrainedHediff>true</addLifeDrainedHediff>
+        <addFedRecentlyHediff>true</addFedRecentlyHediff>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_NeuralInterface</defName>
+    <label>neural interface</label>
+    <description>Establish a touch-range nanite interface with another living biological humanlike mind. Player operators can rewrite allegiance, impose a valid captive state, copy learned skills and passions, or reconstruct a fresh human-form copy. Copy fabrication spends its Nanite Reserve only after a usable body has been placed.</description>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>5000~5000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <drawAimPie>false</drawAimPie>
+      <range>-1</range>
+      <warmupTime>2</warmupTime>
+      <targetParams>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityNaniteInterface">
+        <copyReserveCost>0.60</copyReserveCost>
+        <fallbackCopyPawnKind>WNG_HumanFormCopy</fallbackCopyPawnKind>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>

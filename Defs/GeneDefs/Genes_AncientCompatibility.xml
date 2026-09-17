@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <GeneDef>
+    <defName>WNG_AncientAffinity</defName>
+    <label>Ancient neural affinity</label>
+    <description>This nervous system naturally presents the rare signal geometry accepted by reconstructed Ancient controls. It supplies only the compatibility handshake required by those devices; it does not confer nanite biology, collective access, sovereign authority, free research, ammunition, or power.</description>
+    <displayCategory>Ability</displayCategory>
+    <iconPath>UI/WNG/AncientAffinity</iconPath>
+    <biostatMet>0</biostatMet>
+    <biostatCpx>1</biostatCpx>
+  </GeneDef>
+</Defs>
