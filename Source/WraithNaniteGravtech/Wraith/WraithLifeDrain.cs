@@ -30,6 +30,8 @@ namespace WraithNaniteGravtech
         private const long TicksPerYear = 3600000L;
         private const string LifeDrainedDefName = "WNG_LifeDrained";
         private const string FedRecentlyDefName = "WNG_FedRecently";
+        private const string VitalFeedbackDefName = "WNG_VitalFeedbackOrgan";
+        private const int VitalFeedbackStunTicks = 240;
 
         public new CompProperties_AbilityLifeDrain Props => (CompProperties_AbilityLifeDrain)props;
 
@@ -45,6 +47,16 @@ namespace WraithNaniteGravtech
             Gene_Resource_LifeForce resource = caster.genes?.GetFirstGeneOfType<Gene_Resource_LifeForce>();
             if (resource == null || !resource.Active)
                 return;
+
+            // Vital Feedback intercepts the exact feeding transaction before any victim aging,
+            // feeder rejuvenation, Life Force gain, marker Hediffs or Ideology event can commit.
+            // The same victim Pawn remains untouched while a bounded native stun represents the
+            // bioelectric backlash into the attacking Wraith.
+            if (HasHediff(victim, VitalFeedbackDefName))
+            {
+                ApplyVitalFeedbackBacklash(caster, victim);
+                return;
+            }
 
             // Hoffan protection intercepts before any feeding-side transaction commits: no victim
             // aging, no Life Force gain, no Wraith rejuvenation, no Fed Recently marker and no
@@ -127,6 +139,25 @@ namespace WraithNaniteGravtech
                    victim.RaceProps != null &&
                    victim.RaceProps.IsFlesh &&
                    !victim.RaceProps.IsMechanoid;
+        }
+
+        private static bool HasHediff(Pawn pawn, string defName)
+        {
+            if (pawn?.health?.hediffSet == null)
+                return false;
+            HediffDef def = DefDatabase<HediffDef>.GetNamedSilentFail(defName);
+            return def != null && pawn.health.hediffSet.GetFirstHediffOfDef(def) != null;
+        }
+
+        private static void ApplyVitalFeedbackBacklash(Pawn caster, Pawn victim)
+        {
+            if (caster?.stances?.stunner == null)
+                return;
+            caster.stances.stunner.StunFor(
+                VitalFeedbackStunTicks,
+                victim,
+                addBattleLog: false,
+                showMote: true);
         }
 
         private static void AddOrRefreshHediff(Pawn pawn, string defName)
