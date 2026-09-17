@@ -11,7 +11,7 @@
     <defName>WNG_CE_Ammo_PrecursorPulseCell</defName>
     <label>precursor pulse cell</label>
     <description>A compact high-density field cell used by precursor pulse weapons when Combat Extended is active.</description>
-    <graphicData><texPath>Things/Item/Ammo/Replicator/WNG_ReplicatorChargeCell</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
+    <graphicData><texPath>Things/Item/Resource/Precursor/WNG_VacuumEnergyModule</texPath><graphicClass>Graphic_StackCount</graphicClass></graphicData>
     <statBases><Mass>0.022</Mass><Bulk>0.016</Bulk></statBases>
     <ammoClass>Charged</ammoClass>
     <cookOffProjectile>WNG_CE_Projectile_PrecursorPulse</cookOffProjectile>
