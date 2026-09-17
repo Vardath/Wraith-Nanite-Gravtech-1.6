@@ -1,0 +1,56 @@
+name: Import D107 WIP
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'WNGv1-WIP-20260917-D107-EMERGENCY-HANDOFF.zip'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out staging repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Expand D107 archive into repository root
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP='WNGv1-WIP-20260917-D107-EMERGENCY-HANDOFF.zip'
+          TMP="$(mktemp -d)"
+          unzip -q "$ZIP" -d "$TMP"
+
+          ROOT="$TMP"
+          if [ -d "$TMP/Wraith-Nanite-Gravtech" ]; then
+            ROOT="$TMP/Wraith-Nanite-Gravtech"
+          else
+            mapfile -t TOP_DIRS < <(find "$TMP" -mindepth 1 -maxdepth 1 -type d -print)
+            mapfile -t TOP_FILES < <(find "$TMP" -mindepth 1 -maxdepth 1 -type f -print)
+            if [ "${#TOP_DIRS[@]}" -eq 1 ] && [ "${#TOP_FILES[@]}" -eq 0 ]; then
+              ROOT="${TOP_DIRS[0]}"
+            fi
+          fi
+
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name "$ZIP" \
+            -exec rm -rf {} +
+
+          cp -a "$ROOT"/. .
+          rm -rf "$TMP" "$ZIP"
+
+      - name: Commit imported D107 tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'import: D107 emergency WIP source tree'
+          git push
