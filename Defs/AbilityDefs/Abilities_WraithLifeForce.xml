@@ -72,4 +72,29 @@
       </li>
     </comps>
   </AbilityDef>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_Enthrall</defName>
+    <label>enthrall</label>
+    <description>Overwhelm the will of a downed humanlike pawn or any prisoner and bind that exact pawn into slavery under the Wraith's faction.</description>
+    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <hostile>true</hostile>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>5000~5000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <range>-1</range>
+      <warmupTime>1.5</warmupTime>
+      <drawAimPie>false</drawAimPie>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityEnthrall" />
+    </comps>
+  </AbilityDef>
 </Defs>

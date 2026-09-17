@@ -183,4 +183,67 @@ namespace WraithNaniteGravtech
             pawn.ageTracker.AgeBiologicalTicks = next;
         }
     }
+
+    public sealed class CompProperties_AbilityEnthrall : CompProperties_AbilityEffect
+    {
+        public CompProperties_AbilityEnthrall()
+        {
+            compClass = typeof(CompAbilityEffect_Enthrall);
+        }
+    }
+
+    /// <summary>
+    /// Restored Wraith Enthrall contract: a Wraith may immediately enslave the exact targeted
+    /// humanlike pawn when that pawn is downed or already a prisoner. Native guest/slave state owns
+    /// the transition; WNG creates no proxy pawn and no parallel slavery system.
+    /// </summary>
+    public sealed class CompAbilityEffect_Enthrall : CompAbilityEffect
+    {
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+
+            Pawn victim = target.Pawn;
+            Pawn caster = parent?.pawn;
+            if (!CanEnthrall(caster, victim))
+                return;
+
+            GenGuest.TryEnslavePrisoner(caster, victim);
+        }
+
+        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
+        {
+            Pawn victim = target.Pawn;
+            Pawn caster = parent?.pawn;
+            if (!CanEnthrall(caster, victim))
+            {
+                if (throwMessages && caster != null)
+                {
+                    Messages.Message(
+                        "Enthrall requires another living humanlike pawn who is downed or already a prisoner.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        historical: false);
+                }
+                return false;
+            }
+
+            return base.Valid(target, throwMessages);
+        }
+
+        private static bool CanEnthrall(Pawn caster, Pawn victim)
+        {
+            return caster != null &&
+                   caster.Faction != null &&
+                   victim != null &&
+                   victim != caster &&
+                   !victim.Dead &&
+                   victim.RaceProps != null &&
+                   victim.RaceProps.Humanlike &&
+                   victim.guest != null &&
+                   !victim.IsSlave &&
+                   victim.Faction != caster.Faction &&
+                   (victim.Downed || victim.IsPrisoner);
+        }
+    }
 }

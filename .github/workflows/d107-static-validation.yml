@@ -35,6 +35,20 @@ jobs:
               except Exception as exc:
                   failures.append(f'XML parse failure {path}: {exc}')
 
+          # Restored retained Wraith Enthrall: exact pawn -> native slave state, downed OR prisoner.
+          wraith_source = Path('Source/WraithNaniteGravtech/Wraith/WraithLifeDrain.cs').read_text(encoding='utf-8')
+          wraith_abilities = Path('Defs/AbilityDefs/Abilities_WraithLifeForce.xml').read_text(encoding='utf-8')
+          wraith_genes = Path('Defs/GeneDefs/Genes_Wraith.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('Enthrall comp', wraith_source, 'CompAbilityEffect_Enthrall'),
+              ('native slave transition', wraith_source, 'GenGuest.TryEnslavePrisoner(caster, victim)'),
+              ('downed-or-prisoner target rule', wraith_source, '(victim.Downed || victim.IsPrisoner)'),
+              ('Enthrall AbilityDef', wraith_abilities, '<defName>WNG_Enthrall</defName>'),
+              ('Wraith telepathy grants Enthrall', wraith_genes, '<li>WNG_Enthrall</li>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith Enthrall contract missing: {label}')
+
           # D107 Quiet-Lattice/CatCraft transaction contracts must survive later growth.
           quiet_path = Path('Source/WraithNaniteGravtech/Compatibility/QuietLatticeStargateVisit.cs')
           quiet = quiet_path.read_text(encoding='utf-8')

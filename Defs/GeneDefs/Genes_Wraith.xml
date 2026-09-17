@@ -89,11 +89,12 @@
   <GeneDef>
     <defName>WNG_WraithTelepathy</defName>
     <label>wraith telepathy</label>
-    <description>Wraith nervous tissue is naturally sensitive to other minds and to the shared psychic signals of the Hive. This grants basic Hive Sense and provides the biological substrate used by stronger caste-specific telepathic abilities.</description>
+    <description>Wraith nervous tissue is naturally sensitive to other minds and to the shared psychic signals of the Hive. This grants basic Hive Sense and the retained Enthrall ability, and provides the biological substrate used by stronger caste-specific telepathic abilities.</description>
     <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
     <displayCategory>Ability</displayCategory>
     <abilities>
       <li>WNG_HiveSense</li>
+      <li>WNG_Enthrall</li>
     </abilities>
     <statOffsets>
       <PsychicSensitivity>0.20</PsychicSensitivity>
