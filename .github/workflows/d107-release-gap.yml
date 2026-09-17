@@ -78,21 +78,30 @@ jobs:
           if duplicates:
               hard_errors.append(f'duplicate named typed Defs: {len(duplicates)}')
 
-          # Exact uploaded D107 archive provenance is stronger than reconstructing an old local
-          # counter whose implementation is no longer available. No XML file is allowed to drift
-          # during this bounded C# transaction repair.
+          # Exact import provenance. D107 closure deliberately permits only the already-audited
+          # Quiet-Lattice transaction repair plus two CE ammo presentation fixes uncovered by the
+          # GitHub release-gap audit. No other mod path may drift from the uploaded emergency WIP.
           changed = subprocess.check_output(['git', 'diff', '--name-only', import_commit + '..HEAD'], text=True).splitlines()
-          allowed_changes = {
+          approved_mod_changes = {
               'Source/WraithNaniteGravtech/Compatibility/QuietLatticeStargateVisit.cs',
+              'Compatibility/CombatExtended/Defs/Ammo_WNG.xml',
+              'Compatibility/CombatExtended/Defs/Ammo_Precursor.xml',
+          }
+          audit_paths = {
               '.github/workflows/d107-static-validation.yml',
               '.github/workflows/d107-release-gap.yml',
           }
+          allowed_changes = approved_mod_changes | audit_paths
           provenance_violations = sorted(set(changed) - allowed_changes)
           xml_changes_since_import = sorted(p for p in changed if p.lower().endswith('.xml'))
+          approved_xml_changes = {
+              'Compatibility/CombatExtended/Defs/Ammo_WNG.xml',
+              'Compatibility/CombatExtended/Defs/Ammo_Precursor.xml',
+          }
           if provenance_violations:
               hard_errors.append('D107 provenance violation: ' + ', '.join(provenance_violations))
-          if xml_changes_since_import:
-              hard_errors.append('D107 XML drift from uploaded emergency authority: ' + ', '.join(xml_changes_since_import))
+          if set(xml_changes_since_import) != approved_xml_changes:
+              hard_errors.append('D107 XML change set differs from the two approved CE texture repairs: ' + ', '.join(xml_changes_since_import))
 
           # WNG XML class references: resolve the final type segment, not namespace segments.
           custom_class_refs = set()
@@ -175,7 +184,7 @@ jobs:
                   'duplicates': duplicates, 'parse_errors': parse_errors,
                   'custom_class_refs_checked': len(custom_class_refs),
                   'unresolved_custom_class_refs': unresolved_classes,
-                  'counter_note': 'The original local typed-Def counting implementation is unavailable. Exact XML byte provenance to the uploaded D107 authority is enforced instead.'
+                  'counter_note': 'The original local typed-Def counting implementation is unavailable. Exact bounded path provenance from the uploaded D107 authority is enforced instead.'
               },
               'reachability_candidates': declaration_only,
               'universal_crafting': {
@@ -195,6 +204,7 @@ jobs:
               'about': {'required_package_ids': package_ids, 'missing_expected_dlc_ids': missing_packages},
               'provenance': {
                   'import_authority_commit': import_commit,
+                  'approved_mod_changes': sorted(approved_mod_changes),
                   'changed_paths_since_import': changed,
                   'xml_changes_since_import': xml_changes_since_import,
                   'violations': provenance_violations,
@@ -208,7 +218,7 @@ jobs:
 
           print('D107 release-gap/provenance audit')
           print(f'  XML/C#: {len(xml_files)}/{len(cs_files)}')
-          print(f'  uploaded-authority XML drift: {len(xml_changes_since_import)}')
+          print(f'  approved XML repairs present: {xml_changes_since_import}')
           print(f'  named root Defs: {named_root_defs}; root nodes: {typed_root_nodes}; raw defName tags: {raw_defname_count}')
           print(f'  custom class refs: {len(custom_class_refs)} checked, {len(unresolved_classes)} unresolved')
           print(f'  universal crafting: {len(universal_defs)}/11')
