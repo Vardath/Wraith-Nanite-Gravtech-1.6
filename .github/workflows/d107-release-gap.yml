@@ -38,7 +38,8 @@ jobs:
           parse_errors = []
           def_counts = Counter()
           defs = []
-          all_defname_count = 0
+          typed_root_nodes = 0
+          raw_defname_count = 0
           duplicate_index = defaultdict(list)
           tex_refs = []
           sound_defs = []
@@ -50,10 +51,11 @@ jobs:
                   parse_errors.append([str(path), str(exc)])
                   continue
               doc = tree.getroot()
-              # The D106 generic audit / D107 handoff metric counts every XML defName
-              # element, including compatibility patch payloads, not only root Def nodes.
-              all_defname_count += sum(1 for _ in doc.iter('defName'))
+              raw_defname_count += sum(1 for _ in doc.iter('defName'))
               if doc.tag == 'Defs':
+                  # Historical generic-static metric: every typed root element in a Defs file,
+                  # including named/abstract parent Defs without a defName.
+                  typed_root_nodes += len(list(doc))
                   for node in list(doc):
                       defname = node.findtext('defName')
                       if defname:
@@ -66,7 +68,7 @@ jobs:
                   if elem.text and elem.text.strip():
                       tex_refs.append((str(path), elem.text.strip()))
 
-          root_typed_defs = len(defs)
+          named_root_defs = len(defs)
           duplicates = [
               [kind, name, paths]
               for (kind, name), paths in sorted(duplicate_index.items())
@@ -79,10 +81,10 @@ jobs:
               hard_errors.append(f'XML inventory drift: expected 183, got {len(xml_files)}')
           if len(cs_files) != 79:
               hard_errors.append(f'C# inventory drift: expected 79, got {len(cs_files)}')
-          if all_defname_count != 566:
-              hard_errors.append(f'XML defName inventory drift: expected 566, got {all_defname_count}')
+          if typed_root_nodes != 566:
+              hard_errors.append(f'typed XML Def inventory drift: expected 566, got {typed_root_nodes}')
           if duplicates:
-              hard_errors.append(f'duplicate typed Defs: {len(duplicates)}')
+              hard_errors.append(f'duplicate named typed Defs: {len(duplicates)}')
 
           # WNG XML class references must resolve to a current C# type. Match the full dotted
           # WNG name and test its final type segment so namespace components such as Anomaly or
@@ -153,11 +155,12 @@ jobs:
           if missing_custom_texture_refs:
               hard_errors.append(f'missing custom texture refs: {len(missing_custom_texture_refs)}')
 
-          # Sound usage deliberately examines executable XML/C# only, not Docs/Markdown. Each
-          # SoundDef's own declaration accounts for one occurrence and is subtracted.
+          # Sound usage deliberately examines executable XML/C# only and exact identifier tokens;
+          # this avoids treating WNG_PrecursorShieldEmitter as a use of WNG_PrecursorShield.
           sound_usage = {}
           for sound in sorted(sound_defs):
-              sound_usage[sound] = max(0, usage_text.count(sound) - 1)
+              token = re.compile(r'(?<![A-Za-z0-9_])' + re.escape(sound) + r'(?![A-Za-z0-9_])')
+              sound_usage[sound] = max(0, len(token.findall(usage_text)) - 1)
           unused_sounddefs = [name for name, count in sound_usage.items() if count == 0]
 
           # About.xml DLC/package contract.
@@ -196,8 +199,9 @@ jobs:
               'inventory': {
                   'xml_files': len(xml_files),
                   'csharp_files': len(cs_files),
-                  'xml_defname_count': all_defname_count,
-                  'root_typed_xml_defs': root_typed_defs,
+                  'typed_xml_defs': typed_root_nodes,
+                  'named_root_defs': named_root_defs,
+                  'raw_defname_count': raw_defname_count,
                   'def_counts': dict(sorted(def_counts.items())),
                   'duplicates': duplicates,
                   'parse_errors': parse_errors,
@@ -247,8 +251,8 @@ jobs:
 
           print('D107 release-gap/provenance audit')
           print(f'  XML/C#: {len(xml_files)}/{len(cs_files)}')
-          print(f'  XML defName count: {all_defname_count}')
-          print(f'  root typed Defs: {root_typed_defs}')
+          print(f'  typed XML Defs: {typed_root_nodes}')
+          print(f'  named root Defs: {named_root_defs}; raw defName tags: {raw_defname_count}')
           print(f'  custom class refs: {len(custom_class_refs)} checked, {len(unresolved_classes)} unresolved')
           print(f'  universal crafting: {len(universal_defs)}/11')
           print(f'  declaration-only review candidates: research={len(declaration_only["ResearchProjectDef"])}, pawnkind={len(declaration_only["PawnKindDef"])}, faction={len(declaration_only["FactionDef"])}')
