@@ -100,10 +100,17 @@ namespace WraithNaniteGravtech
 
     public sealed class SitePartWorker_ReplicatorConsumedRuin : SitePartWorker
     {
-        private const string DroneKindDefName = "WNG_ReplicatorDrone";
         private const string MatterDefName = "WNG_ReplicatorMatter";
-        private const int StartingDroneCount = 2;
-        private const int StartingBlockCount = 20;
+        private const int StackCount = 3;
+        private const int MinBlocksPerStack = 12;
+        private const int MaxBlocksPerStack = 18;
+
+        private static readonly IntVec3[] StackOffsets =
+        {
+            new IntVec3(-8, 0, -3),
+            new IntVec3(7, 0, -2),
+            new IntVec3(0, 0, 8)
+        };
 
         public override void PostMapGenerate(Map map)
         {
@@ -112,45 +119,24 @@ namespace WraithNaniteGravtech
             if (map == null || site == null)
                 return;
 
-            Faction swarm = ReplicatorFirstContactUtility.SwarmFaction;
-            PawnKindDef droneKind = DefDatabase<PawnKindDef>.GetNamedSilentFail(DroneKindDefName);
             ThingDef matterDef = DefDatabase<ThingDef>.GetNamedSilentFail(MatterDefName);
-            if (swarm == null || droneKind == null || matterDef == null)
+            if (matterDef == null)
             {
-                Log.Warning("[WNG] Replicator consumed-ruin map generated without its required swarm/Drone/Block Defs.");
+                Log.Warning("[WNG] Replicator consumed-ruin map generated without the Replicator Blocks Def.");
                 return;
             }
 
-            // Twenty real Blocks make the salvage itself a meaningful hazard: after the established
-            // exposure delay, the same stack can pay for two physical Drone reconstructions unless
-            // the player removes or contains it. No Core Fragment is granted by first contact.
-            Thing matter = ThingMaker.MakeThing(matterDef);
-            matter.stackCount = StartingBlockCount;
-            if (!GenPlace.TryPlaceThing(matter, map.Center, map, ThingPlaceMode.Near) && !matter.Destroyed)
-                matter.Destroy(DestroyMode.Vanish);
-
-            string sharedDomain = "ruin:" + site.ID;
-            for (int i = 0; i < StartingDroneCount; i++)
+            // This site is aftermath, not an active infestation. Exactly three separated stacks
+            // of ordinary Blocks are the threat. Their existing exposure/reassembly component,
+            // containment pause and whole-block cap remain authoritative.
+            for (int i = 0; i < StackCount; i++)
             {
-                Pawn drone = null;
-                try
-                {
-                    drone = PawnGenerator.GeneratePawn(droneKind, swarm);
-                    drone.TryGetComp<CompReplicatorDomain>()?.AssignAutonomousDomain(sharedDomain);
+                Thing matter = ThingMaker.MakeThing(matterDef);
+                matter.stackCount = Rand.RangeInclusive(MinBlocksPerStack, MaxBlocksPerStack);
+                IntVec3 preferred = map.Center + StackOffsets[i];
 
-                    IntVec3 preferred = map.Center + new IntVec3(i == 0 ? -4 : 4, 0, i == 0 ? -2 : 2);
-                    if (!GenPlace.TryPlaceThing(drone, preferred, map, ThingPlaceMode.Near))
-                    {
-                        if (!drone.Destroyed)
-                            drone.Destroy(DestroyMode.Vanish);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (drone != null && !drone.Destroyed)
-                        drone.Destroy(DestroyMode.Vanish);
-                    Log.Error("[WNG] Failed to place Replicator first-contact Drone: " + ex);
-                }
+                if (!GenPlace.TryPlaceThing(matter, preferred, map, ThingPlaceMode.Near) && !matter.Destroyed)
+                    matter.Destroy(DestroyMode.Vanish);
             }
         }
     }

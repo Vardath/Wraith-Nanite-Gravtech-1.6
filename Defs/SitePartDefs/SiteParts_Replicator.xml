@@ -3,7 +3,7 @@
   <SitePartDef>
     <defName>WNG_ReplicatorConsumedRuin</defName>
     <label>Replicator-consumed ruin</label>
-    <description>A stripped ruin contaminated by autonomous block Replicators and loose self-organizing Replicator blocks. The site is an early physical source of Replicator material, but exposed salvage can reconstruct itself.</description>
+    <description>A technological ruin already stripped by Replicators. No active swarm remains, but three separated caches of ordinary self-organizing Replicator Blocks persist among the aftermath and can reconstruct if left exposed.</description>
     <workerClass>WraithNaniteGravtech.SitePartWorker_ReplicatorConsumedRuin</workerClass>
     <siteTexture>World/WorldObjects/Sites/GenericSite</siteTexture>
     <showFactionInInspectString>false</showFactionInInspectString>
@@ -11,7 +11,7 @@
     <wantsThreatPoints>false</wantsThreatPoints>
     <considerEnteringAsAttack>false</considerEnteringAsAttack>
     <selectionWeight>0</selectionWeight>
-    <arrivedLetter>The ruin has been stripped almost bare. Two active Replicator Drones remain among loose Replicator blocks. Uncontained stacks of ten or more blocks can reconstruct new Drones after sufficient exposure.</arrivedLetter>
+    <arrivedLetter>The ruin has been physically consumed and stripped. No live Replicators remain, but three separated caches of ordinary Replicator Blocks survived the swarm. Uncontained stacks can reconstruct under the normal Block exposure rules.</arrivedLetter>
     <arrivedLetterDef>ThreatSmall</arrivedLetterDef>
   </SitePartDef>
 </Defs>
