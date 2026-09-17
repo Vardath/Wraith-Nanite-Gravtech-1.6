@@ -76,6 +76,7 @@ jobs:
               'Defs/ThingDefs/Things_ImplantsCore.xml',
               'Defs/RecipeDefs/Recipes_ImplantsCore.xml',
               'Defs/ResearchProjectDefs/Research_ImplantsCore.xml',
+              'Defs/ThingDefs/Things_WraithHiveEcology.xml',
               'Source/WraithNaniteGravtech/Asurans/NanitePhysiology.cs',
               'Defs/ThingDefs/Shuttle_PuddleJumper.xml',
               'Defs/ThingDefs/Shuttle_PuddleJumper_NPC.xml',
