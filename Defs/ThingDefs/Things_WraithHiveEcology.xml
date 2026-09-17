@@ -74,8 +74,8 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_WraithGrowthChamber</defName>
     <label>wraith growth chamber</label>
-    <description>A cultivated Wraith gestation organ. Player Wraith colonies use it to initiate resource-paid caste gestation, while hostile mature Hives use the same organ under their Hive Heart ecology. Hunter, Warrior and Keeper gestation use biomass and Life Force; Commander gestation additionally consumes an existing Wraith biological template, either a corpse or a living Wraith prisoner. A Growth Chamber is produced directly at a Living Forge; it has no separate growth-chamber seed stage.</description>
-    <thingClass>Building</thingClass>
+    <description>A cultivated Wraith gestation organ. Player Wraith colonies use it to initiate resource-paid caste gestation and to grow researched Wraith augmentations, while hostile mature Hives use the same organ under their Hive Heart ecology. Hunter, Warrior and Keeper gestation use biomass and Life Force; Commander gestation additionally consumes an existing Wraith biological template, either a corpse or a living Wraith prisoner. A Growth Chamber is produced directly at a Living Forge; it has no separate growth-chamber seed stage.</description>
+    <thingClass>Building_WorkTable</thingClass>
     <drawerType>MapMeshAndRealTime</drawerType>
     <tickerType>Normal</tickerType>
     <minifiedDef>MinifiedThing</minifiedDef>
@@ -89,6 +89,10 @@
     <passability>PassThroughOnly</passability>
     <fillPercent>0.72</fillPercent>
     <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <building><spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity></building>
     <statBases>
       <MaxHitPoints>620</MaxHitPoints>
       <Mass>64</Mass>
