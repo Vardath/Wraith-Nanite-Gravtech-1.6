@@ -33,6 +33,11 @@
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorTemporaryAsuranState" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorSovereignState" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorInterference" />
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorStepAudio">
+        <stepElectric>WNG_ReplicatorStepElectric</stepElectric>
+        <stepMetalA>WNG_ReplicatorStepMetalA</stepMetalA>
+        <stepMetalB>WNG_ReplicatorStepMetalB</stepMetalB>
+      </li>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorAdaptation">
         <antiShieldEvidenceThreshold>18</antiShieldEvidenceThreshold>
         <antiShieldSampleIntervalTicks>300</antiShieldSampleIntervalTicks>

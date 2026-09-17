@@ -55,7 +55,7 @@
       <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>1</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Interactable">
-        <compClass>WraithNaniteGravtech.CompInteractable_WNGAsuranGravshipShield</compClass><ticksToActivate>120</ticksToActivate><jobString>activate</jobString><activateTexPath>UI/Commands/ActivateGravshipShield</activateTexPath><soundActivate>GravshipShieldGenerator_Activate</soundActivate><requiresPower>false</requiresPower>
+        <compClass>WraithNaniteGravtech.CompInteractable_WNGAsuranGravshipShield</compClass><ticksToActivate>120</ticksToActivate><jobString>activate</jobString><activateTexPath>UI/Commands/ActivateGravshipShield</activateTexPath><soundActivate>WNG_PrecursorShield</soundActivate><requiresPower>false</requiresPower>
         <targetingParameters><canTargetBuildings>false</canTargetBuildings><canTargetAnimals>false</canTargetAnimals><canTargetMechs>false</canTargetMechs><onlyTargetControlledPawns>true</onlyTargetControlledPawns></targetingParameters>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGAsuranGravshipShield">

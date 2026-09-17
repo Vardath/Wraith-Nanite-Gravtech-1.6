@@ -6,6 +6,69 @@ using Verse.Sound;
 
 namespace WraithNaniteGravtech
 {
+    public sealed class CompProperties_ReplicatorStepAudio : CompProperties
+    {
+        public SoundDef stepElectric;
+        public SoundDef stepMetalA;
+        public SoundDef stepMetalB;
+
+        public CompProperties_ReplicatorStepAudio()
+        {
+            compClass = typeof(CompReplicatorStepAudio);
+        }
+    }
+
+    /// <summary>
+    /// Presentation-only block-form movement audio. A cue is emitted only when the exact pawn
+    /// enters a new map cell while its native pather is moving; spawning, teleporting and
+    /// human-form Replicators do not use this component.
+    /// </summary>
+    public sealed class CompReplicatorStepAudio : ThingComp
+    {
+        private IntVec3 lastPosition = IntVec3.Invalid;
+        private int stepIndex;
+
+        private CompProperties_ReplicatorStepAudio Props => (CompProperties_ReplicatorStepAudio)props;
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            lastPosition = parent?.Position ?? IntVec3.Invalid;
+            stepIndex = parent == null ? 0 : Math.Abs(parent.thingIDNumber % 3);
+        }
+
+        public override void CompTick()
+        {
+            base.CompTick();
+
+            Pawn pawn = parent as Pawn;
+            if (pawn == null || !pawn.Spawned || pawn.Map == null || pawn.Dead)
+            {
+                lastPosition = IntVec3.Invalid;
+                return;
+            }
+
+            IntVec3 current = pawn.Position;
+            bool changedCell = lastPosition.IsValid && current != lastPosition;
+            lastPosition = current;
+
+            if (!changedCell || pawn.Downed || pawn.pather == null || !pawn.pather.Moving || current.Fogged(pawn.Map))
+                return;
+
+            SoundDef sound = stepIndex == 0 ? Props.stepElectric : stepIndex == 1 ? Props.stepMetalA : Props.stepMetalB;
+            stepIndex = (stepIndex + 1) % 3;
+
+            try
+            {
+                sound?.PlayOneShot(new TargetInfo(current, pawn.Map));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Replicator step sound failed: " + ex.Message);
+            }
+        }
+    }
+
     public sealed class CompProperties_ReplicatorHierarchy : CompProperties
     {
         public string upgradePawnKind;

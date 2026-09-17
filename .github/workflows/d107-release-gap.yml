@@ -87,6 +87,9 @@ jobs:
               'Defs/ThingDefs/Things_Kassa.xml',
               'Defs/ThingDefs/Things_WraithLivingTechnology.xml',
               'Source/WraithNaniteGravtech/Wraith/WraithGenes.cs',
+              'Defs/ThingDefs/Races_Replicator.xml',
+              'Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs',
+              'Defs/Gravships/Gravship_FamilySupport.xml',
           }
           provenance_violations = sorted(set(changed) - approved_paths)
           if provenance_violations:
