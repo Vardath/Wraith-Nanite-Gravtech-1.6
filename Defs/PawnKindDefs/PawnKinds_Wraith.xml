@@ -80,7 +80,7 @@
     <combatPower>185</combatPower>
     <weaponMoney>650~1400</weaponMoney>
     <weaponTags><li>WraithCaptureWeapon</li><li>WraithLineWeapon</li></weaponTags>
-    <apparelRequired><li>WNG_WraithCommanderCarapace</li></apparelRequired>
+    <apparelRequired><li>WNG_WraithKeeperMantle</li></apparelRequired>
     <abilities><li>WNG_Compulsion</li></abilities>
     <minGenerationAge>45</minGenerationAge>
     <maxGenerationAge>240</maxGenerationAge>
