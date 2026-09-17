@@ -80,6 +80,10 @@ jobs:
               'Source/WraithNaniteGravtech/Asurans/NanitePhysiology.cs',
               'Defs/ThingDefs/Shuttle_PuddleJumper.xml',
               'Defs/ThingDefs/Shuttle_PuddleJumper_NPC.xml',
+              'Source/WraithNaniteGravtech/Shuttles/PuddleJumperSystems.cs',
+              'Defs/ThingDefs/Things_GravshipFamilyResources.xml',
+              'Defs/RecipeDefs/Recipes_GravshipFamilies.xml',
+              'Defs/ResearchProjectDefs/Research_PuddleJumper.xml',
               'Defs/ThingDefs/Things_Kassa.xml',
           }
           provenance_violations = sorted(set(changed) - approved_paths)
