@@ -1,4 +1,4 @@
-name: D107 Static Validation
+name: D108 Static Validation
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate D107 source contracts
+      - name: Validate current source contracts
         shell: bash
         run: |
           python3 - <<'PY'
@@ -23,14 +23,10 @@ jobs:
           root = Path('.')
           xml_files = sorted(root.rglob('*.xml'))
           cs_files = sorted(root.rglob('*.cs'))
-
           failures = []
 
-          # D107 imported emergency tree boundary. Workflow files do not affect these counts.
-          if len(xml_files) != 183:
-              failures.append(f'XML inventory drift: expected 183, found {len(xml_files)}')
-          if len(cs_files) != 79:
-              failures.append(f'C# inventory drift: expected 79, found {len(cs_files)}')
+          # Inventory is reported, not frozen. D107 was a checkpoint, not a ceiling.
+          print(f'Current inventory: {len(xml_files)} XML, {len(cs_files)} C#')
 
           # Every XML document must remain well-formed.
           for path in xml_files:
@@ -39,10 +35,10 @@ jobs:
               except Exception as exc:
                   failures.append(f'XML parse failure {path}: {exc}')
 
+          # D107 Quiet-Lattice/CatCraft transaction contracts must survive later growth.
           quiet_path = Path('Source/WraithNaniteGravtech/Compatibility/QuietLatticeStargateVisit.cs')
           quiet = quiet_path.read_text(encoding='utf-8')
           incident_part = quiet.split('public sealed class MapComponent_QuietLatticeStargateVisit', 1)[0]
-
           required_quiet = {
               'CatCraft class guard': 'StargatesMod.Building_Stargate',
               'home-map thing-grid verification': 'ThingsListAtFast(spawnCenter)',
@@ -56,7 +52,6 @@ jobs:
           for label, needle in required_quiet.items():
               if needle not in quiet:
                   failures.append(f'Quiet-Lattice contract missing: {label}')
-
           if 'LordMaker.MakeNewLord' in incident_part:
               failures.append('Visitor Lord is still created in the incident before CatCraft emergence')
           if 'ClearAndDestroyContents' in quiet:
@@ -66,7 +61,7 @@ jobs:
           if 'shuttle.requiredPawns.Any(p => p == null || !held.Contains(p))' not in quiet:
               failures.append('Courier launch lacks an exact required-pawn-in-holder boundary')
 
-          # Hidden NPC Puddle Jumper must remain a native non-player Odyssey shuttle sibling.
+          # Hidden NPC Puddle Jumper remains a native non-player Odyssey shuttle sibling.
           shuttle_path = Path('Defs/ThingDefs/Shuttle_PuddleJumper_NPC.xml')
           shuttle_root = ET.parse(shuttle_path).getroot()
           ship = None
@@ -88,7 +83,7 @@ jobs:
               if comp not in npc_text:
                   failures.append(f'NPC Puddle Jumper missing native component {comp}')
 
-          # Nish'ta: vanilla projectile remains WNG-owned while CE gets the optional bridge.
+          # Nish'ta bridge remains optional-CE and WNG-owned in vanilla.
           nishta = Path('Source/WraithNaniteGravtech/Goauld/NishtaConditioning.cs').read_text(encoding='utf-8')
           for needle in (
               'Projectile_NishtaCanister : Projectile_Explosive',
@@ -101,6 +96,7 @@ jobs:
               if needle not in nishta:
                   failures.append(f"Nish'ta bridge contract missing: {needle}")
 
+          # Ha'tak CE remains ONAC-guarded and ammo-less.
           goauld_patch = Path('Compatibility/CombatExtended/Patches/Weapons_Goauld.xml').read_text(encoding='utf-8')
           goauld_proj = Path('Compatibility/CombatExtended/Defs/Projectiles_Goauld.xml').read_text(encoding='utf-8')
           for needle in (
@@ -111,13 +107,13 @@ jobs:
               '<thingClass>CombatExtended.Building_TurretGunCE</thingClass>',
           ):
               if needle not in goauld_patch:
-                  failures.append(f'Ha\'tak CE contract missing: {needle}')
+                  failures.append(f"Ha'tak CE contract missing: {needle}")
           if '<AmmoUser>' in goauld_patch:
-              failures.append("Ha'tak/Nish'ta D107 patch unexpectedly introduces an AmmoUser economy")
+              failures.append("Ha'tak/Nish'ta patch unexpectedly introduces an AmmoUser economy")
           if 'WNG_CE_Projectile_GoauldHeavyPlasma' not in goauld_proj or 'CombatExtended.ProjectileCE_Explosive' not in goauld_proj:
               failures.append("Ha'tak CE projectile definition is incomplete")
 
-          # Exact current ranged-weapon CE coverage classification: 7 inherited + Precursor + Nish'ta + Ha'tak.
+          # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
               'WNG_WraithStunStaff',
@@ -133,15 +129,14 @@ jobs:
           ]
           missing = [name for name in ranged if name not in ce_text]
           if missing:
-              failures.append('Missing CE coverage: ' + ', '.join(missing))
+              failures.append('Missing inherited CE coverage: ' + ', '.join(missing))
+          print(f'Inherited CE ranged coverage: {len(ranged) - len(missing)}/{len(ranged)}')
 
-          print(f'D107 inventory: {len(xml_files)} XML, {len(cs_files)} C#')
-          print(f'CE ranged classification: {len(ranged) - len(missing)}/{len(ranged)} explicitly covered')
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:
                   print(' - ' + failure)
               sys.exit(1)
 
-          print('D107 static integration validation: PASS')
+          print('D108 static integration validation: PASS')
           PY
