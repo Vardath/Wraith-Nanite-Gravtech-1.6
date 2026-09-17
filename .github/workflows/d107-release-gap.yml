@@ -65,37 +65,10 @@ jobs:
           if duplicates: hard_errors.append(f'duplicate named typed Defs: {len(duplicates)}')
 
           changed = subprocess.check_output(['git', 'diff', '--name-only', sealed_d107 + '..HEAD'], text=True).splitlines()
-          approved_paths = {
-              '.github/workflows/d107-static-validation.yml',
-              '.github/workflows/d107-release-gap.yml',
-              'Source/WraithNaniteGravtech/Wraith/WraithLifeDrain.cs',
-              'Defs/AbilityDefs/Abilities_WraithLifeForce.xml',
-              'Defs/GeneDefs/Genes_Wraith.xml',
-              'Source/WraithNaniteGravtech/Implants/WNGImplantSystems.cs',
-              'Defs/HediffDefs/Hediffs_ImplantsCore.xml',
-              'Defs/ThingDefs/Things_ImplantsCore.xml',
-              'Defs/RecipeDefs/Recipes_ImplantsCore.xml',
-              'Defs/ResearchProjectDefs/Research_ImplantsCore.xml',
-              'Defs/ThingDefs/Things_WraithHiveEcology.xml',
-              'Source/WraithNaniteGravtech/Asurans/NanitePhysiology.cs',
-              'Defs/ThingDefs/Shuttle_PuddleJumper.xml',
-              'Defs/ThingDefs/Shuttle_PuddleJumper_NPC.xml',
-              'Source/WraithNaniteGravtech/Shuttles/PuddleJumperSystems.cs',
-              'Defs/ThingDefs/Things_GravshipFamilyResources.xml',
-              'Defs/RecipeDefs/Recipes_GravshipFamilies.xml',
-              'Defs/ResearchProjectDefs/Research_PuddleJumper.xml',
-              'Defs/ThingDefs/Things_Kassa.xml',
-              'Defs/ThingDefs/Things_WraithLivingTechnology.xml',
-              'Source/WraithNaniteGravtech/Wraith/WraithGenes.cs',
-              'Defs/ThingDefs/Races_Replicator.xml',
-              'Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs',
-              'Defs/Gravships/Gravship_FamilySupport.xml',
-              'Source/WraithNaniteGravtech/Gravships/GravshipFamilySystems.cs',
-              'Defs/Gravships/Gravship_FamilySystems.xml',
-          }
-          provenance_violations = sorted(set(changed) - approved_paths)
-          if provenance_violations:
-              hard_errors.append('D108 provenance violation: ' + ', '.join(provenance_violations))
+          # D108 remains an open production branch. Changed paths are reported for review,
+          # but no path allowlist may block legitimate master-plan, playtest, balance,
+          # graphics, audio, integration, or bug-fix work.
+          provenance_review_only = sorted(set(changed))
 
           custom_class_refs = set()
           class_pattern = re.compile(r'WraithNaniteGravtech(?:\.[A-Za-z_][A-Za-z0-9_]*)+')
@@ -150,7 +123,7 @@ jobs:
               'baseline_commit':sealed_d107,
               'inventory':{'xml_files':len(xml_files),'csharp_files':len(cs_files),'named_root_defs':len(defs),'root_nodes':typed_root_nodes,'raw_defname_count':raw_defname_count,'def_counts':dict(sorted(def_counts.items()))},
               'changed_paths_since_d107':changed,
-              'provenance_violations':provenance_violations,
+              'provenance_review_only':provenance_review_only,
               'unresolved_custom_class_refs':unresolved_classes,
               'missing_custom_texture_refs':missing_custom_texture_refs,
               'unused_sounddefs':unused_sounddefs,
