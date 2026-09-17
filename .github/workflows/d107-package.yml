@@ -1,0 +1,113 @@
+name: D107 Checkpoint Package
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and verify checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME="WNGv1-CHECKPOINT-20260917-D107-INTEGRATION-CLOSURE"
+          ROOT="Wraith-Nanite-Gravtech"
+          STAGE="$RUNNER_TEMP/$ROOT"
+          ZIP="$GITHUB_WORKSPACE/$NAME.zip"
+          HASH="$GITHUB_WORKSPACE/CHECKPOINT_HASHES-20260917-D107.txt"
+          VERIFY="$GITHUB_WORKSPACE/CHECKPOINT_VERIFICATION-20260917-D107.txt"
+
+          rm -rf "$STAGE" "$ZIP"
+          mkdir -p "$STAGE"
+
+          # Package only actual RimWorld mod content. CI/Git metadata never enters the mod ZIP.
+          for path in About Compatibility Defs Docs Patches Sounds Source Textures LoadFolders.xml; do
+            if [ ! -e "$path" ]; then
+              echo "Required mod path missing: $path" >&2
+              exit 1
+            fi
+            cp -a "$path" "$STAGE/"
+          done
+
+          # Revalidate the exact source inventory before sealing the static checkpoint.
+          XML_COUNT=$(find "$STAGE" -type f -name '*.xml' | wc -l | tr -d ' ')
+          CS_COUNT=$(find "$STAGE" -type f -name '*.cs' | wc -l | tr -d ' ')
+          if [ "$XML_COUNT" != "183" ]; then
+            echo "Expected 183 XML files, found $XML_COUNT" >&2
+            exit 1
+          fi
+          if [ "$CS_COUNT" != "79" ]; then
+            echo "Expected 79 C# files, found $CS_COUNT" >&2
+            exit 1
+          fi
+
+          python3 - "$STAGE" <<'PY'
+          from pathlib import Path
+          import sys, xml.etree.ElementTree as ET
+          root = Path(sys.argv[1])
+          files = sorted(root.rglob('*.xml'))
+          for p in files:
+              ET.parse(p)
+          print(f'XML parse verification: {len(files)}/{len(files)} PASS')
+          PY
+
+          cd "$RUNNER_TEMP"
+          zip -q -r "$ZIP" "$ROOT"
+          cd "$GITHUB_WORKSPACE"
+
+          SHA=$(sha256sum "$ZIP" | awk '{print $1}')
+          SIZE=$(stat -c '%s' "$ZIP")
+          FILES=$(find "$STAGE" -type f | wc -l | tr -d ' ')
+          printf '%s  %s\n' "$SHA" "$NAME.zip" > "$HASH"
+
+          cat > "$VERIFY" <<EOF
+          WNG D107 STATIC CHECKPOINT VERIFICATION
+          Date: 2026-09-17
+          Git commit: $GITHUB_SHA
+          Archive: $NAME.zip
+          SHA-256: $SHA
+          Size bytes: $SIZE
+          Packaged source files: $FILES
+          XML files: $XML_COUNT
+          C# files: $CS_COUNT
+          XML parse: PASS
+          Package root: $ROOT/
+          CI metadata included: NO
+          Scope: D107 integration closure after Quiet-Lattice/CatCraft transaction hardening and bounded CE ammo texture repairs.
+          Proof boundary: static/package verification only. Managed compilation against RimWorld/Odyssey/Unity DLLs, native Def load, live CatCraft/CE/Odyssey behavior and save/reload remain unproven until actually tested.
+          EOF
+
+          # Verify the produced archive has one mod root and no CI/Git metadata.
+          python3 - "$ZIP" <<'PY'
+          import sys, zipfile
+          z = zipfile.ZipFile(sys.argv[1])
+          names = z.namelist()
+          assert names, 'archive is empty'
+          assert all(n.startswith('Wraith-Nanite-Gravtech/') for n in names), 'unexpected archive root'
+          assert not any('/.github/' in n or '/.git/' in n for n in names), 'CI/Git metadata leaked into archive'
+          xmls = [n for n in names if n.endswith('.xml')]
+          css = [n for n in names if n.endswith('.cs')]
+          assert len(xmls) == 183, len(xmls)
+          assert len(css) == 79, len(css)
+          print(f'Archive verification: {len(names)} entries; XML={len(xmls)}; C#={len(css)}; PASS')
+          PY
+
+          echo "D107_CHECKPOINT_SHA256=$SHA"
+          echo "D107_CHECKPOINT_SIZE=$SIZE"
+
+      - name: Upload D107 checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: WNG-D107-INTEGRATION-CLOSURE-CHECKPOINT
+          path: |
+            WNGv1-CHECKPOINT-20260917-D107-INTEGRATION-CLOSURE.zip
+            CHECKPOINT_HASHES-20260917-D107.txt
+            CHECKPOINT_VERIFICATION-20260917-D107.txt
+          if-no-files-found: error
+          compression-level: 0
