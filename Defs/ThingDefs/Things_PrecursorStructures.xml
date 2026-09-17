@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Retained Asuran/Precursor settlement structures. Current gravship graphics are temporary until professional structure art replaces them. -->
+  <ThingDef ParentName="Wall">
+    <defName>WNG_PrecursorWall</defName>
+    <label>precursor wall</label>
+    <description>A seamless Asuran composite wall built from pale segmented field-bearing material. The current hull-derived presentation is provisional.</description>
+    <graphicData Inherit="False">
+      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <linkType>CornerFiller</linkType>
+      <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
+      <damageData><enabled>false</enabled></damageData>
+    </graphicData>
+    <stuffCategories Inherit="False"/>
+    <costStuffCount>0</costStuffCount>
+    <useStuffTerrainAffordance>false</useStuffTerrainAffordance>
+    <costList><Plasteel>4</Plasteel><ComponentIndustrial>1</ComponentIndustrial></costList>
+    <statBases><MaxHitPoints>520</MaxHitPoints><WorkToBuild>260</WorkToBuild><Flammability>0</Flammability><Beauty>5</Beauty></statBases>
+    <designationCategory>Structure</designationCategory>
+    <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
+    <building><paintable>false</paintable></building>
+  </ThingDef>
+
+  <ThingDef ParentName="DoorBase">
+    <defName>WNG_PrecursorDoor</defName>
+    <label>precursor iris door</label>
+    <description>A fast powered Asuran composite partition. Its current gravship-door presentation is provisional pending professional settlement art.</description>
+    <graphicData>
+      <texPath>Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <damageData><enabled>false</enabled></damageData>
+    </graphicData>
+    <stuffCategories Inherit="False"/>
+    <costStuffCount>0</costStuffCount>
+    <useStuffTerrainAffordance>false</useStuffTerrainAffordance>
+    <costList><Plasteel>28</Plasteel><ComponentSpacer>1</ComponentSpacer></costList>
+    <statBases><MaxHitPoints>350</MaxHitPoints><WorkToBuild>1500</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
+    <comps>
+      <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>35</basePowerConsumption></li>
+      <li Class="CompProperties_Breakdownable"/>
+    </comps>
+    <designationCategory>Structure</designationCategory>
+    <researchPrerequisites><li>WNG_PrecursorFabrication</li><li>Autodoors</li></researchPrerequisites>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <building><paintable>false</paintable></building>
+  </ThingDef>
+</Defs>
