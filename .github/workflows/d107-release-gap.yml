@@ -32,11 +32,13 @@ jobs:
           source_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in cs_files)
           searchable_files = [p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in {'.xml', '.cs', '.md'}]
           all_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in searchable_files)
+          usage_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in (xml_files + cs_files))
 
           hard_errors = []
           parse_errors = []
           def_counts = Counter()
           defs = []
+          all_defname_count = 0
           duplicate_index = defaultdict(list)
           tex_refs = []
           sound_defs = []
@@ -48,6 +50,9 @@ jobs:
                   parse_errors.append([str(path), str(exc)])
                   continue
               doc = tree.getroot()
+              # The D106 generic audit / D107 handoff metric counts every XML defName
+              # element, including compatibility patch payloads, not only root Def nodes.
+              all_defname_count += sum(1 for _ in doc.iter('defName'))
               if doc.tag == 'Defs':
                   for node in list(doc):
                       defname = node.findtext('defName')
@@ -61,7 +66,7 @@ jobs:
                   if elem.text and elem.text.strip():
                       tex_refs.append((str(path), elem.text.strip()))
 
-          typed_defs = len(defs)
+          root_typed_defs = len(defs)
           duplicates = [
               [kind, name, paths]
               for (kind, name), paths in sorted(duplicate_index.items())
@@ -74,18 +79,20 @@ jobs:
               hard_errors.append(f'XML inventory drift: expected 183, got {len(xml_files)}')
           if len(cs_files) != 79:
               hard_errors.append(f'C# inventory drift: expected 79, got {len(cs_files)}')
-          if typed_defs != 566:
-              hard_errors.append(f'typed Def inventory drift: expected 566, got {typed_defs}')
+          if all_defname_count != 566:
+              hard_errors.append(f'XML defName inventory drift: expected 566, got {all_defname_count}')
           if duplicates:
               hard_errors.append(f'duplicate typed Defs: {len(duplicates)}')
 
-          # WNG XML class references must resolve to a current C# type. External CE/CatCraft
-          # classes are deliberately excluded because they are optional-mod API references.
+          # WNG XML class references must resolve to a current C# type. Match the full dotted
+          # WNG name and test its final type segment so namespace components such as Anomaly or
+          # Trade are never mistaken for class names.
           custom_class_refs = set()
-          class_pattern = re.compile(r'WraithNaniteGravtech\.([A-Za-z_][A-Za-z0-9_]*)')
+          class_pattern = re.compile(r'WraithNaniteGravtech(?:\.[A-Za-z_][A-Za-z0-9_]*)+')
           for path in xml_files:
               text = path.read_text(encoding='utf-8', errors='replace')
-              custom_class_refs.update(class_pattern.findall(text))
+              for match in class_pattern.finditer(text):
+                  custom_class_refs.add(match.group(0).split('.')[-1])
           unresolved_classes = []
           for short in sorted(custom_class_refs):
               type_pattern = re.compile(r'\b(?:class|struct|enum|interface)\s+' + re.escape(short) + r'\b')
@@ -94,9 +101,9 @@ jobs:
           if unresolved_classes:
               hard_errors.append('unresolved WNG XML class refs: ' + ', '.join(unresolved_classes))
 
-          # Declaration-only heuristics mirror the old release-gap review category. They are
-          # review candidates rather than automatic defects because some Defs can be discovered
-          # by native systems without a literal second reference.
+          # Declaration-only heuristics mirror the old release-gap review category. They remain
+          # review candidates rather than automatic defects because native discovery can be
+          # indirect. D106 had zero candidates in all three categories.
           declaration_only = {}
           for kind in ('ResearchProjectDef', 'PawnKindDef', 'FactionDef'):
               names = [name for k, name, _ in defs if k == kind]
@@ -104,7 +111,6 @@ jobs:
 
           # Universal crafting is a hard release contract from D103-D106.
           universal_recipe = Path('Defs/RecipeDefs/Recipes_UniversalCrafting.xml')
-          universal_text = universal_recipe.read_text(encoding='utf-8', errors='replace') if universal_recipe.exists() else ''
           universal_root = ET.parse(universal_recipe).getroot() if universal_recipe.exists() else None
           universal_defs = []
           universal_worker_refs = 0
@@ -115,17 +121,17 @@ jobs:
                       universal_defs.append(name)
                   if node.findtext('workerClass') == 'WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly':
                       universal_worker_refs += 1
-          setting_present = 'enableUniversalWngCrafting' in source_text
+          setting_present = 'enableUniversalCrafting' in source_text and 'Enable universal WNG crafting' in source_text
           worker_present = re.search(r'\bclass\s+RecipeWorker_UniversalCraftOnly\b', source_text) is not None
           if not setting_present:
-              hard_errors.append('universal-crafting setting is missing')
+              hard_errors.append('universal-crafting setting/UI contract is missing')
           if not worker_present:
               hard_errors.append('universal-crafting worker is missing')
           if len(universal_defs) != 11 or universal_worker_refs != 11:
               hard_errors.append(f'universal-crafting coverage drift: defs={len(universal_defs)}, worker refs={universal_worker_refs}, expected 11/11')
 
           # Texture review: a texPath is custom if a matching PNG (including directional variants)
-          # exists in this mod. Vanilla-looking paths without local art stay review candidates.
+          # exists in this mod. Vanilla-looking paths without local art remain review candidates.
           texture_files = list(Path('Textures').rglob('*.png')) if Path('Textures').exists() else []
           texture_stems = set()
           for p in texture_files:
@@ -147,10 +153,11 @@ jobs:
           if missing_custom_texture_refs:
               hard_errors.append(f'missing custom texture refs: {len(missing_custom_texture_refs)}')
 
-          # Sound usage count excludes each SoundDef's own declaration occurrence.
+          # Sound usage deliberately examines executable XML/C# only, not Docs/Markdown. Each
+          # SoundDef's own declaration accounts for one occurrence and is subtracted.
           sound_usage = {}
           for sound in sorted(sound_defs):
-              sound_usage[sound] = max(0, all_text.count(sound) - 1)
+              sound_usage[sound] = max(0, usage_text.count(sound) - 1)
           unused_sounddefs = [name for name, count in sound_usage.items() if count == 0]
 
           # About.xml DLC/package contract.
@@ -189,7 +196,8 @@ jobs:
               'inventory': {
                   'xml_files': len(xml_files),
                   'csharp_files': len(cs_files),
-                  'typed_xml_defs': typed_defs,
+                  'xml_defname_count': all_defname_count,
+                  'root_typed_xml_defs': root_typed_defs,
                   'def_counts': dict(sorted(def_counts.items())),
                   'duplicates': duplicates,
                   'parse_errors': parse_errors,
@@ -212,6 +220,7 @@ jobs:
                   'generic_vanilla_graphic_ref_count': len(generic_vanilla_graphic_refs),
                   'generic_vanilla_graphic_refs': generic_vanilla_graphic_refs,
                   'missing_custom_texture_refs': missing_custom_texture_refs,
+                  'note': 'Generic vanilla-looking refs are review candidates; this recreated GitHub heuristic is not numerically comparable to the old D106 Data-oracle script.',
               },
               'audio': {
                   'sounddef_count': len(sound_defs),
@@ -238,11 +247,12 @@ jobs:
 
           print('D107 release-gap/provenance audit')
           print(f'  XML/C#: {len(xml_files)}/{len(cs_files)}')
-          print(f'  typed Defs: {typed_defs}')
+          print(f'  XML defName count: {all_defname_count}')
+          print(f'  root typed Defs: {root_typed_defs}')
           print(f'  custom class refs: {len(custom_class_refs)} checked, {len(unresolved_classes)} unresolved')
           print(f'  universal crafting: {len(universal_defs)}/11')
           print(f'  declaration-only review candidates: research={len(declaration_only["ResearchProjectDef"])}, pawnkind={len(declaration_only["PawnKindDef"])}, faction={len(declaration_only["FactionDef"])}')
-          print(f'  generic vanilla graphic review refs: {len(generic_vanilla_graphic_refs)}')
+          print(f'  generic vanilla-looking graphic review refs: {len(generic_vanilla_graphic_refs)} (heuristic, not D106-comparable)')
           print(f'  missing custom texture refs: {len(missing_custom_texture_refs)}')
           print(f'  unused SoundDefs: {len(unused_sounddefs)} -> {unused_sounddefs}')
           print(f'  provenance changed paths: {changed}')
