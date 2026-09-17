@@ -3,7 +3,7 @@
   <ResearchProjectDef>
     <defName>WNG_SkimmerSystems</defName>
     <label>Ancient skimmer and shuttle systems</label>
-    <description>Integrate reconstructed Ancient neural control, finite vacuum-energy containment and Odyssey shuttle engineering into a compact Puddle Jumper transport.</description>
+    <description>Integrate reconstructed Ancient neural control, Asuran nanite propulsion and Odyssey shuttle engineering into a compact Puddle Jumper transport.</description>
     <baseCost>3000</baseCost>
     <techLevel>Ultra</techLevel>
     <researchViewX>21</researchViewX><researchViewY>10.4</researchViewY>

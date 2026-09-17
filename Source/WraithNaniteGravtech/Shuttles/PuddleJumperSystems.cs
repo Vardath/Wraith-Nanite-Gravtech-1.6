@@ -223,7 +223,7 @@ namespace WraithNaniteGravtech
             Command_Toggle cloak = new Command_Toggle
             {
                 defaultLabel = "Puddle Jumper cloak",
-                defaultDesc = "Engage the Jumper's finite concealment field. It consumes vacuum-energy reserve while active and can disperse one long-range incoming attack before collapsing.",
+                defaultDesc = "Engage the Jumper's finite concealment field. It consumes the Jumper's nanite-slurry reserve while active and can disperse one long-range incoming attack before collapsing.",
                 isActive = () => cloaked,
                 toggleAction = TogglePlayerCloak
             };
