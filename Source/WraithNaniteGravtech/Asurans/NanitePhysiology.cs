@@ -240,7 +240,7 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Human-form nanites are synthetic enough that EMP is a deliberate custom weakness even
     /// though the pawn is humanlike. A real EMP DamageDef hit refreshes one disruption Hediff.
-    /// No precursor armour, implant or collective-network exception is imported at this layer.
+    /// EMP Shunt remains mitigation only: it shortens that real disruption instead of preventing it.
     /// </summary>
     public sealed class Gene_EMPSensitiveNanites : Gene
     {
@@ -289,6 +289,11 @@ namespace WraithNaniteGravtech
 
     public sealed class HediffComp_NaniteEMPReceiver : HediffComp
     {
+        private const string DisruptionDefName = "WNG_NaniteEMPDisruption";
+        private const string EmpShuntDefName = "WNG_EMPShuntLattice";
+        private const float EmpShuntDurationFactor = 0.50f;
+        private const int EmpShuntMinimumTicks = 600;
+
         public override void Notify_PawnPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
         {
             base.Notify_PawnPostApplyDamage(dinfo, totalDamageDealt);
@@ -296,16 +301,34 @@ namespace WraithNaniteGravtech
             if (pawn?.health?.hediffSet == null || pawn.Dead || dinfo.Def != DamageDefOf.EMP)
                 return;
 
-            HediffDef disruptionDef = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_NaniteEMPDisruption");
+            HediffDef disruptionDef = DefDatabase<HediffDef>.GetNamedSilentFail(DisruptionDefName);
             if (disruptionDef == null)
                 return;
 
-            // Remove/re-add instead of touching HediffComp_Disappears internals so a new EMP hit
-            // cleanly refreshes the Def-owned random 2,400-4,200 tick disruption window.
+            // Remove/re-add so every real EMP hit refreshes the normal Def-owned random disruption
+            // window. Only after that state exists does EMP Shunt shorten it; the hit is never ignored.
             Hediff existing = pawn.health.hediffSet.GetFirstHediffOfDef(disruptionDef);
             if (existing != null)
                 pawn.health.RemoveHediff(existing);
-            pawn.health.AddHediff(disruptionDef);
+
+            Hediff disruption = pawn.health.AddHediff(disruptionDef);
+            if (!HasEmpShunt(pawn) || disruption == null)
+                return;
+
+            HediffComp_Disappears disappears = disruption.TryGetComp<HediffComp_Disappears>();
+            if (disappears == null)
+                return;
+
+            int shortened = Math.Max(
+                EmpShuntMinimumTicks,
+                Mathf.RoundToInt(disappears.EffectiveTicksToDisappear * EmpShuntDurationFactor));
+            disappears.SetDuration(shortened);
+        }
+
+        private static bool HasEmpShunt(Pawn pawn)
+        {
+            HediffDef shunt = DefDatabase<HediffDef>.GetNamedSilentFail(EmpShuntDefName);
+            return shunt != null && pawn.health.hediffSet.GetFirstHediffOfDef(shunt) != null;
         }
     }
 }
