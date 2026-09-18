@@ -303,10 +303,6 @@ namespace WraithNaniteGravtech
             return true;
         }
 
-        public override string CompTipStringExtra =>
-            "This pawn was restored from a fully committed Wraith Enthrallment state. " +
-            "Faction ownership has been recovered, but residual psychic conditioning can still drive covert sabotage or leak colony intelligence.";
-
         public override void CompExposeData()
         {
             base.CompExposeData();
