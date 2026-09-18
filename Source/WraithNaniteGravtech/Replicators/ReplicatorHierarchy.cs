@@ -286,6 +286,7 @@ namespace WraithNaniteGravtech
 
                 // The upgraded body and source-consumption transaction are already committed.
                 PlaySoundFailSoft("WNG_ReplicatorAssembly", upgraded, upgraded.Map, upgraded.Position);
+                PlayRecombinationVfxFailSoft(upgraded);
             }
             catch (Exception ex)
             {
@@ -339,6 +340,7 @@ namespace WraithNaniteGravtech
             }
 
             int count = Math.Max(1, Props.splitCount);
+            List<Pawn> committedChildren = new List<Pawn>(count);
             for (int i = 0; i < count; i++)
             {
                 Pawn child = null;
@@ -361,6 +363,7 @@ namespace WraithNaniteGravtech
                     child.TryGetComp<CompReplicatorInterference>()?.InheritEmpDisruptionUntil(
                         inheritedEmpUntil,
                         preservePhysicalStun: true);
+                    committedChildren.Add(child);
                 }
                 catch (Exception ex)
                 {
@@ -369,8 +372,58 @@ namespace WraithNaniteGravtech
                     Log.Error("[WNG] Replicator genuine-death split failed for " + parent?.def?.defName + ": " + ex);
                 }
             }
+
+            // Presentation begins only after every successfully configured child above is a real
+            // map pawn. Failed child placements are excluded and never gain a decorative proxy.
+            if (committedChildren.Count > 0)
+                PlaySplitVfxFailSoft(map, origin, committedChildren);
         }
 
+
+        private static void PlayRecombinationVfxFailSoft(Pawn upgraded)
+        {
+            try
+            {
+                if (upgraded == null || !upgraded.Spawned || upgraded.Map == null)
+                    return;
+
+                // Bright convergence at the replacement body plus dense electrical chatter.
+                FleckMaker.ThrowLightningGlow(upgraded.DrawPos, upgraded.Map, 2.2f);
+                for (int i = 0; i < 7; i++)
+                    FleckMaker.ThrowMicroSparks(upgraded.DrawPos, upgraded.Map);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Replicator recombination VFX failed after commit: " + ex.Message);
+            }
+        }
+
+        private static void PlaySplitVfxFailSoft(Map map, IntVec3 origin, List<Pawn> committedChildren)
+        {
+            try
+            {
+                if (map == null || !origin.IsValid || !origin.InBounds(map) || committedChildren == null)
+                    return;
+
+                // The destroyed form visibly disassembles at its last real cell, then each exact
+                // split-born child receives its own electrical materialization chatter.
+                FleckMaker.ThrowLightningGlow(origin.ToVector3Shifted(), map, 1.35f);
+                for (int i = 0; i < 4; i++)
+                    FleckMaker.ThrowMicroSparks(origin.ToVector3Shifted(), map);
+
+                foreach (Pawn child in committedChildren)
+                {
+                    if (child == null || !child.Spawned || child.Map != map)
+                        continue;
+                    FleckMaker.ThrowMicroSparks(child.DrawPos, map);
+                    FleckMaker.ThrowMicroSparks(child.DrawPos, map);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Replicator split VFX failed after commit: " + ex.Message);
+            }
+        }
 
         private static void PlaySoundFailSoft(string defName, Thing target, Map fallbackMap, IntVec3 fallbackPosition)
         {
