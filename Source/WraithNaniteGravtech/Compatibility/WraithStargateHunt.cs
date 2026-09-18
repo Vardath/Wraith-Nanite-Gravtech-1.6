@@ -109,6 +109,7 @@ namespace WraithNaniteGravtech
         private int reinforcementExpiryTick = -1;
         private bool reinforcementLaunched;
         private bool reinforcementDenied;
+        private bool pursuitWindowOpened;
         private float baseRaidPoints;
         private List<int> preExistingPawnIds = new List<int>();
         private List<Pawn> hunters = new List<Pawn>();
@@ -165,6 +166,7 @@ namespace WraithNaniteGravtech
             reinforcementExpiryTick = SafeFutureTick(reinforcementDueTick, ReinforcementWindowTicks);
             reinforcementLaunched = false;
             reinforcementDenied = false;
+            pursuitWindowOpened = false;
             preExistingPawnIds = existingFactionPawnIds?.Where(id => id > 0).Distinct().ToList() ?? new List<int>();
             hunters = new List<Pawn>();
             return true;
@@ -376,6 +378,7 @@ namespace WraithNaniteGravtech
 
                 if (pawn.Position.DistanceToSquared(sourceGateCell) <= exitRadiusSq)
                 {
+                    TryOpenPursuitWindow();
                     ExtractPawn(pawn);
                     continue;
                 }
@@ -424,6 +427,59 @@ namespace WraithNaniteGravtech
                 locomotionUrgency = LocomotionUrgency.Sprint
             };
             pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+        }
+
+        private void TryOpenPursuitWindow()
+        {
+            if (pursuitWindowOpened ||
+                sourceGate == null || sourceGate.Destroyed || !sourceGate.Spawned || sourceGate.Map != map)
+                return;
+
+            MapComponent_WraithGatePursuit pursuit =
+                map.GetComponent<MapComponent_WraithGatePursuit>();
+            if (pursuit != null && pursuit.Open(sourceGate, factionDefName, CurrentPursuitCaptiveIds()))
+                pursuitWindowOpened = true;
+        }
+
+        private List<int> CurrentPursuitCaptiveIds()
+        {
+            List<int> ids = new List<int>();
+            Faction faction = WraithStargateHuntUtility.ResolveFaction(factionDefName);
+            if (faction == null)
+                return ids;
+
+            ThingDef dartDef = DefDatabase<ThingDef>.GetNamedSilentFail("WNG_WraithDart_NPC");
+            if (dartDef != null)
+            {
+                foreach (Thing dart in map.listerThings.ThingsOfDef(dartDef))
+                {
+                    if (dart == null || dart.Destroyed || dart.Faction != faction)
+                        continue;
+                    CompTransporter transporter = dart.TryGetComp<CompTransporter>();
+                    if (transporter == null)
+                        continue;
+                    ids.AddRange(transporter.innerContainer.OfType<Pawn>()
+                        .Where(p => p != null && !p.Dead && WraithCullingUtility.IsEligibleBiologicalHuman(p))
+                        .Select(p => p.thingIDNumber));
+                }
+            }
+
+            WraithCullingCustodyRegistry registry =
+                Current.Game?.GetComponent<WraithCullingCustodyRegistry>();
+            if (registry != null)
+            {
+                ids.AddRange(registry.Records
+                    .Where(record =>
+                        record != null &&
+                        record.pawn != null &&
+                        !record.pawn.Dead &&
+                        record.captorFaction == faction &&
+                        record.rescueSiteId < 0 &&
+                        record.capturedTick >= missionStartTick)
+                    .Select(record => record.pawn.thingIDNumber));
+            }
+
+            return ids.Where(id => id > 0).Distinct().ToList();
         }
 
         private void ExtractPawn(Pawn pawn)
@@ -482,6 +538,7 @@ namespace WraithNaniteGravtech
             reinforcementExpiryTick = -1;
             reinforcementLaunched = false;
             reinforcementDenied = false;
+            pursuitWindowOpened = false;
             baseRaidPoints = 0f;
             preExistingPawnIds?.Clear();
             hunters?.Clear();
@@ -507,6 +564,7 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref reinforcementExpiryTick, "wngWraithGateHuntReinforcementExpiry", -1);
             Scribe_Values.Look(ref reinforcementLaunched, "wngWraithGateHuntReinforcementLaunched", false);
             Scribe_Values.Look(ref reinforcementDenied, "wngWraithGateHuntReinforcementDenied", false);
+            Scribe_Values.Look(ref pursuitWindowOpened, "wngWraithGateHuntPursuitWindowOpened", false);
             Scribe_Values.Look(ref baseRaidPoints, "wngWraithGateHuntBasePoints", 0f);
             Scribe_Collections.Look(ref preExistingPawnIds, "wngWraithGateHuntPreExisting", LookMode.Value);
             Scribe_Collections.Look(ref hunters, "wngWraithGateHuntHunters", LookMode.Reference);
