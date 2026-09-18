@@ -24,6 +24,10 @@ namespace WraithNaniteGravtech
         public float baseRescueThreatPoints = 450f;
         public float threatPerCaptive = 175f;
         public float threatPerFailure = 250f;
+        public int captivityPressureIntervalTicks = 120000;
+        public int captiveAgeYearsPerPressure = 2;
+        public int maxCaptivityStage = 4;
+        public float threatPerCaptivityStage = 125f;
         public float storytellerThreatFactor = 0.65f;
     }
 
@@ -44,6 +48,12 @@ namespace WraithNaniteGravtech
         public int rescueSiteId = -1;
         public int rescueSiteExpiryTick = -1;
         public int rescueFailures;
+        public int captivityStage;
+        public int nextCaptivityPressureTick = -1;
+        public bool custodyAppliedFeedingStock;
+        public bool custodyAppliedExperimentSubject;
+        public bool custodyAppliedConditioning;
+        public bool nativeEnthrallmentCommitted;
         public bool releasedAtSite;
 
         public void ExposeData()
@@ -58,6 +68,12 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref rescueSiteId, "rescueSiteId", -1);
             Scribe_Values.Look(ref rescueSiteExpiryTick, "rescueSiteExpiryTick", -1);
             Scribe_Values.Look(ref rescueFailures, "rescueFailures", 0);
+            Scribe_Values.Look(ref captivityStage, "captivityStage", 0);
+            Scribe_Values.Look(ref nextCaptivityPressureTick, "nextCaptivityPressureTick", -1);
+            Scribe_Values.Look(ref custodyAppliedFeedingStock, "custodyAppliedFeedingStock", false);
+            Scribe_Values.Look(ref custodyAppliedExperimentSubject, "custodyAppliedExperimentSubject", false);
+            Scribe_Values.Look(ref custodyAppliedConditioning, "custodyAppliedConditioning", false);
+            Scribe_Values.Look(ref nativeEnthrallmentCommitted, "nativeEnthrallmentCommitted", false);
             Scribe_Values.Look(ref releasedAtSite, "releasedAtSite", false);
         }
     }
@@ -167,6 +183,7 @@ namespace WraithNaniteGravtech
         {
             int now = Find.TickManager?.TicksGame ?? 0;
             int delay = Math.Max(1, Tuning?.rescueOfferDelayTicks ?? 60000);
+            int pressure = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
             return new WraithAbducteeRecord
             {
                 pawn = pawn,
@@ -179,6 +196,12 @@ namespace WraithNaniteGravtech
                 rescueSiteId = -1,
                 rescueSiteExpiryTick = -1,
                 rescueFailures = 0,
+                captivityStage = 0,
+                nextCaptivityPressureTick = now + pressure,
+                custodyAppliedFeedingStock = false,
+                custodyAppliedExperimentSubject = false,
+                custodyAppliedConditioning = false,
+                nativeEnthrallmentCommitted = false,
                 releasedAtSite = false
             };
         }
@@ -332,6 +355,7 @@ namespace WraithNaniteGravtech
                 return false;
 
             Pawn pawn = record.pawn;
+            Faction priorFaction = pawn.Faction;
             Faction priorGuestHost = pawn.guest?.HostFaction;
             GuestStatus priorGuestStatus = pawn.guest?.GuestStatus ?? GuestStatus.Guest;
             Pawn dropped;
@@ -340,7 +364,7 @@ namespace WraithNaniteGravtech
 
             try
             {
-                RestoreOriginalGuestState(record);
+                RestoreOriginalCustodyState(record);
                 records.Remove(record);
                 released = pawn;
                 return true;
@@ -350,6 +374,8 @@ namespace WraithNaniteGravtech
                 Log.Error("[WNG] Same-gate pursuit captive release failed; recapturing exact Pawn: " + ex.Message);
                 try
                 {
+                    if (pawn.Faction != priorFaction)
+                        pawn.SetFaction(priorFaction);
                     if (pawn.guest != null)
                         pawn.guest.SetGuestStatus(priorGuestHost, priorGuestStatus);
                 }
@@ -363,6 +389,204 @@ namespace WraithNaniteGravtech
                     if (!pawn.Spawned && !pawn.Destroyed)
                         GenSpawn.Spawn(pawn, WraithCullingUtility.SafeReturnCell(map, near), map);
                 }
+                return false;
+            }
+        }
+
+        public int CaptivityStage(WraithAbducteeRecord record)
+        {
+            int max = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+            return record == null ? -1 : Math.Max(0, Math.Min(max, record.captivityStage));
+        }
+
+        private void AdvanceCaptiveLifecycle(int now)
+        {
+            if (records == null || records.Count == 0)
+                return;
+
+            int pressureInterval = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
+            int maxStage = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+            Dictionary<int, List<string>> changedByStage = new Dictionary<int, List<string>>();
+
+            foreach (WraithAbducteeRecord record in records)
+            {
+                Pawn pawn = record?.pawn;
+                if (record == null || pawn == null || pawn.Dead || record.releasedAtSite)
+                    continue;
+
+                record.captivityStage = Math.Max(0, Math.Min(maxStage, record.captivityStage));
+                ApplyCaptiveState(record);
+
+                if (record.nextCaptivityPressureTick < 0)
+                    record.nextCaptivityPressureTick = now + pressureInterval;
+                if (now < record.nextCaptivityPressureTick)
+                    continue;
+
+                int previous = record.captivityStage;
+                ApplyCaptivePressure(record, now);
+                if (record.captivityStage <= previous)
+                    continue;
+
+                if (!changedByStage.TryGetValue(record.captivityStage, out List<string> names))
+                {
+                    names = new List<string>();
+                    changedByStage[record.captivityStage] = names;
+                }
+                names.Add(pawn.LabelShort);
+            }
+
+            foreach (KeyValuePair<int, List<string>> pair in changedByStage.OrderBy(p => p.Key))
+            {
+                TryStageLetter(pair.Key, pair.Value);
+            }
+        }
+
+        private void ApplyCaptivePressure(WraithAbducteeRecord record, int now)
+        {
+            Pawn pawn = record?.pawn;
+            if (pawn == null || pawn.Dead)
+                return;
+
+            int maxStage = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+            record.captivityStage = Math.Max(0, Math.Min(maxStage, record.captivityStage));
+            if (record.captivityStage < maxStage)
+                record.captivityStage++;
+
+            int pressureInterval = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
+            record.nextCaptivityPressureTick = now + pressureInterval;
+
+            int ageYears = Math.Max(0, Tuning?.captiveAgeYearsPerPressure ?? 2);
+            if (ageYears > 0)
+                WraithHiveEcologyUtility.AdjustBiologicalAge(pawn, ageYears);
+            WraithHiveEcologyUtility.RefreshHediff(pawn, "WNG_LifeDrained");
+            ApplyCaptiveState(record);
+        }
+
+        private static bool EnsureCustodyHediff(Pawn pawn, string defName)
+        {
+            if (pawn?.health?.hediffSet == null)
+                return false;
+            HediffDef def = DefDatabase<HediffDef>.GetNamedSilentFail(defName);
+            if (def == null || pawn.health.hediffSet.HasHediff(def))
+                return false;
+            pawn.health.AddHediff(def);
+            return true;
+        }
+
+        private static void RemoveCustodyHediff(Pawn pawn, string defName, ref bool addedByCustody)
+        {
+            if (!addedByCustody || pawn?.health?.hediffSet == null)
+                return;
+            HediffDef def = DefDatabase<HediffDef>.GetNamedSilentFail(defName);
+            Hediff hediff = def == null ? null : pawn.health.hediffSet.GetFirstHediffOfDef(def);
+            if (hediff != null)
+                pawn.health.RemoveHediff(hediff);
+            addedByCustody = false;
+        }
+
+        private void ApplyCaptiveState(WraithAbducteeRecord record)
+        {
+            Pawn pawn = record?.pawn;
+            if (pawn == null || pawn.Dead)
+                return;
+
+            if (EnsureCustodyHediff(pawn, "WNG_WraithFeedingStock"))
+                record.custodyAppliedFeedingStock = true;
+            if (record.captivityStage >= 2 && EnsureCustodyHediff(pawn, "WNG_WraithExperimentSubject"))
+                record.custodyAppliedExperimentSubject = true;
+            if (record.captivityStage >= 3 && EnsureCustodyHediff(pawn, "WNG_WraithConditionedCaptive"))
+                record.custodyAppliedConditioning = true;
+        }
+
+        private void CleanupCaptivityState(WraithAbducteeRecord record)
+        {
+            Pawn pawn = record?.pawn;
+            if (pawn == null)
+                return;
+
+            RemoveCustodyHediff(pawn, "WNG_WraithFeedingStock", ref record.custodyAppliedFeedingStock);
+            RemoveCustodyHediff(pawn, "WNG_WraithExperimentSubject", ref record.custodyAppliedExperimentSubject);
+            RemoveCustodyHediff(pawn, "WNG_WraithConditionedCaptive", ref record.custodyAppliedConditioning);
+        }
+
+        private static void TryStageLetter(int stage, List<string> names)
+        {
+            if (names == null || names.Count == 0)
+                return;
+
+            string label;
+            string text;
+            if (stage >= 4)
+            {
+                label = "Wraith enthrallment threshold reached";
+                text = " have endured enough feeding, invasive study and psychic conditioning to reach the Wraith's full enthrallment threshold. The exact captives remain rescueable; if next materialized under Wraith guard, current native slavery mechanics will commit the enthrallment rather than an obsolete marker Hediff.";
+            }
+            else if (stage >= 3)
+            {
+                label = "Wraith conditioning detected";
+                text = " are now undergoing deliberate psychic conditioning after repeated captivity. Another prolonged delay risks native enthrallment.";
+            }
+            else if (stage >= 2)
+            {
+                label = "Wraith experimentation detected";
+                text = " are now being used as biological experiment subjects as well as renewable feeding stock.";
+            }
+            else
+            {
+                label = "Wraith feeding cycle detected";
+                text = " have endured another controlled feeding cycle. The Wraith are preserving them as renewable feeding stock rather than killing them outright.";
+            }
+
+            try
+            {
+                Find.LetterStack.ReceiveLetter(label, names.ToCommaList(useAnd: true) + text, LetterDefOf.NegativeEvent);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Staged Wraith captivity committed but notification failed: " + ex.Message);
+            }
+        }
+
+        public bool TryCommitNativeEnthrallmentAtSite(WraithAbducteeRecord record, Pawn caster)
+        {
+            Pawn pawn = record?.pawn;
+            if (record == null || pawn == null || pawn.Dead || record.releasedAtSite ||
+                record.captivityStage < Math.Max(1, Tuning?.maxCaptivityStage ?? 4) ||
+                record.nativeEnthrallmentCommitted)
+                return false;
+            if (caster == null || caster.Dead || !caster.Spawned || caster.Map == null ||
+                pawn.Map != caster.Map || caster.Faction == null || caster.Faction != record.captorFaction ||
+                pawn.guest == null || pawn.Faction == caster.Faction)
+                return false;
+
+            try
+            {
+                if (!pawn.IsPrisoner)
+                    pawn.guest.SetGuestStatus(caster.Faction, GuestStatus.Prisoner);
+
+                GenGuest.TryEnslavePrisoner(caster, pawn);
+                if (!pawn.IsSlave || pawn.Faction != caster.Faction)
+                {
+                    Log.Warning("[WNG] Stage-4 Wraith captivity reached native Enthrallment threshold but RimWorld did not commit slave state.");
+                    return false;
+                }
+
+                record.nativeEnthrallmentCommitted = true;
+                try
+                {
+                    Messages.Message(
+                        pawn.LabelShortCap + " has been fully enthralled by " + caster.LabelShortCap +
+                        " using RimWorld's native slave state. The exact Pawn remains rescueable.",
+                        pawn,
+                        MessageTypeDefOf.NegativeEvent,
+                        historical: false);
+                }
+                catch { }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("[WNG] Native stage-4 Wraith enthrallment failed without replacing the exact captive: " + ex);
                 return false;
             }
         }
@@ -394,6 +618,7 @@ namespace WraithNaniteGravtech
             {
                 if (pawn.guest != null && record.captorFaction != null)
                     pawn.guest.SetGuestStatus(record.captorFaction, GuestStatus.Prisoner);
+                ApplyCaptiveState(record);
                 return true;
             }
             catch (Exception ex)
@@ -406,17 +631,32 @@ namespace WraithNaniteGravtech
             }
         }
 
-        private void RestoreOriginalGuestState(WraithAbducteeRecord record)
+        private void RestoreOriginalCustodyState(WraithAbducteeRecord record)
         {
             Pawn pawn = record?.pawn;
-            if (pawn?.guest == null)
+            if (pawn == null)
                 return;
 
-            Faction host = record.originalGuestHost;
-            GuestStatus status = record.originalGuestStatus;
-            if (status == GuestStatus.Prisoner && host == null && record.originalFaction != Faction.OfPlayer)
-                status = GuestStatus.Guest;
-            pawn.guest.SetGuestStatus(host, status);
+            // Stage-4 native enthrallment may have changed faction ownership. Only undo the
+            // Wraith-owned transition this registry itself committed; unrelated later changes win.
+            if (record.nativeEnthrallmentCommitted &&
+                pawn.Faction == record.captorFaction &&
+                pawn.Faction != record.originalFaction)
+            {
+                pawn.SetFaction(record.originalFaction);
+            }
+
+            if (pawn.guest != null)
+            {
+                Faction host = record.originalGuestHost;
+                GuestStatus status = record.originalGuestStatus;
+                if (status == GuestStatus.Prisoner && host == null && record.originalFaction != Faction.OfPlayer)
+                    status = GuestStatus.Guest;
+                pawn.guest.SetGuestStatus(host, status);
+            }
+
+            CleanupCaptivityState(record);
+            record.nativeEnthrallmentCommitted = false;
         }
 
         public List<Pawn> ReleaseSiteCaptives(int siteId)
@@ -428,7 +668,7 @@ namespace WraithNaniteGravtech
                 if (record.releasedAtSite || pawn == null || pawn.Dead || !pawn.Spawned)
                     continue;
 
-                RestoreOriginalGuestState(record);
+                RestoreOriginalCustodyState(record);
                 record.releasedAtSite = true;
                 released.Add(pawn);
             }
@@ -476,6 +716,11 @@ namespace WraithNaniteGravtech
 
                 if (custody.Contains(pawn))
                 {
+                    int priorStage = record.captivityStage;
+                    ApplyCaptivePressure(record, now);
+                    if (record.captivityStage > priorStage)
+                        TryStageLetter(record.captivityStage, new List<string> { pawn.LabelShort });
+
                     record.rescueSiteId = -1;
                     record.rescueSiteExpiryTick = -1;
                     record.nextRescueOfferTick = now + retry;
@@ -495,6 +740,11 @@ namespace WraithNaniteGravtech
                     continue;
                 if (!custody.Contains(record.pawn))
                     continue;
+
+                int priorStage = record.captivityStage;
+                ApplyCaptivePressure(record, now);
+                if (record.captivityStage > priorStage)
+                    TryStageLetter(record.captivityStage, new List<string> { record.pawn.LabelShort });
 
                 record.rescueSiteId = -1;
                 record.rescueSiteExpiryTick = -1;
@@ -539,11 +789,11 @@ namespace WraithNaniteGravtech
                 if (!IsConclusiveRecovery(record))
                     continue;
 
-                RestoreOriginalGuestState(record);
+                RestoreOriginalCustodyState(record);
                 records.RemoveAt(i);
                 Find.LetterStack.ReceiveLetter(
                     "Wraith abductee recovered",
-                    pawn.LabelShortCap + " is safely back under player control. This is the same Pawn that was culled; no replacement was generated.",
+                    pawn.LabelShortCap + " is safely back under player control. This is the same Pawn that was culled; temporary feeding-stock, experiment and conditioning markers were cleared, while biological aging and feeding trauma inflicted during captivity remain real consequences.",
                     LetterDefOf.PositiveEvent,
                     pawn);
             }
@@ -614,8 +864,12 @@ namespace WraithNaniteGravtech
                     continue;
 
                 int maxFailures = eligible.Max(r => r.rescueFailures);
+                int maxStage = eligible.Max(r => Math.Max(0, Math.Min(Math.Max(1, tuning.maxCaptivityStage), r.captivityStage)));
                 float threatPoints = Math.Max(
-                    tuning.baseRescueThreatPoints + eligible.Count * tuning.threatPerCaptive + maxFailures * tuning.threatPerFailure,
+                    tuning.baseRescueThreatPoints +
+                    eligible.Count * tuning.threatPerCaptive +
+                    maxFailures * tuning.threatPerFailure +
+                    maxStage * tuning.threatPerCaptivityStage,
                     StorytellerUtility.DefaultSiteThreatPointsNow() * Math.Max(0f, tuning.storytellerThreatFactor));
 
                 Site site = SiteMaker.MakeSite(
@@ -624,7 +878,7 @@ namespace WraithNaniteGravtech
                     captor,
                     ifHostileThenMustRemainHostile: false,
                     threatPoints: threatPoints);
-                site.customLabel = captor.Name + " Wraith holding site";
+                site.customLabel = CaptivitySiteLabel(captor, maxStage);
                 Find.WorldObjects.Add(site);
 
                 int expiry = now + Math.Max(60000, tuning.rescueSiteDurationTicks);
@@ -639,10 +893,41 @@ namespace WraithNaniteGravtech
                 string names = eligible.Select(r => r.pawn.LabelShort).ToCommaList(useAnd: true);
                 Find.LetterStack.ReceiveLetter(
                     "Wraith captives located",
-                    "Culling traffic has exposed a holding site belonging to " + captor.Name + ". " + names + " are stored there as the same exact pawns that were taken. Assault the site before it relocates.",
+                    "Culling traffic has exposed " + CaptivitySiteArticle(captor, maxStage) + " containing " + names +
+                    ". " + CaptivitySiteThreatText(maxStage) +
+                    " Assault the site before it relocates. If it escapes, the same exact captives remain recoverable but endure another feeding/conditioning cycle.",
                     LetterDefOf.ThreatBig,
                     site);
             }
+        }
+
+        private static string CaptivitySiteLabel(Faction captor, int stage)
+        {
+            string prefix = captor?.Name.NullOrEmpty() == false ? captor.Name + " " : "";
+            if (stage >= 4) return prefix + "thrall-conditioning site";
+            if (stage >= 3) return prefix + "psychic conditioning site";
+            if (stage >= 2) return prefix + "laboratory holding site";
+            return prefix + "feeding preserve";
+        }
+
+        private static string CaptivitySiteArticle(Faction captor, int stage)
+        {
+            string owner = captor?.Name.NullOrEmpty() == false ? captor.Name + " " : "Wraith ";
+            if (stage >= 4) return "a " + owner + "thrall-conditioning site";
+            if (stage >= 3) return "a " + owner + "psychic conditioning site";
+            if (stage >= 2) return "a " + owner + "laboratory holding site";
+            return "a " + owner + "feeding preserve";
+        }
+
+        private static string CaptivitySiteThreatText(int stage)
+        {
+            if (stage >= 4)
+                return "The captives have reached the native Enthrallment threshold; once materialized under a real Wraith Keeper, current RimWorld slave state can be committed while preserving exact Pawn identity.";
+            if (stage >= 3)
+                return "The captives are undergoing deliberate psychic conditioning after repeated feeding and invasive study; further delay risks native enthrallment.";
+            if (stage >= 2)
+                return "The captives are being used as both renewable feeding stock and biological experiment subjects.";
+            return "The captives are being deliberately kept alive as renewable feeding stock.";
         }
 
         public override void GameComponentTick()
@@ -656,6 +941,7 @@ namespace WraithNaniteGravtech
                 return;
 
             ReconcileRecoveredOrDead();
+            AdvanceCaptiveLifecycle(now);
             ExpireRescueSites(now);
             TryOfferRescueSites(now);
         }
@@ -671,6 +957,16 @@ namespace WraithNaniteGravtech
                 if (records == null)
                     records = new List<WraithAbducteeRecord>();
                 records.RemoveAll(r => r == null || r.pawn == null);
+                int now = Find.TickManager?.TicksGame ?? 0;
+                int pressure = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
+                int maxStage = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+                foreach (WraithAbducteeRecord record in records)
+                {
+                    record.captivityStage = Math.Max(0, Math.Min(maxStage, record.captivityStage));
+                    if (record.nextCaptivityPressureTick < 0)
+                        record.nextCaptivityPressureTick = now + pressure;
+                    ApplyCaptiveState(record);
+                }
             }
         }
     }

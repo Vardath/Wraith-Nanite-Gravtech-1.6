@@ -40,22 +40,29 @@ namespace WraithNaniteGravtech
                 index++;
             }
 
-            SpawnDefenders(map, site.Faction, records.Count);
+            Pawn keeper = SpawnDefenders(map, site.Faction, records.Count, records.Max(r => registry.CaptivityStage(r)));
+            if (keeper != null)
+            {
+                foreach (WraithAbducteeRecord record in records)
+                    registry.TryCommitNativeEnthrallmentAtSite(record, keeper);
+            }
         }
 
-        private static void SpawnDefenders(Map map, Faction faction, int captiveCount)
+        private static Pawn SpawnDefenders(Map map, Faction faction, int captiveCount, int maxCaptivityStage)
         {
             if (map == null || faction == null)
-                return;
+                return null;
 
             PawnKindDef keeper = DefDatabase<PawnKindDef>.GetNamedSilentFail("WNG_WraithKeeper");
             PawnKindDef hunter = DefDatabase<PawnKindDef>.GetNamedSilentFail("WNG_WraithHunter");
             PawnKindDef warrior = DefDatabase<PawnKindDef>.GetNamedSilentFail("WNG_WraithWarrior");
             if (keeper == null || hunter == null || warrior == null)
-                return;
+                return null;
 
-            int count = Math.Max(3, Math.Min(8, captiveCount + 2));
+            int stageGuardBonus = Math.Max(0, Math.Min(2, maxCaptivityStage - 2));
+            int count = Math.Max(3, Math.Min(10, captiveCount + 2 + stageGuardBonus));
             Lord lord = LordMaker.MakeNewLord(faction, new LordJob_DefendBase(faction, map.Center, 60000), map);
+            Pawn keeperPawn = null;
             for (int i = 0; i < count; i++)
             {
                 PawnKindDef kind = i == 0 ? keeper : (i % 2 == 0 ? warrior : hunter);
@@ -63,7 +70,10 @@ namespace WraithNaniteGravtech
                 IntVec3 cell = CellFinder.RandomClosewalkCellNear(map.Center, map, 16);
                 GenSpawn.Spawn(defender, cell, map);
                 lord.AddPawn(defender);
+                if (i == 0)
+                    keeperPawn = defender;
             }
+            return keeperPawn;
         }
 
         public override void SitePartWorkerTick(SitePart sitePart)

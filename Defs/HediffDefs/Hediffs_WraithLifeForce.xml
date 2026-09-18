@@ -63,6 +63,41 @@
     <comps><li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>60000~60000</disappearsAfterTicks></li></comps>
   </HediffDef>
   <HediffDef>
+    <defName>WNG_WraithFeedingStock</defName>
+    <label>wraith feeding stock</label>
+    <description>The Wraith are deliberately keeping this exact captive alive as a renewable feeding reserve between controlled feeding cycles. The marker is temporary custody state; biological aging and feeding trauma inflicted during captivity remain real after rescue.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <duplicationAllowed>false</duplicationAllowed>
+    <isBad>true</isBad>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>90000~90000</disappearsAfterTicks></li>
+    </comps>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_WraithConditionedCaptive</defName>
+    <label>wraith-conditioned captive</label>
+    <description>Repeated psychic pressure has eroded this captive's independent responses. The conditioning is short of a committed native Enthrallment transition but leaves the subject unusually receptive to Wraith influence while captivity continues.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <duplicationAllowed>false</duplicationAllowed>
+    <isBad>true</isBad>
+    <stages>
+      <li>
+        <statOffsets>
+          <MentalBreakThreshold>-0.10</MentalBreakThreshold>
+          <PsychicSensitivity>0.30</PsychicSensitivity>
+        </statOffsets>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.06</offset></li>
+        </capMods>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_Disappears"><disappearsAfterTicks>300000~300000</disappearsAfterTicks></li>
+    </comps>
+  </HediffDef>
+
+  <HediffDef>
     <defName>WNG_WraithExperimentSubject</defName>
     <label>wraith experiment subject</label>
     <description>Invasive Wraith examination has left temporary neurological and motor disruption. The subject remains the same prisoner and retains normal custody and identity.</description>
