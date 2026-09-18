@@ -158,6 +158,30 @@ jobs:
           if pattern_recipes.count('<workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>') < len(required_patterns):
               failures.append('Expanded Asuran pattern recipes are not consistently archive-gated')
 
+          # Quest-driven Wraith subfaction politics must alter native NPC-to-NPC goodwill,
+          # exclude permanent-enemy Sable Brood, and require a real biomass commitment.
+          politics_quest = Path('Source/WraithNaniteGravtech/Wraith/WraithInterHiveMediation.cs').read_text(encoding='utf-8')
+          politics_def = Path('Defs/QuestScriptDefs/Quests_WraithPolitics.xml').read_text(encoding='utf-8')
+          for label, needle in (
+              ('mediation quest Def', '<defName>WNG_WraithInterHiveMediation</defName>'),
+              ('mediation quest root', 'QuestNode_Root_WraithInterHiveMediation'),
+          ):
+              if needle not in politics_def:
+                  failures.append(f'Wraith mediation contract missing: {label}')
+          for label, needle in (
+              ('Cinder Court participation', 'WraithLineageUtility.CinderCourtDefName'),
+              ('Veiled Hive participation', 'WraithLineageUtility.VeiledHiveDefName'),
+              ('Pale Covenant participation', 'WraithLineageUtility.PaleCovenantDefName'),
+              ('Sable Brood exclusion', 'WraithLineageUtility.SableBroodDefName'),
+              ('finite biomass cost', 'public const int BiomassCost = 60'),
+              ('native goodwill mutation', 'TryAffectGoodwillWith'),
+              ('biomass consumption', 'WraithHiveEcologyUtility.TryConsumeResource'),
+              ('failed-commit refund', 'WraithHiveEcologyUtility.SpawnResource'),
+              ('goodwill ceiling', 'public const int GoodwillCeiling = 80'),
+          ):
+              if needle not in politics_quest:
+                  failures.append(f'Wraith mediation contract missing: {label}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
