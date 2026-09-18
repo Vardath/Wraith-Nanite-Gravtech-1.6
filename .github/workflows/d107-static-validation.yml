@@ -1199,6 +1199,43 @@ jobs:
           if 'AsuranCollectiveUtility.IsNaniteSynthetic' in stun_staff:
               failures.append('Wraith stun-staff reimplemented nanite exclusion instead of using the current biological-humanlike authority')
 
+          # Advanced anti-Replicator EMP suppression is a distinct countermeasure above
+          # containment, but the current shared interference component remains the only block-EMP state.
+          rep_emp_emitter = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorSuppressionEmitter.cs').read_text(encoding='utf-8')
+          rep_emp_emitter_def = Path('Defs/ThingDefs/Things_ReplicatorSuppression.xml').read_text(encoding='utf-8')
+          rep_emp_research = Path('Defs/ResearchProjectDefs/Research_AdvancedNaniteSuppression.xml').read_text(encoding='utf-8')
+          rep_emp_core = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorEMP.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('advanced suppression research', rep_emp_research, '<defName>WNG_AdvancedNaniteSuppression</defName>'),
+              ('containment prerequisite', rep_emp_research, '<li>WNG_NaniteContainment</li>'),
+              ('nanite-analysis prerequisite', rep_emp_research, '<li>WNG_NaniteAnalysis</li>'),
+              ('suppression emitter Def', rep_emp_emitter_def, '<defName>WNG_ReplicatorSuppressionEmitter</defName>'),
+              ('core-fragment cost', rep_emp_emitter_def, '<WNG_ReplicatorCoreFragment>2</WNG_ReplicatorCoreFragment>'),
+              ('bounded pulse radius', rep_emp_emitter_def, '<radius>13</radius>'),
+              ('bounded target count', rep_emp_emitter_def, '<maxTargets>6</maxTargets>'),
+              ('2600W power cost', rep_emp_emitter_def, '<basePowerConsumption>2600</basePowerConsumption>'),
+              ('native EMP damage only', rep_emp_emitter, 'DamageDefOf.EMP'),
+              ('current block-interference identity', rep_emp_emitter, 'CompReplicatorInterference'),
+              ('human-form nanite targeting', rep_emp_emitter, 'AsuranCollectiveUtility.IsNaniteSynthetic(pawn)'),
+              ('controller-first priority', rep_emp_emitter, 'ReplicatorCoordinationUtility.IsController'),
+              ('shield-adaptation priority', rep_emp_emitter, 'ReplicatorAdaptationFlags.Shield'),
+              ('shared interference state', rep_emp_core, 'private int empDisruptedUntilTick;'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator EMP suppressor contract missing: {label}')
+          for forbidden in (
+              'suppressedUntilTick',
+              'ApplySuppression(',
+              'InheritEmpDisruptionUntil(',
+              'StunFor(',
+          ):
+              if forbidden in rep_emp_emitter:
+                  failures.append(f'Replicator EMP suppressor recreated a parallel suppression state/API: {forbidden}')
+          if 'PawnGenerator.GeneratePawn' in rep_emp_emitter:
+              failures.append('Replicator EMP suppressor unexpectedly creates Replicator bodies')
+          if 'WNG_ReplicatorContainmentProjector' in rep_emp_emitter:
+              failures.append('Replicator EMP suppressor source is coupled to containment instead of remaining a distinct countermeasure')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
