@@ -74,7 +74,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_WraithGrowthChamber</defName>
     <label>wraith growth chamber</label>
-    <description>A cultivated Wraith gestation organ. Player Wraith colonies use it to initiate resource-paid caste gestation and to grow researched Wraith augmentations, while hostile mature Hives use the same organ under their Hive Heart ecology. Hunter, Warrior and Keeper gestation use biomass and Life Force; Commander gestation additionally consumes an existing Wraith biological template, either a corpse or a living Wraith prisoner. A Growth Chamber is produced directly at a Living Forge; it has no separate growth-chamber seed stage.</description>
+    <description>A cultivated Wraith gestation organ. Player Wraith colonies use it for resource-paid caste gestation, researched Wraith augmentations, and—after dedicated research—permanent Wraith-human hybrid grafting of an exact living subject. Hunter, Warrior and Keeper gestation use biomass and Life Force; Commander gestation additionally consumes an existing Wraith biological template. Hybrid grafting instead preserves the subject as the same pawn and installs only a limited unstable Wraith phenotype. Hostile mature Hives use the same organ under their Hive Heart ecology. A Growth Chamber is produced directly at a Living Forge; it has no separate growth-chamber seed stage.</description>
     <thingClass>Building_WorkTable</thingClass>
     <drawerType>MapMeshAndRealTime</drawerType>
     <tickerType>Normal</tickerType>
@@ -101,6 +101,16 @@
     </statBases>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_PlayerWraithGrowthChamber" />
+      <li Class="WraithNaniteGravtech.CompProperties_WraithHybridization">
+        <baseBiomassCost>360</baseBiomassCost>
+        <baseDurationTicks>180000</baseDurationTicks>
+        <donorMinimumLifeForce>0.70</donorMinimumLifeForce>
+        <donorLifeForceCost>0.40</donorLifeForceCost>
+        <initialHybridLifeForce>0.25</initialHybridLifeForce>
+        <gravSubstructureBiomassFactor>0.70</gravSubstructureBiomassFactor>
+        <gravSubstructureDurationFactor>0.65</gravSubstructureDurationFactor>
+        <completionRetryTicks>250</completionRetryTicks>
+      </li>
     </comps>
   </ThingDef>
 
