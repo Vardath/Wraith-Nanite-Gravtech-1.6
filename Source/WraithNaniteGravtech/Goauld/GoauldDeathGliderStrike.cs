@@ -13,7 +13,8 @@ namespace WraithNaniteGravtech
     /// </summary>
     public sealed class IncidentWorker_GoauldDeathGliderStrike : IncidentWorker
     {
-        private const string GliderDefName = "WNG_GoauldDeathGlider";
+        private const string GliderDefName = "WNG_GoauldDeathGlider_NPC";
+        private const string LegacyPlayerGliderDefName = "WNG_GoauldDeathGlider";
         private const string AttackPassDefName = "WNG_GoauldDeathGliderAttackPass";
 
         protected override bool CanFireNowSub(IncidentParms parms)
@@ -147,6 +148,14 @@ namespace WraithNaniteGravtech
 
             if (map.listerThings.ThingsOfDef(gliderDef).Any(t =>
                 t != null && !t.Destroyed && GoauldOptionalInterop.IsSystemLordFaction(t.Faction)))
+                return true;
+
+            // Preserve old saves that already contain a hostile player-Def Glider from before
+            // the player/NPC shuttle split was restored. Do not spawn a duplicate operation.
+            ThingDef legacyPlayerDef = DefDatabase<ThingDef>.GetNamedSilentFail(LegacyPlayerGliderDefName);
+            if (legacyPlayerDef != null && legacyPlayerDef != gliderDef &&
+                map.listerThings.ThingsOfDef(legacyPlayerDef).Any(t =>
+                    t != null && !t.Destroyed && GoauldOptionalInterop.IsSystemLordFaction(t.Faction)))
                 return true;
 
             ThingDef passDef = DefDatabase<ThingDef>.GetNamedSilentFail(AttackPassDefName);

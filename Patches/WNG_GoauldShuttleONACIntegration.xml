@@ -43,6 +43,20 @@
         <xpath>Defs/ThingDef[defName="WNG_GoauldDeathGlider"]/comps/li[@Class="CompProperties_Refuelable"]/fuelGizmoLabel</xpath>
         <value><fuelGizmoLabel>Liquid Naquadria</fuelGizmoLabel></value>
       </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="WNG_GoauldDeathGlider_NPC"]/comps/li[@Class="CompProperties_Refuelable"]/fuelFilter/thingDefs/li</xpath>
+        <value><li>ONAC_LiquidNaquadria</li></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="WNG_GoauldDeathGlider_NPC"]/comps/li[@Class="CompProperties_Refuelable"]/fuelLabel</xpath>
+        <value><fuelLabel>Liquid Naquadria</fuelLabel></value>
+      </li>
+      <li Class="PatchOperationReplace">
+        <xpath>Defs/ThingDef[defName="WNG_GoauldDeathGlider_NPC"]/comps/li[@Class="CompProperties_Refuelable"]/fuelGizmoLabel</xpath>
+        <value><fuelGizmoLabel>Liquid Naquadria</fuelGizmoLabel></value>
+      </li>
+
+
 
       <li Class="PatchOperationAdd">
         <xpath>Defs/ResearchProjectDef[defName="WNG_GoauldShuttles"]/prerequisites</xpath>
