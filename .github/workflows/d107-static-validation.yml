@@ -1035,6 +1035,27 @@ jobs:
           if 'historicalInterestFlags |= (int)(interests & allowed)' not in rep_adaptation_history:
               failures.append('Replicator historical technology memory no longer remains a non-learned interest snapshot')
 
+          # Historical rare vacuum-module trader route: one physical specimen only.
+          rare_vacuum_trade = Path('Source/WraithNaniteGravtech/Ancient/RareArtifactTrade.cs').read_text(encoding='utf-8')
+          rare_vacuum_patch = Path('Patches/WNG_RareVacuumModuleTraders.xml').read_text(encoding='utf-8')
+          vacuum_def = Path('Defs/ThingDefs/Things_VacuumEnergy.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('rare vacuum stock generator', rare_vacuum_trade, 'StockGenerator_WNGRareVacuumModule'),
+              ('current module identity', rare_vacuum_trade, 'WNG_VacuumEnergyModule'),
+              ('exact one-item stock', rare_vacuum_trade, 'item.stackCount = 1'),
+              ('exotic orbital trader', rare_vacuum_patch, 'defName="Orbital_Exotic"'),
+              ('exotic outlander trader', rare_vacuum_patch, 'defName="Caravan_Outlander_Exotic"'),
+              ('retained four-percent chance', rare_vacuum_patch, '<chance>0.04</chance>'),
+              ('current module sellability', vacuum_def, '<tradeability>All</tradeability>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Rare vacuum-module trade contract missing: {label}')
+          if 'WNG_DormantChildsToy' in rare_vacuum_trade or 'WNG_DormantChildsToy' in rare_vacuum_patch:
+              failures.append('Rare artifact trade resurrected the obsolete dormant Child\'s Toy item')
+          for forbidden in ('FinishProject', 'ResearchManager', 'requiredAnalyzed', 'Analyze'):
+              if forbidden in rare_vacuum_trade:
+                  failures.append(f'Rare vacuum-module trader bypasses native research analysis: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
