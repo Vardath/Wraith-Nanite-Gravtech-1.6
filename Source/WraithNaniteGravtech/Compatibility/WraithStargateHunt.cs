@@ -288,7 +288,7 @@ namespace WraithNaniteGravtech
                 {
                     Messages.Message(
                         "The same Stargate corridor has redialed and delivered a bounded Wraith reinforcement wave.",
-                        sourceGate ?? new TargetInfo(sourceGateCell, map),
+                        new TargetInfo(sourceGateCell, map),
                         MessageTypeDefOf.ThreatSmall,
                         historical: false);
                 }
@@ -485,11 +485,6 @@ namespace WraithNaniteGravtech
             baseRaidPoints = 0f;
             preExistingPawnIds?.Clear();
             hunters?.Clear();
-        }
-
-        public override string GetUniqueLoadID()
-        {
-            return "WNG_WraithGateHunt_" + map.uniqueID;
         }
 
         public override void ExposeData()
