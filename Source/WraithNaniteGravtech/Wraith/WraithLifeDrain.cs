@@ -1,6 +1,7 @@
 using System;
 using RimWorld;
 using Verse;
+using Verse.Sound;
 
 namespace WraithNaniteGravtech
 {
@@ -277,4 +278,279 @@ namespace WraithNaniteGravtech
                    (victim.Downed || victim.IsPrisoner);
         }
     }
+
+    public sealed class CompProperties_AbilityReturnLife : CompProperties_AbilityEffect
+    {
+        public float lifeForceCost = 0.66f;
+        public long restoredAgeYears = 10L;
+        public long minimumTargetAgeYears = 18L;
+
+        public CompProperties_AbilityReturnLife()
+        {
+            compClass = typeof(CompAbilityEffect_ReturnLife);
+        }
+    }
+
+    /// <summary>
+    /// Queen-only reversal of Wraith feeding. The target remains the exact same living pawn;
+    /// this transfers stored vitality only and never resurrects or performs generic injury repair.
+    /// </summary>
+    public sealed class CompAbilityEffect_ReturnLife : CompAbilityEffect
+    {
+        private const long TicksPerYear = 3600000L;
+        private const string LifeDrainedDefName = "WNG_LifeDrained";
+        private const string QueenKindDefName = "WNG_WraithQueen";
+
+        public new CompProperties_AbilityReturnLife Props => (CompProperties_AbilityReturnLife)props;
+
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+
+            Pawn caster = parent?.pawn;
+            Pawn recipient = target.Pawn;
+            if (!CanReturnLife(caster, recipient, out Gene_Resource_LifeForce resource, out Hediff drained))
+                return;
+
+            float cost = Math.Max(0f, Props.lifeForceCost);
+            long originalAge = recipient.ageTracker.AgeBiologicalTicks;
+            long restoredAge = CalculateRestoredAge(
+                originalAge,
+                Math.Max(0L, Props.restoredAgeYears),
+                Math.Max(0L, Props.minimumTargetAgeYears));
+
+            if (!resource.TrySpend(cost))
+                return;
+
+            bool removedDrained = false;
+            try
+            {
+                recipient.ageTracker.AgeBiologicalTicks = restoredAge;
+
+                if (drained != null)
+                {
+                    recipient.health.RemoveHediff(drained);
+                    removedDrained = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                resource.AddLifeForce(cost);
+                recipient.ageTracker.AgeBiologicalTicks = originalAge;
+
+                if (removedDrained)
+                {
+                    HediffDef drainedDef = DefDatabase<HediffDef>.GetNamedSilentFail(LifeDrainedDefName);
+                    if (drainedDef != null && recipient.health?.hediffSet?.GetFirstHediffOfDef(drainedDef) == null)
+                        recipient.health.AddHediff(drainedDef);
+                }
+
+                Log.Error("[WNG] Return Life rolled back after an incomplete target transaction: " + ex.Message);
+                return;
+            }
+
+            try
+            {
+                if (caster.Spawned && caster.Map != null)
+                {
+                    DefDatabase<SoundDef>.GetNamedSilentFail("WNG_WraithReturnLife")
+                        ?.PlayOneShot(new TargetInfo(caster.Position, caster.Map));
+                }
+
+                Messages.Message(
+                    caster.LabelShortCap + " returned stored life force to " + recipient.LabelShortCap + ".",
+                    recipient,
+                    MessageTypeDefOf.PositiveEvent,
+                    historical: true);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Return Life committed but presentation failed: " + ex.Message);
+            }
+        }
+
+        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
+        {
+            Pawn caster = parent?.pawn;
+            Pawn recipient = target.Pawn;
+
+            if (!CanReturnLife(caster, recipient, out _, out Hediff drained))
+            {
+                if (throwMessages && caster != null)
+                {
+                    Messages.Message(
+                        "Return Life requires a Wraith Queen with sufficient Life Force and another living biological humanlike.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        historical: false);
+                }
+                return false;
+            }
+
+            long currentAge = recipient.ageTracker.AgeBiologicalTicks;
+            long restoredAge = CalculateRestoredAge(
+                currentAge,
+                Math.Max(0L, Props.restoredAgeYears),
+                Math.Max(0L, Props.minimumTargetAgeYears));
+
+            if (drained == null && restoredAge >= currentAge)
+            {
+                if (throwMessages)
+                {
+                    Messages.Message(
+                        "This target has no feeding trauma or recoverable biological ageing for Return Life to reverse.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        historical: false);
+                }
+                return false;
+            }
+
+            return base.Valid(target, throwMessages);
+        }
+
+        private bool CanReturnLife(
+            Pawn caster,
+            Pawn recipient,
+            out Gene_Resource_LifeForce resource,
+            out Hediff drained)
+        {
+            resource = null;
+            drained = null;
+
+            if (caster == null ||
+                caster.kindDef?.defName != QueenKindDefName ||
+                recipient == null ||
+                recipient == caster ||
+                recipient.Dead ||
+                recipient.RaceProps == null ||
+                !recipient.RaceProps.Humanlike ||
+                !recipient.RaceProps.IsFlesh ||
+                recipient.RaceProps.IsMechanoid ||
+                AsuranCollectiveUtility.IsNaniteSynthetic(recipient) ||
+                recipient.ageTracker == null)
+            {
+                return false;
+            }
+
+            resource = caster.genes?.GetFirstGeneOfType<Gene_Resource_LifeForce>();
+            float cost = Math.Max(0f, Props.lifeForceCost);
+            if (resource == null || !resource.Active || !resource.CanSpend(cost))
+                return false;
+
+            HediffDef drainedDef = DefDatabase<HediffDef>.GetNamedSilentFail(LifeDrainedDefName);
+            drained = drainedDef == null ? null : recipient.health?.hediffSet?.GetFirstHediffOfDef(drainedDef);
+            return true;
+        }
+
+        private static long CalculateRestoredAge(long currentTicks, long years, long adultFloorYears)
+        {
+            long reduction;
+            long adultFloor;
+            try
+            {
+                checked
+                {
+                    reduction = years * TicksPerYear;
+                    adultFloor = adultFloorYears * TicksPerYear;
+                }
+            }
+            catch (OverflowException)
+            {
+                reduction = long.MaxValue;
+                adultFloor = long.MaxValue;
+            }
+
+            long safeCurrent = Math.Max(0L, currentTicks);
+            long floor = Math.Min(safeCurrent, Math.Max(0L, adultFloor));
+            long reduced = safeCurrent > reduction ? safeCurrent - reduction : 0L;
+            return Math.Max(floor, reduced);
+        }
+    }
+
+    public sealed class CompProperties_AbilityWraithCaptiveExperiment : CompProperties_AbilityEffect
+    {
+        public CompProperties_AbilityWraithCaptiveExperiment()
+        {
+            compClass = typeof(CompAbilityEffect_WraithCaptiveExperiment);
+        }
+    }
+
+    /// <summary>
+    /// Player-directed Wraith prisoner experiment. The exact prisoner remains the same pawn under
+    /// the same guest/faction custody; only temporary health and observer-insight effects change.
+    /// </summary>
+    public sealed class CompAbilityEffect_WraithCaptiveExperiment : CompAbilityEffect
+    {
+        private const string SubjectDefName = "WNG_WraithExperimentSubject";
+        private const string InsightDefName = "WNG_WraithExperimentalInsight";
+
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+
+            Pawn caster = parent?.pawn;
+            Pawn prisoner = target.Pawn;
+            if (!CanExperiment(caster, prisoner))
+                return;
+
+            HediffDef subjectDef = DefDatabase<HediffDef>.GetNamedSilentFail(SubjectDefName);
+            HediffDef insightDef = DefDatabase<HediffDef>.GetNamedSilentFail(InsightDefName);
+            if (subjectDef == null || insightDef == null)
+                return;
+
+            AddOrRefresh(prisoner, subjectDef);
+            AddOrRefresh(caster, insightDef);
+        }
+
+        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
+        {
+            Pawn caster = parent?.pawn;
+            Pawn prisoner = target.Pawn;
+            if (!CanExperiment(caster, prisoner))
+            {
+                if (throwMessages && caster != null)
+                {
+                    Messages.Message(
+                        "Captive Experiment requires a living biological humanlike prisoner held by the Wraith's faction.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        historical: false);
+                }
+                return false;
+            }
+
+            return base.Valid(target, throwMessages);
+        }
+
+        private static bool CanExperiment(Pawn caster, Pawn prisoner)
+        {
+            return caster != null &&
+                   caster.Faction != null &&
+                   prisoner != null &&
+                   prisoner != caster &&
+                   !prisoner.Dead &&
+                   prisoner.RaceProps != null &&
+                   prisoner.RaceProps.Humanlike &&
+                   prisoner.RaceProps.IsFlesh &&
+                   !prisoner.RaceProps.IsMechanoid &&
+                   !AsuranCollectiveUtility.IsNaniteSynthetic(prisoner) &&
+                   prisoner.guest != null &&
+                   prisoner.guest.IsPrisoner &&
+                   prisoner.guest.HostFaction == caster.Faction;
+        }
+
+        private static void AddOrRefresh(Pawn pawn, HediffDef hediffDef)
+        {
+            if (pawn?.health?.hediffSet == null || hediffDef == null)
+                return;
+
+            Hediff existing = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+            if (existing != null)
+                pawn.health.RemoveHediff(existing);
+
+            pawn.health.AddHediff(hediffDef);
+        }
+    }
+
 }
