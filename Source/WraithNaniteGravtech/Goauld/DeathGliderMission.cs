@@ -35,6 +35,8 @@ namespace WraithNaniteGravtech
         private IntVec3 returnCell = IntVec3.Invalid;
         private Rot4 returnRotation = Rot4.North;
         private bool retreatAfterSortie;
+        private Faction priorityTargetFaction;
+        private IntVec3 priorityTargetCell = IntVec3.Invalid;
 
         private CompProperties_GoauldDeathGliderMission Props => (CompProperties_GoauldDeathGliderMission)props;
         private CompTransporter Transporter => parent?.TryGetComp<CompTransporter>();
@@ -47,6 +49,26 @@ namespace WraithNaniteGravtech
         {
             if (!sortieActive && parent?.Faction != Faction.OfPlayer)
                 retreatAfterSortie = true;
+        }
+
+        public void ConfigurePriorityTarget(Faction targetFaction, IntVec3 focusCell)
+        {
+            if (sortieActive || parent?.Faction == Faction.OfPlayer)
+                return;
+            priorityTargetFaction = targetFaction;
+            priorityTargetCell = focusCell;
+        }
+
+        public IntVec3 FindNextAttackPassCell(Map map, IntVec3 previousPassCell)
+        {
+            if (map != null && priorityTargetFaction != null &&
+                priorityTargetCell.IsValid && priorityTargetCell.InBounds(map))
+                return GoauldDeathGliderFlightUtility.FindAttackPassCellNear(map, priorityTargetCell);
+
+            return GoauldDeathGliderFlightUtility.FindAttackPassCell(
+                map,
+                previousPassCell,
+                oppositeSide: true);
         }
 
         public int OperationalCrewCount
@@ -127,7 +149,11 @@ namespace WraithNaniteGravtech
             boltsFired = 0;
             sortieActive = true;
 
-            IntVec3 passCell = GoauldDeathGliderFlightUtility.FindAttackPassCell(map, returnCell, oppositeSide: false);
+            IntVec3 passCell = priorityTargetFaction != null &&
+                               priorityTargetCell.IsValid &&
+                               priorityTargetCell.InBounds(map)
+                ? GoauldDeathGliderFlightUtility.FindAttackPassCellNear(map, priorityTargetCell)
+                : GoauldDeathGliderFlightUtility.FindAttackPassCell(map, returnCell, oppositeSide: false);
             if (!GoauldDeathGliderFlightUtility.TryBeginPhysicalPass(parent, map, passCell))
             {
                 sortieActive = false;
@@ -170,6 +196,8 @@ namespace WraithNaniteGravtech
             sortieActive = false;
             returnCell = IntVec3.Invalid;
             retreatAfterSortie = false;
+            priorityTargetFaction = null;
+            priorityTargetCell = IntVec3.Invalid;
         }
 
         public void NotifyPhysicalWithdrawalCommitted()
@@ -177,6 +205,8 @@ namespace WraithNaniteGravtech
             sortieActive = false;
             returnCell = IntVec3.Invalid;
             retreatAfterSortie = false;
+            priorityTargetFaction = null;
+            priorityTargetCell = IntVec3.Invalid;
         }
 
         private void FirePairedStaffCannons(Map map, IntVec3 passCell)
@@ -231,6 +261,8 @@ namespace WraithNaniteGravtech
                 return false;
             if (!(thing is Pawn) && !(thing is Building))
                 return false;
+            if (priorityTargetFaction != null)
+                return thing.Faction == priorityTargetFaction;
             return parent.Faction.HostileTo(thing.Faction);
         }
 
@@ -254,6 +286,8 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref returnCell, "wngDeathGliderReturnCell", IntVec3.Invalid);
             Scribe_Values.Look(ref returnRotation, "wngDeathGliderReturnRotation", Rot4.North);
             Scribe_Values.Look(ref retreatAfterSortie, "wngDeathGliderRetreatAfterSortie", false);
+            Scribe_References.Look(ref priorityTargetFaction, "wngDeathGliderPriorityTargetFaction");
+            Scribe_Values.Look(ref priorityTargetCell, "wngDeathGliderPriorityTargetCell", IntVec3.Invalid);
         }
     }
 
@@ -301,7 +335,9 @@ namespace WraithNaniteGravtech
 
                 if (continueFlightAfterPass)
                 {
-                    IntVec3 nextCell = GoauldDeathGliderFlightUtility.FindAttackPassCell(map, passCell, oppositeSide: true);
+                    IntVec3 nextCell = mission != null
+                        ? mission.FindNextAttackPassCell(map, passCell)
+                        : GoauldDeathGliderFlightUtility.FindAttackPassCell(map, passCell, oppositeSide: true);
                     committed = GoauldDeathGliderFlightUtility.SpawnAttackPass(craft, map, nextCell);
                 }
                 else if (mission?.ShouldWithdrawAfterFinalPass == true)
@@ -531,6 +567,13 @@ namespace WraithNaniteGravtech
                 }
                 return false;
             }
+        }
+
+        public static IntVec3 FindAttackPassCellNear(Map map, IntVec3 focus)
+        {
+            if (map == null)
+                return focus;
+            return FindPassCell(map, focus);
         }
 
         public static IntVec3 FindAttackPassCell(Map map, IntVec3 origin, bool oppositeSide)
