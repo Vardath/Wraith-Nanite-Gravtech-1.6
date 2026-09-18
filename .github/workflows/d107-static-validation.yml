@@ -138,6 +138,26 @@ jobs:
           if '<requiredAnalyzed>' not in nanite_block or '<li>WNG_RecoveredPrecursorPulseRifle</li>' not in nanite_block:
               failures.append('Nanite Analysis is no longer gated by the recovered precursor-rifle specimen')
 
+          # Retained Asuran pattern library must preserve the broadened explicit military catalogue.
+          pattern_source = Path('Source/WraithNaniteGravtech/Asurans/AsuranTechnologyPatternLibrary.cs').read_text(encoding='utf-8')
+          pattern_recipes = Path('Defs/RecipeDefs/Recipes_AsuranPatternReconstruction.xml').read_text(encoding='utf-8')
+          required_patterns = {
+              'Gun_AssaultRifle': 'WNG_ReconstructAssaultRifle',
+              'Gun_SniperRifle': 'WNG_ReconstructSniperRifle',
+              'Gun_LMG': 'WNG_ReconstructLMG',
+              'Gun_ChainShotgun': 'WNG_ReconstructChainShotgun',
+              'Apparel_ArmorRecon': 'WNG_ReconstructReconArmor',
+              'Apparel_ArmorCataphract': 'WNG_ReconstructCataphractArmor',
+              'Apparel_ArmorCataphractHelmet': 'WNG_ReconstructCataphractHelmet',
+          }
+          for specimen, recipe in required_patterns.items():
+              if specimen not in pattern_source or recipe not in pattern_source:
+                  failures.append(f'Asuran pattern catalogue missing {specimen} -> {recipe}')
+              if f'<defName>{recipe}</defName>' not in pattern_recipes:
+                  failures.append(f'Asuran pattern reconstruction recipe missing: {recipe}')
+          if pattern_recipes.count('<workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>') < len(required_patterns):
+              failures.append('Expanded Asuran pattern recipes are not consistently archive-gated')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
