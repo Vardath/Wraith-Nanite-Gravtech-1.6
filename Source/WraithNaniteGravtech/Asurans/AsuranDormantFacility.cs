@@ -125,7 +125,7 @@ namespace WraithNaniteGravtech
             PlaceBuilding(map, "WNG_AsuranDormantReconstructionPlinth", map.Center + new IntVec3(-4, 0, 3));
             PlaceBuilding(map, "WNG_AsuranDormantReconstructionPlinth", map.Center + new IntVec3(4, 0, -3));
 
-            PlaceThing(map, "WNG_PrecursorPulseRifle", map.Center + new IntVec3(0, 0, 4));
+            PlaceThing(map, "WNG_RecoveredPrecursorPulseRifle", map.Center + new IntVec3(0, 0, 4));
             PlaceStack(map, "Plasteel", map.Center + new IntVec3(-2, 0, 4), Rand.RangeInclusive(18, 32));
             PlaceStack(map, "ComponentIndustrial", map.Center + new IntVec3(2, 0, 4), Rand.RangeInclusive(1, 3));
         }
