@@ -31,11 +31,16 @@ namespace WraithNaniteGravtech
         private int deployAtTick = -1;
         private int nextRetryTick = -1;
         private int deployRetries;
+        private List<Pawn> deployedCrew = new List<Pawn>();
 
         public CompProperties_HostileGateJumperIngress Props =>
             (CompProperties_HostileGateJumperIngress)props;
 
         public bool Active => active;
+        public Thing SourceGate => sourceGate;
+        public IEnumerable<Pawn> DeployedCrew =>
+            (deployedCrew ?? new List<Pawn>())
+                .Where(p => p != null && !p.Dead && !p.Destroyed);
 
         public bool Configure(Thing exactGate)
         {
@@ -59,6 +64,8 @@ namespace WraithNaniteGravtech
                 return false;
 
             sourceGate = exactGate;
+            deployedCrew ??= new List<Pawn>();
+            deployedCrew.Clear();
             deployAtTick = Math.Min(int.MaxValue, now + cloakTicks);
             nextRetryTick = deployAtTick;
             deployRetries = 0;
@@ -169,6 +176,14 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
+            // Every exact crew pawn is now physically committed to the map. Preserve these
+            // references so later mission systems can distinguish this gate-arrived team from
+            // unrelated Asuran raids on the same map.
+            deployedCrew = crew
+                .Where(p => p != null && !p.Dead && !p.Destroyed)
+                .Distinct()
+                .ToList();
+
             try
             {
                 LordMaker.MakeNewLord(
@@ -220,10 +235,18 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref deployAtTick, "wngHostileGateJumperDeployAt", -1);
             Scribe_Values.Look(ref nextRetryTick, "wngHostileGateJumperNextRetry", -1);
             Scribe_Values.Look(ref deployRetries, "wngHostileGateJumperDeployRetries", 0);
+            Scribe_Collections.Look(
+                ref deployedCrew,
+                "wngHostileGateJumperDeployedCrew",
+                LookMode.Reference);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 deployRetries = Math.Max(0, Math.Min(Math.Max(1, Props.maximumDeployRetries), deployRetries));
+                deployedCrew = (deployedCrew ?? new List<Pawn>())
+                    .Where(p => p != null && !p.Dead && !p.Destroyed)
+                    .Distinct()
+                    .ToList();
                 if (active && (sourceGate == null || sourceGate.Destroyed || !sourceGate.Spawned || sourceGate.Map != parent.Map))
                     sourceGate = null; // deployment can still complete from the already-present exact craft.
             }
