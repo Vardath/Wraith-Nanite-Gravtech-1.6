@@ -216,6 +216,36 @@ jobs:
               if comp not in npc_text:
                   failures.append(f'NPC Puddle Jumper missing hostile gate-ingress component {comp}')
 
+          # Strategic Wraith Stargate hunt / exact-gate control objective (#105/#108).
+          wraith_gate = Path('Source/WraithNaniteGravtech/Compatibility/WraithStargateHunt.cs').read_text(encoding='utf-8')
+          gate_objective = Path('Source/WraithNaniteGravtech/Compatibility/WNGGateControlObjective.cs').read_text(encoding='utf-8')
+          wraith_gate_def = Path('Defs/IncidentDefs/Incidents_WraithStargate.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('Wraith Stargate hunt incident', wraith_gate_def, '<defName>WNG_WraithStargateHunt</defName>'),
+              ('CatCraft-owned gate resolution', wraith_gate, 'mode.Worker.TryResolveRaidSpawnCenter'),
+              ('exact gate identity', wraith_gate, 'resolved == exactGate'),
+              ('existing Dart culling support', wraith_gate, 'MapComponent_WraithDartCulling'),
+              ('bounded reinforcement redial', wraith_gate, 'ReinforcementWindowTicks'),
+              ('same-gate reinforcement check', wraith_gate, 'IsExactGateUsable(map, sourceGate, faction)'),
+              ('same-gate fast extraction', wraith_gate, 'DirectToGate()'),
+              ('blocked-gate fallback delay', wraith_gate, 'BlockedGateFallbackTicks'),
+              ('conventional edge fallback', wraith_gate, 'DirectToMapEdge()'),
+              ('exact hostile pawn preservation on exit', wraith_gate, 'Find.WorldPawns.PassToWorld'),
+              ('gate objective component', gate_objective, 'MapComponent_WNGGateControlObjective'),
+              ('native alert surface', gate_objective, 'Alert_WNGGateControlObjective'),
+              ('objective exact gate state', gate_objective, 'ExactGateUsable'),
+              ('objective hunt capture progress', gate_objective, 'hunt?.Captures'),
+              ('objective reinforcement state', gate_objective, 'ReinforcementPending'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith Stargate hunt/control contract missing: {label}')
+          for source_name, haystack in (('Wraith hunt', wraith_gate), ('gate objective', gate_objective)):
+              if 'StargatesMod.' in haystack:
+                  failures.append(f'{source_name} has a compile-time CatCraft dependency instead of using the current string-guarded bridge')
+              for forbidden in ('receiveBuffer', 'ReceiveBuffer', 'ClearAndDestroyContents'):
+                  if forbidden in haystack:
+                      failures.append(f'{source_name} touches forbidden CatCraft/holder internals: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
