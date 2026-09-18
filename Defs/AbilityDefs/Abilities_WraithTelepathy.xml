@@ -164,6 +164,35 @@
       <li Class="WraithNaniteGravtech.CompProperties_AbilityWraithCaptiveExperiment" />
     </comps>
   </AbilityDef>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_CaptiveInterrogation</defName>
+    <label>telepathic captive interrogation</label>
+    <description>Subject a biological prisoner held by the Wraith's faction to a sustained surface-thought interrogation. The exact prisoner remains in the same native custody and suffers the established temporary Telepathically Probed disruption, while the interrogating Wraith gains the same bounded experimental insight used by the invasive examination path. This does not feed on, enthrall, recruit, age, hybridise or replace the prisoner.</description>
+    <iconPath>UI/Abilities/Focus</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>120000~120000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <range>-1</range>
+      <warmupTime>3</warmupTime>
+      <drawAimPie>false</drawAimPie>
+      <stunTargetOnCastStart>true</stunTargetOnCastStart>
+      <soundCast>WNG_WraithTelepathicProbe</soundCast>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityWraithCaptiveInterrogation" />
+    </comps>
+  </AbilityDef>
+
   <AbilityDef ParentName="PsycastBase">
     <defName>WNG_QueensCommand</defName>
     <label>queen's command</label>

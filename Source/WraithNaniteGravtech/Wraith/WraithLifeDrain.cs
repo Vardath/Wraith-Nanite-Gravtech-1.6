@@ -468,62 +468,9 @@ namespace WraithNaniteGravtech
         }
     }
 
-    public sealed class CompProperties_AbilityWraithCaptiveExperiment : CompProperties_AbilityEffect
+    internal static class WraithCaptiveProcedureUtility
     {
-        public CompProperties_AbilityWraithCaptiveExperiment()
-        {
-            compClass = typeof(CompAbilityEffect_WraithCaptiveExperiment);
-        }
-    }
-
-    /// <summary>
-    /// Player-directed Wraith prisoner experiment. The exact prisoner remains the same pawn under
-    /// the same guest/faction custody; only temporary health and observer-insight effects change.
-    /// </summary>
-    public sealed class CompAbilityEffect_WraithCaptiveExperiment : CompAbilityEffect
-    {
-        private const string SubjectDefName = "WNG_WraithExperimentSubject";
-        private const string InsightDefName = "WNG_WraithExperimentalInsight";
-
-        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
-        {
-            base.Apply(target, dest);
-
-            Pawn caster = parent?.pawn;
-            Pawn prisoner = target.Pawn;
-            if (!CanExperiment(caster, prisoner))
-                return;
-
-            HediffDef subjectDef = DefDatabase<HediffDef>.GetNamedSilentFail(SubjectDefName);
-            HediffDef insightDef = DefDatabase<HediffDef>.GetNamedSilentFail(InsightDefName);
-            if (subjectDef == null || insightDef == null)
-                return;
-
-            AddOrRefresh(prisoner, subjectDef);
-            AddOrRefresh(caster, insightDef);
-        }
-
-        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
-        {
-            Pawn caster = parent?.pawn;
-            Pawn prisoner = target.Pawn;
-            if (!CanExperiment(caster, prisoner))
-            {
-                if (throwMessages && caster != null)
-                {
-                    Messages.Message(
-                        "Captive Experiment requires a living biological humanlike prisoner held by the Wraith's faction.",
-                        caster,
-                        MessageTypeDefOf.RejectInput,
-                        historical: false);
-                }
-                return false;
-            }
-
-            return base.Valid(target, throwMessages);
-        }
-
-        private static bool CanExperiment(Pawn caster, Pawn prisoner)
+        public static bool IsEligiblePrisoner(Pawn caster, Pawn prisoner)
         {
             return caster != null &&
                    caster.Faction != null &&
@@ -540,7 +487,7 @@ namespace WraithNaniteGravtech
                    prisoner.guest.HostFaction == caster.Faction;
         }
 
-        private static void AddOrRefresh(Pawn pawn, HediffDef hediffDef)
+        public static void AddOrRefresh(Pawn pawn, HediffDef hediffDef)
         {
             if (pawn?.health?.hediffSet == null || hediffDef == null)
                 return;
@@ -550,6 +497,120 @@ namespace WraithNaniteGravtech
                 pawn.health.RemoveHediff(existing);
 
             pawn.health.AddHediff(hediffDef);
+        }
+    }
+
+    public sealed class CompProperties_AbilityWraithCaptiveExperiment : CompProperties_AbilityEffect
+    {
+        public CompProperties_AbilityWraithCaptiveExperiment()
+        {
+            compClass = typeof(CompAbilityEffect_WraithCaptiveExperiment);
+        }
+    }
+
+    /// <summary>
+    /// Player-directed invasive Wraith prisoner experiment. The exact prisoner remains the same pawn
+    /// under the same guest/faction custody; only temporary neurological and observer-insight effects change.
+    /// </summary>
+    public sealed class CompAbilityEffect_WraithCaptiveExperiment : CompAbilityEffect
+    {
+        private const string SubjectDefName = "WNG_WraithExperimentSubject";
+        private const string InsightDefName = "WNG_WraithExperimentalInsight";
+
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+
+            Pawn caster = parent?.pawn;
+            Pawn prisoner = target.Pawn;
+            if (!WraithCaptiveProcedureUtility.IsEligiblePrisoner(caster, prisoner))
+                return;
+
+            HediffDef subjectDef = DefDatabase<HediffDef>.GetNamedSilentFail(SubjectDefName);
+            HediffDef insightDef = DefDatabase<HediffDef>.GetNamedSilentFail(InsightDefName);
+            if (subjectDef == null || insightDef == null)
+                return;
+
+            WraithCaptiveProcedureUtility.AddOrRefresh(prisoner, subjectDef);
+            WraithCaptiveProcedureUtility.AddOrRefresh(caster, insightDef);
+        }
+
+        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
+        {
+            Pawn caster = parent?.pawn;
+            Pawn prisoner = target.Pawn;
+            if (!WraithCaptiveProcedureUtility.IsEligiblePrisoner(caster, prisoner))
+            {
+                if (throwMessages && caster != null)
+                {
+                    Messages.Message(
+                        "Captive Experiment requires a living biological humanlike prisoner held by the Wraith's faction.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        historical: false);
+                }
+                return false;
+            }
+
+            return base.Valid(target, throwMessages);
+        }
+    }
+
+    public sealed class CompProperties_AbilityWraithCaptiveInterrogation : CompProperties_AbilityEffect
+    {
+        public CompProperties_AbilityWraithCaptiveInterrogation()
+        {
+            compClass = typeof(CompAbilityEffect_WraithCaptiveInterrogation);
+        }
+    }
+
+    /// <summary>
+    /// Alternate captive-management path: sustained telepathic interrogation rather than invasive
+    /// neurological mapping. It reuses the established Telepathically Probed state, grants the same
+    /// bounded experimental insight to the Wraith observer, and never feeds on, recruits, enthralls,
+    /// replaces, ages or changes custody of the exact prisoner.
+    /// </summary>
+    public sealed class CompAbilityEffect_WraithCaptiveInterrogation : CompAbilityEffect
+    {
+        private const string ProbeDefName = "WNG_TelepathicallyProbed";
+        private const string InsightDefName = "WNG_WraithExperimentalInsight";
+
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+
+            Pawn caster = parent?.pawn;
+            Pawn prisoner = target.Pawn;
+            if (!WraithCaptiveProcedureUtility.IsEligiblePrisoner(caster, prisoner))
+                return;
+
+            HediffDef probeDef = DefDatabase<HediffDef>.GetNamedSilentFail(ProbeDefName);
+            HediffDef insightDef = DefDatabase<HediffDef>.GetNamedSilentFail(InsightDefName);
+            if (probeDef == null || insightDef == null)
+                return;
+
+            WraithCaptiveProcedureUtility.AddOrRefresh(prisoner, probeDef);
+            WraithCaptiveProcedureUtility.AddOrRefresh(caster, insightDef);
+        }
+
+        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
+        {
+            Pawn caster = parent?.pawn;
+            Pawn prisoner = target.Pawn;
+            if (!WraithCaptiveProcedureUtility.IsEligiblePrisoner(caster, prisoner))
+            {
+                if (throwMessages && caster != null)
+                {
+                    Messages.Message(
+                        "Captive Interrogation requires a living biological humanlike prisoner held by the Wraith's faction.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        historical: false);
+                }
+                return false;
+            }
+
+            return base.Valid(target, throwMessages);
         }
     }
 
