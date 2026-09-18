@@ -186,6 +186,36 @@ jobs:
               if needle not in politics_quest:
                   failures.append(f'Wraith mediation contract missing: {label}')
 
+          # Optional CatCraft hostile Asuran gate-Jumper ingress must remain dependency-safe:
+          # CatCraft resolves the exact gate, WNG stages only its own physical craft/crew beside it.
+          hostile_gate = Path('Source/WraithNaniteGravtech/Compatibility/HostileAsuranGateJumper.cs').read_text(encoding='utf-8')
+          hostile_gate_def = Path('Defs/IncidentDefs/Incidents_HostileAsuranStargate.xml').read_text(encoding='utf-8')
+          jumper_systems = Path('Source/WraithNaniteGravtech/Shuttles/PuddleJumperSystems.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('hostile gate-Jumper incident Def', hostile_gate_def, '<defName>WNG_HostileAsuranGateJumper</defName>'),
+              ('hostile gate-Jumper worker', hostile_gate_def, 'IncidentWorker_HostileAsuranGateJumper'),
+              ('CatCraft-owned arrival resolver', hostile_gate, 'mode.Worker.TryResolveRaidSpawnCenter(probe)'),
+              ('resolved home-map gate class check', hostile_gate, 'QuietLatticeStargateVisitUtility.StargateThingClassName'),
+              ('exact hostile commander', hostile_gate, 'WNG_PrecursorCommander'),
+              ('exact hostile soldiers', hostile_gate, 'WNG_PrecursorSoldier'),
+              ('real NPC Jumper craft', hostile_gate, 'WNG_PuddleJumper_NPC'),
+              ('finite hostile cloak entry point', jumper_systems, 'BeginHostileIngressCloak'),
+              ('bounded hostile cloak end tick', jumper_systems, 'hostileIngressCloakUntilTick'),
+              ('transactional crew drop', hostile_gate, 'transporter.innerContainer.TryDrop'),
+              ('crew deployment rollback', hostile_gate, 'transporter.innerContainer.TryAdd'),
+              ('native hostile assault Lord', hostile_gate, 'LordJob_AssaultColony'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Hostile Asuran gate-Jumper contract missing: {label}')
+          if 'StargatesMod.' in hostile_gate:
+              failures.append('Hostile Asuran gate-Jumper source has a compile-time CatCraft type/name dependency instead of using the existing string-guarded bridge')
+          for forbidden in ('receiveBuffer', 'ReceiveBuffer', 'ClearAndDestroyContents'):
+              if forbidden in hostile_gate:
+                  failures.append(f'Hostile Asuran gate-Jumper source touches forbidden CatCraft/holder internals: {forbidden}')
+          for comp in ('CompProperties_PuddleJumperSystems', 'CompProperties_HostileGateJumperIngress'):
+              if comp not in npc_text:
+                  failures.append(f'NPC Puddle Jumper missing hostile gate-ingress component {comp}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

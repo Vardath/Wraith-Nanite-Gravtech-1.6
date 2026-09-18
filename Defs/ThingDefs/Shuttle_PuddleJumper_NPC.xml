@@ -45,6 +45,8 @@
       <li Class="CompProperties_Transporter"><massCapacity>650</massCapacity><max1PerGroup>true</max1PerGroup><canChangeAssignedThingsAfterStarting>true</canChangeAssignedThingsAfterStarting><pawnLoadedSound>Shuttle_PawnLoaded</pawnLoadedSound><pawnExitSound>Shuttle_PawnExit</pawnExitSound><showMassInInspectString>true</showMassInInspectString></li>
       <li Class="CompProperties_Refuelable"><fuelCapacity>4</fuelCapacity><targetFuelLevelConfigurable>false</targetFuelLevelConfigurable><fuelFilter><thingDefs><li>WNG_AsuranNaniteSlurry</li></thingDefs></fuelFilter><fuelLabel>Asuran nanite slurry</fuelLabel><fuelGizmoLabel>Nanite slurry</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><showFuelGizmo>false</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay><showAllowAutoRefuelToggle>false</showAllowAutoRefuelToggle><canEjectFuel>false</canEjectFuel></li>
       <li Class="CompProperties_AmbientSound"><sound>ShuttleIdle_Ambience</sound></li>
+      <li Class="WraithNaniteGravtech.CompProperties_PuddleJumperSystems"><cloakFuelPerRareTick>0.0025</cloakFuelPerRareTick><cloakCooldownTicks>1200</cloakCooldownTicks><sensorCooldownTicks>2500</sensorCooldownTicks></li>
+      <li Class="WraithNaniteGravtech.CompProperties_HostileGateJumperIngress"><cloakTicks>900</cloakTicks><deployRetryTicks>90</deployRetryTicks><maximumDeployRetries>20</maximumDeployRetries></li>
     </comps>
   </ThingDef>
 </Defs>
