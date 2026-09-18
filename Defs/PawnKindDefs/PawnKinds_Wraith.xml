@@ -100,7 +100,7 @@
     <weaponMoney>1000~2200</weaponMoney>
     <weaponTags><li>WraithHeavyWeapon</li><li>WraithLineWeapon</li></weaponTags>
     <apparelRequired><li>WNG_WraithQueenRaiment</li></apparelRequired>
-    <abilities><li>WNG_PredatorsPresence</li><li>WNG_Compulsion</li><li>WNG_QueensCommand</li></abilities>
+    <abilities><li>WNG_PredatorsPresence</li><li>WNG_Compulsion</li><li>WNG_QueensCommand</li><li>WNG_ReturnLife</li></abilities>
     <factionLeader>true</factionLeader>
     <fixedGender>Female</fixedGender>
     <minGenerationAge>35</minGenerationAge>

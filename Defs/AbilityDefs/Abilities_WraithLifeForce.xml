@@ -97,4 +97,34 @@
       <li Class="WraithNaniteGravtech.CompProperties_AbilityEnthrall" />
     </comps>
   </AbilityDef>
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_ReturnLife</defName>
+    <label>return life</label>
+    <description>Return a large share of a Wraith Queen's stored vitality to another living biological humanlike. The recipient can recover up to ten biological years and the temporary feeding-trauma state is cleared. The transfer costs two thirds of a full Life Force reserve, cannot make an adult younger than eighteen, cannot resurrect the dead and does not repair unrelated injuries.</description>
+    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <hostile>false</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <cooldownTicksRange>600000~600000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <range>-1</range>
+      <warmupTime>3</warmupTime>
+      <drawAimPie>false</drawAimPie>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityReturnLife">
+        <lifeForceCost>0.66</lifeForceCost>
+        <restoredAgeYears>10</restoredAgeYears>
+        <minimumTargetAgeYears>18</minimumTargetAgeYears>
+      </li>
+    </comps>
+  </AbilityDef>
 </Defs>

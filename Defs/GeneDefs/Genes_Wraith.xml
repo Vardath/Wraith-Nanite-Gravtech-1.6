@@ -95,6 +95,7 @@
     <abilities>
       <li>WNG_HiveSense</li>
       <li>WNG_Enthrall</li>
+      <li>WNG_CaptiveExperiment</li>
     </abilities>
     <statOffsets>
       <PsychicSensitivity>0.20</PsychicSensitivity>
