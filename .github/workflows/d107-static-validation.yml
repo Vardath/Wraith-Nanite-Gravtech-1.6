@@ -429,6 +429,43 @@ jobs:
           if 'WNG_CaptiveExperiment' not in wraith_genes:
               failures.append('Retained invasive captive experiment was removed while adding the alternate route')
 
+          # Staged Wraith culling captivity (#146) must preserve exact-Pawn custody while
+          # restoring feeding -> experiment -> conditioning -> native stage-4 enthrallment pressure.
+          custody_stage = Path('Source/WraithNaniteGravtech/Wraith/WraithCullingCustody.cs').read_text(encoding='utf-8')
+          holding_stage = Path('Source/WraithNaniteGravtech/Wraith/WraithHoldingSite.cs').read_text(encoding='utf-8')
+          culling_tuning = Path('Defs/WraithCullingDefs/WraithCulling.xml').read_text(encoding='utf-8')
+          wraith_hediffs = Path('Defs/HediffDefs/Hediffs_WraithLifeForce.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('feeding-stock Hediff', wraith_hediffs, '<defName>WNG_WraithFeedingStock</defName>'),
+              ('conditioned-captive Hediff', wraith_hediffs, '<defName>WNG_WraithConditionedCaptive</defName>'),
+              ('pressure interval tuning', culling_tuning, '<captivityPressureIntervalTicks>120000</captivityPressureIntervalTicks>'),
+              ('age pressure tuning', culling_tuning, '<captiveAgeYearsPerPressure>2</captiveAgeYearsPerPressure>'),
+              ('four-stage ceiling', culling_tuning, '<maxCaptivityStage>4</maxCaptivityStage>'),
+              ('stage threat escalation', culling_tuning, '<threatPerCaptivityStage>125</threatPerCaptivityStage>'),
+              ('record stage persistence', custody_stage, 'Scribe_Values.Look(ref captivityStage'),
+              ('record pressure persistence', custody_stage, 'Scribe_Values.Look(ref nextCaptivityPressureTick'),
+              ('feeding pressure', custody_stage, 'WraithHiveEcologyUtility.AdjustBiologicalAge'),
+              ('feeding trauma refresh', custody_stage, 'WraithHiveEcologyUtility.RefreshHediff(pawn, "WNG_LifeDrained")'),
+              ('invasive stage', custody_stage, 'WNG_WraithExperimentSubject'),
+              ('conditioning stage', custody_stage, 'WNG_WraithConditionedCaptive'),
+              ('native stage-four transition', custody_stage, 'GenGuest.TryEnslavePrisoner(caster, pawn)'),
+              ('native transition ownership marker', custody_stage, 'nativeEnthrallmentCommitted'),
+              ('original faction recovery', custody_stage, 'pawn.SetFaction(record.originalFaction)'),
+              ('missed-site extra pressure', custody_stage, 'ApplyCaptivePressure(record, now)'),
+              ('stage-aware site threat', custody_stage, 'maxStage * tuning.threatPerCaptivityStage'),
+              ('stage-aware site labels', custody_stage, 'CaptivitySiteLabel(captor, maxStage)'),
+              ('real Keeper commit', holding_stage, 'registry.TryCommitNativeEnthrallmentAtSite(record, keeper)'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Staged Wraith captivity contract missing: {label}')
+          if 'WNG_Enthralled' in custody_stage:
+              failures.append('Staged Wraith captivity resurrected the obsolete fake Enthralled Hediff instead of current native slavery')
+          cleanup_block = custody_stage.split('private void CleanupCaptivityState', 1)[1].split('private static void TryStageLetter', 1)[0] if 'private void CleanupCaptivityState' in custody_stage else ''
+          if 'WNG_LifeDrained' in cleanup_block:
+              failures.append('Wraith custody recovery incorrectly removes real feeding trauma')
+          if 'RemoveCustodyHediff(pawn, "WNG_WraithExperimentSubject"' not in cleanup_block:
+              failures.append('Wraith custody recovery no longer removes only registry-added experiment state')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
