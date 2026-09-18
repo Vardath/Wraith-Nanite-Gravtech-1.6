@@ -94,6 +94,28 @@ namespace WraithNaniteGravtech
         }
 
         /// <summary>
+        /// High-tier Asuran/Precursor hardware is deliberately more dangerous to leave exposed to a
+        /// hungry block swarm. Recognition is narrow: WNG-owned Asuran/Precursor ThingDefs at Ultra
+        /// tech level only. The object must still pass every ordinary assimilation, reservation,
+        /// containment and faction rule before this classification matters.
+        /// </summary>
+        public static bool IsHighTierAsuranTechnology(Thing target)
+        {
+            ThingDef def = target?.def;
+            if (def == null || def.techLevel < TechLevel.Ultra)
+                return false;
+
+            string defName = def.defName ?? string.Empty;
+            return defName.StartsWith("WNG_Asuran", StringComparison.Ordinal) ||
+                   defName.StartsWith("WNG_Precursor", StringComparison.Ordinal);
+        }
+
+        public static float AssimilationTimeFactorFor(Thing target)
+        {
+            return IsHighTierAsuranTechnology(target) ? 0.55f : 1f;
+        }
+
+        /// <summary>
         /// Canonical reachable environmental assimilation target used by both ordinary matter
         /// consumption and the starvation-biological fallback. Keeping this search in one place
         /// guarantees living prey can never outrank a target the current environmental ecology
@@ -169,6 +191,46 @@ namespace WraithNaniteGravtech
                         ? historicalItem
                         : historicalBuilding;
                 }
+            }
+
+            // Cross-lattice danger: after any explicit historical reacquisition target, prefer
+            // reachable high-tier Asuran/Precursor hardware over generic steel, furniture or stock.
+            Predicate<Thing> highTierValidator = delegate(Thing thing)
+            {
+                return validator(thing) && IsHighTierAsuranTechnology(thing);
+            };
+
+            Thing highTierItem =
+                GenClosest.ClosestThing_Global_Reachable(
+                    pawn.Position,
+                    pawn.Map,
+                    pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver),
+                    PathEndMode.Touch,
+                    traverse,
+                    radius,
+                    highTierValidator);
+
+            Thing highTierBuilding =
+                GenClosest.ClosestThing_Global_Reachable(
+                    pawn.Position,
+                    pawn.Map,
+                    pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.BuildingArtificial),
+                    PathEndMode.Touch,
+                    traverse,
+                    radius,
+                    highTierValidator);
+
+            if (highTierItem != null || highTierBuilding != null)
+            {
+                if (highTierItem == null)
+                    return highTierBuilding;
+                if (highTierBuilding == null)
+                    return highTierItem;
+
+                return pawn.Position.DistanceToSquared(highTierItem.Position) <=
+                       pawn.Position.DistanceToSquared(highTierBuilding.Position)
+                    ? highTierItem
+                    : highTierBuilding;
             }
 
             Thing item = GenClosest.ClosestThing_Global_Reachable(
@@ -260,6 +322,8 @@ namespace WraithNaniteGravtech
             Map map = parent.Map;
             IntVec3 origin = target.Position;
             ReplicatorAdaptationEvidence adaptationEvidence = ReplicatorAdaptationUtility.EvidenceFrom(target);
+            bool consumedHighTierAsuranTechnology = IsHighTierAsuranTechnology(target);
+            string consumedTechnologyLabel = consumedHighTierAsuranTechnology ? target.LabelCap : null;
             List<Pawn> staged = new List<Pawn>(offspringCount);
 
             try
@@ -331,6 +395,23 @@ namespace WraithNaniteGravtech
                     Log.Error("[WNG] Replicator assimilation committed but adaptation sharing failed: " + ex);
                 }
 
+                if (consumedHighTierAsuranTechnology && map.IsPlayerHome)
+                {
+                    try
+                    {
+                        Messages.Message(
+                            "Replicators have rapidly assimilated " + consumedTechnologyLabel +
+                            ". The swarm learned only the real technology traits present on the consumed object, but high-tier Asuran hardware was processed substantially faster than ordinary material.",
+                            parent,
+                            MessageTypeDefOf.ThreatSmall,
+                            historical: false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning("[WNG] High-tier Asuran assimilation committed but warning presentation failed: " + ex.Message);
+                    }
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -377,7 +458,15 @@ namespace WraithNaniteGravtech
             float adaptationFactor = pawn.TryGetComp<CompReplicatorAdaptationEffects>()?.AssimilationTimeFactor ?? 1f;
             float coordinationFactor = pawn.Map?.GetComponent<MapComponent_ReplicatorCoordination>()?.AssimilationFactorFor(pawn) ?? 1f;
             float specialistFactor = ReplicatorBurrowerUtility.AssimilationTimeFactor(pawn, Target);
-            int duration = Math.Max(60, (int)Math.Round(baseDuration * adaptationFactor * coordinationFactor * specialistFactor));
+            float highTierAsuranFactor = ReplicatorAssimilationUtility.AssimilationTimeFactorFor(Target);
+            int duration = Math.Max(
+                60,
+                (int)Math.Round(
+                    baseDuration *
+                    adaptationFactor *
+                    coordinationFactor *
+                    specialistFactor *
+                    highTierAsuranFactor));
 
             Toil work = ToilMaker.MakeToil("WNG_ReplicatorAssimilate");
             work.defaultCompleteMode = ToilCompleteMode.Delay;
