@@ -109,6 +109,7 @@
         </li>
         <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Standing</method></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_PrecursorPulseRifle</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_RecoveredPrecursorPulseRifle</thingDef><count>1</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_HumanFormCombatArmor</thingDef><count>2</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>Plasteel</thingDef><count>180</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>ComponentSpacer</thingDef><count>6</count></li>
@@ -149,6 +150,7 @@
         <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Gravship</method></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_PrecursorPulseRifle</thingDef><count>2</count></li>
+        <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_RecoveredPrecursorPulseRifle</thingDef><count>1</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_HumanFormCombatArmor</thingDef><count>2</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>Plasteel</thingDef><count>220</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>ComponentSpacer</thingDef><count>10</count></li>

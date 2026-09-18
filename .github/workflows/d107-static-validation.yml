@@ -127,6 +127,17 @@ jobs:
           if 'WNG_CE_Projectile_GoauldHeavyPlasma' not in goauld_proj or 'CombatExtended.ProjectileCE_Explosive' not in goauld_proj:
               failures.append("Ha'tak CE projectile definition is incomplete")
 
+          # Human-form starts retain stable combat equipment plus the damaged research specimen.
+          scenarios = Path('Defs/ScenarioDefs/Scenarios_WNG.xml').read_text(encoding='utf-8')
+          nanite_research = Path('Defs/ResearchProjectDefs/Research_AsuranSovereign.xml').read_text(encoding='utf-8')
+          if scenarios.count('<thingDef>WNG_PrecursorPulseRifle</thingDef><count>2</count>') < 2:
+              failures.append('Human-form starts no longer retain two stable precursor pulse rifles')
+          if scenarios.count('<thingDef>WNG_RecoveredPrecursorPulseRifle</thingDef><count>1</count>') != 2:
+              failures.append('Human-form starts must each carry exactly one recovered precursor-rifle analysis specimen')
+          nanite_block = nanite_research.split('<defName>WNG_NaniteAnalysis</defName>', 1)[1].split('</ResearchProjectDef>', 1)[0] if '<defName>WNG_NaniteAnalysis</defName>' in nanite_research else ''
+          if '<requiredAnalyzed>' not in nanite_block or '<li>WNG_RecoveredPrecursorPulseRifle</li>' not in nanite_block:
+              failures.append('Nanite Analysis is no longer gated by the recovered precursor-rifle specimen')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
