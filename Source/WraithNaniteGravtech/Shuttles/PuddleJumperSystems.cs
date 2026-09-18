@@ -150,13 +150,43 @@ namespace WraithNaniteGravtech
         private bool cloaked;
         private int cloakCooldownUntilTick;
         private int nextSensorTick;
+        private int hostileIngressCloakUntilTick = -1;
         public CompProperties_PuddleJumperSystems Props => (CompProperties_PuddleJumperSystems)props;
+        public bool Cloaked => cloaked;
+
+        /// <summary>
+        /// Bounded non-player ingress use of the same finite cloak as the player Jumper.
+        /// It requires a real compatible operator already aboard and real slurry fuel.
+        /// </summary>
+        public bool BeginHostileIngressCloak(int durationTicks)
+        {
+            if (parent == null || parent.Destroyed || parent.Faction == null || parent.Faction == Faction.OfPlayer ||
+                Faction.OfPlayer == null || !parent.Faction.HostileTo(Faction.OfPlayer) ||
+                !PuddleJumperControlUtility.HasCompatiblePawnAboard(parent))
+                return false;
+
+            CompRefuelable fuel = parent.TryGetComp<CompRefuelable>();
+            float minimumFuel = Math.Max(0f, Props.cloakFuelPerRareTick);
+            if (fuel == null || fuel.Fuel + 0.0001f < minimumFuel)
+                return false;
+
+            int now = Find.TickManager?.TicksGame ?? 0;
+            cloaked = true;
+            hostileIngressCloakUntilTick = Math.Min(int.MaxValue, now + Math.Max(250, durationTicks));
+            return true;
+        }
 
         public override void CompTick()
         {
             base.CompTick();
             if (parent == null || !parent.IsHashIntervalTick(250) || !cloaked || !parent.Spawned || parent.Map == null || parent.Destroyed)
                 return;
+            int now = Find.TickManager?.TicksGame ?? 0;
+            if (hostileIngressCloakUntilTick >= 0 && now >= hostileIngressCloakUntilTick)
+            {
+                CollapseCloak(true);
+                return;
+            }
             if (!PuddleJumperControlUtility.HasCompatiblePawnAboard(parent))
             {
                 CollapseCloak(true);
@@ -187,6 +217,7 @@ namespace WraithNaniteGravtech
         private void CollapseCloak(bool startCooldown)
         {
             cloaked = false;
+            hostileIngressCloakUntilTick = -1;
             if (startCooldown) cloakCooldownUntilTick = (Find.TickManager?.TicksGame ?? 0) + Math.Max(60, Props.cloakCooldownTicks);
         }
 
@@ -249,6 +280,7 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref cloaked, "wngJumperCloaked", false);
             Scribe_Values.Look(ref cloakCooldownUntilTick, "wngJumperCloakCooldownUntil", 0);
             Scribe_Values.Look(ref nextSensorTick, "wngJumperNextSensorTick", 0);
+            Scribe_Values.Look(ref hostileIngressCloakUntilTick, "wngJumperHostileIngressCloakUntil", -1);
         }
     }
 }
