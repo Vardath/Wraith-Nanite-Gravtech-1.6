@@ -744,6 +744,7 @@
           <li>WNG_AsuranFuelOptimizer</li>
           <li>WNG_AsuranSignalJammer</li>
           <li>WNG_PrecursorShieldEmitter</li>
+          <li>WNG_AncientVacuumShieldEmitter</li>
         </linkableFacilities>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGAmbientLoop">
