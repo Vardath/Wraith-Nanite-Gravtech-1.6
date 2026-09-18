@@ -303,6 +303,70 @@ namespace WraithNaniteGravtech
             }
         }
 
+        /// <summary>
+        /// Transactionally returns one exact recently-culled Pawn from persistent Wraith custody
+        /// during a successful same-gate pursuit. Captives already assigned to a rescue site are
+        /// deliberately excluded so pursuit never steals ownership from an active site workflow.
+        /// </summary>
+        public bool TryReleasePursuitCaptive(
+            int pawnId,
+            Faction expectedCaptor,
+            Map map,
+            IntVec3 near,
+            out Pawn released)
+        {
+            EnsureCustody();
+            released = null;
+            if (pawnId <= 0 || expectedCaptor == null || map == null)
+                return false;
+
+            WraithAbducteeRecord record = records.FirstOrDefault(r =>
+                r != null &&
+                r.pawn != null &&
+                !r.pawn.Dead &&
+                r.pawn.thingIDNumber == pawnId &&
+                r.captorFaction == expectedCaptor &&
+                r.rescueSiteId < 0 &&
+                custody.Contains(r.pawn));
+            if (record == null)
+                return false;
+
+            Pawn pawn = record.pawn;
+            Faction priorGuestHost = pawn.guest?.HostFaction;
+            GuestStatus priorGuestStatus = pawn.guest?.GuestStatus ?? GuestStatus.Guest;
+            Pawn dropped;
+            if (!custody.TryDrop(pawn, near, map, ThingPlaceMode.Near, out dropped) || dropped != pawn)
+                return false;
+
+            try
+            {
+                RestoreOriginalGuestState(record);
+                records.Remove(record);
+                released = pawn;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("[WNG] Same-gate pursuit captive release failed; recapturing exact Pawn: " + ex.Message);
+                try
+                {
+                    if (pawn.guest != null)
+                        pawn.guest.SetGuestStatus(priorGuestHost, priorGuestStatus);
+                }
+                catch { }
+
+                if (pawn.Spawned)
+                    pawn.DeSpawn(DestroyMode.Vanish);
+                if (!custody.TryAdd(pawn, false))
+                {
+                    Log.Error("[WNG] Same-gate pursuit rollback could not restore exact captive to Wraith custody.");
+                    if (!pawn.Spawned && !pawn.Destroyed)
+                        GenSpawn.Spawn(pawn, WraithCullingUtility.SafeReturnCell(map, near), map);
+                }
+                return false;
+            }
+        }
+
         public List<WraithAbducteeRecord> RecordsForSite(int siteId)
         {
             if (siteId < 0 || records == null)
