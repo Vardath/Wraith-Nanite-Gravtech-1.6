@@ -341,6 +341,33 @@ jobs:
           if glider_mission.count('return thing.Faction == priorityTargetFaction;') != 1:
               failures.append('Death Glider priority targeting is not a single explicit faction lock')
 
+          # Future separate Asgard compatibility (#136) is an extension surface only.
+          asgard_hooks = Path('Source/WraithNaniteGravtech/Compatibility/AsgardCompatibilityHooks.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('public provider contract', 'public interface IWNGAsgardCompatibilityProvider'),
+              ('runtime provider registry', 'public static class WNGAsgardCompatibility'),
+              ('faction recognition hook', 'bool IsAsgardFaction(Faction faction)'),
+              ('pawn recognition hook', 'bool IsAsgardPawn(Pawn pawn)'),
+              ('Def recognition hook', 'bool IsAsgardDef(Def def)'),
+              ('provider registration', 'RegisterProvider(IWNGAsgardCompatibilityProvider provider)'),
+              ('provider removal', 'UnregisterProvider(string providerId)'),
+              ('provider exception isolation', 'Optional Asgard compatibility provider'),
+              ('no save ownership statement', 'are never serialized into a save'),
+          ):
+              if needle not in asgard_hooks:
+                  failures.append(f'Asgard compatibility hook missing: {label}')
+          for forbidden in (
+              'AsgardFactionDefName',
+              'AsgardPawnKindDefName',
+              'AsgardPackageId',
+              'MayRequire="',
+              'FactionDefOf.',
+          ):
+              if forbidden in asgard_hooks:
+                  failures.append(f'Asgard hook invents or hard-codes external content: {forbidden}')
+          if 'GameComponent' in asgard_hooks or 'Scribe_' in asgard_hooks:
+              failures.append('Asgard provider registry became save-owned instead of runtime-only')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
