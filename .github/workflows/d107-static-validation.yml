@@ -393,6 +393,42 @@ jobs:
           if '<splitCount>2</splitCount>' not in races_rep or '<splitRecombineDelayTicks>2500</splitRecombineDelayTicks>' not in races_rep:
               failures.append('Replicator hierarchy presentation slice changed retained 2:1 split or recombination delay tuning')
 
+          # Wraith captive-management breadth (#146): retained invasive experiment plus a distinct
+          # telepathic interrogation path, both on the same exact native prisoner identity/custody.
+          captive_source = Path('Source/WraithNaniteGravtech/Wraith/WraithLifeDrain.cs').read_text(encoding='utf-8')
+          captive_abilities = Path('Defs/AbilityDefs/Abilities_WraithTelepathy.xml').read_text(encoding='utf-8')
+          wraith_genes = Path('Defs/GeneDefs/Genes_Wraith.xml').read_text(encoding='utf-8')
+          interrogation_block = captive_source.split('public sealed class CompAbilityEffect_WraithCaptiveInterrogation', 1)[1] if 'public sealed class CompAbilityEffect_WraithCaptiveInterrogation' in captive_source else ''
+          experiment_block = captive_source.split('public sealed class CompAbilityEffect_WraithCaptiveExperiment', 1)[1].split('public sealed class CompProperties_AbilityWraithCaptiveInterrogation', 1)[0] if 'public sealed class CompAbilityEffect_WraithCaptiveExperiment' in captive_source and 'public sealed class CompProperties_AbilityWraithCaptiveInterrogation' in captive_source else ''
+          for label, haystack, needle in (
+              ('shared exact-prisoner helper', captive_source, 'WraithCaptiveProcedureUtility.IsEligiblePrisoner'),
+              ('native prisoner requirement', captive_source, 'prisoner.guest.IsPrisoner'),
+              ('same-faction host requirement', captive_source, 'prisoner.guest.HostFaction == caster.Faction'),
+              ('retained invasive subject state', experiment_block, 'WNG_WraithExperimentSubject'),
+              ('retained invasive observer insight', experiment_block, 'WNG_WraithExperimentalInsight'),
+              ('interrogation effect class', interrogation_block, 'CompAbilityEffect_WraithCaptiveInterrogation'),
+              ('established telepathic probe state', interrogation_block, 'WNG_TelepathicallyProbed'),
+              ('bounded interrogation observer insight', interrogation_block, 'WNG_WraithExperimentalInsight'),
+              ('interrogation AbilityDef', captive_abilities, '<defName>WNG_CaptiveInterrogation</defName>'),
+              ('conservative interrogation cooldown', captive_abilities, '<cooldownTicksRange>120000~120000</cooldownTicksRange>'),
+              ('Wraith telepathy grants interrogation', wraith_genes, '<li>WNG_CaptiveInterrogation</li>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith captive-management contract missing: {label}')
+          for forbidden in (
+              'TryEnslavePrisoner',
+              'SetFaction',
+              'SetGuestStatus',
+              'PawnGenerator.GeneratePawn',
+              'AdjustBiologicalAge',
+              'AddLifeForce',
+              'WNG_HybridizationIncubation',
+          ):
+              if forbidden in interrogation_block:
+                  failures.append(f'Captive interrogation crossed into another ownership/feeding/hybrid system: {forbidden}')
+          if 'WNG_CaptiveExperiment' not in wraith_genes:
+              failures.append('Retained invasive captive experiment was removed while adding the alternate route')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
