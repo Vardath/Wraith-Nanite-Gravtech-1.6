@@ -55,6 +55,9 @@ namespace WraithNaniteGravtech
                 Math.Max(60, Props.swarmAlertTicks),
                 Math.Max(0f, Math.Min(1f, Props.swarmResponseChance)),
                 Math.Max(1f, Props.swarmResponseRadius));
+
+            if (totalDamageDealt > 0f)
+                victim.Map.GetComponent<MapComponent_ReplicatorSwarmBehavior>()?.RegisterDefensePressure(victim, attacker);
         }
 
         public bool TryGetSelfDefenseTarget(Pawn responder, out Pawn target)
