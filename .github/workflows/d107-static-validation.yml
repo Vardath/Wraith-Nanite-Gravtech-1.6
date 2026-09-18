@@ -663,6 +663,37 @@ jobs:
               if forbidden in rep_crisis:
                   failures.append(f'Replicator crisis pressure grants active/free swarm bodies: {forbidden}')
 
+          # Salvage-consignment quest and rare trader insertion must both deliver only the
+          # canonical sealed carrier; contamination remains owned by that exact item.
+          rep_salvage_routes = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorSalvageQuestAndTrade.cs').read_text(encoding='utf-8')
+          rep_salvage_quest = Path('Defs/QuestScriptDefs/Quests_ReplicatorInfiltration.xml').read_text(encoding='utf-8')
+          rep_salvage_trade = Path('Patches/WNG_ReplicatorInfiltrationTraders.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('salvage quest Def', rep_salvage_quest, '<defName>WNG_ReplicatorSalvageConsignment</defName>'),
+              ('salvage quest root', rep_salvage_quest, 'QuestNode_Root_ReplicatorSalvageConsignment'),
+              ('accepted-signal delivery', rep_salvage_routes, 'HardcodedSignalWithQuestID("Accepted")'),
+              ('acceptance-time eligibility check', rep_salvage_routes, 'BestEligibleMap()'),
+              ('canonical cargo transaction', rep_salvage_routes, 'ReplicatorCargoInfiltrationUtility.TryDropConsignment'),
+              ('quest resolution persistence', rep_salvage_routes, 'wngReplicatorSalvageResolved'),
+              ('rare stock generator', rep_salvage_routes, 'StockGenerator_ReplicatorSealedSalvage'),
+              ('story-event trader guard', rep_salvage_routes, 'WNGSettingsUtility.ReplicatorStoryEventsEnabled'),
+              ('sealed carrier trader identity', rep_salvage_trade, '<thingDef>WNG_SealedMachineSalvage</thingDef>'),
+              ('retained rare chance', rep_salvage_trade, '<chance>0.035</chance>'),
+              ('bulk goods trader route', rep_salvage_trade, 'Orbital_BulkGoods'),
+              ('exotic trader route', rep_salvage_trade, 'Orbital_Exotic'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator salvage quest/trade contract missing: {label}')
+          for forbidden in (
+              'PawnGenerator.GeneratePawn',
+              'WNG_ReplicatorDrone',
+              'WNG_ReplicatorMatter',
+              'TryReassembleOneDrone',
+              'CompReplicatorMatterReassembly',
+          ):
+              if forbidden in rep_salvage_routes:
+                  failures.append(f'Replicator salvage quest/trade bypasses sealed-carrier ownership: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
