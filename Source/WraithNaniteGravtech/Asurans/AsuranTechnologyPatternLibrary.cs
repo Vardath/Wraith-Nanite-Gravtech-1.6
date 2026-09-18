@@ -38,7 +38,14 @@ namespace WraithNaniteGravtech
             new AsuranTechnologyPatternSpec("core.shield_belt", "Apparel_ShieldBelt", "WNG_ReconstructShieldBelt", "shield belt"),
             new AsuranTechnologyPatternSpec("core.minigun", "Gun_Minigun", "WNG_ReconstructMinigun", "minigun"),
             new AsuranTechnologyPatternSpec("core.marine_armor", "Apparel_PowerArmor", "WNG_ReconstructMarineArmor", "marine armor"),
-            new AsuranTechnologyPatternSpec("core.marine_helmet", "Apparel_PowerArmorHelmet", "WNG_ReconstructMarineHelmet", "marine helmet")
+            new AsuranTechnologyPatternSpec("core.marine_helmet", "Apparel_PowerArmorHelmet", "WNG_ReconstructMarineHelmet", "marine helmet"),
+            new AsuranTechnologyPatternSpec("core.assault_rifle", "Gun_AssaultRifle", "WNG_ReconstructAssaultRifle", "assault rifle"),
+            new AsuranTechnologyPatternSpec("core.sniper_rifle", "Gun_SniperRifle", "WNG_ReconstructSniperRifle", "sniper rifle"),
+            new AsuranTechnologyPatternSpec("core.lmg", "Gun_LMG", "WNG_ReconstructLMG", "light machine gun"),
+            new AsuranTechnologyPatternSpec("core.chain_shotgun", "Gun_ChainShotgun", "WNG_ReconstructChainShotgun", "chain shotgun"),
+            new AsuranTechnologyPatternSpec("core.recon_armor", "Apparel_ArmorRecon", "WNG_ReconstructReconArmor", "recon armor"),
+            new AsuranTechnologyPatternSpec("royalty.cataphract_armor", "Apparel_ArmorCataphract", "WNG_ReconstructCataphractArmor", "cataphract armor"),
+            new AsuranTechnologyPatternSpec("royalty.cataphract_helmet", "Apparel_ArmorCataphractHelmet", "WNG_ReconstructCataphractHelmet", "cataphract helmet")
         };
 
         public static bool TryPatternForSpecimen(ThingDef def, out AsuranTechnologyPatternSpec spec)
