@@ -251,12 +251,12 @@ namespace WraithNaniteGravtech
                    pawn.kindDef?.defName == QueenKindDefName;
         }
 
-        private static bool ValidRegent(Pawn pawn, Faction faction)
+        private bool ValidRegent(Pawn pawn, Faction faction)
         {
             return pawn != null &&
                    !pawn.Dead &&
                    pawn.Spawned &&
-                   pawn.Map != null &&
+                   pawn.Map == map &&
                    pawn.Faction == faction &&
                    IsEligibleSuccessor(pawn);
         }
