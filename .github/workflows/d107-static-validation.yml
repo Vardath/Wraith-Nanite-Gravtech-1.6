@@ -466,6 +466,47 @@ jobs:
           if 'RemoveCustodyHediff(pawn, "WNG_WraithExperimentSubject"' not in cleanup_block:
               failures.append('Wraith custody recovery no longer removes only registry-added experiment state')
 
+          # Pragmatic Wraith diplomacy keeps non-feeding material exchange separate from the
+          # authoritative Strategic Hunger feeding-request UI.
+          pragmatic_diplomacy = Path('Source/WraithNaniteGravtech/Wraith/WraithPragmaticDiplomacy.cs').read_text(encoding='utf-8')
+          pragmatic_tuning = Path('Defs/WraithDiplomacyDefs/WraithDiplomacy.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('diplomacy registry', pragmatic_diplomacy, 'WraithPragmaticDiplomacyRegistry'),
+              ('Cinder participation', pragmatic_diplomacy, 'WraithLineageUtility.CinderCourtDefName'),
+              ('Veiled participation', pragmatic_diplomacy, 'WraithLineageUtility.VeiledHiveDefName'),
+              ('Pale Covenant participation', pragmatic_diplomacy, 'WraithLineageUtility.PaleCovenantDefName'),
+              ('Sable exclusion', pragmatic_diplomacy, 'WraithLineageUtility.SableBroodDefName'),
+              ('biomass payment', pragmatic_diplomacy, 'WNG_Biomass'),
+              ('medical payment', pragmatic_diplomacy, 'MedicineIndustrial'),
+              ('neutroamine payment', pragmatic_diplomacy, 'Neutroamine'),
+              ('native goodwill commit', pragmatic_diplomacy, 'TryAffectGoodwillWith'),
+              ('resource consumption', pragmatic_diplomacy, 'WraithHiveEcologyUtility.TryConsumeResource'),
+              ('resource refund', pragmatic_diplomacy, 'WraithHiveEcologyUtility.SpawnResource'),
+              ('feeding authority boundary', pragmatic_diplomacy, 'WraithStrategicHungerRegistry the sole authority'),
+              ('tuning Def', pragmatic_tuning, '<defName>WNG_WraithPragmaticDiplomacyTuning</defName>'),
+              ('Cinder biomass terms', pragmatic_tuning, '<cinderBiomassCost>100</cinderBiomassCost>'),
+              ('Veiled medical terms', pragmatic_tuning, '<veiledMedicineCost>5</veiledMedicineCost>'),
+              ('Pale medical terms', pragmatic_tuning, '<paleMedicineCost>4</paleMedicineCost>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Pragmatic Wraith diplomacy contract missing: {label}')
+          due_block = pragmatic_diplomacy.split('private IEnumerable<string> DueLineages', 1)[1].split('private static bool CanNegotiate', 1)[0] if 'private IEnumerable<string> DueLineages' in pragmatic_diplomacy else ''
+          if 'SableBroodDefName' in due_block:
+              failures.append('Sable Brood was added to pragmatic negotiation scheduling despite permanent-enemy doctrine')
+          if 'WNG_WraithExiles' in pragmatic_diplomacy:
+              failures.append('Pragmatic Wraith diplomacy regressed to obsolete Wraith Exiles identity')
+          for forbidden in (
+              'WNG_LifeDrained',
+              'WNG_FeedingResistance',
+              'AdjustBiologicalAge',
+              'TryEnslavePrisoner',
+              'EligibleFeedingSubjects',
+              'OpenFeedingSubjectMenu',
+              'ResolveFeedingDeal',
+          ):
+              if forbidden in pragmatic_diplomacy:
+                  failures.append(f'Pragmatic Wraith diplomacy crossed into Strategic Hunger/feeding ownership: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
