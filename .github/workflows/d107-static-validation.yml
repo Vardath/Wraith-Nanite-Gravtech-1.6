@@ -1236,6 +1236,32 @@ jobs:
           if 'WNG_ReplicatorContainmentProjector' in rep_emp_emitter:
               failures.append('Replicator EMP suppressor source is coupled to containment instead of remaining a distinct countermeasure')
 
+          # High-tier Asuran/Precursor assimilation danger (#38) must accelerate only real
+          # consumed technology. It may change target priority/time, never fabricate extra bodies
+          # or arbitrary learned flags outside the canonical post-commit evidence path.
+          rep_assim = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAssimilation.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('high-tier classifier', 'public static bool IsHighTierAsuranTechnology(Thing target)'),
+              ('Ultra threshold', 'def.techLevel < TechLevel.Ultra'),
+              ('current Asuran identity', 'defName.StartsWith("WNG_Asuran"'),
+              ('current Precursor identity', 'defName.StartsWith("WNG_Precursor"'),
+              ('55 percent assimilation time', 'return IsHighTierAsuranTechnology(target) ? 0.55f : 1f;'),
+              ('high-tier preferred target', 'Predicate<Thing> highTierValidator'),
+              ('existing evidence derivation', 'ReplicatorAdaptationUtility.EvidenceFrom(target)'),
+              ('existing post-commit evidence share', 'ReplicatorAdaptationUtility.ShareEvidence(parent, adaptationEvidence)'),
+              ('existing offspring count', 'int offspringCount = Math.Max(1, ext.assimilationOffspringCount);'),
+              ('existing hostile-cap check', 'HasPopulationRoom(parent, offspringCount)'),
+          ):
+              if needle not in rep_assim:
+                  failures.append(f'High-tier Asuran assimilation contract missing: {label}')
+          high_tier_block = rep_assim.split('public static bool IsHighTierAsuranTechnology', 1)[1].split('public static float AssimilationTimeFactorFor', 1)[0] if 'public static bool IsHighTierAsuranTechnology' in rep_assim else ''
+          if 'WNG_Ancient' in high_tier_block or 'WNG_Vacuum' in high_tier_block:
+              failures.append('High-tier Asuran assimilation broadened into unrelated Ancient/vacuum technology')
+          if 'offspringCount + 1' in rep_assim or 'assimilationOffspringCount + 1' in rep_assim:
+              failures.append('High-tier Asuran assimilation started granting free extra Replicator bodies')
+          if 'adaptationEvidence.flags |=' in rep_assim:
+              failures.append('High-tier Asuran assimilation fabricates adaptation flags instead of learning real object evidence')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
