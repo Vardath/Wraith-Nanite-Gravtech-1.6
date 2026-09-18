@@ -1126,6 +1126,54 @@ jobs:
               if forbidden in wraith_appearance:
                   failures.append(f'Wraith appearance reconciler crossed identity/caste ownership boundary: {forbidden}')
 
+          # Historical Wraith Hallucination is retained as a distinct full-Wraith telepathy
+          # action. Manual hibernation remains the current Life Force gizmo, while old Wither and
+          # old Replicator Directive identities remain superseded rather than duplicated.
+          wraith_tele_abilities = Path('Defs/AbilityDefs/Abilities_WraithTelepathy.xml').read_text(encoding='utf-8')
+          wraith_tele_hediffs = Path('Defs/HediffDefs/Hediffs_WraithTelepathy.xml').read_text(encoding='utf-8')
+          wraith_genes = Path('Defs/GeneDefs/Genes_Wraith.xml').read_text(encoding='utf-8')
+          wraith_tele_source = Path('Source/WraithNaniteGravtech/Royalty/WraithTelepathy.cs').read_text(encoding='utf-8')
+          wraith_gene_source = Path('Source/WraithNaniteGravtech/Wraith/WraithGenes.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('Hallucination ability Def', wraith_tele_abilities, '<defName>WNG_Hallucination</defName>'),
+              ('historical one-day cooldown', wraith_tele_abilities, '<cooldownTicksRange>60000~60000</cooldownTicksRange>'),
+              ('touch-range Hallucination', wraith_tele_abilities, '<verbClass>Verb_CastAbilityTouch</verbClass>'),
+              ('Hallucination sound', wraith_tele_abilities, '<soundCast>WNG_WraithHallucination</soundCast>'),
+              ('specialized Hallucination comp', wraith_tele_abilities, 'CompProperties_AbilityWraithHallucination'),
+              ('Hallucination Hediff Def', wraith_tele_hediffs, '<defName>WNG_WraithHallucination</defName>'),
+              ('historical Hallucination duration', wraith_tele_hediffs, '<disappearsAfterTicks>12000~24000</disappearsAfterTicks>'),
+              ('movement disruption', wraith_tele_hediffs, '<capacity>Moving</capacity><offset>-0.12</offset>'),
+              ('consciousness disruption', wraith_tele_hediffs, '<capacity>Consciousness</capacity><offset>-0.12</offset>'),
+              ('sight disruption', wraith_tele_hediffs, '<capacity>Sight</capacity><offset>-0.18</offset>'),
+              ('full-Wraith gene grant', wraith_genes, '<li>WNG_Hallucination</li>'),
+              ('active telepathy caster check', wraith_tele_source, 'WraithTelepathyUtility.IsTelepathicWraith(caster)'),
+              ('living-flesh target check', wraith_tele_source, '!victim.RaceProps.IsFlesh'),
+              ('mechanoid exclusion', wraith_tele_source, 'victim.RaceProps.IsMechanoid'),
+              ('refresh-not-stack behavior', wraith_tele_source, 'victim.health.RemoveHediff(existing)'),
+              ('same exact target application', wraith_tele_source, 'victim.health.AddHediff(hediffDef)'),
+              ('current hibernation gizmo', wraith_gene_source, 'defaultLabel = IsHibernating ? "Wake from hibernation" : "Enter hibernation"'),
+              ('current hibernation state', wraith_gene_source, 'WNG_WraithHibernating'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith Hallucination/supersession contract missing: {label}')
+          telepathy_gene_block = wraith_genes.split('<defName>WNG_WraithTelepathy</defName>', 1)[1].split('</GeneDef>', 1)[0] if '<defName>WNG_WraithTelepathy</defName>' in wraith_genes else ''
+          hybrid_gene_block = wraith_genes.split('<defName>WNG_HybridTelepathy</defName>', 1)[1].split('</GeneDef>', 1)[0] if '<defName>WNG_HybridTelepathy</defName>' in wraith_genes else ''
+          if 'WNG_Hallucination' not in telepathy_gene_block:
+              failures.append('Full Wraith telepathy no longer grants Hallucination')
+          if 'WNG_Hallucination' in hybrid_gene_block:
+              failures.append('Attenuated hybrid telepathy incorrectly gained full-Wraith Hallucination')
+          for forbidden in (
+              'SetFaction(',
+              'SetGuestStatus(',
+              'TryEnslavePrisoner',
+              'AdjustBiologicalAge',
+              'WNG_LifeDrained',
+          ):
+              if forbidden in wraith_tele_source.split('public sealed class CompAbilityEffect_WraithHallucination', 1)[1].split('public sealed class CompProperties_AbilityQueensCommand', 1)[0]:
+                  failures.append(f'Wraith Hallucination crossed identity/feeding ownership boundary: {forbidden}')
+          if '<defName>WNG_Hibernate</defName>' in wraith_tele_abilities:
+              failures.append('Obsolete duplicate WNG_Hibernate AbilityDef was resurrected despite the current Life Force hibernation gizmo')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
