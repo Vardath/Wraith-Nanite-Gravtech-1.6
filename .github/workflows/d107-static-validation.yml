@@ -629,6 +629,40 @@ jobs:
               if forbidden in rep_cargo:
                   failures.append(f'Replicator contaminated cargo bypasses sealed-carrier ownership: {forbidden}')
 
+          # Replicator crisis pressure must remember unresolved mature infestations without
+          # granting active swarms free units. Its only current gameplay consumer is later Matter seed mass.
+          rep_crisis = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorCrisisPressure.cs').read_text(encoding='utf-8')
+          rep_crisis_def = Path('Defs/ReplicatorCrisisDefs/ReplicatorCrisis.xml').read_text(encoding='utf-8')
+          rep_meteor = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorMatterMeteor.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('crisis tuning Def', rep_crisis_def, '<defName>WNG_ReplicatorCrisisPressureTuning</defName>'),
+              ('mature threshold', rep_crisis_def, '<matureInfestationCount>18</matureInfestationCount>'),
+              ('one-day tier exposure', rep_crisis_def, '<exposureTicksPerTier>60000</exposureTicksPerTier>'),
+              ('two-day tier decay', rep_crisis_def, '<clearTicksPerDecay>120000</clearTicksPerDecay>'),
+              ('three-tier ceiling', rep_crisis_def, '<maxPressureTier>3</maxPressureTier>'),
+              ('Drone-equivalent Matter bonus', rep_crisis_def, '<matterSeedBonusPerTier>10</matterSeedBonusPerTier>'),
+              ('save-safe pressure tier', rep_crisis, 'wngReplicatorCrisisPressureTier'),
+              ('save-safe mature exposure', rep_crisis, 'wngReplicatorCrisisMatureExposureTicks'),
+              ('save-safe clear time', rep_crisis, 'wngReplicatorCrisisClearTicks'),
+              ('hostile block census', rep_crisis, 'ReplicatorAssimilationUtility.CountHostileBlocks(map)'),
+              ('Siege Mass mature trigger', rep_crisis, 'WNG_ReplicatorSiegeMass'),
+              ('no-free-reinforcement doctrine', rep_crisis, 'Active swarms receive no free reinforcements'),
+              ('Matter bonus utility', rep_crisis, 'public static int MatterSeedBonus'),
+              ('meteor pressure consumer', rep_meteor, 'ReplicatorCrisisPressureUtility.MatterSeedBonus'),
+              ('meteor distributed bonus', rep_meteor, 'baseBonusPerCluster'),
+              ('meteor reports pressure addition', rep_meteor, 'Regional Replicator crisis pressure added'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator crisis-pressure contract missing: {label}')
+          for forbidden in (
+              'PawnGenerator.GeneratePawn',
+              'GenSpawn.Spawn',
+              'WNG_ReplicatorDrone',
+              'TryReassembleOneDrone',
+          ):
+              if forbidden in rep_crisis:
+                  failures.append(f'Replicator crisis pressure grants active/free swarm bodies: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
