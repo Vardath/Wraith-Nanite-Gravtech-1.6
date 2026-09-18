@@ -19,6 +19,7 @@ namespace WraithNaniteGravtech
         public int backupTick;
         public int reconstructionTick = -1;
         public bool pendingReconstruction;
+        public int ideologicalStance;
 
         public int nameKind;
         public string firstName;
@@ -63,6 +64,7 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref backupTick, "backupTick", 0);
             Scribe_Values.Look(ref reconstructionTick, "reconstructionTick", -1);
             Scribe_Values.Look(ref pendingReconstruction, "pendingReconstruction", false);
+            Scribe_Values.Look(ref ideologicalStance, "ideologicalStance", 0);
             Scribe_Values.Look(ref nameKind, "nameKind", 0);
             Scribe_Values.Look(ref firstName, "firstName");
             Scribe_Values.Look(ref nickName, "nickName");
@@ -212,6 +214,8 @@ namespace WraithNaniteGravtech
             snapshot.backupTick = now;
             snapshot.pendingReconstruction = false;
             snapshot.reconstructionTick = -1;
+            AsuranIdeologyUtility.EnsureStance(pawn);
+            snapshot.ideologicalStance = (int)AsuranIdeologyUtility.StanceOf(pawn);
 
             snapshot.childhoodDefName = pawn.story?.Childhood?.defName;
             snapshot.adulthoodDefName = pawn.story?.Adulthood?.defName;
@@ -473,6 +477,17 @@ namespace WraithNaniteGravtech
                 }
                 copy.genes.xenotypeName = snapshot.xenotypeName;
             }
+
+            if (Enum.IsDefined(typeof(AsuranIdeologicalStance), snapshot.ideologicalStance))
+            {
+                AsuranIdeologicalStance stance = (AsuranIdeologicalStance)snapshot.ideologicalStance;
+                if (stance != AsuranIdeologicalStance.Unassigned)
+                    AsuranIdeologyUtility.RestoreStance(copy, stance);
+            }
+
+            HediffDef continuityLoss = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_AsuranContinuityLoss");
+            if (continuityLoss != null && copy.health?.hediffSet?.GetFirstHediffOfDef(continuityLoss) == null)
+                copy.health.AddHediff(continuityLoss);
         }
 
         private static bool HasGene(Pawn pawn, GeneDef def) => pawn?.genes?.GenesListForReading.Any(g => g?.def == def) == true;
