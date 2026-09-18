@@ -547,6 +547,50 @@ namespace WraithNaniteGravtech
             }
         }
 
+        public bool TryCommitNativeEnthrallmentAtSite(WraithAbducteeRecord record, Pawn caster)
+        {
+            Pawn pawn = record?.pawn;
+            if (record == null || pawn == null || pawn.Dead || record.releasedAtSite ||
+                record.captivityStage < Math.Max(1, Tuning?.maxCaptivityStage ?? 4) ||
+                record.nativeEnthrallmentCommitted)
+                return false;
+            if (caster == null || caster.Dead || !caster.Spawned || caster.Map == null ||
+                pawn.Map != caster.Map || caster.Faction == null || caster.Faction != record.captorFaction ||
+                pawn.guest == null || pawn.Faction == caster.Faction)
+                return false;
+
+            try
+            {
+                if (!pawn.IsPrisoner)
+                    pawn.guest.SetGuestStatus(caster.Faction, GuestStatus.Prisoner);
+
+                GenGuest.TryEnslavePrisoner(caster, pawn);
+                if (!pawn.IsSlave || pawn.Faction != caster.Faction)
+                {
+                    Log.Warning("[WNG] Stage-4 Wraith captivity reached native Enthrallment threshold but RimWorld did not commit slave state.");
+                    return false;
+                }
+
+                record.nativeEnthrallmentCommitted = true;
+                try
+                {
+                    Messages.Message(
+                        pawn.LabelShortCap + " has been fully enthralled by " + caster.LabelShortCap +
+                        " using RimWorld's native slave state. The exact Pawn remains rescueable.",
+                        pawn,
+                        MessageTypeDefOf.NegativeEvent,
+                        historical: false);
+                }
+                catch { }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("[WNG] Native stage-4 Wraith enthrallment failed without replacing the exact captive: " + ex);
+                return false;
+            }
+        }
+
         public List<WraithAbducteeRecord> RecordsForSite(int siteId)
         {
             if (siteId < 0 || records == null)
@@ -820,8 +864,12 @@ namespace WraithNaniteGravtech
                     continue;
 
                 int maxFailures = eligible.Max(r => r.rescueFailures);
+                int maxStage = eligible.Max(r => Math.Max(0, Math.Min(Math.Max(1, tuning.maxCaptivityStage), r.captivityStage)));
                 float threatPoints = Math.Max(
-                    tuning.baseRescueThreatPoints + eligible.Count * tuning.threatPerCaptive + maxFailures * tuning.threatPerFailure,
+                    tuning.baseRescueThreatPoints +
+                    eligible.Count * tuning.threatPerCaptive +
+                    maxFailures * tuning.threatPerFailure +
+                    maxStage * tuning.threatPerCaptivityStage,
                     StorytellerUtility.DefaultSiteThreatPointsNow() * Math.Max(0f, tuning.storytellerThreatFactor));
 
                 Site site = SiteMaker.MakeSite(
@@ -830,7 +878,7 @@ namespace WraithNaniteGravtech
                     captor,
                     ifHostileThenMustRemainHostile: false,
                     threatPoints: threatPoints);
-                site.customLabel = captor.Name + " Wraith holding site";
+                site.customLabel = CaptivitySiteLabel(captor, maxStage);
                 Find.WorldObjects.Add(site);
 
                 int expiry = now + Math.Max(60000, tuning.rescueSiteDurationTicks);
@@ -845,10 +893,41 @@ namespace WraithNaniteGravtech
                 string names = eligible.Select(r => r.pawn.LabelShort).ToCommaList(useAnd: true);
                 Find.LetterStack.ReceiveLetter(
                     "Wraith captives located",
-                    "Culling traffic has exposed a holding site belonging to " + captor.Name + ". " + names + " are stored there as the same exact pawns that were taken. Assault the site before it relocates.",
+                    "Culling traffic has exposed " + CaptivitySiteArticle(captor, maxStage) + " containing " + names +
+                    ". " + CaptivitySiteThreatText(maxStage) +
+                    " Assault the site before it relocates. If it escapes, the same exact captives remain recoverable but endure another feeding/conditioning cycle.",
                     LetterDefOf.ThreatBig,
                     site);
             }
+        }
+
+        private static string CaptivitySiteLabel(Faction captor, int stage)
+        {
+            string prefix = captor?.Name.NullOrEmpty() == false ? captor.Name + " " : "";
+            if (stage >= 4) return prefix + "thrall-conditioning site";
+            if (stage >= 3) return prefix + "psychic conditioning site";
+            if (stage >= 2) return prefix + "laboratory holding site";
+            return prefix + "feeding preserve";
+        }
+
+        private static string CaptivitySiteArticle(Faction captor, int stage)
+        {
+            string owner = captor?.Name.NullOrEmpty() == false ? captor.Name + " " : "Wraith ";
+            if (stage >= 4) return "a " + owner + "thrall-conditioning site";
+            if (stage >= 3) return "a " + owner + "psychic conditioning site";
+            if (stage >= 2) return "a " + owner + "laboratory holding site";
+            return "a " + owner + "feeding preserve";
+        }
+
+        private static string CaptivitySiteThreatText(int stage)
+        {
+            if (stage >= 4)
+                return "The captives have reached the native Enthrallment threshold; once materialized under a real Wraith Keeper, current RimWorld slave state can be committed while preserving exact Pawn identity.";
+            if (stage >= 3)
+                return "The captives are undergoing deliberate psychic conditioning after repeated feeding and invasive study; further delay risks native enthrallment.";
+            if (stage >= 2)
+                return "The captives are being used as both renewable feeding stock and biological experiment subjects.";
+            return "The captives are being deliberately kept alive as renewable feeding stock.";
         }
 
         public override void GameComponentTick()
