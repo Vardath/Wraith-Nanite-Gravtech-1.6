@@ -275,6 +275,36 @@ jobs:
               if forbidden in pursuit:
                   failures.append(f'Wraith pursuit touches forbidden CatCraft/holder internals: {forbidden}')
 
+          # Neutral Wraith Stargate diplomatic traffic (#129) must use CatCraft's own buffered
+          # arrival and delay Lord creation until every surviving exact envoy has emerged.
+          wraith_envoy = Path('Source/WraithNaniteGravtech/Compatibility/WraithStargateDiplomacy.cs').read_text(encoding='utf-8')
+          wraith_envoy_def = Path('Defs/IncidentDefs/Incidents_WraithStargateDiplomacy.xml').read_text(encoding='utf-8')
+          envoy_incident = wraith_envoy.split('public sealed class IncidentWorker_WraithStargateDiplomaticEnvoy', 1)[1] if 'public sealed class IncidentWorker_WraithStargateDiplomaticEnvoy' in wraith_envoy else ''
+          for label, haystack, needle in (
+              ('envoy incident Def', wraith_envoy_def, '<defName>WNG_WraithStargateDiplomaticEnvoy</defName>'),
+              ('Veiled Hive eligibility', wraith_envoy, 'WNG_WraithVeiledHive'),
+              ('Pale Covenant eligibility', wraith_envoy, 'WNG_WraithPaleCovenant'),
+              ('CatCraft arrival worker', wraith_envoy, 'mode.Worker.Arrive(visitors, parms)'),
+              ('pre-arrival exact pawn tracking', wraith_envoy, 'component.TryPrepare('),
+              ('home-map gate verification', wraith_envoy, 'IsResolvedHomeMapStargate'),
+              ('delayed emergence boundary', wraith_envoy, 'emerged.Count != visitors.Count'),
+              ('native visitor Lord', wraith_envoy, 'LordJob_VisitColony'),
+              ('hostility-change reuse of same envoys', wraith_envoy, 'LordJob_AssaultColony'),
+              ('no free reward statement', wraith_envoy, 'arrival grants no goodwill'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith Stargate envoy contract missing: {label}')
+          if wraith_envoy.find('component.TryPrepare(') > wraith_envoy.find('mode.Worker.Arrive(visitors, parms)'):
+              failures.append('Wraith Stargate envoy no longer registers exact pawns before CatCraft arrival ownership')
+          if 'TryAffectGoodwillWith' in wraith_envoy or 'ChangeGoodwill' in wraith_envoy:
+              failures.append('Wraith Stargate envoy grants/mutates goodwill instead of leaving ordinary diplomacy authoritative')
+          eligible_block = wraith_envoy.split('private static readonly string[] EligibleFactionDefNames', 1)[1].split('};', 1)[0] if 'private static readonly string[] EligibleFactionDefNames' in wraith_envoy else ''
+          if 'WNG_WraithSableBrood' in eligible_block or 'WNG_WraithCinderCourt' in eligible_block:
+              failures.append('Wraith Stargate envoy eligibility has expanded beyond the retained Veiled/Pale peaceful envoy pool')
+          for forbidden in ('receiveBuffer', 'ReceiveBuffer', 'ClearAndDestroyContents'):
+              if forbidden in wraith_envoy:
+                  failures.append(f'Wraith Stargate envoy touches forbidden CatCraft/holder internals: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
