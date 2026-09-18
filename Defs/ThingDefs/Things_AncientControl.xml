@@ -39,7 +39,7 @@
   <ThingDef ParentName="FurnitureBase">
     <defName>WNG_AncientControlChair</defName>
     <label>reconstructed Ancient control chair</label>
-    <description>A powered neural command station reconstructed from Ancient principles. It only functions while a compatible operator maintains the link, and it consumes real manufactured drones from its finite internal reserve.</description>
+    <description>A powered neural command station reconstructed from Ancient principles. It only functions while a compatible operator maintains the link. The occupied chair projects a 72-cell allied command network for WNG Puddle Jumper drone control and Asuran/Ancient gravship shield switching, while its own attacks consume real manufactured drones from the finite internal reserve.</description>
     <designationCategory>Furniture</designationCategory>
     <researchPrerequisites><li>WNG_AncientDroneControl</li></researchPrerequisites>
     <uiOrder>2575</uiOrder>
@@ -69,7 +69,7 @@
         <showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle><canEjectFuel>true</canEjectFuel>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_AncientControlChair">
-        <droneRange>82</droneRange><droneFuelCost>1</droneFuelCost><operatorCheckInterval>60</operatorCheckInterval>
+        <networkRadius>72</networkRadius><droneRange>82</droneRange><droneFuelCost>1</droneFuelCost><operatorCheckInterval>60</operatorCheckInterval>
       </li>
     </comps>
   </ThingDef>

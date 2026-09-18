@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -10,6 +11,7 @@ namespace WraithNaniteGravtech
 {
     public sealed class CompProperties_AncientControlChair : CompProperties
     {
+        public float networkRadius = 72f;
         public float droneRange = 82f;
         public float droneFuelCost = 1f;
         public int operatorCheckInterval = 60;
@@ -55,10 +57,25 @@ namespace WraithNaniteGravtech
 
         public override string CompInspectStringExtra()
         {
-            string status = operatorPawn == null ? "Neural operator: none" : "Neural operator: " + operatorPawn.LabelShortCap + (NetworkActive ? " (linked)" : " (inactive)");
+            string status = operatorPawn == null
+                ? "Neural operator: none"
+                : "Neural operator: " + operatorPawn.LabelShortCap + (NetworkActive ? " (linked)" : " (inactive)");
+
             CompRefuelable fuel = parent.TryGetComp<CompRefuelable>();
             if (fuel != null)
-                status += $"\nAncient drones loaded: {Math.Floor(fuel.Fuel)} / {Math.Floor(fuel.Props.fuelCapacity)}";
+                status += "\nAncient drones loaded: " + Math.Floor(fuel.Fuel) + " / " + Math.Floor(fuel.Props.fuelCapacity);
+
+            if (parent.Spawned && parent.Map != null)
+            {
+                int jumpers = AncientControlNetworkUtility
+                    .NetworkedThings(parent.Map, parent.Faction, parent.Position, Props.networkRadius, "WNG_PuddleJumper")
+                    .Count();
+                int shields = AncientControlNetworkUtility
+                    .NetworkedShieldThings(parent.Map, parent.Faction, parent.Position, Props.networkRadius)
+                    .Count();
+                status += "\nCommand network: " + jumpers + " Jumper(s), " + shields + " shield emitter(s)";
+            }
+
             return status;
         }
 
@@ -90,6 +107,28 @@ namespace WraithNaniteGravtech
             else if (!HasDroneAmmo())
                 launch.Disable("No Ancient drones are loaded.");
             yield return launch;
+
+            Command_Action shieldsOn = new Command_Action
+            {
+                defaultLabel = "Engage network shields",
+                defaultDesc = "Switch on allied WNG Asuran/Ancient gravship shield emitters inside this 72-cell neural control network. Native shield power, charging, EMP and overload behavior remains authoritative.",
+                icon = ContentFinder<Texture2D>.Get("UI/WNG/EMP", true),
+                action = () => SetNetworkShields(true)
+            };
+            if (!NetworkActive)
+                shieldsOn.Disable("The control chair has no active neural operator.");
+            yield return shieldsOn;
+
+            Command_Action shieldsOff = new Command_Action
+            {
+                defaultLabel = "Stand down network shields",
+                defaultDesc = "Switch off allied WNG Asuran/Ancient gravship shield emitters inside this 72-cell neural control network.",
+                icon = ContentFinder<Texture2D>.Get("UI/WNG/EMP", true),
+                action = () => SetNetworkShields(false)
+            };
+            if (!NetworkActive)
+                shieldsOff.Disable("The control chair has no active neural operator.");
+            yield return shieldsOff;
         }
 
         private void BeginSelectOperator()
@@ -194,6 +233,130 @@ namespace WraithNaniteGravtech
                 return;
             }
             DefDatabase<SoundDef>.GetNamedSilentFail("WNG_AncientDroneLaunch")?.PlayOneShot(new TargetInfo(parent.Position, parent.Map));
+        }
+        private void SetNetworkShields(bool enabled)
+        {
+            if (!NetworkActive || parent.Map == null || parent.Faction == null)
+                return;
+
+            int changed = 0;
+            foreach (Thing thing in AncientControlNetworkUtility.NetworkedShieldThings(
+                         parent.Map,
+                         parent.Faction,
+                         parent.Position,
+                         Props.networkRadius))
+            {
+                CompFlickable flick = thing.TryGetComp<CompFlickable>();
+                if (flick == null || flick.SwitchIsOn == enabled)
+                    continue;
+
+                flick.SwitchIsOn = enabled;
+                changed++;
+            }
+
+            try
+            {
+                Messages.Message(
+                    "Ancient control network " + (enabled ? "engaged " : "stood down ") +
+                    changed + " shield emitter(s).",
+                    parent,
+                    MessageTypeDefOf.NeutralEvent,
+                    historical: false);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Ancient control-network shield state committed but presentation failed: " + ex.Message);
+            }
+        }
+    }
+
+    public static class AncientControlNetworkUtility
+    {
+        private const string ControlChairDefName = "WNG_AncientControlChair";
+
+        public static readonly string[] ShieldDefNames =
+        {
+            "WNG_PrecursorShieldEmitter",
+            "WNG_AncientVacuumShieldEmitter"
+        };
+
+        public static bool HasActiveControlFor(Thing thing)
+        {
+            if (thing == null || !thing.Spawned || thing.Map == null || thing.Faction == null)
+                return false;
+
+            ThingDef chairDef = DefDatabase<ThingDef>.GetNamedSilentFail(ControlChairDefName);
+            if (chairDef == null)
+                return false;
+
+            foreach (Thing candidate in thing.Map.listerThings.ThingsOfDef(chairDef))
+            {
+                if (candidate == null ||
+                    candidate.Destroyed ||
+                    !candidate.Spawned ||
+                    candidate.Faction != thing.Faction)
+                    continue;
+
+                CompAncientControlChair chair = candidate.TryGetComp<CompAncientControlChair>();
+                if (chair == null || !chair.NetworkActive)
+                    continue;
+
+                float radius = Math.Max(1f, chair.Props.networkRadius);
+                if (candidate.Position.DistanceToSquared(thing.Position) <= radius * radius)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static IEnumerable<Thing> NetworkedThings(
+            Map map,
+            Faction faction,
+            IntVec3 center,
+            float radius,
+            string defName)
+        {
+            if (map == null || faction == null || defName.NullOrEmpty())
+                yield break;
+
+            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+            if (def == null)
+                yield break;
+
+            float radiusSquared = Math.Max(1f, radius) * Math.Max(1f, radius);
+            foreach (Thing thing in map.listerThings.ThingsOfDef(def))
+            {
+                if (thing == null || !thing.Spawned || thing.Faction != faction)
+                    continue;
+                if (thing.Position.DistanceToSquared(center) <= radiusSquared)
+                    yield return thing;
+            }
+        }
+
+        public static IEnumerable<Thing> NetworkedShieldThings(
+            Map map,
+            Faction faction,
+            IntVec3 center,
+            float radius)
+        {
+            if (map == null || faction == null)
+                yield break;
+
+            float radiusSquared = Math.Max(1f, radius) * Math.Max(1f, radius);
+            foreach (string defName in ShieldDefNames)
+            {
+                ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+                if (def == null)
+                    continue;
+
+                foreach (Thing thing in map.listerThings.ThingsOfDef(def))
+                {
+                    if (thing == null || !thing.Spawned || thing.Faction != faction)
+                        continue;
+                    if (thing.Position.DistanceToSquared(center) <= radiusSquared)
+                        yield return thing;
+                }
+            }
         }
     }
 

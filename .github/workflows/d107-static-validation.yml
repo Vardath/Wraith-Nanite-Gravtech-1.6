@@ -764,6 +764,39 @@ jobs:
               if forbidden in rep_gate_assault:
                   failures.append(f'Replicator Stargate assault crossed current ownership/primitive-entry boundary: {forbidden}')
 
+          # Ancient control-chair networking is retained gameplay: an occupied 72-cell chair
+          # may command allied WNG shields and authorize Jumper drone armament, but cloak/sensors
+          # still require a compatible pawn physically aboard the Jumper.
+          ancient_network = Path('Source/WraithNaniteGravtech/Ancient/AncientControlNetwork.cs').read_text(encoding='utf-8')
+          jumper_systems = Path('Source/WraithNaniteGravtech/Shuttles/PuddleJumperSystems.cs').read_text(encoding='utf-8')
+          ancient_control_def = Path('Defs/ThingDefs/Things_AncientControl.xml').read_text(encoding='utf-8')
+          jumper_def = Path('Defs/ThingDefs/Shuttle_PuddleJumper.xml').read_text(encoding='utf-8')
+          armament_block = jumper_systems.split('public sealed class CompPuddleJumperDroneArmament', 1)[1].split('public sealed class CompProperties_PuddleJumperSystems', 1)[0] if 'public sealed class CompPuddleJumperDroneArmament' in jumper_systems else ''
+          systems_block = jumper_systems.split('public sealed class CompPuddleJumperSystems', 1)[1] if 'public sealed class CompPuddleJumperSystems' in jumper_systems else ''
+          for label, haystack, needle in (
+              ('72-cell chair property', ancient_network, 'public float networkRadius = 72f;'),
+              ('72-cell chair Def', ancient_control_def, '<networkRadius>72</networkRadius>'),
+              ('active network query', ancient_network, 'public static bool HasActiveControlFor(Thing thing)'),
+              ('same-faction chair requirement', ancient_network, 'candidate.Faction != thing.Faction'),
+              ('active occupied chair requirement', ancient_network, '!chair.NetworkActive'),
+              ('network Jumper discovery', ancient_network, '"WNG_PuddleJumper"'),
+              ('standard Asuran shield network identity', ancient_network, '"WNG_PrecursorShieldEmitter"'),
+              ('Ancient vacuum shield network identity', ancient_network, '"WNG_AncientVacuumShieldEmitter"'),
+              ('native flick switching', ancient_network, 'flick.SwitchIsOn = enabled;'),
+              ('Jumper dual neural-control path', armament_block, 'AncientControlNetworkUtility.HasActiveControlFor(parent)'),
+              ('onboard armament path preserved', armament_block, 'PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)'),
+              ('armed-suite inspect state', armament_block, 'Jumper systems tier: armed command suite'),
+              ('Jumper Def documents remote armament only', jumper_def, 'launcher can be commanded either by an ATA-compatible pawn aboard or by an occupied allied Ancient control chair'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Ancient control-network contract missing: {label}')
+          if 'HasNeuralControl()' in systems_block:
+              failures.append('Puddle Jumper cloak/sensor systems incorrectly inherited remote chair authorization')
+          if systems_block.count('PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)') < 4:
+              failures.append('Puddle Jumper cloak/sensor/hostile-ingress paths no longer consistently require a compatible pawn aboard')
+          if 'AncientControlNetworkUtility.HasActiveControlFor(parent)' in systems_block:
+              failures.append('Ancient control chair is authorizing cloak/sensors instead of only direct drone armament')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

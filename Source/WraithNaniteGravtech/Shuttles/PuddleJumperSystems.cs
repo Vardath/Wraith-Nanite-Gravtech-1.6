@@ -32,6 +32,12 @@ namespace WraithNaniteGravtech
         private int nextDroneLaunchTick;
         public CompProperties_PuddleJumperDroneArmament Props => (CompProperties_PuddleJumperDroneArmament)props;
 
+        private bool HasNeuralControl()
+        {
+            return PuddleJumperControlUtility.HasCompatiblePawnAboard(parent) ||
+                   AncientControlNetworkUtility.HasActiveControlFor(parent);
+        }
+
         private bool UpgradeUnlocked()
         {
             ResearchProjectDef research = DefDatabase<ResearchProjectDef>.GetNamedSilentFail(Props.researchDefName);
@@ -67,7 +73,7 @@ namespace WraithNaniteGravtech
 
         private void BeginSelectDroneTarget()
         {
-            if (parent.Faction != Faction.OfPlayer || parent.Map == null || !UpgradeUnlocked() || !PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)) return;
+            if (parent.Faction != Faction.OfPlayer || parent.Map == null || !UpgradeUnlocked() || !HasNeuralControl()) return;
             if ((Find.TickManager?.TicksGame ?? 0) < nextDroneLaunchTick || FindLoadedDrone() == null) return;
             TargetingParameters parms = new TargetingParameters
             {
@@ -83,7 +89,7 @@ namespace WraithNaniteGravtech
 
         private void LaunchDroneAt(LocalTargetInfo target)
         {
-            if (parent.Faction != Faction.OfPlayer || parent.Map == null || !UpgradeUnlocked() || !PuddleJumperControlUtility.HasCompatiblePawnAboard(parent) || !ValidDroneTarget(target.Thing)) return;
+            if (parent.Faction != Faction.OfPlayer || parent.Map == null || !UpgradeUnlocked() || !HasNeuralControl() || !ValidDroneTarget(target.Thing)) return;
             int now = Find.TickManager?.TicksGame ?? 0;
             if (now < nextDroneLaunchTick) return;
             CompTransporter transporter = parent.TryGetComp<CompTransporter>();
@@ -117,16 +123,46 @@ namespace WraithNaniteGravtech
             Command_Action launch = new Command_Action
             {
                 defaultLabel = "Launch Jumper drone",
-                defaultDesc = "Launch one reconstructed Ancient drone carried in the Puddle Jumper. Requires Ancient drone-control research and an ATA-compatible pawn physically aboard.",
+                defaultDesc = "Launch one reconstructed Ancient drone carried in the Puddle Jumper. Requires Ancient drone-control research plus either an ATA-compatible pawn physically aboard or an active allied Ancient control chair within 72 cells.",
                 icon = ContentFinder<Texture2D>.Get("UI/WNG/AncientDrone", true),
                 action = BeginSelectDroneTarget
             };
             int now = Find.TickManager?.TicksGame ?? 0;
             if (!UpgradeUnlocked()) launch.Disable("Requires Ancient drone control research.");
-            else if (!PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)) launch.Disable("Requires an ATA-compatible pawn aboard.");
+            else if (!HasNeuralControl()) launch.Disable("Requires an ATA-compatible pawn aboard or an active allied Ancient control chair within 72 cells.");
             else if (LoadedDroneCount() <= 0) launch.Disable("Load at least one reconstructed Ancient drone into the Jumper cargo.");
             else if (now < nextDroneLaunchTick) launch.Disable("Jumper drone-control emitters are recalibrating.");
             yield return launch;
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            if (parent.Faction != Faction.OfPlayer)
+                return null;
+
+            string tier = UpgradeUnlocked()
+                ? "Jumper systems tier: armed command suite"
+                : "Jumper systems tier: reconnaissance suite";
+
+            if (!UpgradeUnlocked())
+                return tier + "\nDirect drone armament: requires Ancient drone control";
+
+            string control = PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)
+                ? "onboard ATA-compatible pilot"
+                : AncientControlNetworkUtility.HasActiveControlFor(parent)
+                    ? "linked Ancient control chair"
+                    : "no neural controller";
+
+            string state = tier +
+                           "\nDrone control: " + control +
+                           "\nAncient drones in cargo: " + LoadedDroneCount();
+
+            int now = Find.TickManager?.TicksGame ?? 0;
+            if (now < nextDroneLaunchTick)
+                state += "\nDrone-control recalibration: " +
+                         ((nextDroneLaunchTick - now) / 60f).ToString("0.0") + " s";
+
+            return state;
         }
 
         public override void PostExposeData()
