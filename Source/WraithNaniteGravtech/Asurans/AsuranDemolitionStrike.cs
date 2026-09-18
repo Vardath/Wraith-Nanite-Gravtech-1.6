@@ -566,7 +566,7 @@ namespace WraithNaniteGravtech
                     instigator,
                     damAmount: damageAmount,
                     armorPenetration: damageAmount * 0.016f,
-                    explosionSound: SoundDefOf.MetalHitImportant,
+                    explosionSound: DefDatabase<SoundDef>.GetNamedSilentFail("Explosion_Bomb"),
                     chanceToStartFire: 0.16f,
                     damageFalloff: true,
                     screenShakeFactor: blastRadius >= 7.5f ? 1.65f : 1.25f);
