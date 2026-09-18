@@ -71,6 +71,22 @@ namespace WraithNaniteGravtech
         }
     }
 
+    public sealed class AsuranGateIngressRecord : IExposable
+    {
+        public Pawn pawn;
+        public Thing sourceGate;
+        public IntVec3 sourceGateCell = IntVec3.Invalid;
+        public int mapId = -1;
+
+        public void ExposeData()
+        {
+            Scribe_References.Look(ref pawn, "pawn");
+            Scribe_References.Look(ref sourceGate, "sourceGate");
+            Scribe_Values.Look(ref sourceGateCell, "sourceGateCell", IntVec3.Invalid);
+            Scribe_Values.Look(ref mapId, "mapId", -1);
+        }
+    }
+
     /// <summary>
     /// Persistent Lattice Collective intelligence. During one hostile presence on a player-home map,
     /// Asurans prioritise physical recovery of one full vacuum-energy module; otherwise they may
@@ -88,6 +104,8 @@ namespace WraithNaniteGravtech
         private List<int> patternWarningMapIds = new List<int>();
         private List<int> moduleWarningMapIds = new List<int>();
         private List<int> deploymentWarningMapIds = new List<int>();
+        private List<AsuranGateIngressRecord> gateIngressRecords =
+            new List<AsuranGateIngressRecord>();
 
         public GameComponent_AsuranHostileTechnologyTheft(Game game) { }
 
@@ -111,6 +129,16 @@ namespace WraithNaniteGravtech
                 if (hostileAsurans.Count == 0)
                 {
                     ResetEncounter(map.uniqueID);
+                    continue;
+                }
+
+                CaptureGateIngressSources(map);
+
+                Pawn moduleCarrier = hostileAsurans.FirstOrDefault(HasVacuumModule);
+                if (moduleCarrier != null)
+                {
+                    CommitModuleObjective(moduleCarrier);
+                    DirectModuleCarrierExtraction(map, moduleCarrier);
                     continue;
                 }
 
@@ -148,6 +176,247 @@ namespace WraithNaniteGravtech
                     alreadyEquipped++;
                     TryAnnounceDeployment(map, pawn, spec);
                 }
+            }
+        }
+
+        private static bool HasVacuumModule(Pawn pawn)
+        {
+            return pawn?.carryTracker?.CarriedThing?.def?.defName ==
+                   AsuranHostileTechnologyTheftUtility.VacuumModuleDefName;
+        }
+
+        private void CaptureGateIngressSources(Map map)
+        {
+            if (map == null)
+                return;
+
+            ThingDef jumperDef =
+                DefDatabase<ThingDef>.GetNamedSilentFail("WNG_PuddleJumper_NPC");
+            if (jumperDef == null)
+                return;
+
+            gateIngressRecords ??= new List<AsuranGateIngressRecord>();
+
+            foreach (Thing jumper in map.listerThings.ThingsOfDef(jumperDef))
+            {
+                if (jumper == null || jumper.Destroyed || !jumper.Spawned)
+                    continue;
+
+                CompHostileGateJumperIngress ingress =
+                    jumper.TryGetComp<CompHostileGateJumperIngress>();
+                if (ingress == null || ingress.SourceGate == null)
+                    continue;
+
+                Thing gate = ingress.SourceGate;
+                IntVec3 gateCell =
+                    gate.Spawned && gate.Map == map
+                        ? gate.Position
+                        : IntVec3.Invalid;
+
+                foreach (Pawn pawn in ingress.DeployedCrew)
+                {
+                    if (pawn == null ||
+                        pawn.Dead ||
+                        pawn.Destroyed ||
+                        !pawn.Spawned ||
+                        pawn.Map != map)
+                        continue;
+
+                    AsuranGateIngressRecord existing =
+                        gateIngressRecords.FirstOrDefault(record =>
+                            record?.pawn == pawn);
+                    if (existing != null)
+                    {
+                        existing.sourceGate = gate;
+                        existing.sourceGateCell = gateCell;
+                        existing.mapId = map.uniqueID;
+                        continue;
+                    }
+
+                    gateIngressRecords.Add(
+                        new AsuranGateIngressRecord
+                        {
+                            pawn = pawn,
+                            sourceGate = gate,
+                            sourceGateCell = gateCell,
+                            mapId = map.uniqueID
+                        });
+                }
+            }
+        }
+
+        private void DirectModuleCarrierExtraction(Map map, Pawn carrier)
+        {
+            if (map == null ||
+                carrier == null ||
+                carrier.Dead ||
+                carrier.Downed ||
+                !carrier.Spawned ||
+                carrier.Map != map ||
+                carrier.jobs == null ||
+                !HasVacuumModule(carrier))
+                return;
+
+            AsuranGateIngressRecord gateRecord =
+                (gateIngressRecords ?? new List<AsuranGateIngressRecord>())
+                .FirstOrDefault(record =>
+                    record != null &&
+                    record.pawn == carrier &&
+                    record.mapId == map.uniqueID);
+
+            if (gateRecord != null)
+            {
+                Thing exactGate = gateRecord.sourceGate;
+
+                // Gate-arrived operatives are bound to the exact corridor that brought them in.
+                // A destroyed, disabled or otherwise unavailable gate blocks extraction; this path
+                // deliberately never converts into an edge retreat.
+                if (exactGate == null ||
+                    exactGate.Destroyed ||
+                    !exactGate.Spawned ||
+                    exactGate.Map != map ||
+                    !WraithStargateHuntUtility.IsExactGateUsable(
+                        map,
+                        exactGate,
+                        carrier.Faction))
+                {
+                    return;
+                }
+
+                IntVec3 gateCell = exactGate.Position;
+                if (carrier.Position.DistanceToSquared(gateCell) <= 6.25f)
+                {
+                    CommitModuleCarrierEscape(
+                        map,
+                        carrier,
+                        gateCell,
+                        "the same Stargate corridor");
+                    return;
+                }
+
+                GiveExtractionGoto(carrier, gateCell, 900);
+                return;
+            }
+
+            // Ordinary hostile Asurans did not arrive through a WNG-tracked CatCraft corridor.
+            // Once they secure the physical module they withdraw conventionally.
+            if (carrier.Position.OnEdge(map))
+            {
+                CommitModuleCarrierEscape(
+                    map,
+                    carrier,
+                    carrier.Position,
+                    "the map edge");
+                return;
+            }
+
+            if (CellFinder.TryFindRandomPawnExitCell(
+                    carrier,
+                    out IntVec3 edgeCell))
+            {
+                GiveExtractionGoto(carrier, edgeCell, 1200);
+            }
+        }
+
+        private static void GiveExtractionGoto(
+            Pawn carrier,
+            IntVec3 target,
+            int expiryTicks)
+        {
+            if (carrier?.jobs == null || !target.IsValid)
+                return;
+
+            if (carrier.CurJobDef == JobDefOf.Goto &&
+                carrier.CurJob?.targetA.Cell == target)
+                return;
+
+            Job job = new Job(JobDefOf.Goto, target)
+            {
+                expiryInterval = Math.Max(300, expiryTicks),
+                locomotionUrgency = LocomotionUrgency.Sprint
+            };
+            carrier.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+        }
+
+        private void CommitModuleCarrierEscape(
+            Map map,
+            Pawn carrier,
+            IntVec3 exitCell,
+            string route)
+        {
+            if (map == null ||
+                carrier == null ||
+                carrier.Dead ||
+                !carrier.Spawned ||
+                carrier.Map != map ||
+                !HasVacuumModule(carrier))
+                return;
+
+            carrier.jobs?.StopAll();
+
+            try
+            {
+                carrier.DeSpawn(DestroyMode.Vanish);
+                if (!Find.WorldPawns.Contains(carrier))
+                    Find.WorldPawns.PassToWorld(
+                        carrier,
+                        PawnDiscardDecideMode.Decide);
+            }
+            catch (Exception ex)
+            {
+                bool worldCommitted = Find.WorldPawns.Contains(carrier);
+                if (!worldCommitted &&
+                    !carrier.Spawned &&
+                    !carrier.Destroyed)
+                {
+                    try
+                    {
+                        GenSpawn.Spawn(
+                            carrier,
+                            exitCell.IsValid && exitCell.InBounds(map)
+                                ? exitCell
+                                : map.Center,
+                            map);
+                    }
+                    catch (Exception rollback)
+                    {
+                        Log.Error(
+                            "[WNG] Vacuum-module carrier escape rollback failed for the exact Asuran pawn: " +
+                            rollback);
+                    }
+                }
+
+                if (!worldCommitted)
+                {
+                    Log.Warning(
+                        "[WNG] Vacuum-module carrier could not complete physical withdrawal; exact pawn/module retained where possible: " +
+                        ex.Message);
+                    return;
+                }
+            }
+
+            gateIngressRecords?.RemoveAll(record =>
+                record == null || record.pawn == carrier);
+
+            try
+            {
+                Find.LetterStack.ReceiveLetter(
+                    "Vacuum-energy module stolen",
+                    "The exact Lattice Collective operative carrying the finite vacuum-energy module escaped through " +
+                    route +
+                    ". The module left the map as that pawn's real carried object; no replacement or abstract resource deduction was used.",
+                    LetterDefOf.ThreatBig,
+                    new TargetInfo(
+                        exitCell.IsValid && exitCell.InBounds(map)
+                            ? exitCell
+                            : map.Center,
+                        map));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(
+                    "[WNG] Vacuum-module carrier physically escaped but the theft letter failed: " +
+                    ex.Message);
             }
         }
 
@@ -655,6 +924,12 @@ namespace WraithNaniteGravtech
 
         private void ResetEncounter(int mapId)
         {
+            gateIngressRecords?.RemoveAll(record =>
+                record == null ||
+                record.mapId == mapId ||
+                record.pawn == null ||
+                record.pawn.Dead ||
+                record.pawn.Destroyed);
             patternCompletedMapIds.Remove(mapId);
             moduleCompletedMapIds.Remove(mapId);
             patternWarningMapIds.Remove(mapId);
@@ -664,6 +939,18 @@ namespace WraithNaniteGravtech
 
         private void TrimPersistentPawnLists()
         {
+            gateIngressRecords = (gateIngressRecords ??
+                new List<AsuranGateIngressRecord>())
+                .Where(record =>
+                    record != null &&
+                    record.pawn != null &&
+                    !record.pawn.Dead &&
+                    !record.pawn.Destroyed)
+                .GroupBy(record => record.pawn)
+                .Select(group => group.First())
+                .Take(256)
+                .ToList();
+
             if (seenHostilePawnIds.Count > 4096)
                 seenHostilePawnIds.RemoveRange(0, seenHostilePawnIds.Count - 2048);
             if (patternEquippedPawnIds.Count > 4096)
@@ -682,6 +969,10 @@ namespace WraithNaniteGravtech
             Scribe_Collections.Look(ref patternWarningMapIds, "wngAsuranPatternWarningMaps", LookMode.Value);
             Scribe_Collections.Look(ref moduleWarningMapIds, "wngAsuranModuleWarningMaps", LookMode.Value);
             Scribe_Collections.Look(ref deploymentWarningMapIds, "wngAsuranDeploymentWarningMaps", LookMode.Value);
+            Scribe_Collections.Look(
+                ref gateIngressRecords,
+                "wngAsuranGateIngressRecords",
+                LookMode.Deep);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
@@ -696,6 +987,17 @@ namespace WraithNaniteGravtech
                 patternWarningMapIds = DistinctNonNegative(patternWarningMapIds);
                 moduleWarningMapIds = DistinctNonNegative(moduleWarningMapIds);
                 deploymentWarningMapIds = DistinctNonNegative(deploymentWarningMapIds);
+                gateIngressRecords = (gateIngressRecords ??
+                    new List<AsuranGateIngressRecord>())
+                    .Where(record =>
+                        record != null &&
+                        record.pawn != null &&
+                        !record.pawn.Dead &&
+                        !record.pawn.Destroyed)
+                    .GroupBy(record => record.pawn)
+                    .Select(group => group.First())
+                    .Take(256)
+                    .ToList();
             }
         }
 
