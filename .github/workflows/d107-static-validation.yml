@@ -571,6 +571,36 @@ jobs:
               if forbidden in rep_meteor:
                   failures.append(f'Replicator Matter meteor bypasses current matter-first ownership: {forbidden}')
 
+          # Sealed Replicator salvage is a bounded carrier for ordinary Matter. Time advances
+          # only while physically spawned; the carrier owns no reassembly/Drone behavior.
+          sealed_salvage = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorSealedSalvage.cs').read_text(encoding='utf-8')
+          sealed_salvage_def = Path('Defs/ThingDefs/Things_ReplicatorInfiltration.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('sealed salvage Def', sealed_salvage_def, '<defName>WNG_SealedMachineSalvage</defName>'),
+              ('rare ticker', sealed_salvage_def, '<tickerType>Rare</tickerType>'),
+              ('spawn-only countdown', sealed_salvage, '!parent.Spawned'),
+              ('saved exposure time', sealed_salvage, 'wngSealedSalvageSpawnedTicks'),
+              ('saved rupture target', sealed_salvage, 'wngSealedSalvageRuptureAtTicks'),
+              ('at-most-once latch', sealed_salvage, 'wngSealedSalvageRuptureCommitted'),
+              ('ordinary Matter payload', sealed_salvage, 'WNG_ReplicatorMatter'),
+              ('physical placement commit', sealed_salvage, 'GenPlace.TryPlaceThing'),
+              ('post-commit casing cleanup', sealed_salvage, 'parent.Destroy(DestroyMode.Vanish)'),
+              ('12k minimum exposure', sealed_salvage_def, '<minimumSpawnedTicks>12000</minimumSpawnedTicks>'),
+              ('24k maximum exposure', sealed_salvage_def, '<maximumSpawnedTicks>24000</maximumSpawnedTicks>'),
+              ('12 Matter payload', sealed_salvage_def, '<matterCount>12</matterCount>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Sealed Replicator salvage contract missing: {label}')
+          for forbidden in (
+              'PawnGenerator.GeneratePawn',
+              'WNG_ReplicatorDrone',
+              'TryReassembleOneDrone',
+              'CompReplicatorMatterReassembly',
+              'SetFaction(',
+          ):
+              if forbidden in sealed_salvage:
+                  failures.append(f'Sealed Replicator salvage bypasses canonical Matter ownership: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
