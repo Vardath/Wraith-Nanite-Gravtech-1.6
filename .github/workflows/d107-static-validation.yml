@@ -216,6 +216,42 @@ jobs:
               if comp not in npc_text:
                   failures.append(f'NPC Puddle Jumper missing hostile gate-ingress component {comp}')
 
+          # Physical hostile-Asuran vacuum-module theft must end in a real carrier withdrawal.
+          # Gate-arrived operatives remain bound to their exact source gate; ordinary raids use the edge.
+          asuran_theft = Path('Source/WraithNaniteGravtech/Asurans/AsuranHostileTechnologyTheft.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('exact deployed gate crew persistence', hostile_gate, 'wngHostileGateJumperDeployedCrew'),
+              ('gate source exposure', hostile_gate, 'public Thing SourceGate => sourceGate'),
+              ('deployed crew exposure', hostile_gate, 'public IEnumerable<Pawn> DeployedCrew'),
+              ('save-safe ingress record', asuran_theft, 'AsuranGateIngressRecord'),
+              ('module carrier detection', asuran_theft, 'FirstOrDefault(HasVacuumModule)'),
+              ('carrier handled before other theft', asuran_theft, 'DirectModuleCarrierExtraction(map, moduleCarrier)'),
+              ('exact gate-source capture', asuran_theft, 'ingress.DeployedCrew'),
+              ('same-gate availability check', asuran_theft, 'WraithStargateHuntUtility.IsExactGateUsable'),
+              ('ordinary edge retreat', asuran_theft, 'CellFinder.TryFindRandomPawnExitCell'),
+              ('physical pawn despawn', asuran_theft, 'carrier.DeSpawn(DestroyMode.Vanish)'),
+              ('exact world-pawn transfer', asuran_theft, 'Find.WorldPawns.PassToWorld'),
+              ('failed withdrawal respawn rollback', asuran_theft, 'GenSpawn.Spawn'),
+              ('gate ingress save state', asuran_theft, 'wngAsuranGateIngressRecords'),
+              ('one-shot seizure latch', asuran_theft, '!moduleCompletedMapIds.Contains(map.uniqueID)'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Asuran vacuum-module extraction contract missing: {label}')
+          carrier_idx = asuran_theft.find('Pawn moduleCarrier = hostileAsurans.FirstOrDefault(HasVacuumModule)')
+          loadout_idx = asuran_theft.find('PrepareLaterRaidLoadouts(map, hostileAsurans)')
+          pattern_idx = asuran_theft.find('TryMaintainOrAssignPatternTheft(map, hostileAsurans)')
+          if carrier_idx < 0 or loadout_idx < 0 or pattern_idx < 0 or carrier_idx > loadout_idx or carrier_idx > pattern_idx:
+              failures.append('Asuran physical module carrier is no longer prioritised before stolen-pattern/loadout work')
+          gate_route_block = asuran_theft.split('if (gateRecord != null)', 1)[1].split('// Ordinary hostile Asurans did not arrive', 1)[0] if 'if (gateRecord != null)' in asuran_theft else ''
+          if 'TryFindRandomPawnExitCell' in gate_route_block:
+              failures.append('Gate-arrived Asuran vacuum-module carrier gained a forbidden map-edge fallback instead of remaining bound to the exact source gate')
+          for source_name, haystack in (('Asuran module extraction', asuran_theft), ('hostile Asuran gate ingress', hostile_gate)):
+              if 'StargatesMod.' in haystack:
+                  failures.append(f'{source_name} acquired a compile-time CatCraft dependency')
+              for forbidden in ('receiveBuffer', 'ReceiveBuffer', 'ClearAndDestroyContents'):
+                  if forbidden in haystack:
+                      failures.append(f'{source_name} touches forbidden CatCraft/holder internals: {forbidden}')
+
           # Strategic Wraith Stargate hunt / exact-gate control objective (#105/#108).
           wraith_gate = Path('Source/WraithNaniteGravtech/Compatibility/WraithStargateHunt.cs').read_text(encoding='utf-8')
           gate_objective = Path('Source/WraithNaniteGravtech/Compatibility/WNGGateControlObjective.cs').read_text(encoding='utf-8')
