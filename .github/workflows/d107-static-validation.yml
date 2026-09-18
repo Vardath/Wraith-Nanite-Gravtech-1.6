@@ -305,6 +305,42 @@ jobs:
               if forbidden in wraith_envoy:
                   failures.append(f'Wraith Stargate envoy touches forbidden CatCraft/holder internals: {forbidden}')
 
+          # Optional ONAC/RimGate policies (#132/#133) must remain dependency-safe and bounded.
+          onac_policy = Path('Source/WraithNaniteGravtech/Compatibility/OnacThreatAndRivalry.cs').read_text(encoding='utf-8')
+          onac_interop = Path('Source/WraithNaniteGravtech/Compatibility/GoauldOptionalInterop.cs').read_text(encoding='utf-8')
+          glider_mission = Path('Source/WraithNaniteGravtech/Goauld/DeathGliderMission.cs').read_text(encoding='utf-8')
+          onac_response_def = Path('Defs/IncidentDefs/Incidents_OnacReplicatorResponse.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('optional response incident', onac_response_def, '<defName>WNG_OnacReplicatorThreatResponse</defName>'),
+              ('optional ONAC load guard', onac_response_def, 'MayRequire="idolord.ONAC"'),
+              ('verified ecosystem faction surface', onac_interop, 'IsOnacEcosystemFaction'),
+              ('all verified ecosystem factions', onac_interop, 'ActiveOnacEcosystemFactions'),
+              ('current Cinder rivalry', onac_policy, 'WraithLineageUtility.CinderCourtDefName'),
+              ('current Veiled rivalry', onac_policy, 'WraithLineageUtility.VeiledHiveDefName'),
+              ('current Pale Covenant rivalry', onac_policy, 'WraithLineageUtility.PaleCovenantDefName'),
+              ('Sable native authority exclusion', onac_policy, 'Sable Brood already uses RimWorld'),
+              ('ally preservation', onac_policy, 'FactionRelationKind.Ally'),
+              ('one-time pair registry', onac_policy, 'processedPairKeys'),
+              ('replicator faction identity', onac_policy, 'WNG_ReplicatorSwarm'),
+              ('exact Jaffa generation', onac_policy, 'GoauldOptionalInterop.GenerateExactJaffa'),
+              ('priority target configuration', onac_policy, 'mission.ConfigurePriorityTarget(replicators, focus.Position)'),
+              ('no goodwill reward for intervention', onac_policy, 'does not change the faction\'s goodwill'),
+              ('save-safe priority target faction', glider_mission, 'priorityTargetFaction'),
+              ('save-safe priority target cell', glider_mission, 'priorityTargetCell'),
+              ('priority-only target filter', glider_mission, 'return thing.Faction == priorityTargetFaction;'),
+              ('priority pass focus', glider_mission, 'FindAttackPassCellNear'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'ONAC threat/rivalry contract missing: {label}')
+          if 'WNG_WraithExiles' in onac_policy:
+              failures.append('ONAC rivalry regressed to obsolete Wraith Exiles identity instead of current Pale Covenant')
+          if 'using ONAC' in onac_policy or 'using RimGate' in onac_policy:
+              failures.append('ONAC policy source introduced a compile-time optional-mod namespace dependency')
+          if 'TryAffectGoodwillWith(\n                Faction.OfPlayer' in onac_policy:
+              failures.append('ONAC Replicator response mutates player goodwill')
+          if glider_mission.count('return thing.Faction == priorityTargetFaction;') != 1:
+              failures.append('Death Glider priority targeting is not a single explicit faction lock')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
