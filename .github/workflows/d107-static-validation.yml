@@ -940,6 +940,52 @@ jobs:
           if 'Find.Maps' in wraith_leadership:
               failures.append('Wraith Queen leadership performs cross-map scans instead of remaining map-local')
 
+          # Wraith sleeper-agent behavior: native stage-4 slavery remains authoritative;
+          # residual espionage is a separate post-rescue state on the same exact pawn.
+          sleeper_agent = Path('Source/WraithNaniteGravtech/Wraith/WraithSleeperAgent.cs').read_text(encoding='utf-8')
+          sleeper_def = Path('Defs/HediffDefs/Hediffs_WraithSleeperAgent.xml').read_text(encoding='utf-8')
+          sleeper_custody = Path('Source/WraithNaniteGravtech/Wraith/WraithCullingCustody.cs').read_text(encoding='utf-8')
+          sleeper_response = Path('Source/WraithNaniteGravtech/Wraith/WraithMatureHiveRetaliation.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('residual sleeper Hediff', sleeper_def, '<defName>WNG_WraithSleeperConditioning</defName>'),
+              ('sleeper Hediff comp', sleeper_def, 'HediffCompProperties_WraithSleeperAgent'),
+              ('historical sabotage cadence', sleeper_def, '<sabotageIntervalTicks>180000~360000</sabotageIntervalTicks>'),
+              ('historical sabotage chance', sleeper_def, '<sabotageChance>0.55</sabotageChance>'),
+              ('historical intelligence cadence', sleeper_def, '<intelligenceIntervalTicks>300000~600000</intelligenceIntervalTicks>'),
+              ('historical intelligence chance', sleeper_def, '<intelligenceLeakChance>0.30</intelligenceLeakChance>'),
+              ('exact source-faction persistence', sleeper_agent, 'Scribe_References.Look(\n                ref sourceFaction'),
+              ('player-colonist sleeper boundary', sleeper_agent, 'pawn.Faction != Faction.OfPlayer'),
+              ('slave exclusion', sleeper_agent, 'pawn.IsSlaveOfColony'),
+              ('real breakdown sabotage', sleeper_agent, 'targetBreakdown.DoBreakdown()'),
+              ('existing delayed response queue', sleeper_agent, 'WraithMatureHiveRetaliationRegistry'),
+              ('queued intelligence leak', sleeper_agent, 'ScheduleSleeperIntelligenceLeak'),
+              ('stage-four commit requirement', sleeper_custody, 'bool wasNativeEnthralled =\n                record.nativeEnthrallmentCommitted;'),
+              ('original player-faction requirement', sleeper_custody, 'record.originalFaction == Faction.OfPlayer'),
+              ('post-rescue application', sleeper_custody, 'WraithSleeperAgentUtility.TryApplyResidualConditioning'),
+              ('response-kind persistence', sleeper_response, 'Scribe_Values.Look(ref responseKind, "responseKind", 0)'),
+              ('source-pawn persistence', sleeper_response, 'Scribe_Values.Look(ref sourcePawnId, "sourcePawnId", 0)'),
+              ('sleeper response kind', sleeper_response, 'ResponseKindSleeperLeak = 1'),
+              ('reduced sleeper threat', sleeper_response, 'SleeperThreatFactor = 0.65f'),
+              ('peace cancels response', sleeper_response, '!faction.HostileTo(Faction.OfPlayer)'),
+              ('breach presentation', sleeper_response, 'Wraith intelligence breach'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith sleeper-agent contract missing: {label}')
+          for forbidden in (
+              'WNG_Enthralled',
+              'SetFaction(',
+              'SetGuestStatus(',
+              'TryEnslavePrisoner',
+              'IncidentDefOf.RaidEnemy.Worker.TryExecute',
+          ):
+              if forbidden in sleeper_agent:
+                  failures.append(f'Wraith sleeper agent crossed native ownership/response boundary: {forbidden}')
+          if 'WNG_Enthralled' in sleeper_def:
+              failures.append('Residual Wraith sleeper behavior resurrected the obsolete fake Enthralled Hediff')
+          response_schedule = sleeper_response.split('public bool ScheduleSleeperIntelligenceLeak', 1)[1].split('public override void GameComponentTick', 1)[0] if 'public bool ScheduleSleeperIntelligenceLeak' in sleeper_response else ''
+          if '!sourceFaction.HostileTo(Faction.OfPlayer)' not in response_schedule:
+              failures.append('Sleeper intelligence scheduling can force a non-hostile Wraith lineage into a raid response')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

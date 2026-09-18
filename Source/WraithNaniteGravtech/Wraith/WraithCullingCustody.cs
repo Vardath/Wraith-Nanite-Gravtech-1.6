@@ -637,9 +637,18 @@ namespace WraithNaniteGravtech
             if (pawn == null)
                 return;
 
+            bool wasNativeEnthralled =
+                record.nativeEnthrallmentCommitted;
+            Faction conditioningFaction =
+                record.captorFaction;
+            bool restoreAsPlayerSleeper =
+                wasNativeEnthralled &&
+                record.originalFaction == Faction.OfPlayer &&
+                pawn.RaceProps?.Humanlike == true;
+
             // Stage-4 native enthrallment may have changed faction ownership. Only undo the
             // Wraith-owned transition this registry itself committed; unrelated later changes win.
-            if (record.nativeEnthrallmentCommitted &&
+            if (wasNativeEnthralled &&
                 pawn.Faction == record.captorFaction &&
                 pawn.Faction != record.originalFaction)
             {
@@ -657,6 +666,24 @@ namespace WraithNaniteGravtech
 
             CleanupCaptivityState(record);
             record.nativeEnthrallmentCommitted = false;
+
+            // Native Enthrallment itself is now over. The separate residual sleeper state is a
+            // post-rescue consequence only and never controls faction, slavery or guest ownership.
+            if (restoreAsPlayerSleeper)
+            {
+                try
+                {
+                    WraithSleeperAgentUtility.TryApplyResidualConditioning(
+                        pawn,
+                        conditioningFaction);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(
+                        "[WNG] Exact Wraith captive recovery committed but residual sleeper conditioning could not be applied: " +
+                        ex.Message);
+                }
+            }
         }
 
         public List<Pawn> ReleaseSiteCaptives(int siteId)
