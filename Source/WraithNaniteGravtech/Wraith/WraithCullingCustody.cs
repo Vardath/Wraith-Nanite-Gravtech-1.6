@@ -574,6 +574,7 @@ namespace WraithNaniteGravtech
             {
                 if (pawn.guest != null && record.captorFaction != null)
                     pawn.guest.SetGuestStatus(record.captorFaction, GuestStatus.Prisoner);
+                ApplyCaptiveState(record);
                 return true;
             }
             catch (Exception ex)
@@ -586,17 +587,32 @@ namespace WraithNaniteGravtech
             }
         }
 
-        private void RestoreOriginalGuestState(WraithAbducteeRecord record)
+        private void RestoreOriginalCustodyState(WraithAbducteeRecord record)
         {
             Pawn pawn = record?.pawn;
-            if (pawn?.guest == null)
+            if (pawn == null)
                 return;
 
-            Faction host = record.originalGuestHost;
-            GuestStatus status = record.originalGuestStatus;
-            if (status == GuestStatus.Prisoner && host == null && record.originalFaction != Faction.OfPlayer)
-                status = GuestStatus.Guest;
-            pawn.guest.SetGuestStatus(host, status);
+            // Stage-4 native enthrallment may have changed faction ownership. Only undo the
+            // Wraith-owned transition this registry itself committed; unrelated later changes win.
+            if (record.nativeEnthrallmentCommitted &&
+                pawn.Faction == record.captorFaction &&
+                pawn.Faction != record.originalFaction)
+            {
+                pawn.SetFaction(record.originalFaction);
+            }
+
+            if (pawn.guest != null)
+            {
+                Faction host = record.originalGuestHost;
+                GuestStatus status = record.originalGuestStatus;
+                if (status == GuestStatus.Prisoner && host == null && record.originalFaction != Faction.OfPlayer)
+                    status = GuestStatus.Guest;
+                pawn.guest.SetGuestStatus(host, status);
+            }
+
+            CleanupCaptivityState(record);
+            record.nativeEnthrallmentCommitted = false;
         }
 
         public List<Pawn> ReleaseSiteCaptives(int siteId)
@@ -608,7 +624,7 @@ namespace WraithNaniteGravtech
                 if (record.releasedAtSite || pawn == null || pawn.Dead || !pawn.Spawned)
                     continue;
 
-                RestoreOriginalGuestState(record);
+                RestoreOriginalCustodyState(record);
                 record.releasedAtSite = true;
                 released.Add(pawn);
             }
@@ -656,6 +672,11 @@ namespace WraithNaniteGravtech
 
                 if (custody.Contains(pawn))
                 {
+                    int priorStage = record.captivityStage;
+                    ApplyCaptivePressure(record, now);
+                    if (record.captivityStage > priorStage)
+                        TryStageLetter(record.captivityStage, new List<string> { pawn.LabelShort });
+
                     record.rescueSiteId = -1;
                     record.rescueSiteExpiryTick = -1;
                     record.nextRescueOfferTick = now + retry;
@@ -675,6 +696,11 @@ namespace WraithNaniteGravtech
                     continue;
                 if (!custody.Contains(record.pawn))
                     continue;
+
+                int priorStage = record.captivityStage;
+                ApplyCaptivePressure(record, now);
+                if (record.captivityStage > priorStage)
+                    TryStageLetter(record.captivityStage, new List<string> { record.pawn.LabelShort });
 
                 record.rescueSiteId = -1;
                 record.rescueSiteExpiryTick = -1;
@@ -719,11 +745,11 @@ namespace WraithNaniteGravtech
                 if (!IsConclusiveRecovery(record))
                     continue;
 
-                RestoreOriginalGuestState(record);
+                RestoreOriginalCustodyState(record);
                 records.RemoveAt(i);
                 Find.LetterStack.ReceiveLetter(
                     "Wraith abductee recovered",
-                    pawn.LabelShortCap + " is safely back under player control. This is the same Pawn that was culled; no replacement was generated.",
+                    pawn.LabelShortCap + " is safely back under player control. This is the same Pawn that was culled; temporary feeding-stock, experiment and conditioning markers were cleared, while biological aging and feeding trauma inflicted during captivity remain real consequences.",
                     LetterDefOf.PositiveEvent,
                     pawn);
             }
@@ -836,6 +862,7 @@ namespace WraithNaniteGravtech
                 return;
 
             ReconcileRecoveredOrDead();
+            AdvanceCaptiveLifecycle(now);
             ExpireRescueSites(now);
             TryOfferRescueSites(now);
         }
@@ -851,6 +878,16 @@ namespace WraithNaniteGravtech
                 if (records == null)
                     records = new List<WraithAbducteeRecord>();
                 records.RemoveAll(r => r == null || r.pawn == null);
+                int now = Find.TickManager?.TicksGame ?? 0;
+                int pressure = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
+                int maxStage = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+                foreach (WraithAbducteeRecord record in records)
+                {
+                    record.captivityStage = Math.Max(0, Math.Min(maxStage, record.captivityStage));
+                    if (record.nextCaptivityPressureTick < 0)
+                        record.nextCaptivityPressureTick = now + pressure;
+                    ApplyCaptiveState(record);
+                }
             }
         }
     }
