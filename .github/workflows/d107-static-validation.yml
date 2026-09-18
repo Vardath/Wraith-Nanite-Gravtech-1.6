@@ -905,6 +905,41 @@ jobs:
           if 'TryAffectGoodwillWith' in wraith_asuran:
               failures.append('Wraith anti-Asuran response forces diplomacy instead of respecting current faction hostility')
 
+          # Local Wraith Queen leadership/succession: true Queen -> one-day disruption ->
+          # Keeper-preferred / Commander-fallback regency. No Queen ever established means no penalty.
+          wraith_leadership = Path('Source/WraithNaniteGravtech/Wraith/WraithQueenLeadership.cs').read_text(encoding='utf-8')
+          wraith_leadership_defs = Path('Defs/HediffDefs/Hediffs_WraithLeadership.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('leadership map component', wraith_leadership, 'MapComponent_WraithQueenLeadership'),
+              ('saved faction record', wraith_leadership, 'WraithLeadershipRecord'),
+              ('60k succession delay', wraith_leadership, 'SuccessionDelayTicks = 60000'),
+              ('current Queen caste', wraith_leadership, 'WNG_WraithQueen'),
+              ('current Keeper caste', wraith_leadership, 'WNG_WraithKeeper'),
+              ('current Commander caste', wraith_leadership, 'WNG_WraithCommander'),
+              ('Wraith xenotype identity', wraith_leadership, 'WNG_Wraith'),
+              ('Queen-established gate', wraith_leadership, 'queenEstablished'),
+              ('same-map regent validation', wraith_leadership, 'pawn.Map == map'),
+              ('Keeper succession preference', wraith_leadership, 'pawn.kindDef?.defName == KeeperKindDefName'),
+              ('saved queen-loss tick', wraith_leadership, 'queenLostTick'),
+              ('saved acting regent', wraith_leadership, 'actingRegent'),
+              ('Queen authority Hediff', wraith_leadership_defs, '<defName>WNG_QueenAuthority</defName>'),
+              ('Regent authority Hediff', wraith_leadership_defs, '<defName>WNG_RegentAuthority</defName>'),
+              ('Queenless disruption Hediff', wraith_leadership_defs, '<defName>WNG_QueenlessDisruption</defName>'),
+              ('acting-regent marker', wraith_leadership_defs, '<defName>WNG_ActingHiveRegent</defName>'),
+              ('Queen movement benefit', wraith_leadership_defs, '<li><capacity>Moving</capacity><offset>0.04</offset></li>'),
+              ('Regent weaker movement benefit', wraith_leadership_defs, '<li><capacity>Moving</capacity><offset>0.02</offset></li>'),
+              ('queenless movement penalty', wraith_leadership_defs, '<li><capacity>Moving</capacity><offset>-0.06</offset></li>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith Queen-leadership contract missing: {label}')
+          never_queen_block = wraith_leadership.split('// No Queen has ever been established on this map for this faction.', 1)[1].split('if (regent != null)', 1)[0] if '// No Queen has ever been established on this map for this faction.' in wraith_leadership else ''
+          if '!record.queenEstablished' not in never_queen_block or 'ClearLeadershipState(factionWraiths)' not in never_queen_block:
+              failures.append('Ordinary Wraith groups can be penalized despite never establishing a Queen on this map')
+          if 'TryAffectGoodwillWith' in wraith_leadership or 'WraithStrategicHungerRegistry' in wraith_leadership:
+              failures.append('Wraith Queen leadership crossed into diplomacy/strategic-hunger ownership')
+          if 'Find.Maps' in wraith_leadership:
+              failures.append('Wraith Queen leadership performs cross-map scans instead of remaining map-local')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
