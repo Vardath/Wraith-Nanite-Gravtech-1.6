@@ -368,6 +368,31 @@ jobs:
           if 'GameComponent' in asgard_hooks or 'Scribe_' in asgard_hooks:
               failures.append('Asgard provider registry became save-owned instead of runtime-only')
 
+          # Replicator hierarchy readability (#141/#142) remains presentation-only and post-commit.
+          hierarchy = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('recombination VFX helper', 'PlayRecombinationVfxFailSoft'),
+              ('split VFX helper', 'PlaySplitVfxFailSoft'),
+              ('native convergence glow', 'FleckMaker.ThrowLightningGlow'),
+              ('native electrical chatter', 'FleckMaker.ThrowMicroSparks'),
+              ('committed child list', 'List<Pawn> committedChildren'),
+              ('split post-commit wording', 'successfully configured child'),
+              ('recombination post-commit wording', 'source-consumption transaction are already committed'),
+          ):
+              if needle not in hierarchy:
+                  failures.append(f'Replicator hierarchy VFX contract missing: {label}')
+          donor_destroy = hierarchy.find('donor.Destroy(DestroyMode.Vanish)')
+          recomb_vfx_call = hierarchy.find('PlayRecombinationVfxFailSoft(upgraded)')
+          if donor_destroy < 0 or recomb_vfx_call < donor_destroy:
+              failures.append('Replicator recombination VFX is no longer strictly after donor consumption')
+          child_commit = hierarchy.find('committedChildren.Add(child)')
+          split_vfx_call = hierarchy.find('PlaySplitVfxFailSoft(map, origin, committedChildren)')
+          if child_commit < 0 or split_vfx_call < child_commit:
+              failures.append('Replicator split VFX is no longer driven by successfully committed children')
+          races_rep = Path('Defs/ThingDefs/Races_Replicator.xml').read_text(encoding='utf-8')
+          if '<splitCount>2</splitCount>' not in races_rep or '<splitRecombineDelayTicks>2500</splitRecombineDelayTicks>' not in races_rep:
+              failures.append('Replicator hierarchy presentation slice changed retained 2:1 split or recombination delay tuning')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
