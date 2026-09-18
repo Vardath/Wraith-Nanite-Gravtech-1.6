@@ -390,12 +390,12 @@ namespace WraithNaniteGravtech
             string disabled = pursuit.DisabledReason(leader);
             if (!disabled.NullOrEmpty())
             {
-                yield return new FloatMenuOption(PursuitLabel + " (" + disabled + ")", null);
+                yield return new FloatMenuOption(MapComponent_WraithGatePursuit.PursuitLabel + " (" + disabled + ")", null);
                 yield break;
             }
 
             yield return new FloatMenuOption(
-                PursuitLabel,
+                MapComponent_WraithGatePursuit.PursuitLabel,
                 () => pursuit.TryLaunch(leader),
                 MenuOptionPriority.High,
                 null,
