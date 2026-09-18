@@ -141,8 +141,7 @@ namespace WraithNaniteGravtech
     {
         protected override bool TestRunInt(Slate slate)
         {
-            return WraithInterHiveMediationUtility.TrySelectPair(out _, out _) &&
-                   WraithInterHiveMediationUtility.TryFindPaymentMap(out _);
+            return WraithInterHiveMediationUtility.TrySelectPair(out _, out _);
         }
 
         protected override void RunInt()
