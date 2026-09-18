@@ -69,6 +69,14 @@ namespace WraithNaniteGravtech
             }
 
             List<Thing> stagedMatter = new List<Thing>(cells.Count);
+            int crisisBonus = Math.Max(
+                0,
+                ReplicatorCrisisPressureUtility.MatterSeedBonus);
+            int baseBonusPerCluster =
+                cells.Count <= 0 ? 0 : crisisBonus / cells.Count;
+            int bonusRemainder =
+                cells.Count <= 0 ? 0 : crisisBonus % cells.Count;
+
             try
             {
                 for (int i = 0; i < cells.Count; i++)
@@ -77,9 +85,18 @@ namespace WraithNaniteGravtech
                     if (matter == null)
                         throw new InvalidOperationException("Could not create Replicator Matter payload.");
 
+                    int bonus =
+                        baseBonusPerCluster +
+                        (i < bonusRemainder ? 1 : 0);
+                    int requested =
+                        Rand.RangeInclusive(
+                            MinimumMatterPerCluster,
+                            MaximumMatterPerCluster) +
+                        bonus;
+
                     matter.stackCount = Math.Min(
                         matterDef.stackLimit,
-                        Rand.RangeInclusive(MinimumMatterPerCluster, MaximumMatterPerCluster));
+                        requested);
                     stagedMatter.Add(matter);
                 }
             }
@@ -129,7 +146,12 @@ namespace WraithNaniteGravtech
             }
 
             TryPlayArrivalSound(cells[0], map);
-            TrySendLetter(map, cells[0], committedMatter, committedClusters);
+            TrySendLetter(
+                map,
+                cells[0],
+                committedMatter,
+                committedClusters,
+                crisisBonus);
             return committedClusters > 0;
         }
 
@@ -193,7 +215,12 @@ namespace WraithNaniteGravtech
             }
         }
 
-        private void TrySendLetter(Map map, IntVec3 cell, int totalMatter, int clusterCount)
+        private void TrySendLetter(
+            Map map,
+            IntVec3 cell,
+            int totalMatter,
+            int clusterCount,
+            int crisisBonus)
         {
             try
             {
@@ -205,7 +232,11 @@ namespace WraithNaniteGravtech
                     " Replicator Blocks are arriving in " + clusterCount +
                     " separated impacts. They are ordinary WNG Replicator Matter, initially dormant. " +
                     "If left exposed outside powered nanite containment for roughly 30,000 ticks, " +
-                    "qualifying stacks can begin reconstructing hostile Drones under the existing matter-first rules.";
+                    "qualifying stacks can begin reconstructing hostile Drones under the existing matter-first rules." +
+                    (crisisBonus > 0
+                        ? "\n\nRegional Replicator crisis pressure added " + crisisBonus +
+                          " extra Blocks to this independent seed. No active swarm received free reinforcements."
+                        : string.Empty);
 
                 Find.LetterStack.ReceiveLetter(
                     label,
