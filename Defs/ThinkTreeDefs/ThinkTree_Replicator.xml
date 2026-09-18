@@ -31,6 +31,8 @@
         <li Class="ThinkNode_QueuedJob" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorBiologicalHunt" />
         <li Class="ThinkNode_Subtree">
           <treeDef>LordDuty</treeDef>
         </li>
@@ -123,6 +125,8 @@
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorRepair" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorBiologicalHunt" />
         <li Class="ThinkNode_Subtree">
           <treeDef>LordDuty</treeDef>
         </li>
@@ -153,6 +157,8 @@
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorBurrowerBreach" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorBiologicalHunt" />
         <li Class="ThinkNode_Subtree"><treeDef>LordDuty</treeDef></li>
         <li Class="ThinkNode_Tagger"><tagToGive>Idle</tagToGive><subNodes><li Class="JobGiver_WanderAnywhere"><maxDanger>Deadly</maxDanger></li></subNodes></li>
         <li Class="JobGiver_IdleError" />
