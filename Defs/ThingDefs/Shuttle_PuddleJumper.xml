@@ -20,7 +20,7 @@
   </TransportShipDef>
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_PuddleJumper</defName><label>Puddle Jumper</label>
-    <description>A compact Ancient-derived Puddle Jumper using Odyssey's native passenger-shuttle lifecycle. Stabilized Asuran nanite slurry fuels launch and cloak systems. An ATA-compatible pawn aboard can operate its finite cloak, neural sensors and reconstructed Ancient drone launcher.</description>
+    <description>A compact Ancient-derived Puddle Jumper using Odyssey's native passenger-shuttle lifecycle. Stabilized Asuran nanite slurry fuels launch and cloak systems. An ATA-compatible pawn aboard is required for cloak and neural sensor operation. After Ancient drone-control research, the finite reconstructed-drone launcher can be commanded either by an ATA-compatible pawn aboard or by an occupied allied Ancient control chair within its 72-cell neural network.</description>
     <thingClass>Building_PassengerShuttle</thingClass><preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>50</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.5</fillPercent><size>(3,5)</size><drawHighlight>true</drawHighlight><highlightColor>(0.48,0.82,0.95)</highlightColor><uiIconScale>1</uiIconScale>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Shuttle/WNG_PuddleJumper</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize><shadowData><volume>(1.8,1.0,4.1)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
     <statBases><MaxHitPoints>850</MaxHitPoints><Flammability>0</Flammability><WorkToBuild>44000</WorkToBuild><Mass>82</Mass><Comfort>0.82</Comfort></statBases>
