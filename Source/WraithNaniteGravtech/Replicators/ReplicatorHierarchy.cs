@@ -173,7 +173,9 @@ namespace WraithNaniteGravtech
             int baseInterval = Math.Max(250, Props.assemblyCheckTicks);
             Pawn pawn = parent as Pawn;
             float coordinationFactor = pawn?.Map?.GetComponent<MapComponent_ReplicatorCoordination>()?.AssemblyFactorFor(pawn) ?? 1f;
-            int interval = Math.Max(250, (int)Math.Round(baseInterval * Math.Max(0.05f, coordinationFactor)));
+            float postureFactor = pawn?.Map?.GetComponent<MapComponent_ReplicatorSwarmBehavior>()?.AssemblyFactorFor(pawn) ?? 1f;
+            float intervalFactor = Math.Max(0.05f, coordinationFactor * postureFactor);
+            int interval = Math.Max(250, (int)Math.Round(baseInterval * intervalFactor));
             int staggerWindow = Math.Min(250, interval);
             int stagger = parent == null ? 0 : Math.Abs(parent.thingIDNumber % Math.Max(1, staggerWindow));
             nextAssemblyTick = now + interval + stagger;
