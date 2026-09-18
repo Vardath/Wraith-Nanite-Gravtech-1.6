@@ -406,7 +406,7 @@ jobs:
               ('same-faction host requirement', captive_source, 'prisoner.guest.HostFaction == caster.Faction'),
               ('retained invasive subject state', experiment_block, 'WNG_WraithExperimentSubject'),
               ('retained invasive observer insight', experiment_block, 'WNG_WraithExperimentalInsight'),
-              ('interrogation effect class', interrogation_block, 'CompAbilityEffect_WraithCaptiveInterrogation'),
+              ('interrogation effect class', captive_source, 'public sealed class CompAbilityEffect_WraithCaptiveInterrogation'),
               ('established telepathic probe state', interrogation_block, 'WNG_TelepathicallyProbed'),
               ('bounded interrogation observer insight', interrogation_block, 'WNG_WraithExperimentalInsight'),
               ('interrogation AbilityDef', captive_abilities, '<defName>WNG_CaptiveInterrogation</defName>'),
