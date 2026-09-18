@@ -193,6 +193,26 @@ namespace WraithNaniteGravtech
                 }
             }
 
+            MapComponent_ReplicatorSwarmBehavior swarmBehavior =
+                pawn.Map.GetComponent<MapComponent_ReplicatorSwarmBehavior>();
+            ReplicatorSwarmPosture posture =
+                swarmBehavior?.CurrentPosture ?? ReplicatorSwarmPosture.Harvest;
+
+            // Immediate survival doctrine outranks high-value technology: a swarm under active
+            // suppression or sustained defensive pressure first opens the infrastructure trapping it.
+            if (posture == ReplicatorSwarmPosture.SuppressionBreak ||
+                posture == ReplicatorSwarmPosture.Breach)
+            {
+                Thing emergencyTarget =
+                    swarmBehavior?.FindPriorityAssimilationTarget(
+                        pawn,
+                        validator,
+                        traverse,
+                        radius);
+                if (emergencyTarget != null)
+                    return emergencyTarget;
+            }
+
             // Cross-lattice danger: after any explicit historical reacquisition target, prefer
             // reachable high-tier Asuran/Precursor hardware over generic steel, furniture or stock.
             Predicate<Thing> highTierValidator = delegate(Thing thing)
@@ -231,6 +251,22 @@ namespace WraithNaniteGravtech
                        pawn.Position.DistanceToSquared(highTierBuilding.Position)
                     ? highTierItem
                     : highTierBuilding;
+            }
+
+            // Outside emergency Breach/SuppressionBreak, preserve #65's high-tier Asuran
+            // priority, then apply Harvest/Recovery/Consolidate material doctrine before falling
+            // back to the ordinary nearest-target search.
+            if (posture != ReplicatorSwarmPosture.SuppressionBreak &&
+                posture != ReplicatorSwarmPosture.Breach)
+            {
+                Thing postureTarget =
+                    swarmBehavior?.FindPriorityAssimilationTarget(
+                        pawn,
+                        validator,
+                        traverse,
+                        radius);
+                if (postureTarget != null)
+                    return postureTarget;
             }
 
             Thing item = GenClosest.ClosestThing_Global_Reachable(

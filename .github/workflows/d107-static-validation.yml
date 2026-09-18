@@ -1262,6 +1262,60 @@ jobs:
           if 'adaptationEvidence.flags |=' in rep_assim:
               failures.append('High-tier Asuran assimilation fabricates adaptation flags instead of learning real object evidence')
 
+          # Restored five-state Replicator swarm doctrine (#66 / master-plan #49).
+          # It may reprioritize environmental assimilation/recombination only; biological pawn
+          # targeting remains exclusively in the existing self-defense/starvation systems.
+          swarm_posture = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorSwarmBehavior.cs').read_text(encoding='utf-8')
+          rep_threat = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorThreatResponse.cs').read_text(encoding='utf-8')
+          rep_hierarchy = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs').read_text(encoding='utf-8')
+          rep_assim = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAssimilation.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('five-state posture enum', swarm_posture, 'public enum ReplicatorSwarmPosture'),
+              ('Harvest posture', swarm_posture, 'Harvest = 0'),
+              ('Breach posture', swarm_posture, 'Breach = 1'),
+              ('Consolidate posture', swarm_posture, 'Consolidate = 2'),
+              ('SuppressionBreak posture', swarm_posture, 'SuppressionBreak = 3'),
+              ('Recovery posture', swarm_posture, 'Recovery = 4'),
+              ('three-hit Breach threshold', swarm_posture, 'PressureEventsForBreach = 3'),
+              ('SuppressionBreak minimum disabled', swarm_posture, 'SuppressionMinimumDisabled = 3'),
+              ('SuppressionBreak percentage', swarm_posture, 'SuppressionPercentThreshold = 30'),
+              ('Recovery high-water mark', swarm_posture, 'RecoveryHighWaterPopulation = 12'),
+              ('Recovery low-population threshold', swarm_posture, 'RecoveryPopulationThreshold = 6'),
+              ('Consolidate population', swarm_posture, 'ConsolidatePopulation = 18'),
+              ('historical Consolidate assembly factor', swarm_posture, 'ConsolidateAssemblyFactor = 0.84f'),
+              ('current EMP interference state', swarm_posture, 'ReplicatorInterferenceUtility.IsEmpDisrupted(pawn)'),
+              ('current powered containment state', swarm_posture, 'ReplicatorContainmentUtility.IsContained(map, pawn.Position)'),
+              ('current functioning Controller check', swarm_posture, 'coordination.HasFunctioningControllerFor(pawn)'),
+              ('real-damage Breach hook', rep_threat, 'RegisterDefensePressure(victim, attacker)'),
+              ('posture recombination factor', rep_hierarchy, 'MapComponent_ReplicatorSwarmBehavior>()?.AssemblyFactorFor(pawn)'),
+              ('posture-aware target selection', rep_assim, 'FindPriorityAssimilationTarget'),
+              ('emergency posture before high-tier tech', rep_assim, 'Immediate survival doctrine outranks high-value technology'),
+              ('high-tier #65 priority retained', rep_assim, 'Predicate<Thing> highTierValidator'),
+              ('non-emergency posture after high-tier tech', rep_assim, 'preserve #65\'s high-tier Asuran'),
+              ('natural-rock exclusion retained', rep_assim, '!def.building.isNaturalRock'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator swarm-posture contract missing: {label}')
+          posture_enum_block = swarm_posture.split('public enum ReplicatorSwarmPosture', 1)[1].split('public sealed class MapComponent_ReplicatorSwarmBehavior', 1)[0] if 'public enum ReplicatorSwarmPosture' in swarm_posture else ''
+          if posture_enum_block.count('=') < 5:
+              failures.append('Replicator swarm-posture enum lost one or more retained doctrine states')
+          for forbidden in (
+              'JobDefOf.AttackMelee',
+              'JobDefOf.AttackStatic',
+              'PawnGenerator.GeneratePawn',
+              'TryReassembleOneDrone',
+          ):
+              if forbidden in swarm_posture:
+                  failures.append(f'Replicator swarm posture crossed into pawn combat/free-body ownership: {forbidden}')
+          recovery_block = swarm_posture.split('case ReplicatorSwarmPosture.Recovery:', 1)[1].split('case ReplicatorSwarmPosture.Consolidate:', 1)[0] if 'case ReplicatorSwarmPosture.Recovery:' in swarm_posture else ''
+          if 'ThingRequestGroup.HaulableEver' not in recovery_block:
+              failures.append('Replicator Recovery posture no longer prefers loose current-legal material')
+          if 'BuildingArtificial' in recovery_block or 'isNaturalRock' in recovery_block:
+              failures.append('Replicator Recovery posture broadened into structures/natural rock instead of current loose-mass rule')
+          schedule_block = rep_hierarchy.split('private void ScheduleNextAssembly()', 1)[1].split('private bool IsEligibleDonor', 1)[0] if 'private void ScheduleNextAssembly()' in rep_hierarchy else ''
+          if 'coordinationFactor * postureFactor' not in schedule_block:
+              failures.append('Replicator hierarchy no longer multiplies the historically separate Controller and Consolidate factors')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
