@@ -13,6 +13,8 @@ namespace WraithNaniteGravtech
         public Faction faction;
         public int dueTick = -1;
         public int retryCount;
+        public int responseKind;
+        public int sourcePawnId;
 
         public void ExposeData()
         {
@@ -20,6 +22,8 @@ namespace WraithNaniteGravtech
             Scribe_References.Look(ref faction, "faction");
             Scribe_Values.Look(ref dueTick, "dueTick", -1);
             Scribe_Values.Look(ref retryCount, "retryCount", 0);
+            Scribe_Values.Look(ref responseKind, "responseKind", 0);
+            Scribe_Values.Look(ref sourcePawnId, "sourcePawnId", 0);
         }
     }
 
@@ -35,6 +39,9 @@ namespace WraithNaniteGravtech
         private const int InitialDelayMaxTicks = 240000;
         private const int RetryDelayTicks = 60000;
         private const int MaxRetries = 3;
+        private const int ResponseKindHiveDestroyed = 0;
+        private const int ResponseKindSleeperLeak = 1;
+        private const float SleeperThreatFactor = 0.65f;
 
         private List<WraithMatureHiveRetaliationState> pending = new List<WraithMatureHiveRetaliationState>();
         private List<int> processedSiteIds = new List<int>();
@@ -61,8 +68,38 @@ namespace WraithNaniteGravtech
                 siteId = siteId,
                 faction = faction,
                 dueTick = now + Rand.RangeInclusive(InitialDelayMinTicks, InitialDelayMaxTicks),
-                retryCount = 0
+                retryCount = 0,
+                responseKind = ResponseKindHiveDestroyed,
+                sourcePawnId = 0
             });
+        }
+
+        public bool ScheduleSleeperIntelligenceLeak(Pawn pawn, Faction sourceFaction)
+        {
+            if (pawn == null || pawn.thingIDNumber <= 0 || sourceFaction == null ||
+                sourceFaction.defeated || Faction.OfPlayer == null)
+                return false;
+            if (!WraithLineageUtility.IsWraithLineage(sourceFaction) ||
+                !sourceFaction.HostileTo(Faction.OfPlayer))
+                return false;
+
+            if (pending.Any(x =>
+                    x != null &&
+                    x.responseKind == ResponseKindSleeperLeak &&
+                    x.sourcePawnId == pawn.thingIDNumber))
+                return false;
+
+            int now = Find.TickManager?.TicksGame ?? 0;
+            pending.Add(new WraithMatureHiveRetaliationState
+            {
+                siteId = -1,
+                faction = sourceFaction,
+                dueTick = now + Rand.RangeInclusive(InitialDelayMinTicks, InitialDelayMaxTicks),
+                retryCount = 0,
+                responseKind = ResponseKindSleeperLeak,
+                sourcePawnId = pawn.thingIDNumber
+            });
+            return true;
         }
 
         public override void GameComponentTick()
@@ -102,23 +139,45 @@ namespace WraithNaniteGravtech
                     continue;
                 }
 
+                float points = Mathf.Max(35f, StorytellerUtility.DefaultThreatPointsNow(home));
+                if (state.responseKind == ResponseKindSleeperLeak)
+                    points = Mathf.Max(35f, points * SleeperThreatFactor);
+
                 IncidentParms parms = new IncidentParms
                 {
                     forced = true,
                     target = home,
                     faction = faction,
-                    points = Mathf.Max(35f, StorytellerUtility.DefaultThreatPointsNow(home)),
+                    points = points,
                     raidStrategy = RaidStrategyDefOf.ImmediateAttack
                 };
 
                 if (IncidentDefOf.RaidEnemy.Worker.TryExecute(parms))
                 {
+                    if (state.responseKind == ResponseKindSleeperLeak)
+                        BestEffortSleeperBreachLetter(home, faction);
                     pending.RemoveAt(i);
                     continue;
                 }
 
                 if (!ScheduleRetryOrExpire(state, now))
                     pending.RemoveAt(i);
+            }
+        }
+
+        private static void BestEffortSleeperBreachLetter(Map home, Faction faction)
+        {
+            try
+            {
+                Find.LetterStack.ReceiveLetter(
+                    "Wraith intelligence breach",
+                    "A Wraith strike force is approaching with unsettling precision. Colony routines and infrastructure appear to have been compromised by intelligence leaked from inside the settlement. The exact sleeper source is not identified by the response itself.",
+                    LetterDefOf.ThreatBig,
+                    home == null ? null : new TargetInfo(home.Center, home));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Sleeper intelligence response committed but breach presentation failed: " + ex.Message);
             }
         }
 
@@ -152,8 +211,33 @@ namespace WraithNaniteGravtech
                 if (processedSiteIds == null)
                     processedSiteIds = new List<int>();
 
-                pending.RemoveAll(x => x == null || x.siteId < 0);
-                processedSiteIds = processedSiteIds.Distinct().ToList();
+                for (int i = pending.Count - 1; i >= 0; i--)
+                {
+                    WraithMatureHiveRetaliationState state = pending[i];
+                    if (state == null)
+                    {
+                        pending.RemoveAt(i);
+                        continue;
+                    }
+
+                    state.responseKind =
+                        state.responseKind == ResponseKindSleeperLeak
+                            ? ResponseKindSleeperLeak
+                            : ResponseKindHiveDestroyed;
+                    state.retryCount = Math.Max(0, Math.Min(MaxRetries, state.retryCount));
+
+                    bool valid =
+                        state.responseKind == ResponseKindSleeperLeak
+                            ? state.sourcePawnId > 0
+                            : state.siteId >= 0;
+                    if (!valid)
+                        pending.RemoveAt(i);
+                }
+
+                processedSiteIds = processedSiteIds
+                    .Where(id => id >= 0)
+                    .Distinct()
+                    .ToList();
             }
         }
     }
