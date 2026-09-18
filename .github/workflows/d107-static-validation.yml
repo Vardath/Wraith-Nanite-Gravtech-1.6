@@ -986,6 +986,55 @@ jobs:
           if '!sourceFaction.HostileTo(Faction.OfPlayer)' not in response_schedule:
               failures.append('Sleeper intelligence scheduling can force a non-hostile Wraith lineage into a raid response')
 
+          # Cross-infestation Replicator adaptation history remains bounded experiential memory:
+          # hostile autonomous domains only, no free technology flags in a later infestation.
+          rep_history = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAdaptationHistory.cs').read_text(encoding='utf-8')
+          rep_adaptation_history = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAdaptation.cs').read_text(encoding='utf-8')
+          rep_assim_history = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAssimilation.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('save-wide history component', rep_history, 'public sealed class ReplicatorAdaptationHistory : GameComponent'),
+              ('hostile-player boundary', rep_history, '!pawn.Faction.HostileTo(Faction.OfPlayer)'),
+              ('autonomous authority boundary', rep_history, 'ReplicatorControlAuthority.AutonomousSwarm'),
+              ('bounded category history', rep_history, 'CategoryExposureCap = 6'),
+              ('bounded shield history', rep_history, 'ShieldEngagementHistoryCap = 54'),
+              ('historical shield divisor', rep_history, 'ShieldEngagementSeedDivisor = 3'),
+              ('old ranged save key', rep_history, 'wngReplicatorHistoryRanged'),
+              ('old armor save key', rep_history, 'wngReplicatorHistoryArmor'),
+              ('old power save key', rep_history, 'wngReplicatorHistoryPower'),
+              ('old grav save key', rep_history, 'wngReplicatorHistoryGrav'),
+              ('old shield save key', rep_history, 'wngReplicatorHistoryShield'),
+              ('old shield-engagement save key', rep_history, 'wngReplicatorHistoryShieldEngagements'),
+              ('fresh-spawn seed boundary', rep_adaptation_history, '!respawningAfterLoad'),
+              ('historical interest state', rep_adaptation_history, 'historicalInterestFlags'),
+              ('one-shot seed latch', rep_adaptation_history, 'historicalSeedApplied'),
+              ('sub-threshold shield clamp', rep_adaptation_history, 'threshold - 1'),
+              ('technology history recording', rep_adaptation_history, 'ReplicatorAdaptationHistoryUtility.RecordEvidence'),
+              ('barrier history recording', rep_adaptation_history, 'ReplicatorAdaptationHistoryUtility'),
+              ('historical target validator', rep_assim_history, 'HistoricalInterestMatches'),
+              ('ordinary assimilation fallback', rep_assim_history, 'Thing item = GenClosest.ClosestThing_Global_Reachable'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator adaptation-history contract missing: {label}')
+          for forbidden in (
+              '.Learn(',
+              'AssignAutonomousDomain(',
+              'SetFaction(',
+              'ReplicatorControlAuthority.ExactQueen',
+              'ReplicatorControlAuthority.SovereignNeuralLattice',
+          ):
+              if forbidden in rep_history:
+                  failures.append(f'Replicator adaptation history grants/changes live control or learned state: {forbidden}')
+          history_priority = rep_assim_history.find('HistoricalInterestMatches')
+          normal_fallback = rep_assim_history.find('Thing item = GenClosest.ClosestThing_Global_Reachable')
+          if history_priority < 0 or normal_fallback < 0 or history_priority > normal_fallback:
+              failures.append('Replicator historical reacquisition priority no longer runs before ordinary closest-target fallback')
+          share_call = rep_assim_history.find('ReplicatorAdaptationUtility.ShareEvidence(parent, adaptationEvidence)')
+          destroy_call = rep_assim_history.find('target.Destroy(DestroyMode.Vanish)')
+          if share_call < 0 or destroy_call < 0 or share_call < destroy_call:
+              failures.append('Replicator adaptation/history learning moved before physical assimilation commit')
+          if 'historicalInterestFlags |= (int)(interests & allowed)' not in rep_adaptation_history:
+              failures.append('Replicator historical technology memory no longer remains a non-learned interest snapshot')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
