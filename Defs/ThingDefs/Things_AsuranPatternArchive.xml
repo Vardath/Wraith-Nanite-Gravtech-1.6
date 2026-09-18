@@ -3,7 +3,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_AsuranPatternArchive</defName>
     <label>Asuran pattern archive</label>
-    <description>A powered collective relay and continuity repository. It periodically records up to sixteen same-faction linked human-form nanite identities and can reconstruct a locally destroyed archived body from its latest stored pattern at substantial material cost. The reconstructed body is a new physical Pawn: changes after the last backup and social relationships are not restored. A powered archive also authenticates nearby lattice traffic and can expose covert human-form infiltrators.</description>
+    <description>A powered collective relay, continuity repository and bounded technology-pattern library. It periodically records up to sixteen same-faction linked human-form nanite identities for reconstruction, can non-destructively scan a supported nearby technology specimen, and retains learned fabrication patterns while powered. Reconstructed bodies are new physical Pawns based on their latest stored identity pattern; post-backup changes and social relationships are not restored. The archive also authenticates nearby lattice traffic and can expose covert human-form infiltrators.</description>
     <thingClass>Building</thingClass>
     <drawerType>MapMeshAndRealTime</drawerType>
     <graphicData>
@@ -51,6 +51,10 @@
         <maxRecords>16</maxRecords>
         <plasteelCost>80</plasteelCost>
         <advancedComponentCost>3</advancedComponentCost>
+      </li>
+      <li Class="WraithNaniteGravtech.CompProperties_AsuranTechnologyPatternLibrary">
+        <scanRadius>8</scanRadius>
+        <scanWorkTicks>30000</scanWorkTicks>
       </li>
     </comps>
     <building>
