@@ -1056,6 +1056,40 @@ jobs:
               if forbidden in rare_vacuum_trade:
                   failures.append(f'Rare vacuum-module trader bypasses native research analysis: {forbidden}')
 
+          # Wraith appearance reconciliation must preserve the retained biological presentation
+          # contract without rewriting caste, faction or hybrid identity.
+          wraith_appearance = Path('Source/WraithNaniteGravtech/Wraith/WraithAppearanceReconciler.cs').read_text(encoding='utf-8')
+          wraith_xeno = Path('Defs/XenotypeDefs/Xenotypes_Wraith.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('Wraith-only xenotype gate', wraith_appearance, 'pawn?.genes?.Xenotype?.defName == "WNG_Wraith"'),
+              ('Fat rejection', wraith_appearance, 'body.defName == "Fat"'),
+              ('Hulk rejection', wraith_appearance, 'body.defName == "Hulk"'),
+              ('Thin fallback', wraith_appearance, 'GetNamedSilentFail("Thin")'),
+              ('long-hair preference', wraith_appearance, '"long", "shoulder", "flow", "length"'),
+              ('straight-hair preference', wraith_appearance, '"straight", "sleek", "smooth"'),
+              ('near-white hair enforcement', wraith_appearance, 'NearWhiteHair'),
+              ('300-tick reconciliation', wraith_appearance, 'ReconcileIntervalTicks = 300'),
+              ('native white-hair gene', wraith_xeno, '<li>Hair_SnowWhite</li>'),
+              ('native long-hair gene', wraith_xeno, '<li>Hair_LongOnly</li>'),
+              ('native grayless hair gene', wraith_xeno, '<li>Hair_Grayless</li>'),
+              ('native no-beard gene', wraith_xeno, '<li>Beard_NoBeardOnly</li>'),
+              ('native light-gray skin gene', wraith_xeno, '<li>Skin_LightGray</li>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith appearance contract missing: {label}')
+          for forbidden in (
+              'SetFaction(',
+              'SetXenotype',
+              'WNG_Hybrid',
+              'WNG_WraithQueen',
+              'WNG_WraithHunter',
+              'WNG_WraithWarrior',
+              'WNG_WraithCommander',
+              'WNG_WraithKeeper',
+          ):
+              if forbidden in wraith_appearance:
+                  failures.append(f'Wraith appearance reconciler crossed identity/caste ownership boundary: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
