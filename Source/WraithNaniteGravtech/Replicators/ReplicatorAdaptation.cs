@@ -41,16 +41,83 @@ namespace WraithNaniteGravtech
         private int learnedFlags;
         private int shieldEngagementCount;
         private int nextShieldEngagementSampleTick;
+        private int historicalInterestFlags;
+        private bool historicalSeedApplied;
 
         private CompProperties_ReplicatorAdaptation Props =>
             (CompProperties_ReplicatorAdaptation)props;
 
         public ReplicatorAdaptationFlags Learned => (ReplicatorAdaptationFlags)learnedFlags;
+        public ReplicatorAdaptationFlags HistoricalInterests =>
+            (ReplicatorAdaptationFlags)historicalInterestFlags;
         public int ShieldEngagementCount => shieldEngagementCount;
 
         public bool Has(ReplicatorAdaptationFlags flag)
         {
             return (Learned & flag) != ReplicatorAdaptationFlags.None;
+        }
+
+        public bool HistoricalInterestMatches(
+            ReplicatorAdaptationEvidence evidence)
+        {
+            ReplicatorAdaptationFlags locallyMissing =
+                HistoricalInterests & ~Learned;
+
+            return (locallyMissing & evidence.flags) !=
+                   ReplicatorAdaptationFlags.None;
+        }
+
+        public void ApplyHistoricalSeed(
+            ReplicatorAdaptationFlags interests,
+            int shieldEvidenceSeed)
+        {
+            if (historicalSeedApplied)
+                return;
+
+            // Material is baseline ecology and AntiShield itself can never be inherited. Technology
+            // history is only a reacquisition hint until this local domain physically assimilates it.
+            ReplicatorAdaptationFlags allowed =
+                ReplicatorAdaptationFlags.Ranged |
+                ReplicatorAdaptationFlags.Armor |
+                ReplicatorAdaptationFlags.Power |
+                ReplicatorAdaptationFlags.Grav |
+                ReplicatorAdaptationFlags.Shield;
+
+            historicalInterestFlags |= (int)(interests & allowed);
+
+            if (!Has(ReplicatorAdaptationFlags.AntiShield))
+            {
+                int threshold =
+                    Math.Max(
+                        2,
+                        Props.antiShieldEvidenceThreshold);
+
+                shieldEngagementCount =
+                    Math.Max(
+                        shieldEngagementCount,
+                        Math.Min(
+                            threshold - 1,
+                            Math.Max(0, shieldEvidenceSeed)));
+            }
+
+            historicalSeedApplied = true;
+            parent.TryGetComp<CompReplicatorAdaptationEffects>()
+                ?.NotifyAdaptationsChanged();
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+
+            if (!respawningAfterLoad &&
+                parent is Pawn pawn &&
+                !historicalSeedApplied)
+            {
+                ReplicatorAdaptationHistoryUtility
+                    .SeedFreshAutonomousPawn(
+                        pawn,
+                        this);
+            }
         }
 
         public void Learn(ReplicatorAdaptationFlags flags)
@@ -90,6 +157,8 @@ namespace WraithNaniteGravtech
             learnedFlags = source.learnedFlags;
             shieldEngagementCount = source.shieldEngagementCount;
             nextShieldEngagementSampleTick = source.nextShieldEngagementSampleTick;
+            historicalInterestFlags = source.historicalInterestFlags;
+            historicalSeedApplied = source.historicalSeedApplied;
             parent.TryGetComp<CompReplicatorAdaptationEffects>()?.NotifyAdaptationsChanged();
         }
 
@@ -101,6 +170,8 @@ namespace WraithNaniteGravtech
             int mergedFlags = 0;
             int mergedShieldEngagements = 0;
             int mergedNextSample = 0;
+            int mergedHistoricalInterests = 0;
+            bool anyHistoricalSeed = false;
             foreach (Pawn pawn in sourcePawns)
             {
                 CompReplicatorAdaptation source = pawn?.TryGetComp<CompReplicatorAdaptation>();
@@ -112,11 +183,15 @@ namespace WraithNaniteGravtech
                 // same barrier sample must not double-count one shared swarm observation.
                 mergedShieldEngagements = Math.Max(mergedShieldEngagements, source.shieldEngagementCount);
                 mergedNextSample = Math.Max(mergedNextSample, source.nextShieldEngagementSampleTick);
+                mergedHistoricalInterests |= source.historicalInterestFlags;
+                anyHistoricalSeed |= source.historicalSeedApplied;
             }
 
             learnedFlags |= mergedFlags;
             shieldEngagementCount = Math.Max(shieldEngagementCount, mergedShieldEngagements);
             nextShieldEngagementSampleTick = Math.Max(nextShieldEngagementSampleTick, mergedNextSample);
+            historicalInterestFlags |= mergedHistoricalInterests;
+            historicalSeedApplied |= anyHistoricalSeed;
             if (shieldEngagementCount >= Math.Max(2, Props.antiShieldEvidenceThreshold))
                 learnedFlags |= (int)ReplicatorAdaptationFlags.AntiShield;
 
@@ -129,6 +204,10 @@ namespace WraithNaniteGravtech
                 return null;
 
             string result = "Replicator adaptations: " + Learned;
+            ReplicatorAdaptationFlags remainingHistory =
+                HistoricalInterests & ~Learned;
+            if (remainingHistory != ReplicatorAdaptationFlags.None)
+                result += "\nHistorical reacquisition interest: " + remainingHistory;
             if (Has(ReplicatorAdaptationFlags.Shield) && !Has(ReplicatorAdaptationFlags.AntiShield))
                 result += "\nShield countermeasure evidence: " + shieldEngagementCount + " / " + Math.Max(2, Props.antiShieldEvidenceThreshold);
             return result;
@@ -142,6 +221,8 @@ namespace WraithNaniteGravtech
             // narrowed to real barrier engagement rather than shield assimilation count.
             Scribe_Values.Look(ref shieldEngagementCount, "wngReplicatorShieldEvidenceCount", 0);
             Scribe_Values.Look(ref nextShieldEngagementSampleTick, "wngReplicatorNextShieldEngagementSampleTick", 0);
+            Scribe_Values.Look(ref historicalInterestFlags, "wngReplicatorHistoricalInterestFlags", 0);
+            Scribe_Values.Look(ref historicalSeedApplied, "wngReplicatorHistoricalSeedApplied", false);
         }
 
         private static int SafeFutureTick(int now, int delay)
@@ -241,6 +322,19 @@ namespace WraithNaniteGravtech
                 recipients++;
             }
 
+            try
+            {
+                ReplicatorAdaptationHistoryUtility.RecordEvidence(
+                    source,
+                    evidence.flags);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(
+                    "[WNG] Local Replicator adaptation committed but historical evidence recording failed: " +
+                    ex.Message);
+            }
+
             return recipients;
         }
 
@@ -262,6 +356,21 @@ namespace WraithNaniteGravtech
                 if (adaptation?.TryRecordShieldEngagement(now) == true)
                     recorded++;
             }
+            if (recorded > 0)
+            {
+                try
+                {
+                    ReplicatorAdaptationHistoryUtility
+                        .RecordShieldEngagement(source);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(
+                        "[WNG] Local shield-engagement evidence committed but historical recording failed: " +
+                        ex.Message);
+                }
+            }
+
             return recorded;
         }
 

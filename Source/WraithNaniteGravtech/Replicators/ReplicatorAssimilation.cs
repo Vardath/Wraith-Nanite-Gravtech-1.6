@@ -116,6 +116,61 @@ namespace WraithNaniteGravtech
             float radius = Math.Max(5f, ext.assimilationSearchRadius);
             TraverseParms traverse = TraverseParms.For(pawn);
 
+            CompReplicatorAdaptation adaptation =
+                pawn.TryGetComp<CompReplicatorAdaptation>();
+            ReplicatorAdaptationFlags unresolvedHistory =
+                adaptation == null
+                    ? ReplicatorAdaptationFlags.None
+                    : adaptation.HistoricalInterests & ~adaptation.Learned;
+
+            if (unresolvedHistory != ReplicatorAdaptationFlags.None)
+            {
+                Predicate<Thing> historicalValidator = delegate(Thing thing)
+                {
+                    return validator(thing) &&
+                           adaptation.HistoricalInterestMatches(
+                               ReplicatorAdaptationUtility.EvidenceFrom(thing));
+                };
+
+                Thing historicalItem =
+                    GenClosest.ClosestThing_Global_Reachable(
+                        pawn.Position,
+                        pawn.Map,
+                        pawn.Map.listerThings.ThingsInGroup(
+                            ThingRequestGroup.HaulableEver),
+                        PathEndMode.Touch,
+                        traverse,
+                        radius,
+                        historicalValidator);
+
+                Thing historicalBuilding =
+                    GenClosest.ClosestThing_Global_Reachable(
+                        pawn.Position,
+                        pawn.Map,
+                        pawn.Map.listerThings.ThingsInGroup(
+                            ThingRequestGroup.BuildingArtificial),
+                        PathEndMode.Touch,
+                        traverse,
+                        radius,
+                        historicalValidator);
+
+                if (historicalItem != null ||
+                    historicalBuilding != null)
+                {
+                    if (historicalItem == null)
+                        return historicalBuilding;
+                    if (historicalBuilding == null)
+                        return historicalItem;
+
+                    return pawn.Position.DistanceToSquared(
+                               historicalItem.Position) <=
+                           pawn.Position.DistanceToSquared(
+                               historicalBuilding.Position)
+                        ? historicalItem
+                        : historicalBuilding;
+                }
+            }
+
             Thing item = GenClosest.ClosestThing_Global_Reachable(
                 pawn.Position,
                 pawn.Map,
