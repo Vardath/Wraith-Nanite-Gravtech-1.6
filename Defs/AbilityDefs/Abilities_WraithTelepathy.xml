@@ -193,6 +193,36 @@
     </comps>
   </AbilityDef>
 
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_Hallucination</defName>
+    <label>induce hallucination</label>
+    <description>Project a sustained false perception directly into a living biological target. For several in-game hours the exact target's movement, sight and conscious processing are impaired. This is a full-Wraith telepathic technique; it does not feed on, enthrall, age, recruit or replace the target.</description>
+    <iconPath>UI/Abilities/Burden</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>60000~60000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <range>-1</range>
+      <warmupTime>1.5</warmupTime>
+      <drawAimPie>false</drawAimPie>
+      <soundCast>WNG_WraithHallucination</soundCast>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityWraithHallucination">
+        <hallucinationHediff>WNG_WraithHallucination</hallucinationHediff>
+      </li>
+    </comps>
+  </AbilityDef>
+
   <AbilityDef ParentName="PsycastBase">
     <defName>WNG_QueensCommand</defName>
     <label>queen's command</label>
