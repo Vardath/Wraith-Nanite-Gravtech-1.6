@@ -27,7 +27,7 @@ namespace WraithNaniteGravtech
                    AsuranCollectiveUtility.IsNaniteSynthetic(pawn);
         }
 
-        public static bool CanStarvationPredate(Pawn hunter)
+        public static bool IsEnvironmentallyStarved(Pawn hunter)
         {
             if (!ReplicatorAssimilationUtility.CanAutonomouslyAssimilate(hunter) ||
                 hunter?.Map == null ||
@@ -38,10 +38,13 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
-            if (ReplicatorAssimilationUtility.FindClosestAssimilationTarget(hunter) != null)
-                return false;
+            return ReplicatorAssimilationUtility.FindClosestAssimilationTarget(hunter) == null;
+        }
 
-            return AvailableOffspringSlots(hunter, 1) > 0;
+        public static bool CanStarvationPredate(Pawn hunter)
+        {
+            return IsEnvironmentallyStarved(hunter) &&
+                   AvailableOffspringSlots(hunter, 1) > 0;
         }
 
         public static bool IsConvertiblePrey(
@@ -259,7 +262,7 @@ namespace WraithNaniteGravtech
 
                 // Matter remains first priority even if the map changed while the conversion job
                 // was running. A newly reachable environmental target aborts before prey consumption.
-                if (!CanStarvationPredate(parent) ||
+                if (!IsEnvironmentallyStarved(parent) ||
                     !IsConvertiblePrey(
                         prey,
                         parent,
