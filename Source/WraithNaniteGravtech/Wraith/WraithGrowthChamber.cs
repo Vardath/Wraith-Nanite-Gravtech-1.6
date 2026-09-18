@@ -362,6 +362,11 @@ namespace WraithNaniteGravtech
                 reason = "This Growth Chamber is already gestating a Wraith.";
                 return false;
             }
+            if (parent.TryGetComp<CompWraithHybridization>()?.CycleActive == true)
+            {
+                reason = "This Growth Chamber is already integrating a Wraith-human graft.";
+                return false;
+            }
             if (FindInitiator() == null)
             {
                 reason = "A living, conscious player Wraith Keeper or Queen must be present to initiate gestation.";
