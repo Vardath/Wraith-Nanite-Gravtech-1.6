@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="BuildingBase">
+    <defName>WNG_DeceptiveSurveyAnnexCore</defName>
+    <label>Ancient survey data core</label>
+    <description>A quiet precursor survey console recovered inside an apparently Ancient annex. Its surface shows no active warning state.</description>
+    <thingClass>Building</thingClass>
+    <drawerType>MapMeshAndRealTime</drawerType>
+    <tickerType>Rare</tickerType>
+    <graphicData>
+      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(1,1)</drawSize>
+    </graphicData>
+    <size>(1,1)</size>
+    <rotatable>false</rotatable>
+    <passability>PassThroughOnly</passability>
+    <fillPercent>0.4</fillPercent>
+    <statBases>
+      <MaxHitPoints>220</MaxHitPoints>
+      <Mass>16</Mass>
+      <Flammability>0</Flammability>
+      <Beauty>4</Beauty>
+    </statBases>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_DeceptiveSurveyAnnexCore">
+        <graceTicks>900</graceTicks>
+        <triggerRadius>12</triggerRadius>
+        <minimumDefenders>2</minimumDefenders>
+        <maximumDefenders>4</maximumDefenders>
+      </li>
+    </comps>
+  </ThingDef>
+</Defs>
