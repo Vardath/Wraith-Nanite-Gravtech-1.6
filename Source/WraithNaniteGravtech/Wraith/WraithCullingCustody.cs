@@ -24,6 +24,10 @@ namespace WraithNaniteGravtech
         public float baseRescueThreatPoints = 450f;
         public float threatPerCaptive = 175f;
         public float threatPerFailure = 250f;
+        public int captivityPressureIntervalTicks = 120000;
+        public int captiveAgeYearsPerPressure = 2;
+        public int maxCaptivityStage = 4;
+        public float threatPerCaptivityStage = 125f;
         public float storytellerThreatFactor = 0.65f;
     }
 
@@ -44,6 +48,12 @@ namespace WraithNaniteGravtech
         public int rescueSiteId = -1;
         public int rescueSiteExpiryTick = -1;
         public int rescueFailures;
+        public int captivityStage;
+        public int nextCaptivityPressureTick = -1;
+        public bool custodyAppliedFeedingStock;
+        public bool custodyAppliedExperimentSubject;
+        public bool custodyAppliedConditioning;
+        public bool nativeEnthrallmentCommitted;
         public bool releasedAtSite;
 
         public void ExposeData()
@@ -58,6 +68,12 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref rescueSiteId, "rescueSiteId", -1);
             Scribe_Values.Look(ref rescueSiteExpiryTick, "rescueSiteExpiryTick", -1);
             Scribe_Values.Look(ref rescueFailures, "rescueFailures", 0);
+            Scribe_Values.Look(ref captivityStage, "captivityStage", 0);
+            Scribe_Values.Look(ref nextCaptivityPressureTick, "nextCaptivityPressureTick", -1);
+            Scribe_Values.Look(ref custodyAppliedFeedingStock, "custodyAppliedFeedingStock", false);
+            Scribe_Values.Look(ref custodyAppliedExperimentSubject, "custodyAppliedExperimentSubject", false);
+            Scribe_Values.Look(ref custodyAppliedConditioning, "custodyAppliedConditioning", false);
+            Scribe_Values.Look(ref nativeEnthrallmentCommitted, "nativeEnthrallmentCommitted", false);
             Scribe_Values.Look(ref releasedAtSite, "releasedAtSite", false);
         }
     }
@@ -167,6 +183,7 @@ namespace WraithNaniteGravtech
         {
             int now = Find.TickManager?.TicksGame ?? 0;
             int delay = Math.Max(1, Tuning?.rescueOfferDelayTicks ?? 60000);
+            int pressure = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
             return new WraithAbducteeRecord
             {
                 pawn = pawn,
@@ -179,6 +196,12 @@ namespace WraithNaniteGravtech
                 rescueSiteId = -1,
                 rescueSiteExpiryTick = -1,
                 rescueFailures = 0,
+                captivityStage = 0,
+                nextCaptivityPressureTick = now + pressure,
+                custodyAppliedFeedingStock = false,
+                custodyAppliedExperimentSubject = false,
+                custodyAppliedConditioning = false,
+                nativeEnthrallmentCommitted = false,
                 releasedAtSite = false
             };
         }
