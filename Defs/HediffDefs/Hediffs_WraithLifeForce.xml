@@ -107,4 +107,88 @@
       </li>
     </comps>
   </HediffDef>
+  <HediffDef>
+    <defName>WNG_HybridizationIncubation</defName>
+    <label>wraith hybrid graft integration</label>
+    <description>A Growth Chamber is forcing Wraith-derived tissue and genetic material into this exact subject. The integration state is physically debilitating and remains separate from the finished hybrid phenotype.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <duplicationAllowed>false</duplicationAllowed>
+    <isBad>true</isBad>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><setMax>0.08</setMax></li>
+          <li><capacity>Manipulation</capacity><setMax>0.10</setMax></li>
+          <li><capacity>Consciousness</capacity><setMax>0.45</setMax></li>
+        </capMods>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>600000~600000</disappearsAfterTicks>
+      </li>
+    </comps>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_UnstableWraithHybridState</defName>
+    <label>unstable Wraith-human graft</label>
+    <description>This exact pawn survived a deliberate Wraith-human hybrid graft. Their original identity and ordinary nutritional biology remain intact beneath a permanent, incomplete Wraith-derived xenogene package.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <duplicationAllowed>false</duplicationAllowed>
+    <isBad>false</isBad>
+    <stages>
+      <li>
+        <statOffsets>
+          <PsychicSensitivity>0.15</PsychicSensitivity>
+        </statOffsets>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_HybridInstabilityFlare</defName>
+    <label>wraith-human instability flare</label>
+    <description>The grafted human and Wraith-derived systems have temporarily fallen out of synchronisation, producing neurological noise, metabolic rejection and impaired motor control.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <duplicationAllowed>false</duplicationAllowed>
+    <isBad>true</isBad>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Moving</capacity><offset>-0.12</offset></li>
+          <li><capacity>Manipulation</capacity><offset>-0.14</offset></li>
+          <li><capacity>Consciousness</capacity><offset>-0.12</offset></li>
+        </capMods>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>18000~30000</disappearsAfterTicks>
+      </li>
+    </comps>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>WNG_TelepathicallyProbed</defName>
+    <label>telepathically probed</label>
+    <description>A limited Wraith-derived mind has forced contact with this pawn's surface thoughts. Concentration and perception remain disrupted after the contact ends.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <duplicationAllowed>false</duplicationAllowed>
+    <isBad>true</isBad>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Consciousness</capacity><offset>-0.08</offset></li>
+          <li><capacity>Sight</capacity><offset>-0.06</offset></li>
+        </capMods>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>45000~75000</disappearsAfterTicks>
+      </li>
+    </comps>
+  </HediffDef>
+
 </Defs>
