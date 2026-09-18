@@ -601,6 +601,34 @@ jobs:
               if forbidden in sealed_salvage:
                   failures.append(f'Sealed Replicator salvage bypasses canonical Matter ownership: {forbidden}')
 
+          # Contaminated Replicator cargo must deliver one exact sealed carrier and let that
+          # carrier own all later contamination. No finished swarm spawn or parallel Matter logic.
+          rep_cargo = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorCargoInfiltration.cs').read_text(encoding='utf-8')
+          rep_incidents = Path('Defs/IncidentDefs/Incidents_Replicator.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('cargo incident Def', rep_incidents, '<defName>WNG_ReplicatorContaminatedCargo</defName>'),
+              ('cargo worker', rep_incidents, 'IncidentWorker_ReplicatorContaminatedCargo'),
+              ('story-event toggle', rep_cargo, 'WNGSettingsUtility.ReplicatorStoryEventsEnabled'),
+              ('hostile swarm exclusion', rep_cargo, 'ReplicatorAssimilationUtility.CountHostileBlocks(map) > 0'),
+              ('single sealed carrier identity', rep_cargo, 'WNG_SealedMachineSalvage'),
+              ('physical drop-pod delivery', rep_cargo, 'DropPodUtility.DropThingsNear'),
+              ('steel cover cargo', rep_cargo, 'ThingDefOf.Steel'),
+              ('component cover cargo', rep_cargo, 'ThingDefOf.ComponentIndustrial'),
+              ('retry-safe commit detection', rep_cargo, 'sealedSalvage.ParentHolder != null'),
+              ('post-commit best-effort letter', rep_cargo, 'BestEffortLetter'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator contaminated-cargo contract missing: {label}')
+          for forbidden in (
+              'PawnGenerator.GeneratePawn',
+              'WNG_ReplicatorDrone',
+              'TryReassembleOneDrone',
+              'CompReplicatorMatterReassembly',
+              'WNG_ReplicatorMatter',
+          ):
+              if forbidden in rep_cargo:
+                  failures.append(f'Replicator contaminated cargo bypasses sealed-carrier ownership: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
