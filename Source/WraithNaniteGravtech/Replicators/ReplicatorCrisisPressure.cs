@@ -207,8 +207,7 @@ namespace WraithNaniteGravtech
         {
             try
             {
-                Find.LetterStack.ReceiveLetter(
-                    "Replicator crisis intensifies",
+                string text =
                     "A mature Replicator infestation has remained established long enough for the wider machine-lattice crisis to deepen. " +
                     "Regional pressure is now tier " + PressureTier + "/" +
                     Math.Max(0, Tuning?.maxPressureTier ?? 3) +
@@ -216,9 +215,23 @@ namespace WraithNaniteGravtech
                     MatterSeedBonus +
                     " additional Blocks, equivalent to " + PressureTier +
                     " extra Drone-scale masses if the material later survives dormancy and self-assembly. " +
-                    "Current observed hostile block population: " + Math.Max(0, hostileCount) + ".",
-                    LetterDefOf.ThreatSmall,
-                    map == null ? null : new TargetInfo(map.Center, map));
+                    "Current observed hostile block population: " + Math.Max(0, hostileCount) + ".";
+
+                if (map != null)
+                {
+                    Find.LetterStack.ReceiveLetter(
+                        "Replicator crisis intensifies",
+                        text,
+                        LetterDefOf.ThreatSmall,
+                        new TargetInfo(map.Center, map));
+                }
+                else
+                {
+                    Find.LetterStack.ReceiveLetter(
+                        "Replicator crisis intensifies",
+                        text,
+                        LetterDefOf.ThreatSmall);
+                }
             }
             catch (Exception ex)
             {
