@@ -1,0 +1,70 @@
+name: D108 Structure Inventory
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.xml'
+      - '**/*.cs'
+      - '.github/workflows/d108-structure-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inventory current implementation structure
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import collections, json, re
+
+          root = Path('.')
+          token_re = re.compile(r'\bWNG_[A-Za-z0-9_]+\b')
+          token_files = collections.defaultdict(set)
+          source_files = []
+
+          for path in sorted(root.rglob('*')):
+              if not path.is_file() or path.suffix.lower() not in {'.xml', '.cs'}:
+                  continue
+              rel = path.as_posix()
+              if rel.startswith('.git/'):
+                  continue
+              text = path.read_text(encoding='utf-8', errors='replace')
+              source_files.append(rel)
+              for token in token_re.findall(text):
+                  token_files[token].add(rel)
+
+          payload = {
+              'source_file_count': len(source_files),
+              'xml_file_count': sum(p.endswith('.xml') for p in source_files),
+              'cs_file_count': sum(p.endswith('.cs') for p in source_files),
+              'unique_wng_identifiers': len(token_files),
+              'identifiers': {k: sorted(v) for k, v in sorted(token_files.items())},
+              'source_files': source_files,
+          }
+          Path('structure-inventory.json').write_text(
+              json.dumps(payload, indent=2, sort_keys=True),
+              encoding='utf-8'
+          )
+          print(json.dumps({
+              'source_file_count': payload['source_file_count'],
+              'xml_file_count': payload['xml_file_count'],
+              'cs_file_count': payload['cs_file_count'],
+              'unique_wng_identifiers': payload['unique_wng_identifiers'],
+          }, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: d108-structure-inventory
+          path: structure-inventory.json
+          if-no-files-found: error
+          retention-days: 1
