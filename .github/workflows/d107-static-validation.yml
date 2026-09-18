@@ -507,6 +507,41 @@ jobs:
               if forbidden in pragmatic_diplomacy:
                   failures.append(f'Pragmatic Wraith diplomacy crossed into Strategic Hunger/feeding ownership: {forbidden}')
 
+          # Restored Asuran demolition/kamikaze strike must remain an exact-pawn,
+          # save-safe standalone Lattice Collective threat with no Stargate dependency.
+          asuran_demo = Path('Source/WraithNaniteGravtech/Asurans/AsuranDemolitionStrike.cs').read_text(encoding='utf-8')
+          asuran_demo_incident = Path('Defs/IncidentDefs/Incidents_AsuranKamikaze.xml').read_text(encoding='utf-8')
+          asuran_demo_hediff = Path('Defs/HediffDefs/Hediffs_AsuranKamikaze.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('historical incident identity', asuran_demo_incident, '<defName>WNG_AsuranKamikazeStrike</defName>'),
+              ('current incident worker', asuran_demo_incident, 'IncidentWorker_AsuranDemolitionStrike'),
+              ('historical charge identity', asuran_demo_hediff, '<defName>WNG_AsuranKamikazeCharge</defName>'),
+              ('fresh charge class', asuran_demo_hediff, 'Hediff_AsuranDemolitionLattice'),
+              ('current hostile collective', asuran_demo, 'WNG_PrecursorCollective'),
+              ('current precursor soldier', asuran_demo, 'WNG_PrecursorSoldier'),
+              ('exact generated operative', asuran_demo, 'PawnGenerator.GeneratePawn(kind, faction)'),
+              ('weaponless rush role', asuran_demo, 'DestroyAllEquipment'),
+              ('approach interlock', asuran_demo, 'MinimumApproachTicks = 900'),
+              ('downed dead-man fuse', asuran_demo, 'DownedFuseTicks = 180'),
+              ('dead dead-man fuse', asuran_demo, 'DeadFuseTicks = 90'),
+              ('high-value target scoring', asuran_demo, 'FindValuableReachableTarget'),
+              ('perimeter fallback', asuran_demo, 'FindPerimeterFallback'),
+              ('native rush job', asuran_demo, 'JobDefOf.Goto'),
+              ('exact-body death commit', asuran_demo, 'operative.Kill(null)'),
+              ('physical explosion commit', asuran_demo, 'GenExplosion.DoExplosion'),
+              ('operative save reference', asuran_demo, 'Scribe_References.Look(\n                ref operative'),
+              ('objective save reference', asuran_demo, 'Scribe_References.Look(\n                ref objective'),
+              ('fuse save state', asuran_demo, 'wngAsuranDemolitionDetonationTick'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Asuran demolition strike contract missing: {label}')
+          if 'Stargate' in asuran_demo or 'ccyt.' in asuran_demo or 'StargatesMod.' in asuran_demo:
+              failures.append('Asuran demolition strike acquired a Stargate dependency')
+          if 'SetFaction(' in asuran_demo:
+              failures.append('Asuran demolition strike changes operative/faction ownership instead of preserving the exact hostile pawn')
+          if 'WNG_AsuranLatticeIntrusion' in asuran_demo:
+              failures.append('Asuran demolition strike was incorrectly coupled to the separate temporary lattice-intrusion system')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
