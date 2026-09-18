@@ -355,6 +355,7 @@ namespace WraithNaniteGravtech
                 return false;
 
             Pawn pawn = record.pawn;
+            Faction priorFaction = pawn.Faction;
             Faction priorGuestHost = pawn.guest?.HostFaction;
             GuestStatus priorGuestStatus = pawn.guest?.GuestStatus ?? GuestStatus.Guest;
             Pawn dropped;
@@ -363,7 +364,7 @@ namespace WraithNaniteGravtech
 
             try
             {
-                RestoreOriginalGuestState(record);
+                RestoreOriginalCustodyState(record);
                 records.Remove(record);
                 released = pawn;
                 return true;
@@ -373,6 +374,8 @@ namespace WraithNaniteGravtech
                 Log.Error("[WNG] Same-gate pursuit captive release failed; recapturing exact Pawn: " + ex.Message);
                 try
                 {
+                    if (pawn.Faction != priorFaction)
+                        pawn.SetFaction(priorFaction);
                     if (pawn.guest != null)
                         pawn.guest.SetGuestStatus(priorGuestHost, priorGuestStatus);
                 }
@@ -387,6 +390,160 @@ namespace WraithNaniteGravtech
                         GenSpawn.Spawn(pawn, WraithCullingUtility.SafeReturnCell(map, near), map);
                 }
                 return false;
+            }
+        }
+
+        public int CaptivityStage(WraithAbducteeRecord record)
+        {
+            int max = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+            return record == null ? -1 : Math.Max(0, Math.Min(max, record.captivityStage));
+        }
+
+        private void AdvanceCaptiveLifecycle(int now)
+        {
+            if (records == null || records.Count == 0)
+                return;
+
+            int pressureInterval = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
+            int maxStage = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+            Dictionary<int, List<string>> changedByStage = new Dictionary<int, List<string>>();
+
+            foreach (WraithAbducteeRecord record in records)
+            {
+                Pawn pawn = record?.pawn;
+                if (record == null || pawn == null || pawn.Dead || record.releasedAtSite)
+                    continue;
+
+                record.captivityStage = Math.Max(0, Math.Min(maxStage, record.captivityStage));
+                ApplyCaptiveState(record);
+
+                if (record.nextCaptivityPressureTick < 0)
+                    record.nextCaptivityPressureTick = now + pressureInterval;
+                if (now < record.nextCaptivityPressureTick)
+                    continue;
+
+                int previous = record.captivityStage;
+                ApplyCaptivePressure(record, now);
+                if (record.captivityStage <= previous)
+                    continue;
+
+                if (!changedByStage.TryGetValue(record.captivityStage, out List<string> names))
+                {
+                    names = new List<string>();
+                    changedByStage[record.captivityStage] = names;
+                }
+                names.Add(pawn.LabelShort);
+            }
+
+            foreach (KeyValuePair<int, List<string>> pair in changedByStage.OrderBy(p => p.Key))
+            {
+                TryStageLetter(pair.Key, pair.Value);
+            }
+        }
+
+        private void ApplyCaptivePressure(WraithAbducteeRecord record, int now)
+        {
+            Pawn pawn = record?.pawn;
+            if (pawn == null || pawn.Dead)
+                return;
+
+            int maxStage = Math.Max(1, Tuning?.maxCaptivityStage ?? 4);
+            record.captivityStage = Math.Max(0, Math.Min(maxStage, record.captivityStage));
+            if (record.captivityStage < maxStage)
+                record.captivityStage++;
+
+            int pressureInterval = Math.Max(60000, Tuning?.captivityPressureIntervalTicks ?? 120000);
+            record.nextCaptivityPressureTick = now + pressureInterval;
+
+            int ageYears = Math.Max(0, Tuning?.captiveAgeYearsPerPressure ?? 2);
+            if (ageYears > 0)
+                WraithHiveEcologyUtility.AdjustBiologicalAge(pawn, ageYears);
+            WraithHiveEcologyUtility.RefreshHediff(pawn, "WNG_LifeDrained");
+            ApplyCaptiveState(record);
+        }
+
+        private static bool EnsureCustodyHediff(Pawn pawn, string defName)
+        {
+            if (pawn?.health?.hediffSet == null)
+                return false;
+            HediffDef def = DefDatabase<HediffDef>.GetNamedSilentFail(defName);
+            if (def == null || pawn.health.hediffSet.HasHediff(def))
+                return false;
+            pawn.health.AddHediff(def);
+            return true;
+        }
+
+        private static void RemoveCustodyHediff(Pawn pawn, string defName, ref bool addedByCustody)
+        {
+            if (!addedByCustody || pawn?.health?.hediffSet == null)
+                return;
+            HediffDef def = DefDatabase<HediffDef>.GetNamedSilentFail(defName);
+            Hediff hediff = def == null ? null : pawn.health.hediffSet.GetFirstHediffOfDef(def);
+            if (hediff != null)
+                pawn.health.RemoveHediff(hediff);
+            addedByCustody = false;
+        }
+
+        private void ApplyCaptiveState(WraithAbducteeRecord record)
+        {
+            Pawn pawn = record?.pawn;
+            if (pawn == null || pawn.Dead)
+                return;
+
+            if (EnsureCustodyHediff(pawn, "WNG_WraithFeedingStock"))
+                record.custodyAppliedFeedingStock = true;
+            if (record.captivityStage >= 2 && EnsureCustodyHediff(pawn, "WNG_WraithExperimentSubject"))
+                record.custodyAppliedExperimentSubject = true;
+            if (record.captivityStage >= 3 && EnsureCustodyHediff(pawn, "WNG_WraithConditionedCaptive"))
+                record.custodyAppliedConditioning = true;
+        }
+
+        private void CleanupCaptivityState(WraithAbducteeRecord record)
+        {
+            Pawn pawn = record?.pawn;
+            if (pawn == null)
+                return;
+
+            RemoveCustodyHediff(pawn, "WNG_WraithFeedingStock", ref record.custodyAppliedFeedingStock);
+            RemoveCustodyHediff(pawn, "WNG_WraithExperimentSubject", ref record.custodyAppliedExperimentSubject);
+            RemoveCustodyHediff(pawn, "WNG_WraithConditionedCaptive", ref record.custodyAppliedConditioning);
+        }
+
+        private static void TryStageLetter(int stage, List<string> names)
+        {
+            if (names == null || names.Count == 0)
+                return;
+
+            string label;
+            string text;
+            if (stage >= 4)
+            {
+                label = "Wraith enthrallment threshold reached";
+                text = " have endured enough feeding, invasive study and psychic conditioning to reach the Wraith's full enthrallment threshold. The exact captives remain rescueable; if next materialized under Wraith guard, current native slavery mechanics will commit the enthrallment rather than an obsolete marker Hediff.";
+            }
+            else if (stage >= 3)
+            {
+                label = "Wraith conditioning detected";
+                text = " are now undergoing deliberate psychic conditioning after repeated captivity. Another prolonged delay risks native enthrallment.";
+            }
+            else if (stage >= 2)
+            {
+                label = "Wraith experimentation detected";
+                text = " are now being used as biological experiment subjects as well as renewable feeding stock.";
+            }
+            else
+            {
+                label = "Wraith feeding cycle detected";
+                text = " have endured another controlled feeding cycle. The Wraith are preserving them as renewable feeding stock rather than killing them outright.";
+            }
+
+            try
+            {
+                Find.LetterStack.ReceiveLetter(label, names.ToCommaList(useAnd: true) + text, LetterDefOf.NegativeEvent);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Staged Wraith captivity committed but notification failed: " + ex.Message);
             }
         }
 
