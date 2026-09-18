@@ -137,7 +137,8 @@ namespace WraithNaniteGravtech
                 Pawn moduleCarrier = hostileAsurans.FirstOrDefault(HasVacuumModule);
                 if (moduleCarrier != null)
                 {
-                    CommitModuleObjective(moduleCarrier);
+                    if (!moduleCompletedMapIds.Contains(map.uniqueID))
+                        CommitModuleObjective(moduleCarrier);
                     DirectModuleCarrierExtraction(map, moduleCarrier);
                     continue;
                 }
