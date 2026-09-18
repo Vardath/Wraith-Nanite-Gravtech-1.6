@@ -96,6 +96,10 @@ jobs:
           for comp in ('CompProperties_Shuttle', 'CompProperties_Launchable', 'CompProperties_Transporter', 'CompProperties_Refuelable'):
               if comp not in npc_text:
                   failures.append(f'NPC Puddle Jumper missing native component {comp}')
+          if '<li>WNG_AsuranNaniteSlurry</li>' not in npc_text:
+              failures.append('NPC Puddle Jumper no longer uses the retained Asuran nanite-slurry fuel family')
+          if 'WNG_VacuumEnergyModule' in npc_text:
+              failures.append('NPC Puddle Jumper has regressed to superseded vacuum-energy-module fuel')
 
           # Nish'ta bridge remains optional-CE and WNG-owned in vanilla.
           nishta = Path('Source/WraithNaniteGravtech/Goauld/NishtaConditioning.cs').read_text(encoding='utf-8')
