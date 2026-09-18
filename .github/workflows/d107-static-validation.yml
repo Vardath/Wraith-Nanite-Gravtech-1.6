@@ -694,6 +694,39 @@ jobs:
               if forbidden in rep_salvage_routes:
                   failures.append(f'Replicator salvage quest/trade bypasses sealed-carrier ownership: {forbidden}')
 
+          # Optional Replicator Stargate salvage must use CatCraft only to resolve the exact
+          # home-map gate, then place ordinary Matter beside it. No dialing/buffer ownership.
+          rep_gate_salvage = Path('Source/WraithNaniteGravtech/Compatibility/ReplicatorStargateSalvage.cs').read_text(encoding='utf-8')
+          rep_gate_salvage_def = Path('Defs/IncidentDefs/Incidents_ReplicatorStargate.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('historical Stargate-salvage Def', rep_gate_salvage_def, '<defName>WNG_ReplicatorStargateSalvage</defName>'),
+              ('retained base chance', rep_gate_salvage_def, '<baseChance>0.03</baseChance>'),
+              ('retained earliest day', rep_gate_salvage_def, '<earliestDay>14</earliestDay>'),
+              ('CatCraft arrival-mode bridge', rep_gate_salvage, 'QuietLatticeStargateVisitUtility.StargateArrivalMode'),
+              ('CatCraft-owned exact gate resolution', rep_gate_salvage, 'mode.Worker.TryResolveRaidSpawnCenter(probe)'),
+              ('home-map gate verification', rep_gate_salvage, 'IsResolvedHomeMapStargate'),
+              ('exact gate-class check', rep_gate_salvage, 'StargateThingClassName'),
+              ('story-event toggle', rep_gate_salvage, 'WNGSettingsUtility.ReplicatorStoryEventsEnabled'),
+              ('hostile swarm exclusion', rep_gate_salvage, 'ReplicatorAssimilationUtility.CountHostileBlocks(map) > 0'),
+              ('bounded existing Matter', rep_gate_salvage, 'MaximumExistingMatter = 60'),
+              ('ordinary Matter payload', rep_gate_salvage, 'WNG_ReplicatorMatter'),
+              ('physical near-gate placement', rep_gate_salvage, 'GenPlace.TryPlaceThing'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator Stargate-salvage contract missing: {label}')
+          for forbidden in (
+              'mode.Worker.Arrive',
+              'receiveBuffer',
+              'ReceiveBuffer',
+              'ClearAndDestroyContents',
+              'PawnGenerator.GeneratePawn',
+              'WNG_ReplicatorDrone',
+              'TryReassembleOneDrone',
+              'StargatesMod.',
+          ):
+              if forbidden in rep_gate_salvage:
+                  failures.append(f'Replicator Stargate salvage crossed optional-integration ownership: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
