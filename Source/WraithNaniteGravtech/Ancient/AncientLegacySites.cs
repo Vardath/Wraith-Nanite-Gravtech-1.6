@@ -173,6 +173,13 @@ namespace WraithNaniteGravtech
             AncientLegacySiteUtility.PlaceThing(map, "WNG_PrecursorBedsideConsole", map.Center + new IntVec3(0, 0, 2));
             AncientLegacySiteUtility.PlaceThing(map, "WNG_PrecursorLumen", map.Center + new IntVec3(0, 0, -2));
 
+            // Restored dead environmental evidence. These props deliberately have no working
+            // research, control, drone, containment, shield or power components.
+            AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_RuinedAncientDiagnosticConsole", map.Center + new IntVec3(-4, 0, -2), 0.38f, 0.70f);
+            AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_FracturedAncientContainmentCradle", map.Center + new IntVec3(3, 0, -2), 0.32f, 0.62f);
+            AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_InertAncientDroneRack", map.Center + new IntVec3(-4, 0, 1), 0.40f, 0.72f);
+            AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_CollapsedAncientFieldProjector", map.Center + new IntVec3(4, 0, 2), 0.28f, 0.58f);
+
             // Evidence, not a free functional Ancient weapon/power system.
             AncientLegacySiteUtility.PlaceThing(map, "WNG_RecoveredAncientDrone", map.Center + new IntVec3(-3, 0, 2));
             AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_AncientShieldHarmonicRelic", map.Center + new IntVec3(3, 0, 1), 0.52f, 0.78f);
@@ -191,6 +198,10 @@ namespace WraithNaniteGravtech
             AncientLegacySiteUtility.BuildRoom(map, map.Center, 5, 5);
             AncientLegacySiteUtility.PlaceThing(map, "WNG_PrecursorTableSmall", map.Center + new IntVec3(0, 0, 2));
             AncientLegacySiteUtility.PlaceThing(map, "WNG_PrecursorWallLumen", map.Center + new IntVec3(-3, 0, 3));
+
+            // A smaller set of the same dead evidence survives in the sealed vault.
+            AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_FracturedAncientContainmentCradle", map.Center + new IntVec3(-2, 0, -2), 0.50f, 0.76f);
+            AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_CollapsedAncientFieldProjector", map.Center + new IntVec3(2, 0, -2), 0.48f, 0.74f);
 
             // Degraded containment evidence remains inert; no free vacuum-energy module.
             AncientLegacySiteUtility.PlaceThing(map, "WNG_RecoveredVacuumEnergyModule", map.Center);
