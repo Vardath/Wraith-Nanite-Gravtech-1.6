@@ -865,6 +865,46 @@ jobs:
           if 'Faction.OfPlayer' not in rep_bio:
               failures.append('Biological predation lost its explicit player-control boundary')
 
+          # Wraith anti-Asuran existential response (#56): synthetic nanite humanoids are
+          # strategic replication threats to Sable/Cinder, not feeding/culling targets.
+          wraith_asuran = Path('Source/WraithNaniteGravtech/Wraith/WraithAsuranThreat.cs').read_text(encoding='utf-8')
+          wraith_asuran_def = Path('Defs/IncidentDefs/Incidents_WraithAsuranThreat.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('registry-driven incident Def', wraith_asuran_def, '<defName>WNG_WraithAsuranExtermination</defName>'),
+              ('zero storyteller base chance', wraith_asuran_def, '<baseChance>0</baseChance>'),
+              ('current nanite-synthetic authority', wraith_asuran, 'AsuranCollectiveUtility.IsNaniteSynthetic'),
+              ('Sable doctrine', wraith_asuran, 'WraithLineageUtility.SableBroodDefName'),
+              ('Cinder doctrine', wraith_asuran, 'WraithLineageUtility.CinderCourtDefName'),
+              ('player synthetic population count', wraith_asuran, 'CountPlayerNaniteHumanoids'),
+              ('pattern-recognition warning', wraith_asuran, 'Wraith pattern recognition'),
+              ('90k initial minimum', wraith_asuran, 'InitialStrikeMinTicks = 90000'),
+              ('180k initial maximum', wraith_asuran, 'InitialStrikeMaxTicks = 180000'),
+              ('360k repeat minimum', wraith_asuran, 'RepeatStrikeMinTicks = 360000'),
+              ('600k repeat maximum', wraith_asuran, 'RepeatStrikeMaxTicks = 600000'),
+              ('65 percent pressure ceiling', wraith_asuran, 'MaximumPressureBonus = 0.65f'),
+              ('ordinary native raid worker', wraith_asuran, 'IncidentDefOf.RaidEnemy.Worker.TryExecute'),
+              ('immediate attack strategy', wraith_asuran, 'RaidStrategyDefOf.ImmediateAttack'),
+              ('save-safe next strike', wraith_asuran, 'wngAsuranThreatNextStrikeTick'),
+              ('save-safe responding lineage', wraith_asuran, 'wngAsuranThreatRespondingLineage'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith anti-Asuran response contract missing: {label}')
+          predatory_block = wraith_asuran.split('PredatoryLineageDefNames', 1)[1].split('};', 1)[0] if 'PredatoryLineageDefNames' in wraith_asuran else ''
+          if 'VeiledHiveDefName' in predatory_block or 'PaleCovenantDefName' in predatory_block:
+              failures.append('Wraith anti-Asuran extermination doctrine expanded beyond retained Sable/Cinder lineages')
+          for forbidden in (
+              'WNG_WraithDart',
+              'MapComponent_WraithDartCulling',
+              'WraithStrategicHungerRegistry',
+              'DrainLife',
+              'PartialFeed',
+              'WNG_LifeDrained',
+          ):
+              if forbidden in wraith_asuran:
+                  failures.append(f'Wraith anti-Asuran extermination crossed into feeding/culling ownership: {forbidden}')
+          if 'TryAffectGoodwillWith' in wraith_asuran:
+              failures.append('Wraith anti-Asuran response forces diplomacy instead of respecting current faction hostility')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
