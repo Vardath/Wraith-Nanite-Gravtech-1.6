@@ -20,6 +20,7 @@ namespace WraithNaniteGravtech
         public int reconstructionTick = -1;
         public bool pendingReconstruction;
         public int ideologicalStance;
+        public int specialistRole;
 
         public int nameKind;
         public string firstName;
@@ -65,6 +66,7 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref reconstructionTick, "reconstructionTick", -1);
             Scribe_Values.Look(ref pendingReconstruction, "pendingReconstruction", false);
             Scribe_Values.Look(ref ideologicalStance, "ideologicalStance", 0);
+            Scribe_Values.Look(ref specialistRole, "specialistRole", 0);
             Scribe_Values.Look(ref nameKind, "nameKind", 0);
             Scribe_Values.Look(ref firstName, "firstName");
             Scribe_Values.Look(ref nickName, "nickName");
@@ -216,6 +218,7 @@ namespace WraithNaniteGravtech
             snapshot.reconstructionTick = -1;
             AsuranIdeologyUtility.EnsureStance(pawn);
             snapshot.ideologicalStance = (int)AsuranIdeologyUtility.StanceOf(pawn);
+            snapshot.specialistRole = (int)HumanFormSpecialistRoleUtility.EnsureRole(pawn);
 
             snapshot.childhoodDefName = pawn.story?.Childhood?.defName;
             snapshot.adulthoodDefName = pawn.story?.Adulthood?.defName;
@@ -483,6 +486,13 @@ namespace WraithNaniteGravtech
                 AsuranIdeologicalStance stance = (AsuranIdeologicalStance)snapshot.ideologicalStance;
                 if (stance != AsuranIdeologicalStance.Unassigned)
                     AsuranIdeologyUtility.RestoreStance(copy, stance);
+            }
+
+            if (Enum.IsDefined(typeof(HumanFormSpecialistRole), snapshot.specialistRole))
+            {
+                HumanFormSpecialistRole role = (HumanFormSpecialistRole)snapshot.specialistRole;
+                if (role != HumanFormSpecialistRole.Unassigned)
+                    HumanFormSpecialistRoleUtility.RestoreRole(copy, role);
             }
 
             HediffDef continuityLoss = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_AsuranContinuityLoss");
