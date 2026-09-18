@@ -727,6 +727,43 @@ jobs:
               if forbidden in rep_gate_salvage:
                   failures.append(f'Replicator Stargate salvage crossed optional-integration ownership: {forbidden}')
 
+          # Replicator Stargate assault is the retained live gate-incursion route. It must
+          # remain capped, exact-gate, shared-domain, and dependency-safe.
+          rep_gate_assault = Path('Source/WraithNaniteGravtech/Compatibility/ReplicatorStargateAssault.cs').read_text(encoding='utf-8')
+          rep_gate_defs = Path('Defs/IncidentDefs/Incidents_ReplicatorStargate.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('historical assault Def', rep_gate_defs, '<defName>WNG_ReplicatorStargateAssault</defName>'),
+              ('retained base chance', rep_gate_defs, '<baseChance>0.02</baseChance>'),
+              ('retained earliest day', rep_gate_defs, '<earliestDay>22</earliestDay>'),
+              ('primitive Drone entry', rep_gate_assault, 'WNG_ReplicatorDrone'),
+              ('shared autonomous domain', rep_gate_assault, 'AssignAutonomousDomain(domainId)'),
+              ('domain-prefixed identity', rep_gate_assault, '"gate:"'),
+              ('live hostile cap', rep_gate_assault, 'HostilePopulationCap(ext)'),
+              ('buffer reservation accounting', rep_gate_assault, 'corridorCommittedCount'),
+              ('exact gate revalidation', rep_gate_assault, 'resolved == exactGate'),
+              ('CatCraft-owned arrival commit', rep_gate_assault, 'mode.Worker.Arrive(pawns, arrivalParms)'),
+              ('two follow-up waves', rep_gate_assault, 'public const int FollowupWaves = 2'),
+              ('retained 9000-tick redial cadence', rep_gate_assault, 'public const int FollowupDelayTicks = 9000'),
+              ('bounded retry window', rep_gate_assault, 'public const int FollowupRetryWindowTicks = 30000'),
+              ('same-gate follow-up guard', rep_gate_assault, 'IsExactGateStillUsable'),
+              ('save-persistent source gate', rep_gate_assault, 'wngReplicatorGateAssaultSourceGate'),
+              ('save-persistent domain', rep_gate_assault, 'wngReplicatorGateAssaultDomain'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator Stargate-assault contract missing: {label}')
+          for forbidden in (
+              'receiveBuffer',
+              'ReceiveBuffer',
+              'ClearAndDestroyContents',
+              'StargatesMod.',
+              'SetFaction(',
+              'WNG_ReplicatorHunter',
+              'WNG_ReplicatorBulwark',
+              'WNG_ReplicatorSiegeMass',
+          ):
+              if forbidden in rep_gate_assault:
+                  failures.append(f'Replicator Stargate assault crossed current ownership/primitive-entry boundary: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
