@@ -542,6 +542,35 @@ jobs:
           if 'WNG_AsuranLatticeIntrusion' in asuran_demo:
               failures.append('Asuran demolition strike was incorrectly coupled to the separate temporary lattice-intrusion system')
 
+          # Retained Replicator Matter meteor must remain a matter-first custody event:
+          # ordinary dormant Matter only, no finished swarm spawn and no parallel reassembly logic.
+          rep_meteor = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorMatterMeteor.cs').read_text(encoding='utf-8')
+          rep_incidents = Path('Defs/IncidentDefs/Incidents_Replicator.xml').read_text(encoding='utf-8')
+          rep_matter = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorMatterReassembly.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('meteor incident Def', rep_incidents, '<defName>WNG_ReplicatorMatterMeteorShower</defName>'),
+              ('meteor worker', rep_incidents, 'IncidentWorker_ReplicatorMatterMeteorShower'),
+              ('story-event toggle', rep_meteor, 'WNGSettingsUtility.ReplicatorStoryEventsEnabled'),
+              ('ordinary Matter payload', rep_meteor, 'WNG_ReplicatorMatter'),
+              ('hostile-block exclusion', rep_meteor, 'ReplicatorAssimilationUtility.CountHostileBlocks(map) > 0'),
+              ('bounded existing Matter', rep_meteor, 'MaximumExistingMatter = 60'),
+              ('separated impacts', rep_meteor, 'MinimumSeparationSquared = 64'),
+              ('physical meteor skyfaller', rep_meteor, 'SkyfallerMaker.SpawnSkyfaller'),
+              ('retry-safe partial commit', rep_meteor, 'suppressing storyteller retry'),
+              ('Matter arrival sound', rep_meteor, 'WNG_ReplicatorMatterFall'),
+              ('current dormancy contract', rep_matter, 'public int exposedTicksRequired = 30000;'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Replicator Matter meteor contract missing: {label}')
+          for forbidden in (
+              'PawnGenerator.GeneratePawn',
+              'WNG_ReplicatorDrone',
+              'CompReplicatorMatterReassembly',
+              'TryReassembleOneDrone',
+          ):
+              if forbidden in rep_meteor:
+                  failures.append(f'Replicator Matter meteor bypasses current matter-first ownership: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
