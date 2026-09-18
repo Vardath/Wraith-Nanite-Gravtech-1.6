@@ -93,6 +93,58 @@ namespace WraithNaniteGravtech
             return def.category == ThingCategory.Building && def.building != null && !def.building.isNaturalRock;
         }
 
+        /// <summary>
+        /// Canonical reachable environmental assimilation target used by both ordinary matter
+        /// consumption and the starvation-biological fallback. Keeping this search in one place
+        /// guarantees living prey can never outrank a target the current environmental ecology
+        /// would actually consume.
+        /// </summary>
+        public static Thing FindClosestAssimilationTarget(Pawn pawn)
+        {
+            if (!CanAutonomouslyAssimilate(pawn))
+                return null;
+
+            ReplicatorBlockExtension ext = ExtensionFor(pawn);
+            if (ext == null)
+                return null;
+
+            Predicate<Thing> validator = delegate(Thing thing)
+            {
+                return IsAssimilationTarget(thing, pawn) && pawn.CanReserve(thing);
+            };
+
+            float radius = Math.Max(5f, ext.assimilationSearchRadius);
+            TraverseParms traverse = TraverseParms.For(pawn);
+
+            Thing item = GenClosest.ClosestThing_Global_Reachable(
+                pawn.Position,
+                pawn.Map,
+                pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver),
+                PathEndMode.Touch,
+                traverse,
+                radius,
+                validator);
+
+            Thing building = GenClosest.ClosestThing_Global_Reachable(
+                pawn.Position,
+                pawn.Map,
+                pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.BuildingArtificial),
+                PathEndMode.Touch,
+                traverse,
+                radius,
+                validator);
+
+            if (item == null)
+                return building;
+            if (building == null)
+                return item;
+
+            return pawn.Position.DistanceToSquared(item.Position) <=
+                   pawn.Position.DistanceToSquared(building.Position)
+                ? item
+                : building;
+        }
+
         public static int CountHostileBlocks(Map map)
         {
             if (map == null)
@@ -299,48 +351,23 @@ namespace WraithNaniteGravtech
                 return null;
 
             ReplicatorBlockExtension ext = ReplicatorAssimilationUtility.ExtensionFor(pawn);
-            if (ext == null || !ReplicatorAssimilationUtility.HasPopulationRoom(pawn, Math.Max(1, ext.assimilationOffspringCount)))
-                return null;
-
-            Predicate<Thing> validator = delegate(Thing thing)
+            if (ext == null ||
+                !ReplicatorAssimilationUtility.HasPopulationRoom(
+                    pawn,
+                    Math.Max(1, ext.assimilationOffspringCount)))
             {
-                return ReplicatorAssimilationUtility.IsAssimilationTarget(thing, pawn) && pawn.CanReserve(thing);
-            };
+                return null;
+            }
 
-            float radius = Math.Max(5f, ext.assimilationSearchRadius);
-            TraverseParms traverse = TraverseParms.For(pawn);
-
-            Thing item = GenClosest.ClosestThing_Global_Reachable(
-                pawn.Position,
-                pawn.Map,
-                pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver),
-                PathEndMode.Touch,
-                traverse,
-                radius,
-                validator);
-
-            Thing building = GenClosest.ClosestThing_Global_Reachable(
-                pawn.Position,
-                pawn.Map,
-                pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.BuildingArtificial),
-                PathEndMode.Touch,
-                traverse,
-                radius,
-                validator);
-
-            Thing target;
-            if (item == null)
-                target = building;
-            else if (building == null)
-                target = item;
-            else
-                target = pawn.Position.DistanceToSquared(item.Position) <= pawn.Position.DistanceToSquared(building.Position) ? item : building;
-
+            Thing target = ReplicatorAssimilationUtility.FindClosestAssimilationTarget(pawn);
             if (target == null)
                 return null;
 
-            JobDef jobDef = DefDatabase<JobDef>.GetNamedSilentFail("WNG_ReplicatorAssimilate");
-            return jobDef == null ? null : JobMaker.MakeJob(jobDef, target);
+            JobDef jobDef =
+                DefDatabase<JobDef>.GetNamedSilentFail("WNG_ReplicatorAssimilate");
+            return jobDef == null
+                ? null
+                : JobMaker.MakeJob(jobDef, target);
         }
     }
 }
