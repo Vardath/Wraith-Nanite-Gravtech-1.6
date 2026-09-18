@@ -138,6 +138,7 @@ jobs:
               'WNG_ReplicatorShieldDisruptor',
               'WNG_ReplicatorArtilleryCaster',
               'WNG_PrecursorPulseRifle',
+              'WNG_RecoveredPrecursorPulseRifle',
               'WNG_NishtaCanister',
               'WNG_Gun_GoauldHeavyPlasmaCannon',
           ]
