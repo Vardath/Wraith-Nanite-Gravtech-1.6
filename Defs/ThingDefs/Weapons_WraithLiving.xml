@@ -216,6 +216,7 @@
   <ThingDef ParentName="BaseBullet">
     <defName>WNG_ProjectileStunStaff</defName>
     <label>staff stun discharge</label>
+    <thingClass>WraithNaniteGravtech.Projectile_WraithStunStaff</thingClass>
     <graphicData>
       <texPath>Things/Projectile/Charge_Small</texPath>
       <graphicClass>Graphic_Single</graphicClass>
