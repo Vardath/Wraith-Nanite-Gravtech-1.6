@@ -1316,6 +1316,36 @@ jobs:
           if 'coordinationFactor * postureFactor' not in schedule_block:
               failures.append('Replicator hierarchy no longer multiplies the historically separate Controller and Consolidate factors')
 
+          # Restored Ancient ruin scenery is evidence-only. Missing bespoke art is not a blocker,
+          # but these historical ruin identities must not become free functional Ancient systems.
+          ancient_ruins = Path('Defs/ThingDefs/Things_AncientRuinEvidence.xml').read_text(encoding='utf-8')
+          ancient_sites = Path('Source/WraithNaniteGravtech/Ancient/AncientLegacySites.cs').read_text(encoding='utf-8')
+          for def_name in (
+              'WNG_RuinedAncientDiagnosticConsole',
+              'WNG_FracturedAncientContainmentCradle',
+              'WNG_InertAncientDroneRack',
+              'WNG_CollapsedAncientFieldProjector',
+          ):
+              if f'<defName>{def_name}</defName>' not in ancient_ruins:
+                  failures.append(f'Ancient ruin evidence identity missing: {def_name}')
+              if f'PlaceDamagedThing(map, "{def_name}"' not in ancient_sites:
+                  failures.append(f'Ancient ruin evidence no longer appears physically at legacy sites: {def_name}')
+          for forbidden in (
+              '<designationCategory>',
+              '<researchPrerequisites>',
+              '<costList>',
+              '<comps>',
+              'CompProperties_Power',
+              'CompProperties_Studiable',
+              'CompProperties_Interactable',
+              'CompProperties_Transporter',
+              'CompProperties_WNGAsuranGravshipShield',
+          ):
+              if forbidden in ancient_ruins:
+                  failures.append(f'Ancient ruin evidence gained functional/buildable ownership: {forbidden}')
+          if 'Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole' not in ancient_ruins or 'Things/Building/Precursor/Gravship/WNG_PrecursorShieldEmitter' not in ancient_ruins:
+              failures.append('Ancient ruin evidence stopped using current provisional visuals pending the professional art pass')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
