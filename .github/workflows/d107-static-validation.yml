@@ -246,6 +246,35 @@ jobs:
                   if forbidden in haystack:
                       failures.append(f'{source_name} touches forbidden CatCraft/holder internals: {forbidden}')
 
+          # Player same-gate Wraith pursuit (#126) must preserve exact pawns and current custody ownership.
+          pursuit = Path('Source/WraithNaniteGravtech/Compatibility/WraithGatePursuit.cs').read_text(encoding='utf-8')
+          custody = Path('Source/WraithNaniteGravtech/Wraith/WraithCullingCustody.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('pursuit map component', pursuit, 'MapComponent_WraithGatePursuit'),
+              ('current float-menu provider API', pursuit, 'public override IEnumerable<FloatMenuOption> GetOptionsFor'),
+              ('two-person minimum', pursuit, 'MinimumTeamSize = 2'),
+              ('four-person maximum', pursuit, 'MaximumTeamSize = 4'),
+              ('exact off-map player pawn transfer', pursuit, 'Find.WorldPawns.PassToWorld'),
+              ('exact player pawn return', pursuit, 'Find.WorldPawns.RemovePawn'),
+              ('same-gate return check', pursuit, 'WraithStargateHuntUtility.IsExactGateUsable'),
+              ('conventional fallback return', pursuit, 'ReturnFallbackDelayTicks'),
+              ('current custody release seam', pursuit, 'TryReleasePursuitCaptive'),
+              ('transactional custody release', custody, 'public bool TryReleasePursuitCaptive'),
+              ('rescue-site exclusion', custody, 'r.rescueSiteId < 0'),
+              ('custody rollback', custody, 'custody.TryAdd(pawn, false)'),
+              ('hunt opens pursuit on real gate exit', wraith_gate, 'TryOpenPursuitWindow();'),
+              ('single pursuit latch', wraith_gate, 'pursuitWindowOpened'),
+              ('physical Dart captive IDs', wraith_gate, 'transporter.innerContainer.OfType<Pawn>()'),
+              ('current custody captive IDs', wraith_gate, 'WraithCullingCustodyRegistry'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith same-gate pursuit contract missing: {label}')
+          if 'StargatesMod.' in pursuit:
+              failures.append('Wraith pursuit has a compile-time CatCraft dependency')
+          for forbidden in ('receiveBuffer', 'ReceiveBuffer', 'ClearAndDestroyContents'):
+              if forbidden in pursuit:
+                  failures.append(f'Wraith pursuit touches forbidden CatCraft/holder internals: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
