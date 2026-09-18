@@ -23,7 +23,7 @@
     </statBases>
     <comps>
       <li Class="CompProperties_CompAnalyzableUnlockResearch">
-        <analysisID>860106</analysisID>
+        <analysisID>860110</analysisID>
         <analysisRequiredRange>1~1</analysisRequiredRange>
         <analysisDurationHours>5</analysisDurationHours>
         <destroyedOnAnalyzed>false</destroyedOnAnalyzed>
