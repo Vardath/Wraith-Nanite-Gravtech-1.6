@@ -15,7 +15,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_PuddleJumper_NPC</defName>
     <label>Puddle Jumper</label>
-    <description>A non-player Puddle Jumper used by scripted offworld visitors. It keeps Odyssey's native shuttle, transporter, fuel and launch lifecycle while remaining unavailable for player construction.</description>
+    <description>A non-player Puddle Jumper used by scripted offworld visitors. It keeps Odyssey's native shuttle, transporter and launch lifecycle, uses the same stabilized Asuran nanite-slurry fuel family as the player craft, and remains unavailable for player construction.</description>
     <thingClass>Building_PassengerShuttle</thingClass>
     <preventDroppingThingsOn>true</preventDroppingThingsOn>
     <altitudeLayer>Building</altitudeLayer>
@@ -43,7 +43,7 @@
       <li Class="CompProperties_Shuttle"><shipDef>WNG_Ship_PuddleJumperNPC</shipDef></li>
       <li Class="CompProperties_Launchable"><fuelPerTile>0.02</fuelPerTile><minFuelCost>0.2</minFuelCost><skyfallerLeaving>WNG_PuddleJumperLeaving</skyfallerLeaving><worldObjectDef>WNG_PuddleJumperWorld</worldObjectDef><cooldownTicks>0</cooldownTicks><fixedLaunchDistanceMax>95</fixedLaunchDistanceMax></li>
       <li Class="CompProperties_Transporter"><massCapacity>650</massCapacity><max1PerGroup>true</max1PerGroup><canChangeAssignedThingsAfterStarting>true</canChangeAssignedThingsAfterStarting><pawnLoadedSound>Shuttle_PawnLoaded</pawnLoadedSound><pawnExitSound>Shuttle_PawnExit</pawnExitSound><showMassInInspectString>true</showMassInInspectString></li>
-      <li Class="CompProperties_Refuelable"><fuelCapacity>4</fuelCapacity><targetFuelLevelConfigurable>false</targetFuelLevelConfigurable><fuelFilter><thingDefs><li>WNG_VacuumEnergyModule</li></thingDefs></fuelFilter><fuelLabel>vacuum-energy module</fuelLabel><fuelGizmoLabel>Vacuum energy</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><showFuelGizmo>false</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay><showAllowAutoRefuelToggle>false</showAllowAutoRefuelToggle><canEjectFuel>false</canEjectFuel></li>
+      <li Class="CompProperties_Refuelable"><fuelCapacity>4</fuelCapacity><targetFuelLevelConfigurable>false</targetFuelLevelConfigurable><fuelFilter><thingDefs><li>WNG_AsuranNaniteSlurry</li></thingDefs></fuelFilter><fuelLabel>Asuran nanite slurry</fuelLabel><fuelGizmoLabel>Nanite slurry</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><showFuelGizmo>false</showFuelGizmo><drawOutOfFuelOverlay>false</drawOutOfFuelOverlay><showAllowAutoRefuelToggle>false</showAllowAutoRefuelToggle><canEjectFuel>false</canEjectFuel></li>
       <li Class="CompProperties_AmbientSound"><sound>ShuttleIdle_Ambience</sound></li>
     </comps>
   </ThingDef>
