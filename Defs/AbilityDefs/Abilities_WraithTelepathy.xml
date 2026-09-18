@@ -109,6 +109,34 @@
     </comps>
   </AbilityDef>
   <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_TelepathicProbe</defName>
+    <label>telepathic probe</label>
+    <description>Force brief contact with a living biological target's surface thoughts. This is the attenuated telepathic technique retained by unstable Wraith-human hybrids; it does not grant Hive Sense, Enthrallment or caste-level Wraith command.</description>
+    <iconPath>UI/Abilities/Focus</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <hostile>true</hostile>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <cooldownTicksRange>30000~30000</cooldownTicksRange>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <range>-1</range>
+      <warmupTime>2</warmupTime>
+      <drawAimPie>false</drawAimPie>
+      <soundCast>WNG_WraithTelepathicProbe</soundCast>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>true</canTargetPawns>
+        <canTargetBuildings>false</canTargetBuildings>
+        <canTargetMechs>false</canTargetMechs>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityHybridTelepathicProbe" />
+    </comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
     <defName>WNG_CaptiveExperiment</defName>
     <label>invasive captive experiment</label>
     <description>Conduct a controlled invasive examination on a biological prisoner held by the Wraith's faction. The exact prisoner remains in custody and suffers temporary neurological disruption, while the examining Wraith gains a brief research-speed benefit from the observations. This does not enthrall, recruit, replace or otherwise change the prisoner's identity or faction.</description>
