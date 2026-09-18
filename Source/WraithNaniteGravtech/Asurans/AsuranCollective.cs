@@ -118,9 +118,9 @@ namespace WraithNaniteGravtech
                 return 1f;
 
             int cap = Math.Max(0, link.Settings.peerBenefitCap);
-            int peers = Math.Min(cap, CountLocalNetworkPeers(pawn));
+            int physicalPeers = Math.Min(cap, CountLocalNetworkPeers(pawn));
             float perPeer = Math.Max(0f, link.Settings.reconstructionBonusPerPeer);
-            return Math.Max(1f, 1f + peers * perPeer);
+            return AsuranIdeologyUtility.ReconstructionMultiplier(pawn, physicalPeers, perPeer);
         }
     }
 
@@ -184,8 +184,8 @@ namespace WraithNaniteGravtech
             }
 
             int cap = Math.Max(1, Settings.peerBenefitCap);
-            int peers = Math.Min(cap, AsuranCollectiveUtility.CountLocalNetworkPeers(pawn));
-            state.Severity = Math.Min(1f, peers / (float)cap);
+            int physicalPeers = Math.Min(cap, AsuranCollectiveUtility.CountLocalNetworkPeers(pawn));
+            state.Severity = AsuranIdeologyUtility.CollectiveStateSeverity(pawn, physicalPeers);
         }
 
         private void RemoveState()
