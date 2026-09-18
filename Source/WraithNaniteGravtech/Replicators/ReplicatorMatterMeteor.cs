@@ -68,11 +68,10 @@ namespace WraithNaniteGravtech
                 cells.Add(cell);
             }
 
-            int totalMatter = 0;
             List<Thing> stagedMatter = new List<Thing>(cells.Count);
             try
             {
-                foreach (IntVec3 cell in cells)
+                for (int i = 0; i < cells.Count; i++)
                 {
                     Thing matter = ThingMaker.MakeThing(matterDef);
                     if (matter == null)
@@ -81,26 +80,57 @@ namespace WraithNaniteGravtech
                     matter.stackCount = Math.Min(
                         matterDef.stackLimit,
                         Rand.RangeInclusive(MinimumMatterPerCluster, MaximumMatterPerCluster));
-                    totalMatter += matter.stackCount;
                     stagedMatter.Add(matter);
-
-                    SkyfallerMaker.SpawnSkyfaller(meteorDef, matter, cell, map);
                 }
             }
             catch (Exception ex)
             {
-                Log.Warning("[WNG] Replicator Matter meteor event aborted during payload staging: " + ex.Message);
                 foreach (Thing thing in stagedMatter)
                 {
                     if (thing != null && !thing.Destroyed && thing.ParentHolder == null)
                         thing.Destroy(DestroyMode.Vanish);
                 }
+                Log.Warning("[WNG] Replicator Matter meteor event aborted before any physical impact was committed: " + ex.Message);
                 return false;
             }
 
+            int committedClusters = 0;
+            int committedMatter = 0;
+            for (int i = 0; i < stagedMatter.Count; i++)
+            {
+                Thing matter = stagedMatter[i];
+                try
+                {
+                    SkyfallerMaker.SpawnSkyfaller(meteorDef, matter, cells[i], map);
+                    committedClusters++;
+                    committedMatter += matter.stackCount;
+                }
+                catch (Exception ex)
+                {
+                    if (matter != null && !matter.Destroyed && matter.ParentHolder == null)
+                        matter.Destroy(DestroyMode.Vanish);
+
+                    for (int j = i + 1; j < stagedMatter.Count; j++)
+                    {
+                        Thing uncommitted = stagedMatter[j];
+                        if (uncommitted != null && !uncommitted.Destroyed && uncommitted.ParentHolder == null)
+                            uncommitted.Destroy(DestroyMode.Vanish);
+                    }
+
+                    if (committedClusters <= 0)
+                    {
+                        Log.Warning("[WNG] Replicator Matter meteor event failed before any physical impact was committed: " + ex.Message);
+                        return false;
+                    }
+
+                    Log.Warning("[WNG] Replicator Matter meteor event partially committed; preserving the already-physical impacts and suppressing storyteller retry: " + ex.Message);
+                    break;
+                }
+            }
+
             TryPlayArrivalSound(cells[0], map);
-            TrySendLetter(map, cells[0], totalMatter, cells.Count);
-            return true;
+            TrySendLetter(map, cells[0], committedMatter, committedClusters);
+            return committedClusters > 0;
         }
 
         private static int ExistingMatterCount(Map map, ThingDef matterDef)
