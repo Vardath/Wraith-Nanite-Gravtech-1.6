@@ -1174,6 +1174,31 @@ jobs:
           if '<defName>WNG_Hibernate</defName>' in wraith_tele_abilities:
               failures.append('Obsolete duplicate WNG_Hibernate AbilityDef was resurrected despite the current Life Force hibernation gizmo')
 
+          # Wraith stun-staff capture behavior must preserve the restored biological-only
+          # paralysis/anesthesia layer on top of ordinary RimWorld Stun impact handling.
+          stun_staff = Path('Source/WraithNaniteGravtech/Wraith/WraithStunStaff.cs').read_text(encoding='utf-8')
+          stun_staff_hediff = Path('Defs/HediffDefs/Hediffs_WraithStunStaff.xml').read_text(encoding='utf-8')
+          wraith_weapons = Path('Defs/ThingDefs/Weapons_WraithLiving.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('capture projectile class', stun_staff, 'Projectile_WraithStunStaff : Bullet'),
+              ('ordinary impact first', stun_staff, 'base.Impact(hitThing, blockedByShield)'),
+              ('current biological predicate', stun_staff, 'WraithLivingTechnologyUtility.IsBiologicalHumanlike(pawn)'),
+              ('paralysis application', stun_staff, 'WNG_StunStaffParalysis'),
+              ('native anesthesia', stun_staff, 'HealthUtility.TryAnesthetize(pawn)'),
+              ('paralysis Hediff', stun_staff_hediff, '<defName>WNG_StunStaffParalysis</defName>'),
+              ('1200-tick paralysis duration', stun_staff_hediff, '<disappearsAfterTicks>1200~1200</disappearsAfterTicks>'),
+              ('movement lock', stun_staff_hediff, '<capacity>Moving</capacity>'),
+              ('manipulation lock', stun_staff_hediff, '<capacity>Manipulation</capacity>'),
+              ('projectile class wiring', wraith_weapons, '<thingClass>WraithNaniteGravtech.Projectile_WraithStunStaff</thingClass>'),
+              ('ordinary Stun damage retained', wraith_weapons, '<damageDef>Stun</damageDef>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith stun-staff capture contract missing: {label}')
+          if 'CombatExtended.' in stun_staff or 'using CombatExtended' in stun_staff:
+              failures.append('Wraith stun-staff core capture source acquired a hard Combat Extended dependency')
+          if 'AsuranCollectiveUtility.IsNaniteSynthetic' in stun_staff:
+              failures.append('Wraith stun-staff reimplemented nanite exclusion instead of using the current biological-humanlike authority')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
