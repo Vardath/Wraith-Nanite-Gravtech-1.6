@@ -63,6 +63,23 @@ namespace WraithNaniteGravtech
             return WNGExternalDefOrigin.None;
         }
 
+        public static bool IsOnacEcosystemFaction(Faction faction)
+        {
+            if (!FullEcosystemActive() || faction == null || faction.defeated || faction.def == null)
+                return false;
+            WNGExternalDefOrigin origin = OriginOf(faction.def);
+            return origin == WNGExternalDefOrigin.Onac || origin == WNGExternalDefOrigin.RimGateJaffa;
+        }
+
+        public static IEnumerable<Faction> ActiveOnacEcosystemFactions()
+        {
+            if (!FullEcosystemActive() || Find.FactionManager == null)
+                return Enumerable.Empty<Faction>();
+            return Find.FactionManager.AllFactions
+                .Where(IsOnacEcosystemFaction)
+                .OrderBy(f => f.loadID);
+        }
+
         public static bool IsSystemLordFaction(Faction faction)
         {
             if (!RimGateJaffaLoaded() || faction == null || faction.defeated || faction.def == null)
