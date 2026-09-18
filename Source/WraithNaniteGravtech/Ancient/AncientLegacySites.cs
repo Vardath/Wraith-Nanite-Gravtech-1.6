@@ -89,6 +89,20 @@ namespace WraithNaniteGravtech
                 thing.Destroy(DestroyMode.Vanish);
         }
 
+        public static void PlaceDamagedThing(Map map, string defName, IntVec3 preferred, float minHealthFraction, float maxHealthFraction)
+        {
+            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+            if (map == null || def == null) return;
+
+            Thing thing = ThingMaker.MakeThing(def);
+            float min = Math.Max(0.05f, Math.Min(1f, minHealthFraction));
+            float max = Math.Max(min, Math.Min(1f, maxHealthFraction));
+            thing.HitPoints = Math.Max(1, Math.Min(thing.MaxHitPoints, (int)Math.Round(thing.MaxHitPoints * Rand.Range(min, max))));
+
+            if (!GenPlace.TryPlaceThing(thing, preferred, map, ThingPlaceMode.Near) && !thing.Destroyed)
+                thing.Destroy(DestroyMode.Vanish);
+        }
+
         private static void SpawnStructure(Map map, ThingDef def, IntVec3 cell)
         {
             if (map == null || def == null || !cell.InBounds(map) || cell.GetFirstBuilding(map) != null)
@@ -161,6 +175,7 @@ namespace WraithNaniteGravtech
 
             // Evidence, not a free functional Ancient weapon/power system.
             AncientLegacySiteUtility.PlaceThing(map, "WNG_RecoveredAncientDrone", map.Center + new IntVec3(-3, 0, 2));
+            AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_AncientShieldHarmonicRelic", map.Center + new IntVec3(3, 0, 1), 0.52f, 0.78f);
             AncientLegacySiteUtility.PlaceStack(map, "Plasteel", map.Center + new IntVec3(3, 0, 2), Rand.RangeInclusive(14, 26));
             AncientLegacySiteUtility.PlaceStack(map, "ComponentIndustrial", map.Center + new IntVec3(3, 0, -2), Rand.RangeInclusive(1, 2));
         }
@@ -179,6 +194,8 @@ namespace WraithNaniteGravtech
 
             // Degraded containment evidence remains inert; no free vacuum-energy module.
             AncientLegacySiteUtility.PlaceThing(map, "WNG_RecoveredVacuumEnergyModule", map.Center);
+            if (Rand.Chance(0.45f))
+                AncientLegacySiteUtility.PlaceDamagedThing(map, "WNG_AncientShieldHarmonicRelic", map.Center + new IntVec3(1, 0, 2), 0.68f, 0.94f);
             AncientLegacySiteUtility.PlaceStack(map, "Gold", map.Center + new IntVec3(2, 0, 1), Rand.RangeInclusive(8, 16));
             AncientLegacySiteUtility.PlaceStack(map, "ComponentSpacer", map.Center + new IntVec3(-2, 0, 1), 1);
         }
