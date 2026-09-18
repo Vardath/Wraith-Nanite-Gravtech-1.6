@@ -44,7 +44,7 @@ namespace WraithNaniteGravtech
     /// hemogen helper applies Hemogen Craving at zero, which is sanguophage behavior and not Wraith
     /// biology. Drain/starvation/torpor are owned here instead.
     /// </summary>
-    public sealed class Gene_Resource_LifeForce : Gene_Resource
+    public class Gene_Resource_LifeForce : Gene_Resource
     {
         private const string StarvedDefName = "WNG_LifeForceStarved";
         private const string TorporDefName = "WNG_LifeForceTorpor";
@@ -60,6 +60,8 @@ namespace WraithNaniteGravtech
         protected override Color BarHighlightColor => new Color(0.70f, 0.24f, 0.30f);
 
         public bool IsHibernating => HasHediff(HibernationDefName);
+
+        protected virtual bool SupportsDeliberateHibernation => true;
 
         public float RegenerationFactor
         {
@@ -130,7 +132,7 @@ namespace WraithNaniteGravtech
             foreach (Gizmo gizmo in base.GetGizmos())
                 yield return gizmo;
 
-            if (!Active || pawn == null || pawn.Faction != Faction.OfPlayer || pawn.Dead)
+            if (!SupportsDeliberateHibernation || !Active || pawn == null || pawn.Faction != Faction.OfPlayer || pawn.Dead)
                 yield break;
 
             Command_Action command = new Command_Action

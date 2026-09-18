@@ -105,4 +105,88 @@
     <biostatMet>-1</biostatMet>
   </GeneDef>
 
+  <GeneDef>
+    <defName>WNG_HybridRegeneration</defName>
+    <label>incomplete wraith regeneration</label>
+    <description>An unstable Wraith-derived tissue lattice slowly repairs ordinary non-permanent injuries. It is deliberately weaker than true Wraith regeneration and cannot reconstruct missing anatomy.</description>
+    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_WraithHybridRegeneration</geneClass>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>-2</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HybridLifeForce</defName>
+    <label>unstable life-force metabolism</label>
+    <description>This hybrid keeps ordinary food metabolism while carrying a small, unstable Life Force reserve. The reserve drains faster than a true Wraith's and can be replenished only by Partial Feed; complete depletion can still produce Wraith-like weakness and torpor.</description>
+    <iconPath>UI/Icons/Genes/Gene_Hemogenic</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_Resource_HybridLifeForce</geneClass>
+    <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_LifeForce</resourceGizmoType>
+    <resourceLabel>unstable life force</resourceLabel>
+    <resourceDescription>{PAWN_nameDef} retains ordinary nutrition but also carries a small Wraith-derived vitality reserve. Partial feeding replenishes it; full Drain Life is unavailable.</resourceDescription>
+    <resourceLossPerDay>0.10</resourceLossPerDay>
+    <resourceGizmoThresholds>
+      <li>0.06</li>
+      <li>0.16</li>
+      <li>0.28</li>
+    </resourceGizmoThresholds>
+    <showGizmoOnWorldView>true</showGizmoOnWorldView>
+    <abilities>
+      <li>WNG_PartialFeed</li>
+    </abilities>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>-1</biostatMet>
+    <modExtensions>
+      <li Class="WraithNaniteGravtech.WraithLifeForceSettingsExtension">
+        <hibernationDrainFactor>1</hibernationDrainFactor>
+        <starvedThreshold>0.06</starvedThreshold>
+        <torporThreshold>0.001</torporThreshold>
+        <torporRecoveryThreshold>0.04</torporRecoveryThreshold>
+        <lowReserveThreshold>0.16</lowReserveThreshold>
+        <highReserveThreshold>0.28</highReserveThreshold>
+        <depletedRegenerationFactor>0.05</depletedRegenerationFactor>
+        <starvingRegenerationFactor>0.20</starvingRegenerationFactor>
+        <lowRegenerationFactor>0.45</lowRegenerationFactor>
+        <healthyRegenerationFactor>0.70</healthyRegenerationFactor>
+        <highRegenerationFactor>1.00</highRegenerationFactor>
+        <hibernatingRegenerationFactor>0.05</hibernatingRegenerationFactor>
+        <injuryHealIntervalTicks>5000</injuryHealIntervalTicks>
+        <baseInjuryHealAmount>0.75</baseInjuryHealAmount>
+        <injuryLifeForceCostPerSeverity>0.004</injuryLifeForceCostPerSeverity>
+        <limbRegrowthIntervalTicks>60000</limbRegrowthIntervalTicks>
+        <limbRegrowthMinimumReserve>1</limbRegrowthMinimumReserve>
+        <limbRegrowthLifeForceCost>1</limbRegrowthLifeForceCost>
+      </li>
+    </modExtensions>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HybridTelepathy</defName>
+    <label>attenuated wraith telepathy</label>
+    <description>The hybrid can force brief contact with a biological target's surface thoughts, but lacks true Hive Sense, Enthrallment and caste-level Wraith psychic control.</description>
+    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <abilities>
+      <li>WNG_TelepathicProbe</li>
+    </abilities>
+    <statOffsets>
+      <PsychicSensitivity>0.10</PsychicSensitivity>
+    </statOffsets>
+    <biostatCpx>1</biostatCpx>
+    <biostatMet>-1</biostatMet>
+  </GeneDef>
+
+  <GeneDef>
+    <defName>WNG_HybridInstability</defName>
+    <label>wraith-human genomic instability</label>
+    <description>The incomplete graft never reaches stable Wraith equilibrium. Biological and psychic systems periodically fall out of synchronisation, causing deterministic recurring instability flares.</description>
+    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <displayCategory>Ability</displayCategory>
+    <geneClass>WraithNaniteGravtech.Gene_WraithHybridInstability</geneClass>
+    <biostatCpx>2</biostatCpx>
+    <biostatMet>3</biostatMet>
+  </GeneDef>
+
 </Defs>
