@@ -79,6 +79,92 @@ namespace WraithNaniteGravtech
         }
     }
 
+    public sealed class CompProperties_AbilityWraithHallucination : CompProperties_AbilityEffect
+    {
+        public HediffDef hallucinationHediff;
+
+        public CompProperties_AbilityWraithHallucination()
+        {
+            compClass = typeof(CompAbilityEffect_WraithHallucination);
+        }
+    }
+
+    /// <summary>
+    /// Full-Wraith sensory intrusion. This refreshes one temporary Hediff on the same living
+    /// biological target. It deliberately changes no faction, guest/slave state, age, Life Force,
+    /// genes, xenotype or pawn identity.
+    /// </summary>
+    public sealed class CompAbilityEffect_WraithHallucination : CompAbilityEffect
+    {
+        public new CompProperties_AbilityWraithHallucination Props =>
+            (CompProperties_AbilityWraithHallucination)props;
+
+        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
+        {
+            Pawn caster = parent?.pawn;
+            Pawn victim = target.Pawn;
+
+            if (!WraithTelepathyUtility.IsTelepathicWraith(caster))
+            {
+                if (throwMessages && caster != null)
+                    Messages.Message(
+                        "Hallucination requires active Wraith telepathy.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        false);
+                return false;
+            }
+
+            if (victim == null ||
+                victim == caster ||
+                victim.Dead ||
+                victim.health?.hediffSet == null ||
+                victim.RaceProps == null ||
+                !victim.RaceProps.IsFlesh ||
+                victim.RaceProps.IsMechanoid)
+            {
+                if (throwMessages && caster != null)
+                    Messages.Message(
+                        "Hallucination requires another living biological target.",
+                        caster,
+                        MessageTypeDefOf.RejectInput,
+                        false);
+                return false;
+            }
+
+            return base.Valid(target, throwMessages);
+        }
+
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+
+            Pawn caster = parent?.pawn;
+            Pawn victim = target.Pawn;
+            HediffDef hediffDef = Props.hallucinationHediff;
+            if (!WraithTelepathyUtility.IsTelepathicWraith(caster) ||
+                victim == null ||
+                victim == caster ||
+                victim.Dead ||
+                victim.health?.hediffSet == null ||
+                victim.RaceProps == null ||
+                !victim.RaceProps.IsFlesh ||
+                victim.RaceProps.IsMechanoid ||
+                hediffDef == null)
+            {
+                return;
+            }
+
+            // Refresh rather than stack. Removing and re-adding recreates the disappearing comp's
+            // bounded 12k–24k duration while preserving the exact target Pawn.
+            Hediff existing = victim.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+            if (existing != null)
+                victim.health.RemoveHediff(existing);
+
+            victim.health.AddHediff(hediffDef);
+        }
+    }
+
     public sealed class CompProperties_AbilityQueensCommand : CompProperties_AbilityEffect
     {
         public float radius = 10f;
