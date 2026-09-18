@@ -797,6 +797,26 @@ jobs:
           if 'AncientControlNetworkUtility.HasActiveControlFor(parent)' in systems_block:
               failures.append('Ancient control chair is authorizing cloak/sensors instead of only direct drone armament')
 
+          # Child's Toy proximity thought: restore the historical +3 colony mood effect,
+          # but bind it to the current real controlled Toy rather than the old ordinary-Drone mismatch.
+          toy_thought = Path('Source/WraithNaniteGravtech/Replicators/ThoughtWorker_ChildsToyNearby.cs').read_text(encoding='utf-8')
+          toy_thought_def = Path('Defs/ThoughtDefs/Thoughts_Replicator.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('historical thought identity', toy_thought_def, '<defName>WNG_ChildsToyNearby</defName>'),
+              ('thought worker', toy_thought_def, 'ThoughtWorker_ChildsToyNearby'),
+              ('old +3 mood effect', toy_thought_def, '<baseMoodEffect>3</baseMoodEffect>'),
+              ('current Toy identity', toy_thought, 'WNG_ChildsToy'),
+              ('10-cell radius', toy_thought, 'RadiusSquared = 100f'),
+              ('active Overseer state', toy_thought, 'OverseerSubjectState.Overseen'),
+              ('real overseer requirement', toy_thought, 'toy.GetOverseer() == null'),
+          ):
+              if needle not in haystack:
+                  failures.append(f"Child's Toy thought contract missing: {label}")
+          if 'WNG_ReplicatorDrone' in toy_thought:
+              failures.append("Child's Toy thought regressed to the historical ordinary-Drone mismatch")
+          if 'IsColonyMechPlayerControlled' in toy_thought:
+              failures.append("Child's Toy thought uses the obsolete generic mech check instead of the current Toy overseer contract")
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
