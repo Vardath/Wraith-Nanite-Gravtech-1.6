@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection;
 using System.Linq;
 using RimWorld;
 using UnityEngine;
@@ -83,6 +84,13 @@ namespace WraithNaniteGravtech.Anomaly
                 if (!def.inspectorTabs.Contains(typeof(ITab_StudyNotes)))
                     def.inspectorTabs.Add(typeof(ITab_StudyNotes));
             }
+        }
+
+        private static void SetStudiableField(CompProperties_Studiable study, string fieldName, object value)
+        {
+            FieldInfo field = typeof(CompProperties_Studiable).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field != null)
+                field.SetValue(study, value);
         }
 
         private static void SetStudiableField(CompProperties_Studiable study, string fieldName, object value)
