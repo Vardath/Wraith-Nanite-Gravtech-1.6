@@ -208,7 +208,7 @@ namespace WraithNaniteGravtech
                 return;
 
             float radiusSq = record.radius * record.radius;
-            List<Pawn> pawns = map.mapPawns.AllPawnsSpawned;
+            List<Pawn> pawns = map.mapPawns.AllPawnsSpawned.ToList();
             for (int i = 0; i < pawns.Count; i++)
             {
                 Pawn pawn = pawns[i];
