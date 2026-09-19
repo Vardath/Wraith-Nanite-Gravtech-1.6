@@ -1206,6 +1206,56 @@ jobs:
               if forbidden in wraith_appearance:
                   failures.append(f'Wraith appearance reconciler crossed identity/caste ownership boundary: {forbidden}')
 
+          # Retained WNG gene-ability continuity (#88 archaeology recovery):
+          # active WNG genes may restore only the AbilityDefs they explicitly declare.
+          # This repair is add-only and must never infer caste/PawnKind abilities or remove unrelated powers.
+          gene_ability_reconciler = Path('Source/WraithNaniteGravtech/WNGGeneAbilityReconciler.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('game component owner', 'GameComponent_WNGGeneAbilityReconciler'),
+              ('historical 300-tick cadence', 'ReconcileIntervalTicks = 300'),
+              ('spawned-map bounded scan', 'map.mapPawns.AllPawnsSpawned'),
+              ('active gene gate', '!gene.Active'),
+              ('WNG namespace gate', '!geneDef.defName.StartsWith("WNG_", StringComparison.Ordinal)'),
+              ('declared ability source', 'geneDef.abilities'),
+              ('missing-ability check', 'pawn.abilities.GetAbility(abilityDef) != null'),
+              ('native ability restoration', 'pawn.abilities.GainAbility(abilityDef)'),
+              ('save-persistent cadence', '"wngGeneAbilityNextReconcileTick"'),
+          ):
+              if needle not in gene_ability_reconciler:
+                  failures.append(f'WNG gene-ability continuity contract missing: {label}')
+          for forbidden in ('RemoveAbility(', '.kindDef', 'PawnKindDef', 'SetXenotype', 'SetFaction('):
+              if forbidden in gene_ability_reconciler:
+                  failures.append(f'WNG gene-ability reconciler crossed its add-only gene boundary: {forbidden}')
+
+          expected_gene_abilities = {
+              'WNG_LifeForceMetabolism': {'WNG_LifeDrain', 'WNG_PartialFeed'},
+              'WNG_HostCultivator': {'WNG_HostSeedGestation'},
+              'WNG_WraithTelepathy': {'WNG_HiveSense', 'WNG_Hallucination', 'WNG_Enthrall', 'WNG_CaptiveExperiment', 'WNG_CaptiveInterrogation'},
+              'WNG_HybridLifeForce': {'WNG_PartialFeed'},
+              'WNG_HybridTelepathy': {'WNG_TelepathicProbe'},
+              'WNG_AsuranCollectiveLink': {'WNG_AsuranLatticeIntrusion'},
+              'WNG_NeuralInterface': {'WNG_NeuralInterface'},
+              'WNG_ReplicatorQueenLink': {'WNG_ReplicatorQueenDirective', 'WNG_ReplicatorSovereignSummon', 'WNG_ReplicatorSovereignReleaseSummoned'},
+          }
+          current_gene_abilities = {}
+          for gene_path in Path('Defs/GeneDefs').rglob('*.xml'):
+              root = ET.parse(gene_path).getroot()
+              for node in list(root):
+                  if node.tag != 'GeneDef':
+                      continue
+                  name = node.findtext('defName')
+                  if not name:
+                      continue
+                  current_gene_abilities[name] = {
+                      li.text for li in node.findall('./abilities/li') if li.text
+                  }
+          for gene_name, abilities in expected_gene_abilities.items():
+              if current_gene_abilities.get(gene_name) != abilities:
+                  failures.append(
+                      f'WNG gene ability declarations changed unexpectedly for {gene_name}: '
+                      f'{sorted(current_gene_abilities.get(gene_name, set()))} != {sorted(abilities)}'
+                  )
+
           # Hive Sense must retain both the newer local-mind scan and the historical
           # bounded caster focus state. Neither side supersedes the other.
           hive_abilities = Path('Defs/AbilityDefs/Abilities_WraithTelepathy.xml').read_text(encoding='utf-8')
