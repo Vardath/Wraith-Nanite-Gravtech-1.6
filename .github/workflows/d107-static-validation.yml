@@ -2012,6 +2012,48 @@ jobs:
           if '<defName>WNG_AsuranPowerCell</defName>' not in asuran_grav_power:
               failures.append('Precursor Power Cell restoration unexpectedly displaced Asuran gravship power generation')
 
+          # Retained terrestrial Wraith living-structure regeneration (#87 archaeology recovery):
+          # living wall and membrane door heal slowly without turning gravship repair back into
+          # free regeneration. Ship-scale repair remains owned by the biomass-fed metabolic heart.
+          living_regen_source = Path('Source/WraithNaniteGravtech/Wraith/WraithLivingStructureRegeneration.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('regeneration comp properties', 'CompProperties_WraithLivingStructureRegeneration'),
+              ('save-persistent next pulse', 'Scribe_Values.Look(ref nextRepairTick, "nextRepairTick", -1)'),
+              ('normal-tick support', 'public override void CompTick()'),
+              ('rare-tick support', 'public override void CompTickRare()'),
+              ('bounded HP restore', 'Math.Min(parent.MaxHitPoints, parent.HitPoints + amount)'),
+          ):
+              if needle not in living_regen_source:
+                  failures.append(f'Wraith living-structure regeneration contract missing: {label}')
+
+          living_infra_text = Path('Defs/ThingDefs/Things_WraithPlayerInfrastructure.xml').read_text(encoding='utf-8')
+          living_infra_root = ET.fromstring(living_infra_text)
+          living_infra_defs = {n.findtext('defName'): n for n in list(living_infra_root) if n.findtext('defName')}
+          for name in ('WNG_WraithLivingWall', 'WNG_WraithMembraneDoor'):
+              node = living_infra_defs.get(name)
+              if node is None:
+                  failures.append(f'Wraith living-structure regeneration target missing: {name}')
+                  continue
+              regen = next((n for n in node.findall('./comps/li') if n.get('Class') == 'WraithNaniteGravtech.CompProperties_WraithLivingStructureRegeneration'), None)
+              if regen is None:
+                  failures.append(f'{name} lost intrinsic living-structure regeneration')
+              else:
+                  if regen.findtext('repairIntervalTicks') != '500':
+                      failures.append(f'{name} regeneration interval regressed')
+                  if regen.findtext('hitPointsPerPulse') != '1':
+                      failures.append(f'{name} regeneration pulse amount regressed')
+              if 'regenerates damage while alive' not in (node.findtext('description') or ''):
+                  failures.append(f'{name} description no longer matches its regeneration behavior')
+          wall = living_infra_defs.get('WNG_WraithLivingWall')
+          if wall is None or wall.findtext('tickerType') != 'Rare':
+              failures.append('Wraith living wall no longer ticks its intrinsic regeneration component')
+
+          gravship_family_text = Path('Defs/Gravships/Gravship_FamilySystems.xml').read_text(encoding='utf-8')
+          if 'CompProperties_WraithLivingStructureRegeneration' in gravship_family_text:
+              failures.append('Terrestrial Wraith structure regeneration leaked into gravship free-repair semantics')
+          if 'CompProperties_WraithGravshipMetabolicRepair' not in gravship_family_text:
+              failures.append('Wraith gravship biomass-fed metabolic repair owner disappeared while restoring terrestrial regeneration')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
