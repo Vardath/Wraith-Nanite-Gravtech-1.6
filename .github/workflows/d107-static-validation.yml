@@ -1160,6 +1160,38 @@ jobs:
               if forbidden in wraith_appearance:
                   failures.append(f'Wraith appearance reconciler crossed identity/caste ownership boundary: {forbidden}')
 
+          # Hive Sense must retain both the newer local-mind scan and the historical
+          # bounded caster focus state. Neither side supersedes the other.
+          hive_abilities = Path('Defs/AbilityDefs/Abilities_WraithTelepathy.xml').read_text(encoding='utf-8')
+          hive_hediffs = Path('Defs/HediffDefs/Hediffs_WraithTelepathy.xml').read_text(encoding='utf-8')
+          hive_source = Path('Source/WraithNaniteGravtech/Royalty/WraithTelepathy.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('Hive Sense ability Def', hive_abilities, '<defName>WNG_HiveSense</defName>'),
+              ('40-cell current scan', hive_abilities, '<radius>40</radius>'),
+              ('focus Hediff wiring', hive_abilities, '<focusHediff>WNG_HiveSenseFocused</focusHediff>'),
+              ('historical focus Hediff', hive_hediffs, '<defName>WNG_HiveSenseFocused</defName>'),
+              ('historical 15000-tick focus', hive_hediffs, '<disappearsAfterTicks>15000~15000</disappearsAfterTicks>'),
+              ('historical sight focus', hive_hediffs, '<capacity>Sight</capacity><offset>0.10</offset>'),
+              ('historical hearing focus', hive_hediffs, '<capacity>Hearing</capacity><offset>0.10</offset>'),
+              ('historical consciousness focus', hive_hediffs, '<capacity>Consciousness</capacity><offset>0.04</offset>'),
+              ('current aggregate scan', hive_source, 'map.mapPawns.AllPawnsSpawned'),
+              ('current hostile/allied summary', hive_source, 'int hostile = sensed.Count'),
+              ('focus refresh-not-stack', hive_source, 'caster.health.RemoveHediff(existingFocus)'),
+              ('same exact caster focus', hive_source, 'caster.health.AddHediff(focus)'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Hive Sense retained-function contract missing: {label}')
+          hive_block = hive_source.split('public sealed class CompAbilityEffect_HiveSense', 1)[1].split('public sealed class CompProperties_AbilityWraithHallucination', 1)[0] if 'public sealed class CompAbilityEffect_HiveSense' in hive_source else ''
+          for forbidden in (
+              'SetFaction(',
+              'SetGuestStatus(',
+              'TryEnslavePrisoner',
+              'AdjustBiologicalAge',
+              'WNG_LifeDrained',
+          ):
+              if forbidden in hive_block:
+                  failures.append(f'Hive Sense crossed identity/feeding ownership boundary: {forbidden}')
+
           # Historical Wraith Hallucination is retained as a distinct full-Wraith telepathy
           # action. Manual hibernation remains the current Life Force gizmo, while old Wither and
           # old Replicator Directive identities remain superseded rather than duplicated.
