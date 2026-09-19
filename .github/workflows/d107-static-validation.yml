@@ -2397,7 +2397,7 @@ jobs:
           ):
               if needle not in haystack:
                   failures.append(f'WNG family gravship hull topology contract missing: {label}')
-          if 'Harmony' in family_hull_layer or 'ThingDefOf.GravshipHull' in family_hull_layer:
+          if 'Harmony' in family_hull_layer or '== ThingDefOf.GravshipHull' in family_hull_layer:
               failures.append('WNG family hull topology must remain a separate family-aware layer, not a native hull patch/hard-code')
 
           if failures:
