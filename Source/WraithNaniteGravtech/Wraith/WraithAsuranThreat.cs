@@ -325,10 +325,25 @@ namespace WraithNaniteGravtech
             if (!committed)
                 return false;
 
-            // The native Wraith raid is the authoritative combat transaction. Current D108 has no
-            // safe NPC strike-craft/cruiser carrier layer to reuse, so do not manufacture an empty
-            // player shuttle or culling Dart here. A later dedicated NPC carrier slice may add
-            // physical craft support without changing this already-real raid.
+            // The native raid above remains the authoritative combat commit. Physical
+            // carrier support is post-commit only: failure cannot make the registry retry the raid.
+            try
+            {
+                WraithStrategicCarrierUtility.TryStageSupportCarrier(
+                    map,
+                    lineage,
+                    parms.points > 0f
+                        ? parms.points
+                        : StorytellerUtility.DefaultThreatPointsNow(map),
+                    cruiserThreshold: 2200f);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(
+                    "[WNG] Wraith anti-Asuran raid committed but strategic carrier staging failed: " +
+                    ex.Message);
+            }
+
             try
             {
                 Find.LetterStack.ReceiveLetter(
