@@ -117,13 +117,14 @@
   <ThingDef ParentName="BedWithQualityBase">
     <defName>WNG_WraithHibernationPod</defName>
     <label>wraith hibernation pod</label>
-    <description>A sealed living chamber holding one exact Wraith in prolonged biological hibernation. The mature Hive keeps the occupant in the Life Force hibernation state until population losses or intrusion require waking.</description>
+    <description>A sealed living chamber for one exact Wraith in prolonged biological hibernation. Hibernation itself is owned by the Wraith's current Life Force state; the pod does not force it. While an already-hibernating occupant rests inside, a same-faction Keeper or Queen can perform a once-daily biomass-fed maintenance cycle that replaces a small fraction of unavoidable dormant Life Force loss.</description>
     <graphicData>
       <texPath>Things/Building/Furniture/Wraith/WNG_HibernationPod</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <drawSize>(2,2)</drawSize>
     </graphicData>
     <size>(1,2)</size>
+    <tickerType>Normal</tickerType>
     <designationCategory>Furniture</designationCategory>
     <researchPrerequisites><li>WNG_FeedingEcology</li></researchPrerequisites>
     <costList><WNG_Biomass>70</WNG_Biomass></costList>
@@ -140,6 +141,14 @@
       <destroySound>BuildingDestroyed_Soft_Medium</destroySound>
     </building>
     <leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithHibernationMaintenance">
+        <checkIntervalTicks>250</checkIntervalTicks>
+        <keeperTendIntervalTicks>60000</keeperTendIntervalTicks>
+        <biomassCost>1</biomassCost>
+        <lifeForceRestore>0.02</lifeForceRestore>
+      </li>
+    </comps>
   </ThingDef>
 
   <ThingDef ParentName="BedWithQualityBase">

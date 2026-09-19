@@ -1496,6 +1496,37 @@ jobs:
               if mutator in external_api:
                   failures.append(f'External compatibility API stopped being passive identity-only: {mutator}')
 
+          # Restored Wraith hibernation-pod tending is maintenance only. Current Life Force
+          # hibernation remains authoritative; the pod may not force or clear hibernation state.
+          hib_tending = Path('Source/WraithNaniteGravtech/Wraith/WraithHibernationMaintenance.cs').read_text(encoding='utf-8')
+          hive_ecology_defs = Path('Defs/ThingDefs/Things_WraithHiveEcology.xml').read_text(encoding='utf-8')
+          pod_block = hive_ecology_defs.split('<defName>WNG_WraithHibernationPod</defName>', 1)[1].split('</ThingDef>', 1)[0] if '<defName>WNG_WraithHibernationPod</defName>' in hive_ecology_defs else ''
+          for label, haystack, needle in (
+              ('maintenance comp source', hib_tending, 'CompWraithHibernationMaintenance'),
+              ('real hibernation-state requirement', hib_tending, 'WNG_WraithHibernating'),
+              ('same-faction Keeper/Queen requirement', hib_tending, 'WraithHiveEcologyUtility.HasKeeperOrQueen'),
+              ('real biomass payment', hib_tending, 'WraithHiveEcologyUtility.TryConsumeResource'),
+              ('failed-payment refund seam', hib_tending, 'WraithHiveEcologyUtility.SpawnResource'),
+              ('exact Life Force resource', hib_tending, 'Gene_Resource_LifeForce'),
+              ('saved tending cadence', hib_tending, 'wngHibernationPodNextKeeperTendTick'),
+              ('pod normal ticker', pod_block, '<tickerType>Normal</tickerType>'),
+              ('pod tending comp', pod_block, 'CompProperties_WraithHibernationMaintenance'),
+              ('one-day tending interval', pod_block, '<keeperTendIntervalTicks>60000</keeperTendIntervalTicks>'),
+              ('one biomass cost', pod_block, '<biomassCost>1</biomassCost>'),
+              ('small Life Force top-up', pod_block, '<lifeForceRestore>0.02</lifeForceRestore>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith hibernation-pod tending contract missing: {label}')
+          for forbidden in (
+              'AddHediff',
+              'RemoveHediff',
+              'WraithStrategicHungerRegistry',
+              'OpenFeedingSubjectMenu',
+              'TryAffectGoodwillWith',
+          ):
+              if forbidden in hib_tending:
+                  failures.append(f'Wraith hibernation-pod tending crossed current hibernation/strategic ownership boundary: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
