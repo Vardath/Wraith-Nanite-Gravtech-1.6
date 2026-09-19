@@ -263,6 +263,7 @@ namespace WraithNaniteGravtech
                 TemporaryAsuranIntrusionUtility.CopyMergedState(donors, upgraded);
                 ReplicatorSovereignControlUtility.CopyState(pawn, upgraded);
                 upgraded.TryGetComp<CompReplicatorAdaptation>()?.MergeFrom(donors);
+                upgraded.TryGetComp<CompReplicatorMaterialProfile>()?.MergeFrom(donors);
 
                 if (!GenPlace.TryPlaceThing(
                         upgraded,
@@ -319,6 +320,7 @@ namespace WraithNaniteGravtech
             Pawn parentPawn = parent as Pawn;
             int inheritedEmpUntil = parentPawn?.TryGetComp<CompReplicatorInterference>()?.EmpDisruptedUntilTick ?? 0;
             CompReplicatorAdaptation inheritedAdaptation = parentPawn?.TryGetComp<CompReplicatorAdaptation>();
+            CompReplicatorMaterialProfile inheritedMaterial = parentPawn?.TryGetComp<CompReplicatorMaterialProfile>();
             CompReplicatorDomain inheritedDomain = parentPawn?.TryGetComp<CompReplicatorDomain>();
             Faction faction = parentPawn?.Faction ?? lastKnownFaction;
             if (faction == null)
@@ -362,6 +364,7 @@ namespace WraithNaniteGravtech
                     ReplicatorSovereignControlUtility.CopyState(parentPawn, child);
                     child.TryGetComp<CompReplicatorHierarchy>()?.LockRecombination(Props.splitRecombineDelayTicks);
                     child.TryGetComp<CompReplicatorAdaptation>()?.InheritFrom(inheritedAdaptation);
+                    child.TryGetComp<CompReplicatorMaterialProfile>()?.InheritFrom(inheritedMaterial);
                     child.TryGetComp<CompReplicatorInterference>()?.InheritEmpDisruptionUntil(
                         inheritedEmpUntil,
                         preservePhysicalStun: true);
