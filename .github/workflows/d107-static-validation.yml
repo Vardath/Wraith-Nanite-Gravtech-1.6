@@ -1945,6 +1945,67 @@ jobs:
               if forbidden in rep_material_source:
                   failures.append(f'Replicator material profile gained forbidden matter/replication ownership: {forbidden}')
 
+          # Retained Precursor Power Cell: compact ordinary colony-grid storage only.
+          # It must remain distinct from both finite vacuum-energy generation and the isolated
+          # Asuran gravship family lattice. Historical non-Replicator art is not restored.
+          precursor_cell_text = Path('Defs/ThingDefs/Things_PrecursorPowerCell.xml').read_text(encoding='utf-8')
+          precursor_cell_root = ET.fromstring(precursor_cell_text)
+          precursor_cell = next((n for n in list(precursor_cell_root) if n.findtext('defName') == 'WNG_PrecursorPowerCell'), None)
+          if precursor_cell is None:
+              failures.append('Retained Precursor Power Cell is missing')
+          else:
+              if precursor_cell.findtext('thingClass') != 'Building_Battery':
+                  failures.append('Precursor Power Cell is no longer an ordinary RimWorld battery')
+              if precursor_cell.findtext('designationCategory') != 'Power':
+                  failures.append('Precursor Power Cell is no longer player-buildable power infrastructure')
+              if precursor_cell.findtext('./researchPrerequisites/li') != 'WNG_PrecursorEnergySystems':
+                  failures.append('Precursor Power Cell research gate regressed')
+              if precursor_cell.findtext('constructionSkillPrerequisite') != '8':
+                  failures.append('Precursor Power Cell construction-skill gate regressed')
+              expected_cell_cost = {'Plasteel': '55', 'ComponentSpacer': '2'}
+              actual_cell_cost = {child.tag: child.text for child in list(precursor_cell.find('costList') or [])}
+              if actual_cell_cost != expected_cell_cost:
+                  failures.append('Precursor Power Cell material cost regressed')
+              battery = next((n for n in precursor_cell.findall('./comps/li') if n.get('Class') == 'CompProperties_Battery'), None)
+              if battery is None:
+                  failures.append('Precursor Power Cell lost its native battery component')
+              else:
+                  if battery.findtext('storedEnergyMax') != '1800':
+                      failures.append('Precursor Power Cell storage capacity regressed')
+                  if battery.findtext('efficiency') != '0.92':
+                      failures.append('Precursor Power Cell efficiency regressed')
+                  if battery.findtext('shortCircuitInRain') != 'false':
+                      failures.append('Precursor Power Cell weatherproofing regressed')
+                  if battery.findtext('transmitsPower') != 'true':
+                      failures.append('Precursor Power Cell no longer connects to the ordinary colony grid')
+              stunnable = next((n for n in precursor_cell.findall('./comps/li') if n.get('Class') == 'CompProperties_Stunnable'), None)
+              if stunnable is None or stunnable.findtext('./affectedDamageDefs/li') != 'EMP':
+                  failures.append('Precursor Power Cell lost its retained EMP vulnerability')
+              if precursor_cell.findtext('./graphicData/texPath') != 'Things/Building/Precursor/Power/WNG_VacuumEnergyTap':
+                  failures.append('Precursor Power Cell temporary clean-art reuse changed before dedicated presentation replacement')
+              cell_xml = ET.tostring(precursor_cell, encoding='unicode')
+              for forbidden in (
+                  'WNG_VacuumEnergyModule',
+                  'CompProperties_Refuelable',
+                  'CompProperties_WNGFamilyPowerNode',
+                  'CompProperties_WNGFuelEndpoint',
+                  'basePowerConsumption',
+                  'generatedPower',
+                  'WNG_AsuranGravshipArchitecture',
+              ):
+                  if forbidden in cell_xml:
+                      failures.append(f'Precursor Power Cell crossed into generator/gravship semantics: {forbidden}')
+
+          precursor_energy_research = Path('Defs/ResearchProjectDefs/Research_PrecursorPersonalShields.xml').read_text(encoding='utf-8')
+          if '<defName>WNG_PrecursorEnergySystems</defName>' not in precursor_energy_research:
+              failures.append('Precursor Power Cell restoration depends on missing current Precursor Energy Systems research')
+          vacuum_power_text = Path('Defs/ThingDefs/Things_VacuumEnergy.xml').read_text(encoding='utf-8')
+          if '<defName>WNG_VacuumEnergyTap</defName>' not in vacuum_power_text or '<WNG_VacuumEnergyModule>1</WNG_VacuumEnergyModule>' not in vacuum_power_text:
+              failures.append('Precursor Power Cell restoration unexpectedly displaced finite vacuum-energy generation')
+          asuran_grav_power = Path('Defs/Gravships/Gravship_FamilySystems.xml').read_text(encoding='utf-8')
+          if '<defName>WNG_AsuranPowerCell</defName>' not in asuran_grav_power:
+              failures.append('Precursor Power Cell restoration unexpectedly displaced Asuran gravship power generation')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
