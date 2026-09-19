@@ -43,6 +43,7 @@
         <affectedDamageDefs><li>EMP</li></affectedDamageDefs>
         <useLargeEMPEffecter>false</useLargeEMPEffecter>
       </li>
+          <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>900</repairIntervalTicks><healPerPulse>3</healPerPulse><archiveRadius>45</archiveRadius></li>
     </comps>
     <uiOrder>2024</uiOrder>
   </ThingDef>
