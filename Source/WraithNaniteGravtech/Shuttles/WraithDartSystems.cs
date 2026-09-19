@@ -143,7 +143,7 @@ namespace WraithNaniteGravtech
             {
                 foreach (Pawn pawn in captives)
                 {
-                    Pawn dropped;
+                    Thing dropped;
                     if (!transporter.innerContainer.TryDrop(pawn, near, map, ThingPlaceMode.Near, 1, out dropped) || dropped != pawn)
                         throw new InvalidOperationException("one or more buffered captives could not be rematerialized");
                     droppedPawns.Add(pawn);
