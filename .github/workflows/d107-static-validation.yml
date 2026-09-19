@@ -1669,6 +1669,41 @@ jobs:
               except ValueError:
                   failures.append('Human-form armor ratings are not parseable')
 
+          # Retained faction interior floors remain ordinary floors, not hidden gravship
+          # substructure aliases. Current clean gravship textures are temporary presentation reuse only.
+          faction_floors = Path('Defs/TerrainDefs/WNG_FactionFloors.xml').read_text(encoding='utf-8')
+          faction_floor_root = ET.fromstring(faction_floors)
+          floor_defs = {n.findtext('defName'): n for n in list(faction_floor_root) if n.findtext('defName')}
+          if set(floor_defs) != {'WNG_WraithLivingFloor', 'WNG_AsuranDeckFloor'}:
+              failures.append('Faction interior floor file must contain exactly the retained Wraith and Asuran floors')
+          else:
+              wraith_floor = floor_defs['WNG_WraithLivingFloor']
+              asuran_floor = floor_defs['WNG_AsuranDeckFloor']
+              for label, node in (('Wraith living floor', wraith_floor), ('Asuran deck floor', asuran_floor)):
+                  if node.get('ParentName') != 'FloorBase':
+                      failures.append(f'{label} is no longer ordinary FloorBase flooring')
+                  if node.findtext('designationCategory') != 'Floors':
+                      failures.append(f'{label} is no longer player-buildable interior flooring')
+                  if node.find('placeWorkers') is not None:
+                      failures.append(f'{label} unexpectedly gained gravship placement restrictions')
+              if wraith_floor.findtext('texturePath') != 'Terrain/Wraith/WNG_WraithGravshipSubstructure':
+                  failures.append('Wraith living floor temporary clean-art reuse changed before dedicated presentation replacement')
+              if asuran_floor.findtext('texturePath') != 'Terrain/Precursor/WNG_AsuranGravshipSubstructure':
+                  failures.append('Asuran deck floor temporary clean-art reuse changed before dedicated presentation replacement')
+              if wraith_floor.findtext('./costList/WNG_Biomass') != '2':
+                  failures.append('Wraith living floor biomass cost regressed')
+              if wraith_floor.findtext('./researchPrerequisites/li') != 'WNG_BiologicalCultivation':
+                  failures.append('Wraith living floor research gate regressed')
+              if asuran_floor.findtext('./costList/Plasteel') != '2':
+                  failures.append('Asuran deck floor plasteel cost regressed')
+              if asuran_floor.findtext('./researchPrerequisites/li') != 'WNG_PrecursorFabrication':
+                  failures.append('Asuran deck floor research gate regressed')
+              if asuran_floor.findtext('constructionSkillPrerequisite') != '5':
+                  failures.append('Asuran deck floor construction skill gate regressed')
+              for forbidden in ('GravlitePanel', 'WNG_HiveGravshipArchitecture', 'WNG_AsuranGravshipArchitecture'):
+                  if forbidden in faction_floors:
+                      failures.append(f'Faction interior floors regressed into gravship substructure semantics: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
