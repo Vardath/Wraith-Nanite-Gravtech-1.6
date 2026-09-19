@@ -1527,6 +1527,47 @@ jobs:
               if forbidden in hib_tending:
                   failures.append(f'Wraith hibernation-pod tending crossed current hibernation/strategic ownership boundary: {forbidden}')
 
+          # Restored player Feeding Niche automation reuses current Mature-Hive local-feeding
+          # semantics but remains player-only. It must not create biomass or strategic hunger UI.
+          player_niche = Path('Source/WraithNaniteGravtech/Wraith/WraithPlayerFeedingNiche.cs').read_text(encoding='utf-8')
+          hive_ecology_defs = Path('Defs/ThingDefs/Things_WraithHiveEcology.xml').read_text(encoding='utf-8')
+          niche_block = hive_ecology_defs.split('<defName>WNG_WraithFeedingNiche</defName>', 1)[1].split('</ThingDef>', 1)[0] if '<defName>WNG_WraithFeedingNiche</defName>' in hive_ecology_defs else ''
+          for label, haystack, needle in (
+              ('player niche comp source', player_niche, 'CompPlayerWraithFeedingNiche'),
+              ('player-only runtime ownership', player_niche, 'parent.Faction != Faction.OfPlayer'),
+              ('exact prisoner validation', player_niche, 'WraithHiveEcologyUtility.IsValidFeedingStock'),
+              ('Keeper/Queen supervision', player_niche, 'WraithHiveEcologyUtility.HasKeeperOrQueen'),
+              ('hungry-Wraith selection', player_niche, 'WraithHiveEcologyUtility.HungryWraiths'),
+              ('biological-age transaction', player_niche, 'WraithHiveEcologyUtility.AdjustBiologicalAge'),
+              ('Life Drained transaction', player_niche, 'WNG_LifeDrained'),
+              ('Life Force transaction', player_niche, 'hungry[i].AddLifeForce'),
+              ('rollback age snapshot', player_niche, 'long oldAge = captive.ageTracker.AgeBiologicalTicks'),
+              ('rollback Life Force snapshot', player_niche, 'oldLifeForce[i] = hungry[i].Value'),
+              ('player toggle', player_niche, 'Keeper ration feeding'),
+              ('saved feed cadence', player_niche, 'wngPlayerNicheNextRationFeedTick'),
+              ('saved toggle state', player_niche, 'wngPlayerNicheAutoRationFeed'),
+              ('niche normal ticker', niche_block, '<tickerType>Normal</tickerType>'),
+              ('niche player comp', niche_block, 'CompProperties_PlayerWraithFeedingNiche'),
+              ('current local-feed cadence', niche_block, '<cycleTicks>120000</cycleTicks>'),
+              ('current victim aging', niche_block, '<victimAgeYears>2</victimAgeYears>'),
+              ('current Life Force gain', niche_block, '<lifeForceGainPerWraith>0.12</lifeForceGainPerWraith>'),
+              ('current hunger threshold', niche_block, '<feedOnlyBelowLifeForce>0.85</feedOnlyBelowLifeForce>'),
+              ('current max feeders', niche_block, '<maxWraithsFed>3</maxWraithsFed>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Player Wraith Feeding Niche contract missing: {label}')
+          for forbidden in (
+              'SpawnResource',
+              'WNG_Biomass',
+              'TryConsumeResource',
+              'TryAffectGoodwillWith',
+              'OpenFeedingSubjectMenu',
+              'SetFaction(',
+              '.Kill(',
+          ):
+              if forbidden in player_niche:
+                  failures.append(f'Player Wraith Feeding Niche crossed current local-feeding ownership boundary: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
