@@ -1704,6 +1704,32 @@ jobs:
                   if forbidden in faction_floors:
                       failures.append(f'Faction interior floors regressed into gravship substructure semantics: {forbidden}')
 
+          # Retained Asuran equipment plinth: ordinary low-profile furniture, not a powered
+          # archive, stockpile container, or reconstruction system. Dedicated art remains open;
+          # current clean precursor-console presentation is temporary.
+          precursor_furniture = Path('Defs/ThingDefs/Furniture_Precursor.xml').read_text(encoding='utf-8')
+          precursor_furniture_root = ET.fromstring(precursor_furniture)
+          precursor_furniture_defs = {n.findtext('defName'): n for n in list(precursor_furniture_root) if n.findtext('defName')}
+          plinth = precursor_furniture_defs.get('WNG_PrecursorStoragePlinth')
+          if plinth is None:
+              failures.append('Retained Asuran equipment plinth is missing')
+          else:
+              if plinth.get('ParentName') != 'FurnitureBase':
+                  failures.append('Asuran equipment plinth is no longer ordinary furniture')
+              if plinth.findtext('surfaceType') != 'Item':
+                  failures.append('Asuran equipment plinth lost its item-surface role')
+              if plinth.findtext('designationCategory') != 'Furniture':
+                  failures.append('Asuran equipment plinth is no longer buildable furniture')
+              if plinth.findtext('./researchPrerequisites/li') != 'WNG_PrecursorFabrication':
+                  failures.append('Asuran equipment plinth research gate regressed')
+              if plinth.findtext('./costList/Plasteel') != '15':
+                  failures.append('Asuran equipment plinth material cost regressed')
+              if plinth.findtext('./graphicData/texPath') != 'Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole':
+                  failures.append('Asuran equipment plinth temporary clean-art reuse changed before dedicated presentation replacement')
+              for forbidden in ('thingClass>Building_Storage', 'CompProperties_Storage', 'WNG_AsuranPatternArchive', 'WNG_NeuralInterface'):
+                  if forbidden in ET.tostring(plinth, encoding='unicode'):
+                      failures.append(f'Asuran equipment plinth gained unintended powered/storage semantics: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

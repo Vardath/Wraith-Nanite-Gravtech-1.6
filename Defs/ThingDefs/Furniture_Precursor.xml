@@ -63,4 +63,26 @@
     <placeWorkers><li>PlaceWorker_ShowFacilitiesConnections</li></placeWorkers><comps><li Class="CompProperties_Facility"><statOffsets><Comfort>0.07</Comfort></statOffsets><maxSimultaneous>1</maxSimultaneous><mustBePlacedAdjacentCardinalToBedHead>true</mustBePlacedAdjacentCardinalToBedHead></li></comps>
     <uiOrder>2140</uiOrder>
   </ThingDef>
+  <ThingDef ParentName="FurnitureBase">
+    <defName>WNG_PrecursorStoragePlinth</defName>
+    <label>Asuran equipment plinth</label>
+    <description>A clean low-profile precursor equipment surface intended for compact high-value rooms and gravship interiors. It is ordinary furniture, not a powered archive, stockpile container, or reconstruction device.</description>
+    <surfaceType>Item</surfaceType>
+    <graphicData>
+      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath>
+      <graphicClass>Graphic_Multi</graphicClass>
+      <drawSize>(1,1)</drawSize>
+    </graphicData>
+    <designationCategory>Furniture</designationCategory>
+    <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
+    <statBases>
+      <MaxHitPoints>180</MaxHitPoints>
+      <WorkToBuild>700</WorkToBuild>
+      <Beauty>3</Beauty>
+      <Mass>8</Mass>
+      <Flammability>0</Flammability>
+    </statBases>
+    <costList><Plasteel>15</Plasteel></costList>
+    <uiOrder>2142</uiOrder>
+  </ThingDef>
 </Defs>
