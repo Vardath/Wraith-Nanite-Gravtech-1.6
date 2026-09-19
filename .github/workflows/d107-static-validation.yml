@@ -2000,8 +2000,14 @@ jobs:
           if '<defName>WNG_PrecursorEnergySystems</defName>' not in precursor_energy_research:
               failures.append('Precursor Power Cell restoration depends on missing current Precursor Energy Systems research')
           vacuum_power_text = Path('Defs/ThingDefs/Things_VacuumEnergy.xml').read_text(encoding='utf-8')
-          if '<defName>WNG_VacuumEnergyTap</defName>' not in vacuum_power_text or '<WNG_VacuumEnergyModule>1</WNG_VacuumEnergyModule>' not in vacuum_power_text:
-              failures.append('Precursor Power Cell restoration unexpectedly displaced finite vacuum-energy generation')
+          for label, needle in (
+              ('vacuum-energy tap Def', '<defName>WNG_VacuumEnergyTap</defName>'),
+              ('finite module fuel filter', '<fuelFilter><thingDefs><li>WNG_VacuumEnergyModule</li></thingDefs></fuelFilter>'),
+              ('finite module consumption rate', '<fuelConsumptionRate>0.0666667</fuelConsumptionRate>'),
+              ('current 15 kW output', '<generatedPower>15000</generatedPower>'),
+          ):
+              if needle not in vacuum_power_text:
+                  failures.append(f'Precursor Power Cell restoration unexpectedly displaced finite vacuum-energy generation: {label}')
           asuran_grav_power = Path('Defs/Gravships/Gravship_FamilySystems.xml').read_text(encoding='utf-8')
           if '<defName>WNG_AsuranPowerCell</defName>' not in asuran_grav_power:
               failures.append('Precursor Power Cell restoration unexpectedly displaced Asuran gravship power generation')
