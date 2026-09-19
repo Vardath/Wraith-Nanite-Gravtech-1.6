@@ -23,8 +23,9 @@
   <RecipeDef ParentName="SurgeryInstallImplantBase">
     <defName>WNG_InstallAncientNeuralInterface</defName>
     <label>install Ancient control interface</label>
-    <description>Integrate an Ancient control interface with the patient's brain. Ordinary RimWorld surgical skill, medicine, success and failure rules remain in force.</description>
+    <description>Attempt to integrate an artificial Ancient/ATA control interface with the patient's brain. The operation itself completes cleanly, but the neural handshake is difficult to retain: each completed attempt has a 15% chance to take and an 85% chance to reject without injuring the pawn.</description>
     <jobString>Integrating an Ancient control interface.</jobString>
+    <workerClass>WraithNaniteGravtech.Recipe_InstallAncientNeuralInterface</workerClass>
     <workAmount>4200</workAmount>
     <ingredients>
       <li><count>1</count><filter><thingDefs><li>WNG_AncientNeuralInterface</li></thingDefs></filter></li>
