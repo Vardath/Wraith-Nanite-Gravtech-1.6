@@ -800,9 +800,37 @@ jobs:
               if forbidden in rep_gate_assault:
                   failures.append(f'Replicator Stargate assault crossed current ownership/primitive-entry boundary: {forbidden}')
 
+          # Ancient/ATA compatibility is the shared authority for player Ancient controls.
+          # Natural WNG_AncientAffinity is the real activation gene; the artificial interface is
+          # a clean 15%-take / 85%-rejection workaround, not an 85% dangerous surgery failure.
+          ancient_compat = Path('Source/WraithNaniteGravtech/Ancient/AncientCompatibility.cs').read_text(encoding='utf-8')
+          ancient_recipe = Path('Defs/RecipeDefs/Recipes_AncientCompatibility.xml').read_text(encoding='utf-8')
+          ancient_gene = Path('Defs/GeneDefs/Genes_AncientCompatibility.xml').read_text(encoding='utf-8')
+          ancient_interface_item = Path('Defs/ThingDefs/Things_AncientCompatibility.xml').read_text(encoding='utf-8')
+          install_block = ancient_compat.split('public sealed class Recipe_InstallAncientNeuralInterface', 1)[1].split('// Rare natural ATA-like compatibility', 1)[0] if 'public sealed class Recipe_InstallAncientNeuralInterface' in ancient_compat else ''
+          for label, haystack, needle in (
+              ('natural Ancient activation gene identity', ancient_compat, 'NaturalAffinityGeneDefName = "WNG_AncientAffinity"'),
+              ('natural Ancient gene Def', ancient_gene, '<defName>WNG_AncientAffinity</defName>'),
+              ('natural ATA chance retained', ancient_compat, 'public const float NaturalAffinityChance = 0.02f;'),
+              ('artificial interface identity', ancient_compat, 'ArtificialInterfaceHediffDefName = "WNG_AncientNeuralInterface"'),
+              ('15 percent interface take', ancient_compat, 'ArtificialInterfaceTakeChance = 0.15f'),
+              ('shared natural compatibility path', ancient_compat, 'HasNaturalAffinity(pawn) || HasArtificialInterface(pawn)'),
+              ('clean install worker', ancient_recipe, '<workerClass>WraithNaniteGravtech.Recipe_InstallAncientNeuralInterface</workerClass>'),
+              ('post-operation rejection roll', install_block, 'Rand.Chance(AncientCompatibilityUtility.ArtificialInterfaceTakeChance)'),
+              ('successful retained interface', install_block, 'pawn.health.AddHediff(interfaceDef, part)'),
+              ('rejection is non-injury', install_block, 'procedure completed cleanly'),
+              ('physical interface documents retention', ancient_interface_item, 'only about 15% of procedures produce a lasting interface'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Ancient compatibility contract missing: {label}')
+          if 'CheckSurgeryFail' in install_block:
+              failures.append('Ancient interface 85% rejection regressed into a dangerous surgery-failure roll')
+          if '<surgerySuccessChanceFactor>0.15</surgerySuccessChanceFactor>' in ancient_recipe or '<surgerySuccessChanceFactor>0.85</surgerySuccessChanceFactor>' in ancient_recipe:
+              failures.append('Ancient interface retention chance was incorrectly encoded as vanilla surgery success/failure')
+
           # Ancient control-chair networking is retained gameplay: an occupied 72-cell chair
-          # may command allied WNG shields and authorize Jumper drone armament, but cloak/sensors
-          # still require a compatible pawn physically aboard the Jumper.
+          # may command allied WNG shields and authorize Jumper drone armament, while native player
+          # Jumper launch, cloak and sensors require a compatible pawn physically aboard the Jumper.
           ancient_network = Path('Source/WraithNaniteGravtech/Ancient/AncientControlNetwork.cs').read_text(encoding='utf-8')
           jumper_systems = Path('Source/WraithNaniteGravtech/Shuttles/PuddleJumperSystems.cs').read_text(encoding='utf-8')
           ancient_control_def = Path('Defs/ThingDefs/Things_AncientControl.xml').read_text(encoding='utf-8')
@@ -819,6 +847,10 @@ jobs:
               ('standard Asuran shield network identity', ancient_network, '"WNG_PrecursorShieldEmitter"'),
               ('Ancient vacuum shield network identity', ancient_network, '"WNG_AncientVacuumShieldEmitter"'),
               ('native flick switching', ancient_network, 'flick.SwitchIsOn = enabled;'),
+              ('player Jumper ATA launch comp', jumper_def, 'WraithNaniteGravtech.CompProperties_AncientPuddleJumperLaunchable'),
+              ('native launch subclass', jumper_systems, 'public sealed class CompAncientPuddleJumperLaunchable : CompLaunchable'),
+              ('native launch base contract retained', jumper_systems, 'AcceptanceReport vanilla = base.CanLaunch(overrideFuelLevel)'),
+              ('native launch compatibility gate', jumper_systems, '!PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)'),
               ('Jumper dual neural-control path', armament_block, 'AncientControlNetworkUtility.HasActiveControlFor(parent)'),
               ('onboard armament path preserved', armament_block, 'PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)'),
               ('armed-suite inspect state', armament_block, 'Jumper systems tier: armed command suite'),
@@ -830,6 +862,8 @@ jobs:
               failures.append('Puddle Jumper cloak/sensor systems incorrectly inherited remote chair authorization')
           if systems_block.count('PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)') < 4:
               failures.append('Puddle Jumper cloak/sensor/hostile-ingress paths no longer consistently require a compatible pawn aboard')
+          if 'CompProperties_AncientPuddleJumperLaunchable' not in jumper_def:
+              failures.append('Player Puddle Jumper native Odyssey launch is no longer ATA-gated')
           if 'AncientControlNetworkUtility.HasActiveControlFor(parent)' in systems_block:
               failures.append('Ancient control chair is authorizing cloak/sensors instead of only direct drone armament')
 
