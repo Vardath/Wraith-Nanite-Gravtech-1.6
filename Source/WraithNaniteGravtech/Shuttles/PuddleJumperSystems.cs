@@ -17,6 +17,38 @@ namespace WraithNaniteGravtech
         }
     }
 
+    /// <summary>
+    /// Player Puddle Jumpers use Odyssey's native launch lifecycle, but Ancient flight controls
+    /// will not authorize launch unless a real ATA-compatible pawn is physically aboard.
+    /// The shared compatibility utility accepts the natural Ancient activation gene, a successfully
+    /// retained artificial interface, or the deliberately compatible Asuran synthetic handshake.
+    /// </summary>
+    public sealed class CompProperties_AncientPuddleJumperLaunchable : CompProperties_Launchable
+    {
+        public CompProperties_AncientPuddleJumperLaunchable()
+        {
+            compClass = typeof(CompAncientPuddleJumperLaunchable);
+        }
+    }
+
+    public sealed class CompAncientPuddleJumperLaunchable : CompLaunchable
+    {
+        public override AcceptanceReport CanLaunch(float? overrideFuelLevel = null)
+        {
+            AcceptanceReport vanilla = base.CanLaunch(overrideFuelLevel);
+            if (!vanilla.Accepted)
+                return vanilla;
+
+            if (parent?.Faction == Faction.OfPlayer &&
+                !PuddleJumperControlUtility.HasCompatiblePawnAboard(parent))
+            {
+                return "Requires an Ancient/ATA-compatible pawn aboard the Puddle Jumper.";
+            }
+
+            return true;
+        }
+    }
+
     public sealed class CompProperties_PuddleJumperDroneArmament : CompProperties
     {
         public float droneRange = 72f;
