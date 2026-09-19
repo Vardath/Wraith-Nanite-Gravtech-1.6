@@ -154,6 +154,7 @@ namespace WraithNaniteGravtech
                             parent.Position,
                             map,
                             ThingPlaceMode.Near,
+                            1,
                             out exact) ||
                         exact != pawn ||
                         !pawn.Spawned ||
