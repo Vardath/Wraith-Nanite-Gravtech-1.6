@@ -854,7 +854,7 @@ jobs:
               ('Jumper dual neural-control path', armament_block, 'AncientControlNetworkUtility.HasActiveControlFor(parent)'),
               ('onboard armament path preserved', armament_block, 'PuddleJumperControlUtility.HasCompatiblePawnAboard(parent)'),
               ('armed-suite inspect state', armament_block, 'Jumper systems tier: armed command suite'),
-              ('Jumper Def documents remote armament only', jumper_def, 'launcher can be commanded either by an ATA-compatible pawn aboard or by an occupied allied Ancient control chair'),
+              ('Jumper Def documents remote armament only', jumper_def, 'launcher can be commanded either by a compatible pawn aboard or by an occupied allied Ancient control chair'),
           ):
               if needle not in haystack:
                   failures.append(f'Ancient control-network contract missing: {label}')
