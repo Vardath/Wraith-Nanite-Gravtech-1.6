@@ -174,7 +174,7 @@ namespace WraithNaniteGravtech
             for (int i = 0; i < factors.Count; i++)
             {
                 StatModifier modifier = factors[i];
-                if (modifier?.stat == StatDefOf.MaxHitPoints)
+                if (modifier != null && modifier.stat == StatDefOf.MaxHitPoints)
                 {
                     maxHitPointsFactor = modifier.value;
                     break;
