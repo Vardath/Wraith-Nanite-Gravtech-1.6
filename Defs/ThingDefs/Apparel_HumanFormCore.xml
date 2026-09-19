@@ -25,4 +25,44 @@
       <recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers>
     </recipeMaker>
   </ThingDef>
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_HumanFormUniform</defName>
+    <label>human-form replicator uniform</label>
+    <description>A fitted pale uniform assembled from self-aligning precursor fibers. It provides modest environmental and combat protection while serving as ordinary human-form Replicator attire rather than a battlefield shell.</description>
+    <techLevel>Spacer</techLevel>
+    <!-- Dedicated clean uniform art remains part of the later non-Replicator presentation pass.
+         Until then this retained apparel reuses current clean human-form artwork rather than old forbidden bytes. -->
+    <graphicData>
+      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>220</MaxHitPoints>
+      <WorkToMake>18000</WorkToMake>
+      <Mass>2.5</Mass>
+      <EquipDelay>1.8</EquipDelay>
+      <ArmorRating_Sharp>0.45</ArmorRating_Sharp>
+      <ArmorRating_Blunt>0.22</ArmorRating_Blunt>
+      <ArmorRating_Heat>0.45</ArmorRating_Heat>
+    </statBases>
+    <costList>
+      <Synthread>45</Synthread>
+      <Plasteel>10</Plasteel>
+      <WNG_ReplicatorMatter>8</WNG_ReplicatorMatter>
+    </costList>
+    <apparel>
+      <bodyPartGroups>
+        <li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li>
+      </bodyPartGroups>
+      <layers><li>Shell</li></layers>
+      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</wornGraphicPath>
+      <tags><li>WNG_HumanFormClothing</li></tags>
+    </apparel>
+    <recipeMaker>
+      <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
+      <workSkill>Crafting</workSkill>
+      <skillRequirements><Crafting>5</Crafting></skillRequirements>
+      <recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers>
+    </recipeMaker>
+  </ThingDef>
 </Defs>
