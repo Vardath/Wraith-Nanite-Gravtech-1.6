@@ -32,7 +32,12 @@ namespace WraithNaniteGravtech
         private const string LifeDrainedDefName = "WNG_LifeDrained";
         private const string FedRecentlyDefName = "WNG_FedRecently";
         private const string VitalFeedbackDefName = "WNG_VitalFeedbackOrgan";
+        private const string FeedingResistanceDefName = "WNG_FeedingResistance";
+        private const string FeedingResistanceCrisisDefName = "WNG_FeedingResistanceCrisis";
+        private const string FeedingRejectionBacklashDefName = "WNG_FeedingRejectionBacklash";
         private const int VitalFeedbackStunTicks = 240;
+        private const float FeedingResistanceExtractionFactor = 0.20f;
+        private const float FeedingResistanceRejectionChance = 0.35f;
 
         public new CompProperties_AbilityLifeDrain Props => (CompProperties_AbilityLifeDrain)props;
 
@@ -68,6 +73,23 @@ namespace WraithNaniteGravtech
                 return;
             }
 
+            // Vital Resistance is the retained temporary middle ground between having no countermeasure
+            // and the later permanent Hoffan treatment. It never grants immunity. A feeding attempt can
+            // reject completely, producing bounded temporary consequences on both exact pawns; otherwise
+            // the same current feeding transaction proceeds at one fifth of its ordinary transfer strength.
+            bool feedingResistance = HasHediff(victim, FeedingResistanceDefName);
+            if (feedingResistance && Rand.Chance(FeedingResistanceRejectionChance))
+            {
+                AddOrRefreshHediff(victim, FeedingResistanceCrisisDefName);
+                AddOrRefreshHediff(caster, FeedingRejectionBacklashDefName);
+                Messages.Message(
+                    victim.LabelShortCap + "'s vital resistance rejected " + caster.LabelShort + "'s feeding attempt.",
+                    victim,
+                    MessageTypeDefOf.NeutralEvent,
+                    historical: false);
+                return;
+            }
+
             HediffDef lifeDrainedDef = DefDatabase<HediffDef>.GetNamedSilentFail(LifeDrainedDefName);
             bool alreadyLifeDrained = lifeDrainedDef != null &&
                 victim.health?.hediffSet?.GetFirstHediffOfDef(lifeDrainedDef) != null;
@@ -80,17 +102,27 @@ namespace WraithNaniteGravtech
                 return;
             }
 
-            if (Props.victimAgeYears != 0L)
-                AdjustBiologicalAge(victim, Props.victimAgeYears);
+            long victimAgeYears = feedingResistance
+                ? ScaleWholeYears(Props.victimAgeYears, FeedingResistanceExtractionFactor)
+                : Props.victimAgeYears;
+            long casterRejuvenationYears = feedingResistance
+                ? ScaleWholeYears(Props.casterRejuvenationYears, FeedingResistanceExtractionFactor)
+                : Props.casterRejuvenationYears;
+            float lifeForceGain = feedingResistance
+                ? Math.Max(0f, Props.lifeForceGain) * FeedingResistanceExtractionFactor
+                : Math.Max(0f, Props.lifeForceGain);
+
+            if (victimAgeYears != 0L)
+                AdjustBiologicalAge(victim, victimAgeYears);
             if (Props.addLifeDrainedHediff)
                 AddOrRefreshHediff(victim, LifeDrainedDefName);
 
-            if (Props.casterRejuvenationYears != 0L)
-                AdjustBiologicalAge(caster, -Props.casterRejuvenationYears, Props.minimumCasterAgeYears);
+            if (casterRejuvenationYears != 0L)
+                AdjustBiologicalAge(caster, -casterRejuvenationYears, Props.minimumCasterAgeYears);
             if (Props.addFedRecentlyHediff)
                 AddOrRefreshHediff(caster, FedRecentlyDefName);
 
-            resource.AddLifeForce(Math.Max(0f, Props.lifeForceGain));
+            resource.AddLifeForce(lifeForceGain);
 
             // Ideology is observational here: only a completed feeding transaction emits the
             // history event, and belief handling can never cancel or alter the Life Force commit.
@@ -174,6 +206,15 @@ namespace WraithNaniteGravtech
             if (existing != null)
                 pawn.health.RemoveHediff(existing);
             pawn.health.AddHediff(hediffDef);
+        }
+
+        private static long ScaleWholeYears(long years, float factor)
+        {
+            if (years <= 0L || factor <= 0f)
+                return 0L;
+
+            double scaled = years * (double)factor;
+            return scaled < 1d ? 0L : (long)Math.Floor(scaled);
         }
 
         private static void AdjustBiologicalAge(Pawn pawn, long yearsDelta, long minimumYears = 0L)

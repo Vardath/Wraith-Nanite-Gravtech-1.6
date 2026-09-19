@@ -1775,6 +1775,85 @@ jobs:
               if actual_hash != expected_hash:
                   failures.append(f'Approved Replicator ruin art bytes changed: {art_path}')
 
+          # Retained Vital Resistance therapy is a temporary middle-tier anti-feeding option,
+          # freshly integrated into the current Life Drain transaction. It must remain distinct from
+          # permanent Hoffan protection and must NOT re-enter Wraith augmentation prerequisites.
+          feeding_resistance_defs = Path('Defs/HediffDefs/Hediffs_FeedingResistance.xml').read_text(encoding='utf-8')
+          feeding_resistance_root = ET.fromstring(feeding_resistance_defs)
+          feeding_hediffs = {n.findtext('defName'): n for n in list(feeding_resistance_root) if n.findtext('defName')}
+          expected_feeding_hediffs = {
+              'WNG_FeedingResistance',
+              'WNG_FeedingResistanceStrain',
+              'WNG_FeedingResistanceCrisis',
+              'WNG_FeedingRejectionBacklash',
+          }
+          if set(feeding_hediffs) != expected_feeding_hediffs:
+              failures.append('Vital Resistance health-state family is incomplete or gained unexpected Defs')
+          else:
+              if feeding_hediffs['WNG_FeedingResistance'].findtext('./comps/li/disappearsAfterTicks') != '300000~300000':
+                  failures.append('Vital Resistance no longer lasts about five days')
+              if feeding_hediffs['WNG_FeedingResistanceStrain'].findtext('./comps/li/disappearsAfterTicks') != '60000~90000':
+                  failures.append('Vital Resistance treatment-strain duration regressed')
+              if feeding_hediffs['WNG_FeedingResistanceCrisis'].findtext('./comps/li/disappearsAfterTicks') != '45000~45000':
+                  failures.append('Vital Resistance rejection-crisis duration regressed')
+              if feeding_hediffs['WNG_FeedingRejectionBacklash'].findtext('./comps/li/disappearsAfterTicks') != '18000~18000':
+                  failures.append('Vital Resistance Wraith-backlash duration regressed')
+
+          feeding_resistance_item = Path('Defs/ThingDefs/Things_FeedingResistance.xml').read_text(encoding='utf-8')
+          feeding_item_root = ET.fromstring(feeding_resistance_item)
+          dose = next((n for n in list(feeding_item_root) if n.findtext('defName') == 'WNG_VitalResistanceDose'), None)
+          if dose is None:
+              failures.append('Vital Resistance dose is missing')
+          else:
+              if dose.findtext('./graphicData/texPath') != 'Things/Item/Drug/GoJuice':
+                  failures.append('Vital Resistance dose must use current clean/native presentation until dedicated art exists')
+              if dose.findtext('./recipeMaker/researchPrerequisite') != 'WNG_FeedingResistance':
+                  failures.append('Vital Resistance dose lost its dedicated research gate')
+              if dose.findtext('./recipeMaker/recipeUsers/li') != 'DrugLab':
+                  failures.append('Vital Resistance dose is no longer made at the Drug Lab')
+              if dose.findtext('./costList/Neutroamine') != '5' or dose.findtext('./costList/MedicineIndustrial') != '1':
+                  failures.append('Vital Resistance material cost regressed')
+              outcomes = [x.findtext('hediffDef') for x in dose.findall('./ingestible/outcomeDoers/li')]
+              if outcomes != ['WNG_FeedingResistance', 'WNG_FeedingResistanceStrain']:
+                  failures.append('Vital Resistance dose no longer applies therapy plus immediate strain')
+
+          feeding_research_text = Path('Defs/ResearchProjectDefs/Research_FeedingResistance.xml').read_text(encoding='utf-8')
+          feeding_research_root = ET.fromstring(feeding_research_text)
+          feeding_research = next((n for n in list(feeding_research_root) if n.findtext('defName') == 'WNG_FeedingResistance'), None)
+          if feeding_research is None:
+              failures.append('Vital Resistance research project is missing')
+          else:
+              prerequisites = [x.text for x in feeding_research.findall('./prerequisites/li')]
+              if prerequisites != ['WNG_BiologicalCultivation', 'DrugProduction']:
+                  failures.append('Vital Resistance research prerequisites regressed')
+
+          life_drain = Path('Source/WraithNaniteGravtech/Wraith/WraithLifeDrain.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('20-percent reduced extraction', 'private const float FeedingResistanceExtractionFactor = 0.20f;'),
+              ('35-percent rejection chance', 'private const float FeedingResistanceRejectionChance = 0.35f;'),
+              ('victim rejection crisis', 'AddOrRefreshHediff(victim, FeedingResistanceCrisisDefName);'),
+              ('Wraith rejection backlash', 'AddOrRefreshHediff(caster, FeedingRejectionBacklashDefName);'),
+              ('reduced victim ageing', 'ScaleWholeYears(Props.victimAgeYears, FeedingResistanceExtractionFactor)'),
+              ('reduced Wraith rejuvenation', 'ScaleWholeYears(Props.casterRejuvenationYears, FeedingResistanceExtractionFactor)'),
+              ('reduced Life Force gain', 'Props.lifeForceGain) * FeedingResistanceExtractionFactor'),
+          ):
+              if needle not in life_drain:
+                  failures.append(f'Vital Resistance feeding integration missing: {label}')
+          vital_feedback_index = life_drain.find('HasHediff(victim, VitalFeedbackDefName)')
+          hoffan_index = life_drain.find('HoffanSerumUtility.HasProtection(victim)')
+          resistance_index = life_drain.find('bool feedingResistance = HasHediff(victim, FeedingResistanceDefName);')
+          if not (0 <= vital_feedback_index < hoffan_index < resistance_index):
+              failures.append('Anti-feeding precedence regressed: Vital Feedback -> Hoffan -> temporary Vital Resistance')
+          if 'if (alreadyLifeDrained && Props.killIfAlreadyDrained)' not in life_drain:
+              failures.append('Vital Resistance accidentally removed the current repeated-full-feed lethality rule')
+
+          implant_research = ET.fromstring(Path('Defs/ResearchProjectDefs/Research_ImplantsCore.xml').read_text(encoding='utf-8'))
+          wraith_aug = next((n for n in list(implant_research) if n.findtext('defName') == 'WNG_WraithAugmentation'), None)
+          if wraith_aug is None:
+              failures.append('Wraith augmentation research disappeared while restoring Vital Resistance')
+          elif 'WNG_FeedingResistance' in [x.text for x in wraith_aug.findall('./prerequisites/li')]:
+              failures.append('Obsolete Vital Resistance prerequisite was incorrectly reattached to Wraith augmentation')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
