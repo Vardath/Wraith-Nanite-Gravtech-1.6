@@ -1256,6 +1256,7 @@
         <role>Generator</role>
         <capacityWatts>8000</capacityWatts>
       </li>
+          <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>750</repairIntervalTicks><healPerPulse>4</healPerPulse><archiveRadius>55</archiveRadius></li>
     </comps>
   </ThingDef>
   <ThingDef ParentName="WNG_SmallThrusterBase">
@@ -1326,6 +1327,7 @@
         <role>Consumer</role>
         <demandWatts>600</demandWatts>
       </li>
+          <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>750</repairIntervalTicks><healPerPulse>4</healPerPulse><archiveRadius>55</archiveRadius></li>
     </comps>
   </ThingDef>
   <ThingDef ParentName="WNG_LargeThrusterBase">
