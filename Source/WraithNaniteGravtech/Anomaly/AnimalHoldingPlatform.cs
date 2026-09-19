@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection;
 using System.Linq;
 using RimWorld;
 using UnityEngine;
@@ -68,11 +70,11 @@ namespace WraithNaniteGravtech.Anomaly
 
                 bool iratus = def.defName == "WNG_IratusBug";
                 study.frequencyTicks = 120000;
-                study.knowledgeCategory = KnowledgeCategoryDefOf.Basic;
-                study.anomalyKnowledge = iratus ? 1.25f : (systematicStudyUnlocked ? 0.20f : 0.05f);
+                SetStudiableField(study, "knowledgeCategory", KnowledgeCategoryDefOf.Basic);
+                SetStudiableField(study, "anomalyKnowledge", iratus ? 1.25f : (systematicStudyUnlocked ? 0.20f : 0.05f));
                 study.minMonolithLevelForStudy = 0;
-                study.requiresHoldingPlatform = true;
-                study.requiresImprisonment = false;
+                SetStudiableField(study, "requiresHoldingPlatform", true);
+                SetStudiableField(study, "requiresImprisonment", false);
 
                 if (!def.comps.Any(c => c is CompProperties_WNGAnimalStudyTracker))
                     def.comps.Add(new CompProperties_WNGAnimalStudyTracker());
@@ -82,6 +84,13 @@ namespace WraithNaniteGravtech.Anomaly
                 if (!def.inspectorTabs.Contains(typeof(ITab_StudyNotes)))
                     def.inspectorTabs.Add(typeof(ITab_StudyNotes));
             }
+        }
+
+        private static void SetStudiableField(CompProperties_Studiable study, string fieldName, object value)
+        {
+            FieldInfo field = typeof(CompProperties_Studiable).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field != null)
+                field.SetValue(study, value);
         }
     }
 

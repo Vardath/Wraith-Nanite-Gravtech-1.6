@@ -144,7 +144,7 @@ namespace WraithNaniteGravtech
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
             base.Apply(target, dest);
-            Pawn victim = target.Pawn;
+            Pawn victim = target.Thing as Pawn;
             if (!ValidBiologicalTarget(victim))
                 return;
 
@@ -282,7 +282,7 @@ namespace WraithNaniteGravtech
                 canTargetBuildings = false,
                 canTargetLocations = false,
                 canTargetSelf = false,
-                validator = info => IsEligibleSubject(info.Pawn)
+                validator = info => IsEligibleSubject(info.Thing as Pawn)
             };
             Find.Targeter.BeginTargeting(parameters, ConfirmSubject);
         }

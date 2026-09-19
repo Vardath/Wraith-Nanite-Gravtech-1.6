@@ -1,0 +1,65 @@
+name: D108 Managed Build and Playtest Package
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore RimWorld 1.6 reference assemblies
+        run: dotnet restore Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj
+
+      - name: Compile WNG managed assembly
+        run: dotnet build Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj -c Release --no-restore
+
+      - name: Verify managed output
+        shell: bash
+        run: |
+          test -f Assemblies/WraithNaniteGravtech.dll
+          echo "Managed assembly:"
+          ls -lh Assemblies/WraithNaniteGravtech.dll
+
+      - name: Build installable playtest ZIP
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+
+          root = Path('.')
+          stage = Path('playtest-stage/Wraith-Nanite-Gravtech')
+          stage.mkdir(parents=True, exist_ok=True)
+          excluded = {'.git', '.github', 'Source', 'playtest-stage'}
+          for entry in root.iterdir():
+              if entry.name in excluded:
+                  continue
+              target = stage / entry.name
+              if entry.is_dir():
+                  shutil.copytree(entry, target, dirs_exist_ok=True)
+              elif entry.is_file():
+                  shutil.copy2(entry, target)
+          PY
+          cd playtest-stage
+          zip -qr ../Wraith-Nanite-Gravtech-playtest.zip Wraith-Nanite-Gravtech
+          cd ..
+          unzip -l Wraith-Nanite-Gravtech-playtest.zip | grep 'Assemblies/WraithNaniteGravtech.dll'
+
+      - name: Upload playtest package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wraith-Nanite-Gravtech-playtest
+          path: Wraith-Nanite-Gravtech-playtest.zip
+          if-no-files-found: error
+          retention-days: 14

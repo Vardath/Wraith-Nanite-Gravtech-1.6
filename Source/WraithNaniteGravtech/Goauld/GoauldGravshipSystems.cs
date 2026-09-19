@@ -14,7 +14,6 @@ namespace WraithNaniteGravtech
         public CompProperties_WNGGoauldFamilyPowerProxy()
         {
             compClass = typeof(CompPowerTrader_WNGGoauldFamilyProxy);
-            basePowerConsumption = 0f;
         }
     }
 

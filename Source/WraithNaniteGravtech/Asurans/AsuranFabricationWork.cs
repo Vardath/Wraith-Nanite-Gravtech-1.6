@@ -51,7 +51,7 @@ namespace WraithNaniteGravtech
                     || pawn.workSettings == null
                     || !pawn.workSettings.EverWork
                     || pawn.story == null
-                    || pawn.story.WorkTypeIsDisabled(workType))
+                    || pawn.WorkTypeIsDisabled(workType))
                     continue;
 
                 if (pawn.workSettings.GetPriority(workType) == 0)

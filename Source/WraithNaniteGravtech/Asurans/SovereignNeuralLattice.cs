@@ -359,7 +359,7 @@ namespace WraithNaniteGravtech
             if (part == null)
                 return false;
             if (Find.QuestManager?.QuestsListForReading != null &&
-                Find.QuestManager.QuestsListForReading.Any(q => q != null && q.State != QuestState.Ended &&
+                Find.QuestManager.QuestsListForReading.Any(q => q != null && (q.State == QuestState.Ongoing || q.State == QuestState.NotYetAccepted) &&
                     q.PartsListForReading.OfType<QuestPart_SovereignLatticeRecovery>().Any()))
                 return false;
             return !Find.WorldObjects.AllWorldObjects.OfType<Site>()
@@ -369,11 +369,11 @@ namespace WraithNaniteGravtech
         protected override void RunInt()
         {
             string accepted = QuestGenUtility.HardcodedSignalWithQuestID("Accepted");
-            QuestGen.quest.AddPart(new QuestPart_SovereignLatticeRecovery { inSignal = accepted });
+            QuestGen.quest.AddPart(new QuestPart_SovereignLatticeRecovery { inSignal = accepted, inSignalEnable = accepted });
         }
     }
 
-    public sealed class QuestPart_SovereignLatticeRecovery : QuestPart
+    public sealed class QuestPart_SovereignLatticeRecovery : QuestPartActivable
     {
         public string inSignal;
         private Site cacheSite;

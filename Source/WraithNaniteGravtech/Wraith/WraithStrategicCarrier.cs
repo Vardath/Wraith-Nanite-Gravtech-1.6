@@ -148,12 +148,13 @@ namespace WraithNaniteGravtech
             {
                 foreach (Pawn pawn in crew)
                 {
-                    Pawn exact;
+                    Thing exact;
                     if (!transporter.innerContainer.TryDrop(
                             pawn,
                             parent.Position,
                             map,
                             ThingPlaceMode.Near,
+                            1,
                             out exact) ||
                         exact != pawn ||
                         !pawn.Spawned ||

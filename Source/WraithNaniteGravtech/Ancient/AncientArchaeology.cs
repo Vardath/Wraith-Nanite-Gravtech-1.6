@@ -17,7 +17,7 @@ namespace WraithNaniteGravtech
             if (part == null)
                 return false;
             if (Find.QuestManager?.QuestsListForReading != null &&
-                Find.QuestManager.QuestsListForReading.Any(q => q != null && q.State != QuestState.Ended &&
+                Find.QuestManager.QuestsListForReading.Any(q => q != null && (q.State == QuestState.Ongoing || q.State == QuestState.NotYetAccepted) &&
                     q.PartsListForReading.OfType<QuestPart_AncientArchaeology>().Any()))
                 return false;
             return !Find.WorldObjects.AllWorldObjects.OfType<Site>()
@@ -27,11 +27,11 @@ namespace WraithNaniteGravtech
         protected override void RunInt()
         {
             string accepted = QuestGenUtility.HardcodedSignalWithQuestID("Accepted");
-            QuestGen.quest.AddPart(new QuestPart_AncientArchaeology { inSignal = accepted });
+            QuestGen.quest.AddPart(new QuestPart_AncientArchaeology { inSignal = accepted, inSignalEnable = accepted });
         }
     }
 
-    public sealed class QuestPart_AncientArchaeology : QuestPart
+    public sealed class QuestPart_AncientArchaeology : QuestPartActivable
     {
         public string inSignal;
         private Site site;
