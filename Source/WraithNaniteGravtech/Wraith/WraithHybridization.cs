@@ -282,7 +282,7 @@ namespace WraithNaniteGravtech
                 canTargetBuildings = false,
                 canTargetLocations = false,
                 canTargetSelf = false,
-                validator = info => IsEligibleSubject(info.Pawn)
+                validator = info => IsEligibleSubject(info.Thing as Pawn)
             };
             Find.Targeter.BeginTargeting(parameters, ConfirmSubject);
         }
