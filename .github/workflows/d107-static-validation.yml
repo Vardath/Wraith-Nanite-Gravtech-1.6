@@ -2104,6 +2104,67 @@ jobs:
           if 'CompProperties_WraithGravshipMetabolicRepair' not in gravship_family_text:
               failures.append('Wraith gravship biomass-fed metabolic repair owner disappeared while restoring terrestrial regeneration')
 
+          # Retained Asuran archive-linked structural repair (#89 archaeology recovery):
+          # supported same-faction structures heal slowly only while a powered Pattern Archive
+          # is physically nearby. This is not free passive regeneration and does not restore the
+          # obsolete PrecursorGravPowerCore identity.
+          asuran_repair_source = Path('Source/WraithNaniteGravtech/Asurans/AsuranArchiveRepair.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('repair comp properties', 'CompProperties_AsuranArchiveRepair'),
+              ('Pattern Archive authority', 'PatternArchiveDefName = "WNG_AsuranPatternArchive"'),
+              ('same-faction requirement', 'archive.Faction != faction'),
+              ('powered Archive requirement', 'power?.PowerOn == true'),
+              ('physical radius check', 'archive.Position.DistanceToSquared(origin) > radiusSquared'),
+              ('save-persistent next pulse', 'Scribe_Values.Look(ref nextRepairTick, "wngAsuranArchiveRepairNextTick", -1)'),
+              ('bounded HP restore', 'Math.Min(parent.MaxHitPoints, parent.HitPoints + amount)'),
+          ):
+              if needle not in asuran_repair_source:
+                  failures.append(f'Asuran archive-repair contract missing: {label}')
+
+          asuran_repair_targets = {
+              'WNG_AsuranPatternArchive': ('Defs/ThingDefs/Things_AsuranPatternArchive.xml', '900', '3', '45'),
+              'WNG_PrecursorWall': ('Defs/ThingDefs/Things_PrecursorStructures.xml', '1200', '2', '45'),
+              'WNG_PrecursorDoor': ('Defs/ThingDefs/Things_PrecursorStructures.xml', '900', '3', '45'),
+              'WNG_PrecursorFabricator': ('Defs/ThingDefs/Things_SovereignLattice.xml', '900', '3', '45'),
+              'WNG_PrecursorPowerCell': ('Defs/ThingDefs/Things_PrecursorPowerCell.xml', '900', '3', '45'),
+              'WNG_AsuranPowerCell': ('Defs/Gravships/Gravship_FamilySystems.xml', '750', '4', '55'),
+              'WNG_PrecursorVectorThruster': ('Defs/Gravships/Gravship_FamilySystems.xml', '750', '4', '55'),
+              'WNG_PrecursorShieldEmitter': ('Defs/Gravships/Gravship_FamilySupport.xml', '750', '4', '55'),
+          }
+          parsed_asuran_repair_files = {}
+          for name, (path, interval, heal, radius) in asuran_repair_targets.items():
+              if path not in parsed_asuran_repair_files:
+                  parsed_asuran_repair_files[path] = ET.fromstring(Path(path).read_text(encoding='utf-8'))
+              node = next((n for n in list(parsed_asuran_repair_files[path]) if n.findtext('defName') == name), None)
+              if node is None:
+                  failures.append(f'Asuran archive-repair target missing: {name}')
+                  continue
+              repair = next((n for n in node.findall('./comps/li') if n.get('Class') == 'WraithNaniteGravtech.CompProperties_AsuranArchiveRepair'), None)
+              if repair is None:
+                  failures.append(f'{name} lost archive-linked structural repair')
+                  continue
+              if repair.findtext('repairIntervalTicks') != interval:
+                  failures.append(f'{name} archive-repair interval regressed')
+              if repair.findtext('healPerPulse') != heal:
+                  failures.append(f'{name} archive-repair amount regressed')
+              if repair.findtext('archiveRadius') != radius:
+                  failures.append(f'{name} archive-repair radius regressed')
+
+          precursor_structures = parsed_asuran_repair_files['Defs/ThingDefs/Things_PrecursorStructures.xml']
+          precursor_wall = next((n for n in list(precursor_structures) if n.findtext('defName') == 'WNG_PrecursorWall'), None)
+          if precursor_wall is None or precursor_wall.findtext('tickerType') != 'Rare':
+              failures.append('Precursor wall no longer ticks its archive-linked repair component')
+          fabricator_root = parsed_asuran_repair_files['Defs/ThingDefs/Things_SovereignLattice.xml']
+          fabricator = next((n for n in list(fabricator_root) if n.findtext('defName') == 'WNG_PrecursorFabricator'), None)
+          if fabricator is None or fabricator.findtext('tickerType') != 'Normal':
+              failures.append('Asuran fabricator no longer ticks its archive-linked repair component')
+
+          all_asuran_repair_xml = '\n'.join(
+              Path(path).read_text(encoding='utf-8') for path in sorted(set(v[0] for v in asuran_repair_targets.values()))
+          )
+          if 'WNG_PrecursorGravPowerCore' in all_asuran_repair_xml:
+              failures.append('Asuran archive repair resurrected the obsolete PrecursorGravPowerCore identity')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

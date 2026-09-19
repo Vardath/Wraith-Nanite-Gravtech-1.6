@@ -17,8 +17,12 @@
     <useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><Plasteel>4</Plasteel><ComponentIndustrial>1</ComponentIndustrial></costList>
     <statBases><MaxHitPoints>520</MaxHitPoints><WorkToBuild>260</WorkToBuild><Flammability>0</Flammability><Beauty>5</Beauty></statBases>
+    <tickerType>Rare</tickerType>
     <designationCategory>Structure</designationCategory>
     <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>1200</repairIntervalTicks><healPerPulse>2</healPerPulse><archiveRadius>45</archiveRadius></li>
+    </comps>
     <building><paintable>false</paintable></building>
   </ThingDef>
 
@@ -39,6 +43,7 @@
     <comps>
       <li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>35</basePowerConsumption></li>
       <li Class="CompProperties_Breakdownable"/>
+          <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>900</repairIntervalTicks><healPerPulse>3</healPerPulse><archiveRadius>45</archiveRadius></li>
     </comps>
     <designationCategory>Structure</designationCategory>
     <researchPrerequisites><li>WNG_PrecursorFabrication</li><li>Autodoors</li></researchPrerequisites>

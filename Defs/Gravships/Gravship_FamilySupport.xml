@@ -63,6 +63,7 @@
         <reactivateEffect>BulletShieldGenerator_Reactivate</reactivateEffect><activeSound>BulletShield_Ambience</activeSound><hitPoints>900</hitPoints><hitPointsRestoreInstantlyAfterCharge>false</hitPointsRestoreInstantlyAfterCharge><startWithMaxHitPoints>false</startWithMaxHitPoints><chargeDurationTicks>8000</chargeDurationTicks><minIdleAlpha>0.2</minIdleAlpha><drawWithNoSelection>true</drawWithNoSelection><disarmedByEmpForTicks>1500</disarmedByEmpForTicks><gizmoTipKey>GravshipShieldTip</gizmoTipKey><alwaysShowHitpointsGizmo>true</alwaysShowHitpointsGizmo><rechargeHitPointsIntervalTicks>75</rechargeHitPointsIntervalTicks><activated>true</activated><activeDuration>6500</activeDuration>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Asuran</family><role>Consumer</role><demandWatts>2600</demandWatts></li>
+          <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>750</repairIntervalTicks><healPerPulse>4</healPerPulse><archiveRadius>55</archiveRadius></li>
     </comps>
   </ThingDef>
 </Defs>
