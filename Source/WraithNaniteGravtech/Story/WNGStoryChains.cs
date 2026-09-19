@@ -165,7 +165,7 @@ namespace WraithNaniteGravtech
             return Find.QuestManager?.QuestsListForReading != null
                 && Find.QuestManager.QuestsListForReading.Any(q =>
                     q != null
-                    && q.State != QuestState.Ended
+                    && (q.State == QuestState.Ongoing || q.State == QuestState.NotYetAccepted)
                     && q.PartsListForReading.OfType<QuestPart_WNGStoryChain>().Any(p => p.Branch == branch));
         }
 
@@ -380,7 +380,7 @@ namespace WraithNaniteGravtech
 
         private void CompleteBranch()
         {
-            if (quest.State == QuestState.Ended)
+            if (quest.State != QuestState.Ongoing && quest.State != QuestState.NotYetAccepted)
                 return;
 
             string label;
