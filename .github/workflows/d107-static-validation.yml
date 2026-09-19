@@ -1568,6 +1568,34 @@ jobs:
               if forbidden in player_niche:
                   failures.append(f'Player Wraith Feeding Niche crossed current local-feeding ownership boundary: {forbidden}')
 
+          # Retained Replicator salvage disposal: hazardous loose Blocks and optional Core Fragments
+          # must have an explicit physical destruction route. These are ordinary smelter bills only;
+          # they do not analyze samples, create Replicators, reset containment state or preserve fragments.
+          rep_salvage = Path('Defs/RecipeDefs/Recipes_ReplicatorSalvage.xml').read_text(encoding='utf-8')
+          rep_salvage_root = ET.fromstring(rep_salvage)
+          rep_salvage_defs = {n.findtext('defName'): n for n in list(rep_salvage_root) if n.findtext('defName')}
+          if set(rep_salvage_defs) != {'WNG_ReprocessReplicatorMatter', 'WNG_DestroyReplicatorCoreFragment'}:
+              failures.append('Replicator salvage disposal must contain exactly the two retained bills')
+          else:
+              matter_recipe = rep_salvage_defs['WNG_ReprocessReplicatorMatter']
+              fragment_recipe = rep_salvage_defs['WNG_DestroyReplicatorCoreFragment']
+              for label, node, ingredient, count, steel in (
+                  ('Block reprocessing', matter_recipe, 'WNG_ReplicatorMatter', '10', '6'),
+                  ('Core-fragment destruction', fragment_recipe, 'WNG_ReplicatorCoreFragment', '1', '8'),
+              ):
+                  users = [x.text for x in node.findall('./recipeUsers/li')]
+                  if users != ['ElectricSmelter']:
+                      failures.append(f'{label} is no longer an ElectricSmelter-only disposal bill')
+                  ingredients = node.findall('./ingredients/li')
+                  if len(ingredients) != 1 or ingredients[0].findtext('count') != count or ingredients[0].findtext('./filter/thingDefs/li') != ingredient:
+                      failures.append(f'{label} ingredient contract regressed')
+                  if node.findtext('./products/Steel') != steel:
+                      failures.append(f'{label} inert-steel recovery contract regressed')
+                  if node.find('researchPrerequisite') is not None:
+                      failures.append(f'{label} unexpectedly gained a research gate and is no longer an emergency disposal route')
+              if matter_recipe.findtext('./products/WNG_ReplicatorMatter') is not None or fragment_recipe.findtext('./products/WNG_ReplicatorCoreFragment') is not None:
+                  failures.append('Replicator salvage disposal recreates hazardous source material')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
