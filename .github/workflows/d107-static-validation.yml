@@ -1730,6 +1730,51 @@ jobs:
                   if forbidden in ET.tostring(plinth, encoding='unicode'):
                       failures.append(f'Asuran equipment plinth gained unintended powered/storage semantics: {forbidden}')
 
+          # Retained Replicator consumed-ruin aftermath scenery is inert evidence only.
+          # It may improve first-contact readability but must never create a second Matter/threat path.
+          import hashlib
+          rep_ruins = Path('Defs/ThingDefs/Things_ReplicatorRuins.xml').read_text(encoding='utf-8')
+          rep_ruin_root = ET.fromstring(rep_ruins)
+          rep_ruin_defs = {n.findtext('defName'): n for n in list(rep_ruin_root) if n.findtext('defName')}
+          expected_rep_ruins = {
+              'WNG_ReplicatorStrippedWallHusk',
+              'WNG_ReplicatorScouredMachineHusk',
+              'WNG_ReplicatorConsumptionScar',
+          }
+          if set(rep_ruin_defs) != expected_rep_ruins:
+              failures.append('Replicator consumed-ruin scenery must contain exactly the three retained inert evidence props')
+          for name, node in rep_ruin_defs.items():
+              xml = ET.tostring(node, encoding='unicode')
+              for forbidden in ('<comps>', '<designationCategory>', '<costList>', 'WNG_ReplicatorMatter', 'WNG_ReplicatorCoreFragment'):
+                  if forbidden in xml:
+                      failures.append(f'Replicator ruin scenery {name} gained gameplay/resource semantics: {forbidden}')
+          rep_first_contact = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorFirstContact.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('three authoritative Matter stacks', 'private const int StackCount = 3;'),
+              ('retained wall husk placement', '"WNG_ReplicatorStrippedWallHusk"'),
+              ('retained machine husk placement', '"WNG_ReplicatorScouredMachineHusk"'),
+              ('retained consumption-scar placement', '"WNG_ReplicatorConsumptionScar"'),
+              ('fail-soft scenery Def lookup', 'DefDatabase<ThingDef>.GetNamedSilentFail(SceneryDefNames[i])'),
+              ('fail-soft scenery placement', 'GenPlace.TryPlaceThing(scenery, preferred, map, ThingPlaceMode.Near)'),
+          ):
+              if needle not in rep_first_contact:
+                  failures.append(f'Replicator consumed-ruin scenery contract missing: {label}')
+          if rep_first_contact.count('matter.stackCount = Rand.RangeInclusive(MinBlocksPerStack, MaxBlocksPerStack);') != 1:
+              failures.append('Replicator consumed-ruin Matter payload loop changed unexpectedly')
+          expected_rep_art = {
+              'Textures/Things/Building/Replicator/Ruins/WNG_ReplicatorConsumptionScar.png': 'c898d1683fc573359f8e09b89344716d6a101e4d3e0104550279e606857514de',
+              'Textures/Things/Building/Replicator/Ruins/WNG_ReplicatorScouredMachineHusk.png': '1215e1853dbbb934fb1e53ce322b3088b7b3cebffc48d4098b8f4ded1c21d12a',
+              'Textures/Things/Building/Replicator/Ruins/WNG_ReplicatorStrippedWallHusk.png': 'c4b70957b5bbe435bd2f94c70bf3850959e0a9991e27e68fb9bb4346b9373112',
+          }
+          for art_path, expected_hash in expected_rep_art.items():
+              art = Path(art_path)
+              if not art.is_file():
+                  failures.append(f'Approved Replicator ruin art missing: {art_path}')
+                  continue
+              actual_hash = hashlib.sha256(art.read_bytes()).hexdigest()
+              if actual_hash != expected_hash:
+                  failures.append(f'Approved Replicator ruin art bytes changed: {art_path}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

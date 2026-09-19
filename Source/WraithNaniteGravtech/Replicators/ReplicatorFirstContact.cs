@@ -9,8 +9,8 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Bounded first-contact route for the autonomous block-Replicator ecosystem.
     /// This deliberately reuses the current Drone and physical loose-Block systems rather than
-    /// reviving historical cargo proxies, ruin-husk Defs, hidden matter accounts or a second
-    /// reproduction model.
+    /// reviving historical cargo proxies, hidden matter accounts or a second reproduction model.
+    /// Retained consumed-ruin husks are inert physical evidence only and own no Replicator state.
     /// </summary>
     public static class ReplicatorFirstContactUtility
     {
@@ -91,7 +91,7 @@ namespace WraithNaniteGravtech
 
             Find.LetterStack.ReceiveLetter(
                 "Replicator trace located",
-                "A stripped ruin has been located nearby. Reconnaissance shows autonomous Replicator activity and loose self-organizing blocks among the remains. The blocks are physical salvage, but leaving enough of them exposed can reconstruct new Replicator Drones.",
+                "A stripped ruin has been located nearby. Reconnaissance shows unmistakable Replicator consumption patterns and loose self-organizing blocks among the remains. No active swarm is visible. The blocks are physical salvage, but leaving enough of them exposed can reconstruct new Replicator Drones.",
                 LetterDefOf.ThreatSmall,
                 site);
             return true;
@@ -110,6 +110,26 @@ namespace WraithNaniteGravtech
             new IntVec3(-8, 0, -3),
             new IntVec3(7, 0, -2),
             new IntVec3(0, 0, 8)
+        };
+
+        private static readonly string[] SceneryDefNames =
+        {
+            "WNG_ReplicatorStrippedWallHusk",
+            "WNG_ReplicatorStrippedWallHusk",
+            "WNG_ReplicatorScouredMachineHusk",
+            "WNG_ReplicatorScouredMachineHusk",
+            "WNG_ReplicatorConsumptionScar",
+            "WNG_ReplicatorConsumptionScar"
+        };
+
+        private static readonly IntVec3[] SceneryOffsets =
+        {
+            new IntVec3(-5, 0, -6),
+            new IntVec3(6, 0, -5),
+            new IntVec3(-4, 0, 4),
+            new IntVec3(5, 0, 4),
+            new IntVec3(-1, 0, -4),
+            new IntVec3(2, 0, 2)
         };
 
         public override void PostMapGenerate(Map map)
@@ -137,6 +157,22 @@ namespace WraithNaniteGravtech
 
                 if (!GenPlace.TryPlaceThing(matter, preferred, map, ThingPlaceMode.Near) && !matter.Destroyed)
                     matter.Destroy(DestroyMode.Vanish);
+            }
+
+            // Inert retained scenery makes the first-contact site read as a consumed technological
+            // ruin instead of three unexplained resource piles. These Things contain no Matter,
+            // comps, research, loot or incident state; failed scenery placement never affects the
+            // authoritative loose-Block transaction above.
+            for (int i = 0; i < SceneryDefNames.Length && i < SceneryOffsets.Length; i++)
+            {
+                ThingDef sceneryDef = DefDatabase<ThingDef>.GetNamedSilentFail(SceneryDefNames[i]);
+                if (sceneryDef == null)
+                    continue;
+
+                Thing scenery = ThingMaker.MakeThing(sceneryDef);
+                IntVec3 preferred = map.Center + SceneryOffsets[i];
+                if (!GenPlace.TryPlaceThing(scenery, preferred, map, ThingPlaceMode.Near) && !scenery.Destroyed)
+                    scenery.Destroy(DestroyMode.Vanish);
             }
         }
     }
