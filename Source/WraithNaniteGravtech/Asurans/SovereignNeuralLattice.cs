@@ -369,11 +369,11 @@ namespace WraithNaniteGravtech
         protected override void RunInt()
         {
             string accepted = QuestGenUtility.HardcodedSignalWithQuestID("Accepted");
-            QuestGen.quest.AddPart(new QuestPart_SovereignLatticeRecovery { inSignal = accepted });
+            QuestGen.quest.AddPart(new QuestPart_SovereignLatticeRecovery { inSignal = accepted, inSignalEnable = accepted });
         }
     }
 
-    public sealed class QuestPart_SovereignLatticeRecovery : QuestPart
+    public sealed class QuestPart_SovereignLatticeRecovery : QuestPartActivable
     {
         public string inSignal;
         private Site cacheSite;
