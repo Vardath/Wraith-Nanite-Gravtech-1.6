@@ -221,6 +221,7 @@ namespace WraithNaniteGravtech
             QuestGen.quest.AddPart(new QuestPart_WNGStoryChain
             {
                 inSignal = QuestGenUtility.HardcodedSignalWithQuestID("Accepted"),
+                inSignalEnable = QuestGenUtility.HardcodedSignalWithQuestID("Accepted"),
                 Branch = StoryBranch
             });
         }
@@ -241,7 +242,7 @@ namespace WraithNaniteGravtech
         protected override WNGStoryBranch StoryBranch => WNGStoryBranch.Ancient;
     }
 
-    public sealed class QuestPart_WNGStoryChain : QuestPart
+    public sealed class QuestPart_WNGStoryChain : QuestPartActivable
     {
         public string inSignal;
         public WNGStoryBranch Branch;
