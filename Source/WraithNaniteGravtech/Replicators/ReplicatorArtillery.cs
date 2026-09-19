@@ -180,6 +180,7 @@ namespace WraithNaniteGravtech
                 TemporaryAsuranIntrusionUtility.CopyState(source, artillery);
                 ReplicatorSovereignControlUtility.CopyState(source, artillery);
                 artillery.TryGetComp<CompReplicatorAdaptation>()?.InheritFrom(source.TryGetComp<CompReplicatorAdaptation>());
+                artillery.TryGetComp<CompReplicatorMaterialProfile>()?.InheritFrom(source.TryGetComp<CompReplicatorMaterialProfile>());
 
                 if (!GenPlace.TryPlaceThing(
                         artillery,

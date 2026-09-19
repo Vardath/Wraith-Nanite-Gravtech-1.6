@@ -358,6 +358,8 @@ namespace WraithNaniteGravtech
             Map map = parent.Map;
             IntVec3 origin = target.Position;
             ReplicatorAdaptationEvidence adaptationEvidence = ReplicatorAdaptationUtility.EvidenceFrom(target);
+            ReplicatorMaterialGrade offspringMaterialGrade =
+                ReplicatorMaterialProfileUtility.GradeFromSource(target);
             bool consumedHighTierAsuranTechnology = IsHighTierAsuranTechnology(target);
             string consumedTechnologyLabel = consumedHighTierAsuranTechnology ? target.LabelCap : null;
             List<Pawn> staged = new List<Pawn>(offspringCount);
@@ -379,6 +381,7 @@ namespace WraithNaniteGravtech
                     TemporaryAsuranIntrusionUtility.CopyState(parent, child);
                     ReplicatorSovereignControlUtility.CopyState(parent, child);
                     child.TryGetComp<CompReplicatorAdaptation>()?.InheritFrom(parent.TryGetComp<CompReplicatorAdaptation>());
+                    child.TryGetComp<CompReplicatorMaterialProfile>()?.SetGrade(offspringMaterialGrade);
                     if (!GenPlace.TryPlaceThing(child, origin, map, ThingPlaceMode.Near))
                     {
                         if (!child.Destroyed)

@@ -42,6 +42,7 @@
         <antiShieldEvidenceThreshold>18</antiShieldEvidenceThreshold>
         <antiShieldSampleIntervalTicks>300</antiShieldSampleIntervalTicks>
       </li>
+      <li Class="WraithNaniteGravtech.CompProperties_ReplicatorMaterialProfile" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorAdaptationEffects">
         <materialAssimilationTimeFactor>0.85</materialAssimilationTimeFactor>
         <powerRegenerationIntervalFactor>0.65</powerRegenerationIntervalFactor>

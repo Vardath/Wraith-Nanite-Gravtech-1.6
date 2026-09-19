@@ -183,6 +183,7 @@ namespace WraithNaniteGravtech
                 TemporaryAsuranIntrusionUtility.CopyState(source, repairer);
                 ReplicatorSovereignControlUtility.CopyState(source, repairer);
                 repairer.TryGetComp<CompReplicatorAdaptation>()?.InheritFrom(source.TryGetComp<CompReplicatorAdaptation>());
+                repairer.TryGetComp<CompReplicatorMaterialProfile>()?.InheritFrom(source.TryGetComp<CompReplicatorMaterialProfile>());
 
                 if (!GenPlace.TryPlaceThing(
                         repairer,

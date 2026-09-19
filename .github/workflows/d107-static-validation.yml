@@ -1854,6 +1854,97 @@ jobs:
           elif 'WNG_FeedingResistance' in [x.text for x in wraith_aug.findall('./prerequisites/li')]:
               failures.append('Obsolete Vital Resistance prerequisite was incorrectly reattached to Wraith augmentation')
 
+          # Retained Replicator physical-material profile is a body-quality state, not matter
+          # currency and not the learned Armor adaptation. It must derive from real RimWorld Stuff,
+          # survive physical transformations, and never manufacture a better grade during recombination.
+          rep_material_source = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorMaterialProfile.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('material-grade enum', 'public enum ReplicatorMaterialGrade'),
+              ('save-persistent material grade', 'wngReplicatorMaterialGrade'),
+              ('real Stuff source', 'ThingDef material = source?.Stuff;'),
+              ('raw Stuff fallback', 'source?.def?.IsStuff == true'),
+              ('vanilla Stuff durability factors', 'material.stuffProps.statFactors'),
+              ('MaxHitPoints factor classifier', 'modifier.stat == StatDefOf.MaxHitPoints'),
+              ('fragile threshold', 'FragileMaxHitPointsFactor = 0.80f'),
+              ('hardened threshold', 'HardenedMaxHitPointsFactor = 1.25f'),
+              ('ultra threshold', 'UltraMaxHitPointsFactor = 2.00f'),
+              ('conservative donor average', 'int merged = total / count;'),
+          ):
+              if needle not in rep_material_source:
+                  failures.append(f'Replicator material-profile contract missing: {label}')
+          grade_classifier = rep_material_source.split('public static ReplicatorMaterialGrade GradeFromSource', 1)[1] if 'public static ReplicatorMaterialGrade GradeFromSource' in rep_material_source else ''
+          for forbidden in ('defName ==', 'defName.StartsWith', 'MarketValue', 'techLevel'):
+              if forbidden in grade_classifier:
+                  failures.append(f'Replicator material classifier regressed to guessed/nonphysical classification: {forbidden}')
+
+          rep_material_defs = Path('Defs/HediffDefs/Hediffs_ReplicatorMaterialProfile.xml').read_text(encoding='utf-8')
+          rep_material_root = ET.fromstring(rep_material_defs)
+          rep_material_hediffs = {n.findtext('defName'): n for n in list(rep_material_root) if n.findtext('defName')}
+          expected_material_hediffs = {
+              'WNG_ReplicatorMaterialFragile',
+              'WNG_ReplicatorMaterialStandard',
+              'WNG_ReplicatorMaterialHardened',
+              'WNG_ReplicatorMaterialUltra',
+          }
+          if set(rep_material_hediffs) != expected_material_hediffs:
+              failures.append('Replicator material-profile Hediff family is incomplete or gained unexpected Defs')
+          else:
+              expected_material_stats = {
+                  'WNG_ReplicatorMaterialFragile': ('-0.08', '-0.05', '-0.03', '1.08'),
+                  'WNG_ReplicatorMaterialStandard': (None, None, None, None),
+                  'WNG_ReplicatorMaterialHardened': ('0.18', '0.12', '0.08', '0.96'),
+                  'WNG_ReplicatorMaterialUltra': ('0.34', '0.24', '0.16', '0.90'),
+              }
+              for name, expected in expected_material_stats.items():
+                  node = rep_material_hediffs[name]
+                  actual = (
+                      node.findtext('./stages/li/statOffsets/ArmorRating_Sharp'),
+                      node.findtext('./stages/li/statOffsets/ArmorRating_Blunt'),
+                      node.findtext('./stages/li/statOffsets/ArmorRating_Heat'),
+                      node.findtext('./stages/li/statFactors/MoveSpeed'),
+                  )
+                  if actual != expected:
+                      failures.append(f'Replicator material-profile balance contract regressed for {name}: {actual}')
+
+          rep_races = Path('Defs/ThingDefs/Races_Replicator.xml').read_text(encoding='utf-8')
+          if 'CompProperties_ReplicatorMaterialProfile' not in rep_races.split('<ThingDef Name="WNG_ReplicatorBlockBase"', 1)[1].split('</ThingDef>', 1)[0]:
+              failures.append('Block Replicator base no longer owns the material-profile component')
+
+          rep_assimilation = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAssimilation.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('target-derived offspring grade', 'ReplicatorMaterialProfileUtility.GradeFromSource(target)'),
+              ('offspring grade commit', 'TryGetComp<CompReplicatorMaterialProfile>()?.SetGrade(offspringMaterialGrade)'),
+          ):
+              if needle not in rep_assimilation:
+                  failures.append(f'Replicator material-profile assimilation transfer missing: {label}')
+
+          rep_hierarchy = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('recombination donor merge', 'TryGetComp<CompReplicatorMaterialProfile>()?.MergeFrom(donors)'),
+              ('split parent capture', 'CompReplicatorMaterialProfile inheritedMaterial'),
+              ('split exact inheritance', 'TryGetComp<CompReplicatorMaterialProfile>()?.InheritFrom(inheritedMaterial)'),
+          ):
+              if needle not in rep_hierarchy:
+                  failures.append(f'Replicator material-profile hierarchy transfer missing: {label}')
+
+          for specialist_path, specialist_name in (
+              ('Source/WraithNaniteGravtech/Replicators/ReplicatorRepairer.cs', 'Repairer'),
+              ('Source/WraithNaniteGravtech/Replicators/ReplicatorBurrower.cs', 'Burrower'),
+              ('Source/WraithNaniteGravtech/Replicators/ReplicatorArtillery.cs', 'Artillery'),
+              ('Source/WraithNaniteGravtech/Replicators/ReplicatorCoordination.cs', 'Controller'),
+          ):
+              specialist_text = Path(specialist_path).read_text(encoding='utf-8')
+              if 'TryGetComp<CompReplicatorMaterialProfile>()?.InheritFrom(source.TryGetComp<CompReplicatorMaterialProfile>())' not in specialist_text:
+                  failures.append(f'Replicator {specialist_name} reconfiguration loses physical material profile')
+
+          # Learned Armor remains a separate experiential effect. Material profile must not replace it.
+          rep_adaptation_effects = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAdaptationEffects.cs').read_text(encoding='utf-8')
+          if 'ReplicatorAdaptationFlags.Armor' not in rep_adaptation_effects or 'armorDeflectionChance' not in rep_adaptation_effects:
+              failures.append('Replicator material profile incorrectly displaced the learned Armor adaptation')
+          for forbidden in ('WNG_ReplicatorMatter', 'stackCount', 'ThingMaker.MakeThing', 'PawnGenerator.GeneratePawn'):
+              if forbidden in rep_material_source:
+                  failures.append(f'Replicator material profile gained forbidden matter/replication ownership: {forbidden}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

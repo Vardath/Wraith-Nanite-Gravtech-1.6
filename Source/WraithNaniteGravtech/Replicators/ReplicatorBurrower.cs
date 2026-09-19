@@ -185,6 +185,7 @@ namespace WraithNaniteGravtech
                 TemporaryAsuranIntrusionUtility.CopyState(source, burrower);
                 ReplicatorSovereignControlUtility.CopyState(source, burrower);
                 burrower.TryGetComp<CompReplicatorAdaptation>()?.InheritFrom(source.TryGetComp<CompReplicatorAdaptation>());
+                burrower.TryGetComp<CompReplicatorMaterialProfile>()?.InheritFrom(source.TryGetComp<CompReplicatorMaterialProfile>());
 
                 if (!GenPlace.TryPlaceThing(
                         burrower,

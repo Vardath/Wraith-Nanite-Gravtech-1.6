@@ -197,6 +197,7 @@ namespace WraithNaniteGravtech
                 TemporaryAsuranIntrusionUtility.CopyState(source, controller);
                 ReplicatorSovereignControlUtility.CopyState(source, controller);
                 controller.TryGetComp<CompReplicatorAdaptation>()?.InheritFrom(source.TryGetComp<CompReplicatorAdaptation>());
+                controller.TryGetComp<CompReplicatorMaterialProfile>()?.InheritFrom(source.TryGetComp<CompReplicatorMaterialProfile>());
 
                 // Place the replacement first so failure cannot consume the source. The source then
                 // vanishes rather than dying, avoiding hierarchy split/leavings during conversion.
