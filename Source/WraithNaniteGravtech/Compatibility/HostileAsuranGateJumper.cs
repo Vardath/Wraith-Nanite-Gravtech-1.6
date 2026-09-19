@@ -135,7 +135,7 @@ namespace WraithNaniteGravtech
             {
                 foreach (Pawn pawn in crew)
                 {
-                    Pawn rematerialized;
+                    Thing rematerialized;
                     if (!transporter.innerContainer.TryDrop(
                             pawn,
                             parent.Position,
