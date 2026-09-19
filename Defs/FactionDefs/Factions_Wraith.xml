@@ -3,8 +3,8 @@
   <!--
     WNGv1 Wraith lineages are ordinary RimWorld factions. Their raids therefore do not
     require Stargates, ONAC or any custom corridor system. Strategic feeding hunger is
-    deliberately NOT implemented in these Defs; it will be faction-instance state layered
-    on top of these exact lineages later.
+    deliberately not encoded directly in these FactionDefs; the current faction-instance
+    hunger registry owns that state on top of these exact lineages.
   -->
 
   <FactionDef ParentName="FactionBase">
