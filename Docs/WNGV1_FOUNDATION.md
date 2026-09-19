@@ -26,4 +26,4 @@ The player Growth Chamber is now dedicated demographic infrastructure. It is cul
 
 A Growth Chamber fully installed on native grav substructure snapshots the accepted 0.70 Biomass / 0.65 duration efficiency factors when a cycle begins. Player gestation does not inherit NPC Mature-Hive founding-population caps and does not modify strategic faction hunger. Child's Toy remains native Biotech gestation.
 
-Commander is accepted as an ordinary Wraith caste but remains deliberately unimplemented in the player Growth Chamber until its corpse/live-prisoner template transaction and base Biomass/time are explicitly settled.
+Commander is an ordinary Wraith caste and is implemented in the player Growth Chamber. Commander gestation consumes an existing Wraith biological template (a Wraith corpse or living Wraith prisoner), costs 340 base Biomass, takes 300,000 base ticks before grav-substructure efficiency, and retains the chamber's normal Life Force donor requirement and paid-cycle save/retry safeguards.
