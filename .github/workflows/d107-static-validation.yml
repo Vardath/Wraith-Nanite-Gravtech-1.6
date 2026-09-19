@@ -975,6 +975,52 @@ jobs:
           if 'TryAffectGoodwillWith' in wraith_asuran:
               failures.append('Wraith anti-Asuran response forces diplomacy instead of respecting current faction hostility')
 
+          # Physical Wraith strategic support carriers: hidden NPC craft only, exact lineage
+          # crew, post-raid staging, rollback-safe deployment, then physical empty-carrier withdrawal.
+          wraith_carrier = Path('Source/WraithNaniteGravtech/Wraith/WraithStrategicCarrier.cs').read_text(encoding='utf-8')
+          wraith_carrier_defs = Path('Defs/ThingDefs/Shuttle_WraithStrategic_NPC.xml').read_text(encoding='utf-8')
+          wraith_retaliation = Path('Source/WraithNaniteGravtech/Wraith/WraithMatureHiveRetaliation.cs').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('NPC strike craft Def', wraith_carrier_defs, '<defName>WNG_WraithStrikeCraft_NPC</defName>'),
+              ('NPC cruiser Def', wraith_carrier_defs, '<defName>WNG_WraithCruiser_NPC</defName>'),
+              ('NPC strike ship contract', wraith_carrier_defs, '<defName>WNG_Ship_WraithStrikeCraftNPC</defName>'),
+              ('NPC cruiser ship contract', wraith_carrier_defs, '<defName>WNG_Ship_WraithCruiserNPC</defName>'),
+              ('NPC-only transport flag', wraith_carrier_defs, '<playerShuttle>false</playerShuttle>'),
+              ('hidden construction boundary', wraith_carrier_defs, '<neverBuildable>true</neverBuildable>'),
+              ('Wraith bio-fluid fuel', wraith_carrier_defs, '<li>WNG_WraithBiofluidFuel</li>'),
+              ('living-hull regeneration', wraith_carrier_defs, 'CompProperties_WraithCraftRegeneration'),
+              ('strategic mission comp', wraith_carrier_defs, 'CompProperties_WraithStrategicCarrierMission'),
+              ('exact transporter crew load', wraith_carrier, 'transporter.innerContainer.TryAdd'),
+              ('exact crew drop', wraith_carrier, 'transporter.innerContainer.TryDrop'),
+              ('all-or-none deployment rollback', wraith_carrier, 'dropped.AsEnumerable().Reverse()'),
+              ('native assault Lord', wraith_carrier, 'LordJob_AssaultColony'),
+              ('physical incoming skyfaller', wraith_carrier, 'SkyfallerMaker.SpawnSkyfaller'),
+              ('generic physical withdrawal helper', wraith_carrier, 'WNGWraithDartDeparture.TryDepartWithoutWorldObject'),
+              ('empty-holder withdrawal guard', wraith_carrier, 'transporter.innerContainer.OfType<Pawn>().Any'),
+              ('anti-Asuran 2200 cruiser threshold', wraith_asuran, 'cruiserThreshold: 2200f'),
+              ('retaliation 1800 cruiser threshold', wraith_retaliation, 'cruiserThreshold: 1800f'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Wraith strategic-carrier contract missing: {label}')
+          if wraith_carrier_defs.count('<playerShuttle>false</playerShuttle>') < 2:
+              failures.append('Wraith strategic carriers are not both NPC-only transport ships')
+          for forbidden in (
+              'WNG_WraithDart_NPC',
+              'CompProperties_WraithDartMission',
+              'CompProperties_WraithDartHackable',
+              'MapComponent_WraithDartCulling',
+          ):
+              if forbidden in wraith_carrier or forbidden in wraith_carrier_defs:
+                  failures.append(f'Wraith strategic carrier crossed into culling-Dart ownership: {forbidden}')
+          anti_raid_commit = wraith_asuran.find('IncidentDefOf.RaidEnemy.Worker.TryExecute')
+          anti_carrier_call = wraith_asuran.find('WraithStrategicCarrierUtility.TryStageSupportCarrier')
+          if anti_raid_commit < 0 or anti_carrier_call < anti_raid_commit:
+              failures.append('Wraith anti-Asuran carrier staging is no longer strictly post-raid commit')
+          retaliation_raid_commit = wraith_retaliation.find('IncidentDefOf.RaidEnemy.Worker.TryExecute(parms)')
+          retaliation_carrier_call = wraith_retaliation.find('WraithStrategicCarrierUtility.TryStageSupportCarrier')
+          if retaliation_raid_commit < 0 or retaliation_carrier_call < retaliation_raid_commit:
+              failures.append('Wraith Hive/sleeper carrier staging is no longer strictly post-raid commit')
+
           # Local Wraith Queen leadership/succession: true Queen -> one-day disruption ->
           # Keeper-preferred / Commander-fallback regency. No Queen ever established means no penalty.
           wraith_leadership = Path('Source/WraithNaniteGravtech/Wraith/WraithQueenLeadership.cs').read_text(encoding='utf-8')
