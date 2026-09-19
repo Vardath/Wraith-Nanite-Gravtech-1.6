@@ -27,11 +27,11 @@ namespace WraithNaniteGravtech
         protected override void RunInt()
         {
             string accepted = QuestGenUtility.HardcodedSignalWithQuestID("Accepted");
-            QuestGen.quest.AddPart(new QuestPart_AncientArchaeology { inSignal = accepted });
+            QuestGen.quest.AddPart(new QuestPart_AncientArchaeology { inSignal = accepted, inSignalEnable = accepted });
         }
     }
 
-    public sealed class QuestPart_AncientArchaeology : QuestPart
+    public sealed class QuestPart_AncientArchaeology : QuestPartActivable
     {
         public string inSignal;
         private Site site;
