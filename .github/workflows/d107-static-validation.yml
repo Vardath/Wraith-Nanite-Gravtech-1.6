@@ -1458,6 +1458,44 @@ jobs:
           if 'Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole' not in ancient_ruins or 'Things/Building/Precursor/Gravship/WNG_PrecursorShieldEmitter' not in ancient_ruins:
               failures.append('Ancient ruin evidence stopped using current provisional visuals pending the professional art pass')
 
+          # Public external compatibility API is a passive reflection-friendly identity surface.
+          external_api = Path('Source/WraithNaniteGravtech/Compatibility/WNGExternalCompatibilityApi.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('public API class', 'public static class WNGExternalCompatibilityApi'),
+              ('API version 2', 'public const int ApiVersion = 2'),
+              ('stable package ID', 'vardath.wraithnanitegravtech'),
+              ('WNG-owned Def predicate', 'IsWngOwnedDef'),
+              ('Wraith pawn predicate', 'IsWraithPawn'),
+              ('current Wraith-lineage authority', 'WraithLineageUtility.IsWraithLineage'),
+              ('Sable token', 'WraithLineageUtility.SableBroodDefName'),
+              ('Cinder token', 'WraithLineageUtility.CinderCourtDefName'),
+              ('Veiled token', 'WraithLineageUtility.VeiledHiveDefName'),
+              ('Pale Covenant token', 'WraithLineageUtility.PaleCovenantDefName'),
+              ('exact Queen predicate', 'ReplicatorQueenUtility.IsExactQueen'),
+              ('block Replicator predicate', 'ReplicatorAssimilationUtility.IsBlockReplicator'),
+              ('current nanite-synthetic authority', 'AsuranCollectiveUtility.IsNaniteSynthetic'),
+              ('human-form Replicator predicate', 'IsHumanFormReplicatorPawn'),
+              ('precursor synthetic predicate', 'IsPrecursorSyntheticPawn'),
+              ('faction identity tokens', 'GetFactionIdentityToken'),
+              ('pawn identity tokens', 'GetPawnIdentityToken'),
+          ):
+              if needle not in external_api:
+                  failures.append(f'External compatibility API contract missing: {label}')
+          for obsolete in ('WNG_WraithBrood', 'WNG_WraithExiles'):
+              if obsolete in external_api:
+                  failures.append(f'External compatibility API retained obsolete faction identity: {obsolete}')
+          for mutator in (
+              'SetFaction(',
+              'TryAffectGoodwillWith',
+              'AddHediff',
+              'GeneratePawn',
+              'ThingMaker.MakeThing',
+              'GenSpawn.Spawn',
+              'TryTakeOrderedJob',
+          ):
+              if mutator in external_api:
+                  failures.append(f'External compatibility API stopped being passive identity-only: {mutator}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
