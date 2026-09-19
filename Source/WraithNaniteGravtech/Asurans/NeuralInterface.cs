@@ -23,7 +23,7 @@ namespace WraithNaniteGravtech
     /// </summary>
     public sealed class CompAbilityEffect_NaniteInterface : CompAbilityEffect
     {
-        private static readonly string[] HumanFormNaniteGeneDefNames =
+        internal static readonly string[] HumanFormNaniteGeneDefNames =
         {
             "WNG_NaniteBody",
             "WNG_NaniteReserve",
@@ -434,7 +434,7 @@ namespace WraithNaniteGravtech
             if (copy?.genes == null)
                 return;
 
-            foreach (string defName in HumanFormNaniteGeneDefNames)
+            foreach (string defName in CompAbilityEffect_NaniteInterface.HumanFormNaniteGeneDefNames)
             {
                 GeneDef def = DefDatabase<GeneDef>.GetNamedSilentFail(defName);
                 if (def != null && !HasGene(copy, def))
