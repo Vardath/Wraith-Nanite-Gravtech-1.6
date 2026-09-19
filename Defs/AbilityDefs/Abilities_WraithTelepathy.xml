@@ -3,7 +3,7 @@
   <AbilityDef ParentName="PsycastBase">
     <defName>WNG_HiveSense</defName>
     <label>hive sense</label>
-    <description>Extend the Wraith's natural telepathic awareness across the local area, sensing other Wraith-linked minds without revealing their exact position. This is biological Hive perception expressed through Royalty's psychic machinery, not an implanted psylink.</description>
+    <description>Extend the Wraith's natural telepathic awareness across the local area, sensing other Wraith-linked minds without revealing their exact position. The same focused state briefly sharpens sight, hearing and conscious processing. This is biological Hive perception expressed through Royalty's psychic machinery, not an implanted psylink.</description>
     <level>0</level>
     <iconPath>UI/Abilities/Focus</iconPath>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
@@ -30,6 +30,7 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_AbilityHiveSense">
         <radius>40</radius>
+        <focusHediff>WNG_HiveSenseFocused</focusHediff>
       </li>
     </comps>
   </AbilityDef>
