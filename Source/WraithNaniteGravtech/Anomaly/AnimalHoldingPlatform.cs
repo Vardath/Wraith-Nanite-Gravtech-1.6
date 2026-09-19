@@ -92,13 +92,6 @@ namespace WraithNaniteGravtech.Anomaly
             if (field != null)
                 field.SetValue(study, value);
         }
-
-        private static void SetStudiableField(CompProperties_Studiable study, string fieldName, object value)
-        {
-            FieldInfo field = typeof(CompProperties_Studiable).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-            if (field != null)
-                field.SetValue(study, value);
-        }
     }
 
     /// <summary>
