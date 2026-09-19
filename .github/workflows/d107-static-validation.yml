@@ -1596,6 +1596,41 @@ jobs:
               if matter_recipe.findtext('./products/WNG_ReplicatorMatter') is not None or fragment_recipe.findtext('./products/WNG_ReplicatorCoreFragment') is not None:
                   failures.append('Replicator salvage disposal recreates hazardous source material')
 
+          # Retained Wraith emergency biomass recovery: a surviving player Growth Chamber may
+          # bootstrap a smaller biomass reserve after loss of the Living Forge. The fallback must
+          # remain less efficient/slower than ordinary Forge cultivation and must not create free biomass.
+          wraith_living_recipes = Path('Defs/RecipeDefs/Recipes_WraithLivingTechnology.xml').read_text(encoding='utf-8')
+          wraith_living_root = ET.fromstring(wraith_living_recipes)
+          wraith_recipe_defs = {n.findtext('defName'): n for n in list(wraith_living_root) if n.findtext('defName')}
+          emergency_biomass = wraith_recipe_defs.get('WNG_RecoverBiomass')
+          normal_biomass = wraith_recipe_defs.get('WNG_CultureBiomass')
+          if emergency_biomass is None:
+              failures.append('Wraith emergency biomass recovery recipe is missing')
+          else:
+              if [x.text for x in emergency_biomass.findall('./recipeUsers/li')] != ['WNG_WraithGrowthChamber']:
+                  failures.append('Emergency biomass recovery is no longer Growth-Chamber-only')
+              emergency_ingredients = emergency_biomass.findall('./ingredients/li')
+              if len(emergency_ingredients) != 1 or emergency_ingredients[0].findtext('count') != '20' or emergency_ingredients[0].findtext('./filter/categories/li') != 'MeatRaw':
+                  failures.append('Emergency biomass recovery raw-tissue input regressed')
+              if emergency_biomass.findtext('./products/WNG_Biomass') != '12':
+                  failures.append('Emergency biomass recovery yield regressed')
+              if emergency_biomass.findtext('workAmount') != '1500':
+                  failures.append('Emergency biomass recovery work penalty regressed')
+              if emergency_biomass.findtext('workSkill') != 'Intellectual':
+                  failures.append('Emergency biomass recovery no longer uses Intellectual work')
+          if normal_biomass is None:
+              failures.append('Ordinary Living Forge biomass cultivation disappeared')
+          else:
+              if [x.text for x in normal_biomass.findall('./recipeUsers/li')] != ['WNG_LivingForge']:
+                  failures.append('Ordinary biomass cultivation is no longer Living-Forge-owned')
+              if normal_biomass.findtext('./products/WNG_Biomass') != '16' or normal_biomass.findtext('workAmount') != '900':
+                  failures.append('Ordinary Living Forge biomass baseline changed unexpectedly')
+          if emergency_biomass is not None and normal_biomass is not None:
+              if int(emergency_biomass.findtext('./products/WNG_Biomass', '0')) >= int(normal_biomass.findtext('./products/WNG_Biomass', '0')):
+                  failures.append('Emergency Growth Chamber biomass recovery is no longer less efficient than the Living Forge')
+              if int(emergency_biomass.findtext('workAmount', '0')) <= int(normal_biomass.findtext('workAmount', '0')):
+                  failures.append('Emergency Growth Chamber biomass recovery is no longer slower than the Living Forge')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
