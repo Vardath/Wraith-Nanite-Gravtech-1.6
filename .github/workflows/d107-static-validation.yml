@@ -2165,6 +2165,57 @@ jobs:
           if 'WNG_PrecursorGravPowerCore' in all_asuran_repair_xml:
               failures.append('Asuran archive repair resurrected the obsolete PrecursorGravPowerCore identity')
 
+          # Retained deceptive Ancient survey-annex warning trap (#90 archaeology recovery):
+          # the annex must warn at a wider radius, preserve a minimum warning window, and only
+          # then wake a finite threat-scaled Asuran cadre on closer approach.
+          deceptive_annex_source = Path('Source/WraithNaniteGravtech/Ancient/AncientLegacySites.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('saved warning state', 'Scribe_Values.Look(ref warningIssued, "wngDeceptiveAncientWarningIssued", false)'),
+              ('saved warning tick', 'Scribe_Values.Look(ref warningTick, "wngDeceptiveAncientWarningTick", -1)'),
+              ('current reveal-timer save compatibility', 'Scribe_Values.Look(ref revealReadyTick, "wngSurveyAnnexRevealReadyTick", -1)'),
+              ('saved threat budget', 'Scribe_Values.Look(ref configuredThreatPoints, "wngDeceptiveAncientThreatPoints", 700f)'),
+              ('wider warning boundary', 'AnyFreeColonistWithin(Props.warningRadius)'),
+              ('minimum warning window', 'Math.Max(60, Props.minimumWarningTicks)'),
+              ('closer activation boundary', 'AnyFreeColonistWithin(Props.activationRadius)'),
+              ('site threat handoff', 'site.desiredThreatPoints'),
+              ('threat configuration', 'ConfigureThreat(threatPoints)'),
+              ('soldier threshold', 'configuredThreatPoints >= 900f'),
+              ('commander threshold', 'configuredThreatPoints >= 1650f'),
+              ('finite base cadre', 'new List<PawnKindDef> { baseKind, baseKind }'),
+              ('one-shot physical commit', 'revealed = true;'),
+              ('warning inspect state', 'Survey matrix: anomalous pattern harmonic detected'),
+          ):
+              if needle not in deceptive_annex_source:
+                  failures.append(f'Deceptive survey-annex contract missing: {label}')
+
+          deceptive_annex_defs = ET.fromstring(Path('Defs/ThingDefs/Things_AncientLegacy.xml').read_text(encoding='utf-8'))
+          deceptive_core = next((n for n in list(deceptive_annex_defs) if n.findtext('defName') == 'WNG_DeceptiveSurveyAnnexCore'), None)
+          if deceptive_core is None:
+              failures.append('Deceptive survey-annex core Def is missing')
+          else:
+              if deceptive_core.findtext('tickerType') != 'Normal':
+                  failures.append('Deceptive survey-annex core no longer checks its staged trigger on the retained cadence')
+              props = next((n for n in deceptive_core.findall('./comps/li') if n.get('Class') == 'WraithNaniteGravtech.CompProperties_DeceptiveSurveyAnnexCore'), None)
+              if props is None:
+                  failures.append('Deceptive survey-annex core lost its staged trap component')
+              else:
+                  expected = {
+                      'initialGraceTicks': '600',
+                      'warningRadius': '14',
+                      'activationRadius': '7',
+                      'minimumWarningTicks': '600',
+                      'checkIntervalTicks': '120',
+                  }
+                  for field, value in expected.items():
+                      if props.findtext(field) != value:
+                          failures.append(f'Deceptive survey-annex {field} regressed: {props.findtext(field)}')
+                  for obsolete in ('graceTicks', 'triggerRadius', 'minimumDefenders', 'maximumDefenders'):
+                      if props.find(obsolete) is not None:
+                          failures.append(f'Deceptive survey-annex retained obsolete one-stage field: {obsolete}')
+
+          if 'WNG_DeceptiveAncientSurveyMatrix' in deceptive_annex_source:
+              failures.append('Deceptive survey-annex restoration resurrected the obsolete historical Def identity')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [

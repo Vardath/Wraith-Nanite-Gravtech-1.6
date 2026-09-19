@@ -3,10 +3,10 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_DeceptiveSurveyAnnexCore</defName>
     <label>Ancient survey data core</label>
-    <description>A quiet precursor survey console recovered inside an apparently Ancient annex. Its surface shows no active warning state.</description>
+    <description>An apparently Ancient survey console concealing a deeper pattern layer. A wider approach can expose an anomalous harmonic before a closer approach, after a short warning window, awakens the finite hidden Asuran cadre.</description>
     <thingClass>Building</thingClass>
     <drawerType>MapMeshAndRealTime</drawerType>
-    <tickerType>Rare</tickerType>
+    <tickerType>Normal</tickerType>
     <graphicData>
       <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
@@ -24,10 +24,11 @@
     </statBases>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_DeceptiveSurveyAnnexCore">
-        <graceTicks>900</graceTicks>
-        <triggerRadius>12</triggerRadius>
-        <minimumDefenders>2</minimumDefenders>
-        <maximumDefenders>4</maximumDefenders>
+        <initialGraceTicks>600</initialGraceTicks>
+        <warningRadius>14</warningRadius>
+        <activationRadius>7</activationRadius>
+        <minimumWarningTicks>600</minimumWarningTicks>
+        <checkIntervalTicks>120</checkIntervalTicks>
       </li>
     </comps>
   </ThingDef>

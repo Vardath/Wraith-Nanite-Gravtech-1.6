@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
@@ -70,13 +71,20 @@ namespace WraithNaniteGravtech
             }
         }
 
-        public static void PlaceThing(Map map, string defName, IntVec3 preferred)
+        public static Thing PlaceThing(Map map, string defName, IntVec3 preferred)
         {
             ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
-            if (map == null || def == null) return;
+            if (map == null || def == null) return null;
+
             Thing thing = ThingMaker.MakeThing(def);
-            if (!GenPlace.TryPlaceThing(thing, preferred, map, ThingPlaceMode.Near) && !thing.Destroyed)
-                thing.Destroy(DestroyMode.Vanish);
+            if (!GenPlace.TryPlaceThing(thing, preferred, map, ThingPlaceMode.Near))
+            {
+                if (!thing.Destroyed)
+                    thing.Destroy(DestroyMode.Vanish);
+                return null;
+            }
+
+            return thing;
         }
 
         public static void PlaceStack(Map map, string defName, IntVec3 preferred, int count)
@@ -214,10 +222,11 @@ namespace WraithNaniteGravtech
 
     public sealed class CompProperties_DeceptiveSurveyAnnexCore : CompProperties
     {
-        public int graceTicks = 900;
-        public float triggerRadius = 12f;
-        public int minimumDefenders = 2;
-        public int maximumDefenders = 4;
+        public int initialGraceTicks = 600;
+        public float warningRadius = 14f;
+        public float activationRadius = 7f;
+        public int minimumWarningTicks = 600;
+        public int checkIntervalTicks = 120;
 
         public CompProperties_DeceptiveSurveyAnnexCore()
         {
@@ -225,80 +234,173 @@ namespace WraithNaniteGravtech
         }
     }
 
+    /// <summary>
+    /// Two-stage retained survey-annex trap. The apparently Ancient matrix first exposes an
+    /// anomalous pattern harmonic at a wider approach radius. Only after a minimum warning window
+    /// can a closer approach wake the finite hidden Asuran reconstruction cadre. Site threat points
+    /// choose the finite cadre composition; the trap remains one-shot and save-persistent.
+    /// </summary>
     public sealed class CompDeceptiveSurveyAnnexCore : ThingComp
     {
+        private bool warningIssued;
         private bool revealed;
-        private int revealReadyTick;
+        private int warningTick = -1;
+        private int revealReadyTick = -1;
+        private float configuredThreatPoints = 700f;
 
         private CompProperties_DeceptiveSurveyAnnexCore Props =>
             (CompProperties_DeceptiveSurveyAnnexCore)props;
 
+        public void ConfigureThreat(float threatPoints)
+        {
+            configuredThreatPoints = Math.Max(400f, threatPoints);
+        }
+
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
-            if (!respawningAfterLoad && revealReadyTick <= 0)
-                revealReadyTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, Props.graceTicks);
+            if (!respawningAfterLoad && revealReadyTick < 0)
+                revealReadyTick = SafeFutureTick(Find.TickManager?.TicksGame ?? 0, Props.initialGraceTicks);
         }
 
-        public override void CompTickRare()
+        public override void CompTick()
         {
-            base.CompTickRare();
-            if (revealed || parent?.Spawned != true || parent.Map == null)
+            base.CompTick();
+            if (revealed || parent?.Spawned != true || parent.Map == null || Find.TickManager == null)
                 return;
 
-            int now = Find.TickManager?.TicksGame ?? 0;
-            if (revealReadyTick <= 0)
-                revealReadyTick = SafeFutureTick(now, Props.graceTicks);
+            int interval = Math.Max(30, Props.checkIntervalTicks);
+            if (!parent.IsHashIntervalTick(interval))
+                return;
+
+            int now = Find.TickManager.TicksGame;
+            if (revealReadyTick < 0)
+                revealReadyTick = SafeFutureTick(now, Props.initialGraceTicks);
             if (now < revealReadyTick)
                 return;
 
-            float radius = Math.Max(0f, Props.triggerRadius);
-            float radiusSq = radius * radius;
-            bool approached = parent.Map.mapPawns.FreeColonistsSpawned
-                .Any(p => p != null && !p.Dead && p.Position.DistanceToSquared(parent.Position) <= radiusSq);
-            if (!approached)
+            if (!warningIssued)
+            {
+                if (AnyFreeColonistWithin(Props.warningRadius))
+                    IssueWarning(now);
+                return;
+            }
+
+            int minimumWarning = Math.Max(60, Props.minimumWarningTicks);
+            if (now < SafeFutureTick(warningTick, minimumWarning))
                 return;
 
-            // Commit the one-shot reveal before spawning defenders so save/reload or
-            // presentation failure cannot duplicate the hidden cadre.
-            revealed = true;
-            RevealLattice();
+            if (AnyFreeColonistWithin(Props.activationRadius))
+                RevealLattice();
+        }
+
+        private bool AnyFreeColonistWithin(float radius)
+        {
+            if (parent?.Map == null)
+                return false;
+
+            float radiusSq = Math.Max(0f, radius) * Math.Max(0f, radius);
+            return parent.Map.mapPawns.FreeColonistsSpawned.Any(
+                p => p != null && !p.Dead && p.Position.DistanceToSquared(parent.Position) <= radiusSq);
+        }
+
+        private void IssueWarning(int now)
+        {
+            if (warningIssued || revealed)
+                return;
+
+            // Commit warning state before presentation so a UI/fleck failure cannot repeatedly
+            // retrigger the wider warning boundary.
+            warningIssued = true;
+            warningTick = Math.Max(0, now);
+
+            try
+            {
+                Find.LetterStack.ReceiveLetter(
+                    "Anomalous precursor signal",
+                    "The central survey matrix is not behaving like the surrounding Ancient hardware. A faint pattern harmonic has appeared beneath the expected control geometry. It has not reconstructed anything. Destroy the matrix or withdraw from the inner chamber if you do not want to find out what is hidden beneath the precursor shell.",
+                    LetterDefOf.NeutralEvent,
+                    parent);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Deceptive survey-annex warning committed but presentation failed: " + ex.Message);
+            }
         }
 
         private void RevealLattice()
         {
-            Map map = parent.Map;
-            if (map == null) return;
+            if (revealed || parent?.Map == null)
+                return;
 
+            Map map = parent.Map;
             FactionDef factionDef = DefDatabase<FactionDef>.GetNamedSilentFail("WNG_PrecursorCollective");
             Faction faction = factionDef == null ? null : Find.FactionManager?.FirstFactionOfDef(factionDef);
             PawnKindDef baseKind = DefDatabase<PawnKindDef>.GetNamedSilentFail("WNG_HumanFormReplicator");
             PawnKindDef soldier = DefDatabase<PawnKindDef>.GetNamedSilentFail("WNG_PrecursorSoldier");
+            PawnKindDef commander = DefDatabase<PawnKindDef>.GetNamedSilentFail("WNG_PrecursorCommander");
             if (faction == null || baseKind == null)
             {
-                Log.Warning("[WNG] Deceptive survey annex revealed but its hostile Lattice faction/pawn kind was unavailable.");
+                Log.Warning("[WNG] Deceptive survey annex armed but its hostile Lattice faction/pawn kind was unavailable.");
                 return;
             }
 
-            int min = Math.Max(1, Props.minimumDefenders);
-            int max = Math.Max(min, Props.maximumDefenders);
-            int count = Rand.RangeInclusive(min, max);
-            Lord lord = LordMaker.MakeNewLord(faction, new LordJob_DefendBase(faction, parent.Position, 60000), map);
+            List<PawnKindDef> kinds = new List<PawnKindDef> { baseKind, baseKind };
+            if (configuredThreatPoints >= 900f && soldier != null)
+                kinds.Add(soldier);
+            if (configuredThreatPoints >= 1650f && commander != null)
+                kinds.Add(commander);
 
-            for (int i = 0; i < count; i++)
+            Lord lord = LordMaker.MakeNewLord(faction, new LordJob_DefendBase(faction, parent.Position, 60000), map);
+            List<Pawn> spawned = new List<Pawn>(kinds.Count);
+
+            try
             {
-                PawnKindDef kind = soldier != null && i == count - 1 && count >= 3 ? soldier : baseKind;
-                Pawn pawn = PawnGenerator.GeneratePawn(kind, faction);
-                IntVec3 cell = CellFinder.RandomClosewalkCellNear(parent.Position, map, 9);
-                GenSpawn.Spawn(pawn, cell, map);
-                lord.AddPawn(pawn);
+                foreach (PawnKindDef kind in kinds)
+                {
+                    Pawn pawn = PawnGenerator.GeneratePawn(kind, faction);
+                    IntVec3 cell = CellFinder.RandomClosewalkCellNear(parent.Position, map, 7);
+                    GenSpawn.Spawn(pawn, cell, map);
+                    lord.AddPawn(pawn);
+                    spawned.Add(pawn);
+                }
+
+                // Physical cadre exists before the one-shot state commits.
+                revealed = true;
+            }
+            catch (Exception ex)
+            {
+                foreach (Pawn pawn in spawned)
+                {
+                    if (pawn != null && !pawn.Destroyed)
+                        pawn.Destroy(DestroyMode.Vanish);
+                }
+
+                Log.Error("[WNG] Deceptive survey-annex reveal rolled back before commit: " + ex);
+                return;
             }
 
-            Find.LetterStack.ReceiveLetter(
-                "Survey annex revealed",
-                "The apparently Ancient survey core has unfolded into an Asuran lattice node. Concealed pattern hardware has awakened a finite defensive cadre: the annex was a Lattice trap, not an intact Ancient outpost.",
-                LetterDefOf.ThreatSmall,
-                parent);
+            try
+            {
+                Find.LetterStack.ReceiveLetter(
+                    "Ancient ruin revealed as Asuran trap",
+                    "The hidden pattern layer has opened. The apparent precursor survey matrix was an Asuran reconstruction trap masked beneath Ancient-style control geometry. A finite defensive cadre has rebuilt around the matrix. The ruin still contains no usable Pattern Archive or functioning reconstruction network.",
+                    LetterDefOf.ThreatBig,
+                    parent);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Deceptive survey-annex reveal committed but presentation failed: " + ex.Message);
+            }
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            if (revealed)
+                return "Survey matrix: hidden Asuran layer exhausted";
+            if (warningIssued)
+                return "Survey matrix: anomalous pattern harmonic detected";
+            return "Survey matrix: precursor signature nominal";
         }
 
         private static int SafeFutureTick(int now, int delay)
@@ -310,10 +412,18 @@ namespace WraithNaniteGravtech
         public override void PostExposeData()
         {
             base.PostExposeData();
+            Scribe_Values.Look(ref warningIssued, "wngDeceptiveAncientWarningIssued", false);
             Scribe_Values.Look(ref revealed, "wngSurveyAnnexRevealed", false);
-            Scribe_Values.Look(ref revealReadyTick, "wngSurveyAnnexRevealReadyTick", 0);
+            Scribe_Values.Look(ref warningTick, "wngDeceptiveAncientWarningTick", -1);
+            Scribe_Values.Look(ref revealReadyTick, "wngSurveyAnnexRevealReadyTick", -1);
+            Scribe_Values.Look(ref configuredThreatPoints, "wngDeceptiveAncientThreatPoints", 700f);
+
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
-                revealReadyTick = Math.Max(0, revealReadyTick);
+            {
+                warningTick = Math.Max(-1, warningTick);
+                revealReadyTick = Math.Max(-1, revealReadyTick);
+                configuredThreatPoints = Math.Max(400f, configuredThreatPoints);
+            }
         }
     }
 
@@ -325,7 +435,12 @@ namespace WraithNaniteGravtech
             if (map == null) return;
 
             AncientLegacySiteUtility.BuildRoom(map, map.Center, 6, 4);
-            AncientLegacySiteUtility.PlaceThing(map, "WNG_DeceptiveSurveyAnnexCore", map.Center);
+            Thing core = AncientLegacySiteUtility.PlaceThing(map, "WNG_DeceptiveSurveyAnnexCore", map.Center);
+            float threatPoints = 700f;
+            if (map.Parent is Site site)
+                threatPoints = Math.Max(threatPoints, site.desiredThreatPoints);
+            core?.TryGetComp<CompDeceptiveSurveyAnnexCore>()?.ConfigureThreat(threatPoints);
+
             AncientLegacySiteUtility.PlaceThing(map, "WNG_PrecursorTableSmall", map.Center + new IntVec3(0, 0, 2));
             AncientLegacySiteUtility.PlaceThing(map, "WNG_PrecursorFormChair", map.Center + new IntVec3(-2, 0, 2));
             AncientLegacySiteUtility.PlaceThing(map, "WNG_PrecursorFormChair", map.Center + new IntVec3(2, 0, 2));
