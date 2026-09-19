@@ -2378,6 +2378,28 @@ jobs:
           if 'GeneratePawn' in gate_strike:
               failures.append('Asuran gate-strike lifecycle creates replacement pawns instead of preserving exact deployed crew')
 
+          # WNG family gravship hulls must recover Odyssey-style angled/corner topology.
+          family_hull_layer = Path('Source/WraithNaniteGravtech/Gravships/SectionLayer_WNGFamilyGravshipHull.cs').read_text(encoding='utf-8')
+          family_hull_defs = Path('Defs/Gravships/Gravship_FamilySystems.xml').read_text(encoding='utf-8')
+          goauld_hull_defs = Path('Defs/Gravships/Gravship_Goauld.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('family section layer', family_hull_layer, 'SectionLayer_WNGFamilyGravshipHull : SectionLayer'),
+              ('Wraith hull recognition', family_hull_layer, 'WNG_OrganicGravshipHull'),
+              ('Asuran hull recognition', family_hull_layer, 'WNG_PrecursorGravshipHull'),
+              ('Goauld hull recognition', family_hull_layer, 'WNG_GoauldGravshipHull'),
+              ('native full corner mask', family_hull_layer, 'AngledGravshipHull_northwest'),
+              ('native partial diagonal mask', family_hull_layer, 'AngledGravshipHull_Partial_northwest'),
+              ('gravship mask parity', family_hull_layer, 'ShaderDatabase.GravshipMaskMasked'),
+              ('indoor mask parity', family_hull_layer, 'ShaderDatabase.IndoorMaskMasked'),
+              ('Wraith linked straight hull', family_hull_defs, '<defName>WNG_OrganicGravshipHull</defName>'),
+              ('Asuran linked straight hull', family_hull_defs, '<defName>WNG_PrecursorGravshipHull</defName>'),
+              ('Goauld hull Def', goauld_hull_defs, '<defName>WNG_GoauldGravshipHull</defName>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'WNG family gravship hull topology contract missing: {label}')
+          if 'Harmony' in family_hull_layer or 'ThingDefOf.GravshipHull' in family_hull_layer:
+              failures.append('WNG family hull topology must remain a separate family-aware layer, not a native hull patch/hard-code')
+
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:
