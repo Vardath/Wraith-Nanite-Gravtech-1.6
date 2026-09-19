@@ -154,13 +154,14 @@
   <ThingDef ParentName="BedWithQualityBase">
     <defName>WNG_WraithFeedingNiche</defName>
     <label>wraith feeding niche</label>
-    <description>A living restraint and suspension cradle for exact biological captives retained as local Wraith feeding stock. The mature Hive does not fabricate replacement captives when this finite stock is exhausted or rescued.</description>
+    <description>A living restraint and suspension cradle for one exact biological captive retained as local Wraith feeding stock. Hostile Mature Hives use it through their Hive Heart ecology and never replenish finite captives for free. A player-owned niche can also enable Keeper-ration feeding: a same-faction Keeper or Queen supervises bounded nonlethal feeding only when player Wraith actually need Life Force.</description>
     <graphicData>
       <texPath>Things/Building/Wraith/Storage/WNG_NutrientNiche</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <drawSize>(2,2)</drawSize>
     </graphicData>
     <size>(1,2)</size>
+    <tickerType>Normal</tickerType>
     <designationCategory>Furniture</designationCategory>
     <researchPrerequisites><li>WNG_FeedingEcology</li></researchPrerequisites>
     <costList><WNG_Biomass>30</WNG_Biomass></costList>
@@ -178,6 +179,16 @@
       <destroySound>BuildingDestroyed_Soft_Medium</destroySound>
     </building>
     <leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_PlayerWraithFeedingNiche">
+        <checkIntervalTicks>250</checkIntervalTicks>
+        <cycleTicks>120000</cycleTicks>
+        <victimAgeYears>2</victimAgeYears>
+        <lifeForceGainPerWraith>0.12</lifeForceGainPerWraith>
+        <feedOnlyBelowLifeForce>0.85</feedOnlyBelowLifeForce>
+        <maxWraithsFed>3</maxWraithsFed>
+      </li>
+    </comps>
   </ThingDef>
 
   <ThingDef ParentName="BuildingBase">
