@@ -57,7 +57,6 @@
       <layers><li>Shell</li></layers>
       <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</wornGraphicPath>
       <tags><li>WNG_HumanFormClothing</li></tags>
-      <defaultOutfitTags><li>Worker</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
     <recipeMaker>
       <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
