@@ -3,24 +3,27 @@
   <ThingDef ParentName="Wall">
     <defName>WNG_WraithLivingWall</defName>
     <label>wraith living wall</label>
-    <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms and supports roofs like an ordinary wall.</description>
+    <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms, supports roofs like an ordinary wall, and slowly regenerates damage while alive.</description>
     <graphicData><texPath>Things/Building/Wraith/Structure/WNG_LivingWall</texPath><graphicClass>Graphic_Appearances</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><WNG_Biomass>5</WNG_Biomass></costList>
     <statBases><MaxHitPoints>420</MaxHitPoints><WorkToBuild>180</WorkToBuild><Flammability>0.25</Flammability><Beauty>2</Beauty></statBases>
     <designationCategory>Structure</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
+    <tickerType>Rare</tickerType>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingStructureRegeneration"><repairIntervalTicks>500</repairIntervalTicks><hitPointsPerPulse>1</hitPointsPerPulse></li></comps>
     <building><paintable>false</paintable></building>
   </ThingDef>
 
   <ThingDef ParentName="DoorBase">
     <defName>WNG_WraithMembraneDoor</defName>
     <label>wraith membrane door</label>
-    <description>A muscular living partition that contracts aside for authorised passage and seals itself afterwards.</description>
+    <description>A muscular living partition that contracts aside for authorised passage, seals itself afterwards, and slowly regenerates damage while alive.</description>
     <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData></graphicData>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><WNG_Biomass>18</WNG_Biomass></costList>
     <statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.25</Flammability></statBases>
     <designationCategory>Structure</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
+    <comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingStructureRegeneration"><repairIntervalTicks>500</repairIntervalTicks><hitPointsPerPulse>1</hitPointsPerPulse></li></comps>
     <building><paintable>false</paintable></building>
   </ThingDef>
 
