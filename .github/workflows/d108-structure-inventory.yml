@@ -7,6 +7,8 @@ on:
       - '**/*.xml'
       - '**/*.cs'
       - '.github/workflows/d108-structure-inventory.yml'
+      - '.github/workflows/d107-static-validation.yml'
+      - '.github/workflows/d107-release-gap.yml'
   workflow_dispatch:
 
 permissions:
