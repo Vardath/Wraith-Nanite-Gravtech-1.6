@@ -2216,6 +2216,57 @@ jobs:
           if 'WNG_DeceptiveAncientSurveyMatrix' in deceptive_annex_source:
               failures.append('Deceptive survey-annex restoration resurrected the obsolete historical Def identity')
 
+          # Retained implant-regeneration continuity: Regenerative Vesicle and Reconstruction
+          # Microforge heal only existing non-permanent injuries. Vesicle retains its recovered
+          # 2400-tick / 0.55 pulse without nanite-EMP pause; Microforge keeps the newer D108
+          # 2500-tick / 0.75 retune but human-form nanite EMP disruption suspends its pulse.
+          implant_regen_source = Path('Source/WraithNaniteGravtech/Implants/WNGImplantSystems.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('shared repairable-injury selector', 'WorstRepairableInjury(Pawn pawn)'),
+              ('permanent-injury exclusion', '!x.IsPermanent()'),
+              ('Vesicle regeneration comp properties', 'HediffCompProperties_ImplantRegeneration'),
+              ('Vesicle regeneration comp', 'HediffComp_ImplantRegeneration'),
+              ('configurable EMP pause', 'pauseDuringNaniteEMP'),
+              ('nanite EMP state check', 'WNG_NaniteEMPDisruption'),
+              ('Microforge D108 interval', 'RepairIntervalTicks = 2500'),
+              ('Microforge D108 heal amount', 'HealPerPulse = 0.75f'),
+          ):
+              if needle not in implant_regen_source:
+                  failures.append(f'Implant regeneration contract missing: {label}')
+          for forbidden in ('RestorePart(', 'Resurrect(', 'ResurrectionUtility'):
+              if forbidden in implant_regen_source:
+                  failures.append(f'Implant regeneration exceeded retained injury-only boundary: {forbidden}')
+
+          implant_defs_root = ET.fromstring(Path('Defs/HediffDefs/Hediffs_ImplantsCore.xml').read_text(encoding='utf-8'))
+          implant_defs = {n.findtext('defName'): n for n in list(implant_defs_root) if n.findtext('defName')}
+          vesicle = implant_defs.get('WNG_RegenerativeVesicle')
+          if vesicle is None:
+              failures.append('Regenerative Vesicle Hediff is missing')
+          else:
+              if vesicle.findtext('./stages/li/naturalHealingFactor') != '1.45':
+                  failures.append('Regenerative Vesicle lost the newer native healing-factor layer')
+              if vesicle.findtext('./stages/li/totalBleedFactor') != '0.75':
+                  failures.append('Regenerative Vesicle lost the newer bleed-control layer')
+              regen = next((n for n in vesicle.findall('./comps/li') if n.get('Class') == 'WraithNaniteGravtech.HediffCompProperties_ImplantRegeneration'), None)
+              if regen is None:
+                  failures.append('Regenerative Vesicle lost its retained active injury-repair pulse')
+              else:
+                  if regen.findtext('intervalTicks') != '2400':
+                      failures.append('Regenerative Vesicle active repair interval regressed')
+                  if regen.findtext('healAmount') != '0.55':
+                      failures.append('Regenerative Vesicle active repair amount regressed')
+                  if regen.findtext('pauseDuringNaniteEMP') != 'false':
+                      failures.append('Regenerative Vesicle incorrectly became dependent on nanite EMP state')
+
+          microforge = implant_defs.get('WNG_ReconstructionMicroforge')
+          if microforge is None or microforge.findtext('hediffClass') != 'WraithNaniteGravtech.Hediff_ReconstructionMicroforge':
+              failures.append('Reconstruction Microforge lost its current D108 repair owner')
+          microforge_block = implant_regen_source.split('public sealed class Hediff_ReconstructionMicroforge', 1)[1] if 'public sealed class Hediff_ReconstructionMicroforge' in implant_regen_source else ''
+          if 'WNGImplantRegenerationUtility.HasNaniteEmpDisruption(pawn)' not in microforge_block:
+              failures.append('Reconstruction Microforge no longer pauses under human-form nanite EMP disruption')
+          if 'WorstRepairableInjury(pawn)?.Heal(HealPerPulse)' not in microforge_block:
+              failures.append('Reconstruction Microforge no longer uses the bounded shared injury-repair path')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
