@@ -154,6 +154,23 @@ namespace WraithNaniteGravtech
 
                 if (IncidentDefOf.RaidEnemy.Worker.TryExecute(parms))
                 {
+                    // The native raid is already committed. Carrier staging is bounded physical
+                    // support only and must never turn a successful retaliation into a retry.
+                    try
+                    {
+                        WraithStrategicCarrierUtility.TryStageSupportCarrier(
+                            home,
+                            faction,
+                            points,
+                            cruiserThreshold: 1800f);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning(
+                            "[WNG] Wraith retaliation raid committed but strategic carrier staging failed: " +
+                            ex.Message);
+                    }
+
                     if (state.responseKind == ResponseKindSleeperLeak)
                         BestEffortSleeperBreachLetter(home, faction);
                     pending.RemoveAt(i);
