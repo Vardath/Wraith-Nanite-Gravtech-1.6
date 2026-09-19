@@ -144,7 +144,7 @@ namespace WraithNaniteGravtech
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
             base.Apply(target, dest);
-            Pawn victim = target.Pawn;
+            Pawn victim = target.Thing as Pawn;
             if (!ValidBiologicalTarget(victim))
                 return;
 
