@@ -17,7 +17,7 @@ namespace WraithNaniteGravtech
             if (part == null)
                 return false;
             if (Find.QuestManager?.QuestsListForReading != null &&
-                Find.QuestManager.QuestsListForReading.Any(q => q != null && q.State != QuestState.Ended &&
+                Find.QuestManager.QuestsListForReading.Any(q => q != null && (q.State == QuestState.Ongoing || q.State == QuestState.NotYetAccepted) &&
                     q.PartsListForReading.OfType<QuestPart_AncientArchaeology>().Any()))
                 return false;
             return !Find.WorldObjects.AllWorldObjects.OfType<Site>()
