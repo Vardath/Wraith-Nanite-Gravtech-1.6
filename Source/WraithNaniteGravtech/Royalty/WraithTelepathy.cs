@@ -9,6 +9,7 @@ namespace WraithNaniteGravtech
     public sealed class CompProperties_AbilityHiveSense : CompProperties_AbilityEffect
     {
         public float radius = 40f;
+        public HediffDef focusHediff;
 
         public CompProperties_AbilityHiveSense()
         {
@@ -46,6 +47,17 @@ namespace WraithNaniteGravtech
             Map map = caster?.Map;
             if (caster == null || map == null)
                 return;
+
+            // Restore the historical focus state without removing the newer local-mind scan.
+            // Refresh rather than stack so repeated casts extend one bounded 15,000-tick effect.
+            HediffDef focus = Props.focusHediff;
+            if (focus != null && caster.health?.hediffSet != null)
+            {
+                Hediff existingFocus = caster.health.hediffSet.GetFirstHediffOfDef(focus);
+                if (existingFocus != null)
+                    caster.health.RemoveHediff(existingFocus);
+                caster.health.AddHediff(focus);
+            }
 
             float radiusSquared = Props.radius * Props.radius;
             var sensed = map.mapPawns.AllPawnsSpawned
