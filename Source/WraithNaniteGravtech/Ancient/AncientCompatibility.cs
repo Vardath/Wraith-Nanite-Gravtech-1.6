@@ -9,6 +9,7 @@ namespace WraithNaniteGravtech
     {
         public const string NaturalAffinityGeneDefName = "WNG_AncientAffinity";
         public const string ArtificialInterfaceHediffDefName = "WNG_AncientNeuralInterface";
+        public const float ArtificialInterfaceTakeChance = 0.15f;
 
         public static bool IsCompatible(Pawn pawn)
         {
@@ -20,6 +21,9 @@ namespace WraithNaniteGravtech
         }
 
         public static bool HasNaturalAffinity(Pawn pawn) => HasActiveGene(pawn, NaturalAffinityGeneDefName);
+
+        public static bool HasArtificialInterface(Pawn pawn) =>
+            HasHediff(pawn, ArtificialInterfaceHediffDefName);
 
         public static bool IsEligibleForNaturalAffinity(Pawn pawn)
         {
@@ -39,6 +43,98 @@ namespace WraithNaniteGravtech
         {
             HediffDef def = DefDatabase<HediffDef>.GetNamedSilentFail(defName);
             return def != null && pawn?.health?.hediffSet?.HasHediff(def) == true;
+        }
+    }
+
+    /// <summary>
+    /// Artificial ATA compatibility is not an 85% dangerous surgery failure.
+    /// The operation itself completes cleanly; afterwards the neural handshake either seats
+    /// successfully (15%) or the interface fails to integrate (85%) without injuring the pawn.
+    /// The consumed interface/medicine represent a completed integration attempt.
+    /// </summary>
+    public sealed class Recipe_InstallAncientNeuralInterface : Recipe_Surgery
+    {
+        public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
+        {
+            Pawn pawn = thing as Pawn;
+            return pawn != null &&
+                   !pawn.Dead &&
+                   !AncientCompatibilityUtility.IsCompatible(pawn) &&
+                   base.AvailableOnNow(thing, part);
+        }
+
+        public override AcceptanceReport AvailableReport(Thing thing, BodyPartRecord part = null)
+        {
+            Pawn pawn = thing as Pawn;
+            if (pawn == null || pawn.Dead)
+                return "Requires a living humanlike patient.";
+            if (AncientCompatibilityUtility.HasNaturalAffinity(pawn))
+                return pawn.LabelShortCap + " already carries the Ancient technology activation gene.";
+            if (AncientCompatibilityUtility.HasArtificialInterface(pawn))
+                return pawn.LabelShortCap + " already has an accepted Ancient neural interface.";
+            if (AsuranCollectiveUtility.IsNaniteSynthetic(pawn))
+                return pawn.LabelShortCap + " already presents a compatible synthetic Ancient-control handshake.";
+            return base.AvailableReport(thing, part);
+        }
+
+        public override void ApplyOnPawn(
+            Pawn pawn,
+            BodyPartRecord part,
+            Pawn billDoer,
+            List<Thing> ingredients,
+            Bill bill)
+        {
+            if (pawn == null ||
+                pawn.Dead ||
+                pawn.health?.hediffSet == null ||
+                AncientCompatibilityUtility.IsCompatible(pawn))
+                return;
+
+            HediffDef interfaceDef =
+                DefDatabase<HediffDef>.GetNamedSilentFail(
+                    AncientCompatibilityUtility.ArtificialInterfaceHediffDefName);
+            if (interfaceDef == null)
+            {
+                Log.Error("[WNG] Ancient neural-interface surgery completed but its HediffDef could not be resolved; no compatibility state was changed.");
+                return;
+            }
+
+            // Deliberately do NOT call CheckSurgeryFail here. The retained 85% figure describes
+            // post-operation interface rejection, not a botched operation or injury roll.
+            if (billDoer != null)
+                TaleRecorder.RecordTale(TaleDefOf.DidSurgery, billDoer, pawn);
+
+            if (!Rand.Chance(AncientCompatibilityUtility.ArtificialInterfaceTakeChance))
+            {
+                if (pawn.Faction == Faction.OfPlayer)
+                {
+                    Messages.Message(
+                        pawn.LabelShortCap +
+                        "'s Ancient control-interface procedure completed cleanly, but the neural handshake did not take. No interface was retained.",
+                        pawn,
+                        MessageTypeDefOf.NeutralEvent,
+                        historical: false);
+                }
+                return;
+            }
+
+            pawn.health.AddHediff(interfaceDef, part);
+
+            if (!AncientCompatibilityUtility.HasArtificialInterface(pawn))
+            {
+                Log.Error("[WNG] Ancient neural-interface surgery selected a successful take but the interface Hediff did not persist.");
+                return;
+            }
+
+            if (pawn.Faction == Faction.OfPlayer)
+            {
+                Messages.Message(
+                    pawn.LabelShortCap +
+                    "'s Ancient control interface accepted the neural handshake. Ancient/ATA-gated systems can now recognize this pawn.",
+                    pawn,
+                    MessageTypeDefOf.PositiveEvent,
+                    historical: false);
+            }
         }
     }
 
