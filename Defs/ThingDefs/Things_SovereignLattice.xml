@@ -45,6 +45,7 @@
       <drawSize>(3,2)</drawSize>
     </graphicData>
     <size>(3,2)</size>
+    <tickerType>Normal</tickerType>
     <designationCategory>Production</designationCategory>
     <hasInteractionCell>true</hasInteractionCell>
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
@@ -60,6 +61,9 @@
     </costList>
     <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
     <inspectorTabs><li>ITab_Bills</li></inspectorTabs>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>900</repairIntervalTicks><healPerPulse>3</healPerPulse><archiveRadius>45</archiveRadius></li>
+    </comps>
     <building><spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity></building>
   </ThingDef>
 </Defs>
