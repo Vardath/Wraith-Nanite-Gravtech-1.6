@@ -2267,6 +2267,78 @@ jobs:
           if 'WorstRepairableInjury(pawn)?.Heal(HealPerPulse)' not in microforge_block:
               failures.append('Reconstruction Microforge no longer uses the bounded shared injury-repair path')
 
+          # Historical dormant Child's Toy artifact: rare physical acquisition must unfold into
+          # the current dedicated Toy, not the obsolete ordinary Drone product. The artifact owns
+          # only one-shot activation; native Mechanitor control and the existing Toy feral timer remain separate.
+          dormant_toy_source = Path('Source/WraithNaniteGravtech/Replicators/DormantChildsToyArtifact.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('artifact activation comp', 'CompDormantChildsToyArtifact'),
+              ('save-persistent one-shot latch', 'Scribe_Values.Look(ref activationCommitted, "wngDormantChildsToyActivationCommitted", false)'),
+              ('current Toy definition guard', 'toyKind.defName != "WNG_ChildsToy"'),
+              ('player-faction Toy generation', 'PawnGenerator.GeneratePawn(toyKind, Faction.OfPlayer)'),
+              ('physical placement before source cleanup', 'GenPlace.TryPlaceThing(toy, origin, map, ThingPlaceMode.Near)'),
+              ('activation commit latch', 'activationCommitted = true;'),
+              ('spent casing cleanup', 'parent.Destroy(DestroyMode.Vanish);'),
+              ('rare artifact stock generator', 'StockGenerator_WNGRareChildsToyArtifact'),
+              ('single-item trader stock', 'item.stackCount = 1;'),
+          ):
+              if needle not in dormant_toy_source:
+                  failures.append(f'Dormant Child\'s Toy artifact contract missing: {label}')
+
+          placement_i = dormant_toy_source.find('GenPlace.TryPlaceThing(toy, origin, map, ThingPlaceMode.Near)')
+          latch_i = dormant_toy_source.find('activationCommitted = true;', placement_i + 1)
+          cleanup_i = dormant_toy_source.find('parent.Destroy(DestroyMode.Vanish);', latch_i + 1)
+          if not (placement_i >= 0 and latch_i > placement_i and cleanup_i > latch_i):
+              failures.append('Dormant Child\'s Toy activation transaction no longer commits placement -> latch -> casing cleanup in order')
+          for forbidden in (
+              'PawnRelationDefOf.Overseer',
+              'AssignPawnControlGroup',
+              'WNG_ReplicatorDrone"',
+          ):
+              if forbidden in dormant_toy_source:
+                  failures.append(f'Dormant Child\'s Toy artifact bypasses current Toy/Mechanitor semantics: {forbidden}')
+
+          dormant_toy_defs = Path('Defs/ThingDefs/Things_DormantChildsToy.xml').read_text(encoding='utf-8')
+          dormant_toy_root = ET.fromstring(dormant_toy_defs)
+          dormant_toy = next((n for n in list(dormant_toy_root) if n.findtext('defName') == 'WNG_DormantChildsToy'), None)
+          if dormant_toy is None:
+              failures.append('Dormant Child\'s Toy ThingDef is missing')
+          else:
+              if dormant_toy.findtext('./comps/li/pawnKindDef') != 'WNG_ChildsToy':
+                  failures.append('Dormant Child\'s Toy no longer activates into the current dedicated Toy')
+              if dormant_toy.findtext('tradeability') != 'All':
+                  failures.append('Dormant Child\'s Toy is no longer trader-sellable')
+              if dormant_toy.findtext('stackLimit') != '1':
+                  failures.append('Dormant Child\'s Toy is no longer a singular artifact')
+              if dormant_toy.findtext('./statBases/MarketValue') != '950':
+                  failures.append('Dormant Child\'s Toy historical provisional market value regressed')
+              comp = dormant_toy.find('./comps/li')
+              if comp is None or comp.get('Class') != 'WraithNaniteGravtech.CompProperties_DormantChildsToyArtifact':
+                  failures.append('Dormant Child\'s Toy lost its current activation component')
+
+          dormant_toy_patch = Path('Patches/WNG_RareChildsToyTraders.xml').read_text(encoding='utf-8')
+          for label, needle in (
+              ('Exotic orbital route', 'defName="Orbital_Exotic"'),
+              ('Exotic caravan route', 'defName="Caravan_Outlander_Exotic"'),
+              ('current artifact stock generator', 'StockGenerator_WNGRareChildsToyArtifact'),
+              ('current artifact identity', '<thingDef>WNG_DormantChildsToy</thingDef>'),
+              ('retained seven-percent chance', '<chance>0.07</chance>'),
+          ):
+              if needle not in dormant_toy_patch:
+                  failures.append(f'Dormant Child\'s Toy rare-trader route missing: {label}')
+
+          current_toy_defs = Path('Defs/ThingDefs/Race_ChildsToy.xml').read_text(encoding='utf-8')
+          current_toy_source = Path('Source/WraithNaniteGravtech/Replicators/ChildsToy.cs').read_text(encoding='utf-8')
+          current_toy_recipe = Path('Defs/RecipeDefs/Recipes_ChildsToy.xml').read_text(encoding='utf-8')
+          for label, haystack, needle in (
+              ('dedicated Toy PawnKind', current_toy_defs, '<defName>WNG_ChildsToy</defName>'),
+              ('native Overseer state remains authority', current_toy_source, 'State == OverseerSubjectState.Overseen'),
+              ('existing Toy feral conversion remains authority', current_toy_source, 'TryConvertToHostileDrone(false)'),
+              ('normal gestation still produces the Toy', current_toy_recipe, '<WNG_ChildsToy>1</WNG_ChildsToy>'),
+          ):
+              if needle not in haystack:
+                  failures.append(f'Dormant artifact restoration displaced current Child\'s Toy contract: {label}')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
