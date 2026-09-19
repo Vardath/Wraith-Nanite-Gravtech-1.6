@@ -17,7 +17,7 @@ namespace WraithNaniteGravtech
                 return false;
             if (AsuranCollectiveUtility.IsNaniteSynthetic(pawn))
                 return true;
-            return HasActiveGene(pawn, NaturalAffinityGeneDefName) || HasHediff(pawn, ArtificialInterfaceHediffDefName);
+            return HasNaturalAffinity(pawn) || HasArtificialInterface(pawn);
         }
 
         public static bool HasNaturalAffinity(Pawn pawn) => HasActiveGene(pawn, NaturalAffinityGeneDefName);
