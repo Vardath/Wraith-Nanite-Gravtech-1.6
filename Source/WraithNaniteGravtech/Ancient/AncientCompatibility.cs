@@ -99,8 +99,8 @@ namespace WraithNaniteGravtech
                 return;
             }
 
-            // Deliberately do NOT call CheckSurgeryFail here. The retained 85% figure describes
-            // post-operation interface rejection, not a botched operation or injury roll.
+            // Deliberately bypass vanilla surgical-failure resolution here. The retained 85% figure
+            // describes post-operation interface rejection, not a botched operation or injury roll.
             if (billDoer != null)
                 TaleRecorder.RecordTale(TaleDefOf.DidSurgery, billDoer, pawn);
 
