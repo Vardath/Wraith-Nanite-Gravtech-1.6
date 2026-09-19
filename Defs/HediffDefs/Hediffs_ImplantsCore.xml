@@ -19,6 +19,13 @@
     <description>A living Wraith vesicle that accelerates ordinary tissue repair and reduces bleeding. It does not regenerate missing parts or erase permanent scars.</description>
     <spawnThingOnRemoved>WNG_RegenerativeVesicle</spawnThingOnRemoved>
     <stages><li><naturalHealingFactor>1.45</naturalHealingFactor><totalBleedFactor>0.75</totalBleedFactor></li></stages>
+    <comps>
+      <li Class="WraithNaniteGravtech.HediffCompProperties_ImplantRegeneration">
+        <intervalTicks>2400</intervalTicks>
+        <healAmount>0.55</healAmount>
+        <pauseDuringNaniteEMP>false</pauseDuringNaniteEMP>
+      </li>
+    </comps>
   </HediffDef>
 
   <HediffDef ParentName="ImplantHediffBase">
