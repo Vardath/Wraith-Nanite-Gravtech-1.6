@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -217,7 +218,9 @@ namespace WraithNaniteGravtech
                     {
                         CompProperties_Power power = comp as CompProperties_Power;
                         if (power != null && power.compClass == typeof(CompPowerPlant))
-                            power.basePowerConsumption = -WraithBioelectricPowerOutput;
+                            typeof(CompProperties_Power)
+                                .GetField("basePowerConsumption", BindingFlags.Instance | BindingFlags.NonPublic)
+                                ?.SetValue(power, (float)-WraithBioelectricPowerOutput);
                         CompProperties_Refuelable refuel = comp as CompProperties_Refuelable;
                         if (refuel != null)
                             refuel.fuelConsumptionRate = WraithBioelectricBiomassPerDay;
