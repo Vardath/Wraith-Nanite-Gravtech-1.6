@@ -2359,6 +2359,25 @@ jobs:
               failures.append('Missing inherited CE coverage: ' + ', '.join(missing))
           print(f'Inherited CE ranged coverage: {len(ranged) - len(missing)}/{len(ranged)}')
 
+          # Restored hostile Asuran gate-strike lifecycle must remain bounded and exact-gate only.
+          gate_strike = Path('Source/WraithNaniteGravtech/Asurans/AsuranGateStrikeMission.cs').read_text(encoding='utf-8')
+          for label, needle in (
+              ('map-level strike owner', 'MapComponent_AsuranGateStrikeMission'),
+              ('exact deployed crew source', 'ingress.DeployedCrew'),
+              ('bounded extraction deadline', 'ExtractionStartTicks = 3600'),
+              ('high-value technology attack', 'JobDefOf.AttackStatic'),
+              ('exact source-gate usability', 'WraithStargateHuntUtility.IsExactGateUsable'),
+              ('world-pawn exact retreat', 'Find.WorldPawns.PassToWorld'),
+              ('technology-theft ownership boundary', 'IsTechnologyTheftJob(pawn)'),
+              ('module-carrier ownership boundary', 'if (HasVacuumModule(pawn))'),
+          ):
+              if needle not in gate_strike:
+                  failures.append(f'Asuran gate-strike lifecycle contract missing: {label}')
+          if 'TryFindRandomPawnExitCell' in gate_strike or 'OnEdge(map)' in gate_strike:
+              failures.append('Asuran gate-strike lifecycle gained a forbidden map-edge extraction fallback')
+          if 'GeneratePawn' in gate_strike:
+              failures.append('Asuran gate-strike lifecycle creates replacement pawns instead of preserving exact deployed crew')
+
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:
