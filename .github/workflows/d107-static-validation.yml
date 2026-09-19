@@ -1631,6 +1631,44 @@ jobs:
               if int(emergency_biomass.findtext('workAmount', '0')) <= int(normal_biomass.findtext('workAmount', '0')):
                   failures.append('Emergency Growth Chamber biomass recovery is no longer slower than the Living Forge')
 
+          # Retained human-form uniform: ordinary identity apparel remains distinct from the
+          # combat shell. The dedicated presentation pass is still open, so D108 may temporarily
+          # reuse current clean human-form artwork but must never point back to the forbidden old uniform art.
+          human_form_apparel = Path('Defs/ThingDefs/Apparel_HumanFormCore.xml').read_text(encoding='utf-8')
+          human_form_root = ET.fromstring(human_form_apparel)
+          human_form_defs = {n.findtext('defName'): n for n in list(human_form_root) if n.findtext('defName')}
+          uniform = human_form_defs.get('WNG_HumanFormUniform')
+          combat_armor = human_form_defs.get('WNG_HumanFormCombatArmor')
+          if uniform is None:
+              failures.append('Retained human-form Replicator uniform is missing')
+          else:
+              if uniform.findtext('./recipeMaker/researchPrerequisite') != 'WNG_PrecursorFabrication':
+                  failures.append('Human-form uniform lost its Asuran fabrication research gate')
+              if uniform.findtext('./recipeMaker/recipeUsers/li') != 'WNG_PrecursorFabricator':
+                  failures.append('Human-form uniform is no longer fabricated at the Asuran fabricator')
+              if uniform.findtext('./recipeMaker/skillRequirements/Crafting') != '5':
+                  failures.append('Human-form uniform Crafting requirement regressed')
+              expected_uniform_cost = {'Synthread': '45', 'Plasteel': '10', 'WNG_ReplicatorMatter': '8'}
+              actual_uniform_cost = {child.tag: child.text for child in list(uniform.find('costList') or [])}
+              if actual_uniform_cost != expected_uniform_cost:
+                  failures.append('Human-form uniform material contract regressed')
+              if uniform.findtext('./apparel/tags/li') != 'WNG_HumanFormClothing':
+                  failures.append('Human-form uniform lost its retained clothing identity tag')
+              if uniform.findtext('./graphicData/texPath') != 'Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor':
+                  failures.append('Human-form uniform temporary clean-art reuse changed before dedicated art replacement')
+              if uniform.findtext('./apparel/wornGraphicPath') != 'Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor':
+                  failures.append('Human-form uniform worn-art path no longer uses current clean temporary presentation')
+              if 'WNG_HumanFormUniform</texPath>' in human_form_apparel or 'WNG_HumanFormUniform</wornGraphicPath>' in human_form_apparel:
+                  failures.append('Human-form uniform regressed to forbidden historical presentation path')
+          if combat_armor is None:
+              failures.append('Human-form combat armor disappeared while restoring the civilian uniform')
+          elif uniform is not None:
+              try:
+                  if float(uniform.findtext('./statBases/ArmorRating_Sharp', '0')) >= float(combat_armor.findtext('./statBases/ArmorRating_Sharp', '0')):
+                      failures.append('Human-form uniform is no longer lower-protection than combat armor')
+              except ValueError:
+                  failures.append('Human-form armor ratings are not parseable')
+
           # Existing ranged CE coverage must not regress. New ranged weapons may extend this list later.
           ce_text = '\n'.join(p.read_text(encoding='utf-8', errors='replace') for p in Path('Compatibility/CombatExtended').rglob('*.xml'))
           ranged = [
