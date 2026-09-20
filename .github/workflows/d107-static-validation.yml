@@ -2378,7 +2378,7 @@ jobs:
           if 'GeneratePawn' in gate_strike:
               failures.append('Asuran gate-strike lifecycle creates replacement pawns instead of preserving exact deployed crew')
 
-          # WNG family gravship hulls must recover Odyssey-style angled/corner topology.
+          # WNG family gravship hulls must own professional family-matched angled/corner topology.
           family_hull_layer = Path('Source/WraithNaniteGravtech/Gravships/SectionLayer_WNGFamilyGravshipHull.cs').read_text(encoding='utf-8')
           family_hull_defs = Path('Defs/Gravships/Gravship_FamilySystems.xml').read_text(encoding='utf-8')
           goauld_hull_defs = Path('Defs/Gravships/Gravship_Goauld.xml').read_text(encoding='utf-8')
@@ -2387,8 +2387,12 @@ jobs:
               ('Wraith hull recognition', family_hull_layer, 'WNG_OrganicGravshipHull'),
               ('Asuran hull recognition', family_hull_layer, 'WNG_PrecursorGravshipHull'),
               ('Goauld hull recognition', family_hull_layer, 'WNG_GoauldGravshipHull'),
-              ('native full corner mask', family_hull_layer, 'AngledGravshipHull_northwest'),
-              ('native partial diagonal mask', family_hull_layer, 'AngledGravshipHull_Partial_northwest'),
+              ('family hull material reuse', family_hull_layer, 'FamilyHullMaterial'),
+              ('family substructure material reuse', family_hull_layer, 'FamilySubstructureMaterial'),
+              ('angled-band geometry', family_hull_layer, 'AddAngledBand'),
+              ('Wraith substructure art path', family_hull_layer, 'Terrain/Wraith/WNG_WraithGravshipSubstructure'),
+              ('Asuran substructure art path', family_hull_layer, 'Terrain/Precursor/WNG_AsuranGravshipSubstructure'),
+              ('Goauld substructure art path', family_hull_layer, 'Terrain/Goauld/WNG_GoauldGravshipSubstructure'),
               ('gravship mask parity', family_hull_layer, 'ShaderDatabase.GravshipMaskMasked'),
               ('indoor mask parity', family_hull_layer, 'ShaderDatabase.IndoorMaskMasked'),
               ('Wraith linked straight hull', family_hull_defs, '<defName>WNG_OrganicGravshipHull</defName>'),
@@ -2397,6 +2401,13 @@ jobs:
           ):
               if needle not in haystack:
                   failures.append(f'WNG family gravship hull topology contract missing: {label}')
+          for forbidden in (
+              'AngledGravshipHull_northwest',
+              'AngledGravshipHull_Partial_northwest',
+              'SubstructureCorner_Full_west',
+          ):
+              if forbidden in family_hull_layer:
+                  failures.append(f'Professional WNG hull art pass regressed to vanilla corner texture: {forbidden}')
           if 'Harmony' in family_hull_layer or '== ThingDefOf.GravshipHull' in family_hull_layer:
               failures.append('WNG family hull topology must remain a separate family-aware layer, not a native hull patch/hard-code')
 
