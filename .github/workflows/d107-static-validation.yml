@@ -152,7 +152,7 @@ jobs:
               'Gun_ChainShotgun': 'WNG_ReconstructChainShotgun',
               'Apparel_ArmorRecon': 'WNG_ReconstructReconArmor',
               'Apparel_ArmorCataphract': 'WNG_ReconstructCataphractArmor',
-              'Apparel_ArmorCataphractHelmet': 'WNG_ReconstructCataphractHelmet',
+              'Apparel_ArmorHelmetCataphract': 'WNG_ReconstructCataphractHelmet',
           }
           for specimen, recipe in required_patterns.items():
               if specimen not in pattern_source or recipe not in pattern_source:
@@ -2400,6 +2400,20 @@ jobs:
           if 'Harmony' in family_hull_layer or '== ThingDefOf.GravshipHull' in family_hull_layer:
               failures.append('WNG family hull topology must remain a separate family-aware layer, not a native hull patch/hard-code')
 
+          # Live RimWorld 1.6 Def-load regressions found by the first af251cf playtest.
+          live_bad_tokens = {
+              'Defs/HediffDefs/Hediffs_HumanForm.xml': ('<GlobalWorkSpeed>',),
+              'Defs/ThingDefs/Apparel_PrecursorRecovered.xml': ('<li>Accessories</li>',),
+              'Defs/ThingDefs/Things_VacuumEnergy.xml': ('<FuelValue>',),
+              'Defs/ThingDefs/Things_AncientControl.xml': ('<FuelValue>',),
+              'Defs/ThingDefs/Things_ReplicatorSuppression.xml': ('<designationCategory>WNG_Architect</designationCategory>',),
+              'Defs/RecipeDefs/Recipes_AsuranPatternReconstruction.xml': ('Apparel_ArmorCataphractHelmet',),
+          }
+          for live_path, forbidden_tokens in live_bad_tokens.items():
+              live_text = Path(live_path).read_text(encoding='utf-8')
+              for forbidden in forbidden_tokens:
+                  if forbidden in live_text:
+                      failures.append(f'Live RimWorld 1.6 Def-load regression returned in {live_path}: {forbidden}')
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:
