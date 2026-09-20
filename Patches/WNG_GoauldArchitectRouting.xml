@@ -2,6 +2,6 @@
 <Patch>
   <Operation Class="PatchOperationReplace" MayRequire="idolord.onac">
     <xpath>Defs/ThingDef[defName="WNG_GoauldTransportRings"]/designationCategory</xpath>
-    <value><designationCategory>ONAC_Architect</designationCategory></value>
+    <value><designationCategory>WNG_Architect</designationCategory></value>
   </Operation>
 </Patch>
