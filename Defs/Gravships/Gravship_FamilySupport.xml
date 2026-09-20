@@ -6,7 +6,7 @@
     <label>wraith signal veil organ</label>
     <description>A living electromagnetic masking organ woven into a Wraith gravship. It performs Odyssey's native signal-jammer role while drawing only from the isolated Wraith neural grid.</description>
     <designationCategory>Misc</designationCategory><uiOrder>2240</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithSignalVeil</texPath><drawSize>(2,2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithSignalVeil</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.6</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><constructionSkillPrerequisite>8</constructionSkillPrerequisite><resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
     <statBases><MaxHitPoints>350</MaxHitPoints><Mass>48</Mass><WorkToBuild>8500</WorkToBuild><Flammability>0.1</Flammability><Beauty>3</Beauty></statBases>
@@ -25,7 +25,7 @@
     <label>Asuran signal nullifier</label>
     <description>A precision Asuran signature-control array. It performs Odyssey's native signal-jammer role while remaining electrically isolated inside the Asuran family lattice.</description>
     <designationCategory>Misc</designationCategory><uiOrder>2241</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranSignalJammer</texPath><drawSize>(2,2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranSignalJammer</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.6</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><constructionSkillPrerequisite>9</constructionSkillPrerequisite><resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed>
     <statBases><MaxHitPoints>450</MaxHitPoints><Mass>62</Mass><WorkToBuild>11000</WorkToBuild><Flammability>0</Flammability><Beauty>7</Beauty></statBases>
