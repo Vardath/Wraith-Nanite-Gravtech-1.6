@@ -8,15 +8,16 @@ using Verse;
 namespace WraithNaniteGravtech
 {
     /// <summary>
-    /// Odyssey's native SectionLayer_GravshipHull only recognises ThingDefOf.GravshipHull.
-    /// WNG family hulls are real airtight gravship hull walls with separate Defs, so this layer
-    /// reproduces the current 1.6 angled-corner topology for those exact family Defs without
-    /// patching or replacing the native layer.
+    /// Family-aware Odyssey gravship hull renderer.
     ///
-    /// Dedicated WNG angled-corner art is intentionally not fabricated here. Until the later
-    /// presentation pass supplies family corner masks, the current Odyssey angled hull masks are
-    /// tinted by the exact neighbouring WNG hull DrawColor. Straight WNG hull surfaces remain owned
-    /// by each family's existing Graphic_Linked atlas.
+    /// Straight hull cells remain owned by each family's linked hull graphic.  For angled/corner
+    /// joins this layer now reuses the *same family hull material* instead of tinting Odyssey's
+    /// vanilla GravshipHull corner artwork.  That keeps Wraith living chitin, Asuran nanite
+    /// composite and Goa'uld Ha'tak armor visually continuous through 45-degree transitions.
+    ///
+    /// Substructure corner fill likewise uses the exact family substructure texture rather than
+    /// Odyssey's generic corner texture.  This deliberately makes art identity follow the actual
+    /// hull/substructure Defs, so future art upgrades do not require another rendering rewrite.
     /// </summary>
     public sealed class SectionLayer_WNGFamilyGravshipHull : SectionLayer
     {
@@ -40,13 +41,13 @@ namespace WraithNaniteGravtech
             "WNG_GoauldGravshipHull"
         };
 
-        private static readonly Vector2[] QuadUvs =
-        {
-            new Vector2(0f, 0f),
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f)
-        };
+        private static readonly Dictionary<string, string> SubstructureTexturePaths =
+            new Dictionary<string, string>
+            {
+                { "WNG_OrganicGravshipHull", "Terrain/Wraith/WNG_WraithGravshipSubstructure" },
+                { "WNG_PrecursorGravshipHull", "Terrain/Precursor/WNG_AsuranGravshipSubstructure" },
+                { "WNG_GoauldGravshipHull", "Terrain/Goauld/WNG_GoauldGravshipSubstructure" }
+            };
 
         private static readonly IntVec3[] NeighbourOffsets =
         {
@@ -69,6 +70,8 @@ namespace WraithNaniteGravtech
         };
 
         private const float CornerScale = 2f;
+        private const float FullCornerBandWidth = 0.58f;
+        private const float PartialCornerBandWidth = 0.44f;
 
         private static readonly float CornerAltitude =
             AltitudeLayer.BuildingOnTop.AltitudeFor();
@@ -77,19 +80,8 @@ namespace WraithNaniteGravtech
             AltitudeLayer.TerrainEdges.AltitudeFor();
 
         private static List<ThingDef> familyHullDefs;
-
-        private static CachedMaterial cornerNW;
-        private static CachedMaterial cornerNE;
-        private static CachedMaterial cornerSW;
-        private static CachedMaterial cornerSE;
-        private static CachedMaterial diagonalNW;
-        private static CachedMaterial diagonalNE;
-        private static CachedMaterial diagonalSW;
-        private static CachedMaterial diagonalSE;
-        private static CachedMaterial substructureWest;
-        private static CachedMaterial substructureEast;
-        private static CachedMaterial substructureTipWest;
-        private static CachedMaterial substructureTipEast;
+        private static readonly Dictionary<string, Material> FamilySubstructureMaterials =
+            new Dictionary<string, Material>();
 
         public override bool Visible => ModsConfig.OdysseyActive;
 
@@ -140,19 +132,25 @@ namespace WraithNaniteGravtech
                     bool gravshipMasked = CornerTouchesSubstructure(cell, corner);
                     bool indoorMasked = CornerTouchesRoof(cell, corner, map);
 
-                    AddQuad(
-                        CornerMaterial(corner).Material,
-                        drawCell,
-                        CornerScale,
-                        CornerAltitude,
-                        colour,
-                        gravshipMasked,
-                        indoorMasked);
+                    Material hullMaterial = FamilyHullMaterial(hullDef);
+                    if (hullMaterial != null)
+                    {
+                        AddAngledBand(
+                            hullMaterial,
+                            drawCell,
+                            corner,
+                            IsPartial(corner) ? PartialCornerBandWidth : FullCornerBandWidth,
+                            CornerAltitude,
+                            colour,
+                            gravshipMasked,
+                            indoorMasked);
+                    }
 
                     bool substructureSouth =
                         terrain.FoundationAt(cell + IntVec3.South)?.IsSubstructure ?? false;
 
                     AddSubstructureCorner(
+                        hullDef,
                         corner,
                         cell,
                         substructureSouth,
@@ -160,7 +158,6 @@ namespace WraithNaniteGravtech
                         indoorMasked);
 
                     // One empty corner cell can belong to only one coherent same-family topology.
-                    // Stop after the first exact family match so different hull families never blend.
                     break;
                 }
             }
@@ -170,58 +167,44 @@ namespace WraithNaniteGravtech
 
         private static void EnsureResolved()
         {
-            if (familyHullDefs == null)
-            {
-                familyHullDefs = FamilyHullDefNames
-                    .Select(DefDatabase<ThingDef>.GetNamedSilentFail)
-                    .Where(def => def != null)
-                    .Distinct()
-                    .ToList();
-            }
-
-            if (cornerNW != null)
+            if (familyHullDefs != null)
                 return;
 
-            Shader wallShader = ShaderDatabase.CutoutOverlay;
-            Shader substructureShader = ShaderDatabase.Transparent;
+            familyHullDefs = FamilyHullDefNames
+                .Select(DefDatabase<ThingDef>.GetNamedSilentFail)
+                .Where(def => def != null)
+                .Distinct()
+                .ToList();
+        }
 
-            cornerNW = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_northwest",
-                wallShader);
-            cornerNE = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_northeast",
-                wallShader);
-            cornerSW = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_southwest",
-                wallShader);
-            cornerSE = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_southeast",
-                wallShader);
-            diagonalNW = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_Partial_northwest",
-                wallShader);
-            diagonalNE = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_Partial_northeast",
-                wallShader);
-            diagonalSW = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_Partial_southwest",
-                wallShader);
-            diagonalSE = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/AngledGravshipHull_Partial_southeast",
-                wallShader);
+        private static bool IsPartial(CornerType corner)
+        {
+            return corner == CornerType.DiagonalNW ||
+                   corner == CornerType.DiagonalNE ||
+                   corner == CornerType.DiagonalSW ||
+                   corner == CornerType.DiagonalSE;
+        }
 
-            substructureWest = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/SubstructureCorner_Full_west",
-                substructureShader);
-            substructureEast = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/SubstructureCorner_Full_east",
-                substructureShader);
-            substructureTipWest = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/SubstructureCorner_Tip_west",
-                substructureShader);
-            substructureTipEast = new CachedMaterial(
-                "Things/Building/Linked/GravshipHull/SubstructureCorner_Tip_east",
-                substructureShader);
+        private static Material FamilyHullMaterial(ThingDef hullDef)
+        {
+            Graphic graphic = hullDef?.graphicData?.Graphic;
+            if (graphic is Graphic_Linked linked)
+                graphic = linked.SubGraphic;
+            return graphic?.MatSingle;
+        }
+
+        private static Material FamilySubstructureMaterial(ThingDef hullDef)
+        {
+            if (hullDef == null ||
+                !SubstructureTexturePaths.TryGetValue(hullDef.defName, out string path))
+                return null;
+
+            if (!FamilySubstructureMaterials.TryGetValue(path, out Material material))
+            {
+                material = MaterialPool.MatFrom(path, ShaderDatabase.Transparent);
+                FamilySubstructureMaterials[path] = material;
+            }
+            return material;
         }
 
         private static bool TryResolveCorner(
@@ -285,22 +268,229 @@ namespace WraithNaniteGravtech
             return true;
         }
 
-        private static CachedMaterial CornerMaterial(CornerType corner)
+        private void AddAngledBand(
+            Material material,
+            IntVec3 drawCell,
+            CornerType corner,
+            float width,
+            float altitude,
+            Color colour,
+            bool gravshipMasked,
+            bool indoorMasked)
         {
-            EnsureResolved();
+            AddAngledBand(GetSubMesh(material), drawCell, corner, width, altitude, colour);
+
+            Texture2D texture = material.mainTexture as Texture2D;
+            if (texture == null)
+                return;
+
+            if (gravshipMasked)
+            {
+                Material mask = MaterialPool.MatFrom(
+                    texture,
+                    ShaderDatabase.GravshipMaskMasked,
+                    material.color);
+                AddAngledBand(GetSubMesh(mask), drawCell, corner, width, altitude, colour);
+            }
+
+            if (indoorMasked)
+            {
+                Material mask = MaterialPool.MatFrom(
+                    texture,
+                    ShaderDatabase.IndoorMaskMasked,
+                    material.color);
+                AddAngledBand(GetSubMesh(mask), drawCell, corner, width, altitude, colour);
+            }
+        }
+
+        private static void AddAngledBand(
+            LayerSubMesh mesh,
+            IntVec3 drawCell,
+            CornerType corner,
+            float width,
+            float altitude,
+            Color colour)
+        {
+            Vector2 p1;
+            Vector2 p2;
+
             switch (corner)
             {
-                case CornerType.CornerNW: return cornerNW;
-                case CornerType.CornerNE: return cornerNE;
-                case CornerType.CornerSW: return cornerSW;
-                case CornerType.CornerSE: return cornerSE;
-                case CornerType.DiagonalNW: return diagonalNW;
-                case CornerType.DiagonalNE: return diagonalNE;
-                case CornerType.DiagonalSW: return diagonalSW;
-                case CornerType.DiagonalSE: return diagonalSE;
+                case CornerType.CornerNW:
+                case CornerType.DiagonalNW:
+                    p1 = new Vector2(0f, 1f);
+                    p2 = new Vector2(1f, 2f);
+                    break;
+                case CornerType.CornerNE:
+                case CornerType.DiagonalNE:
+                    p1 = new Vector2(1f, 2f);
+                    p2 = new Vector2(2f, 1f);
+                    break;
+                case CornerType.CornerSE:
+                case CornerType.DiagonalSE:
+                    p1 = new Vector2(2f, 1f);
+                    p2 = new Vector2(1f, 0f);
+                    break;
+                case CornerType.CornerSW:
+                case CornerType.DiagonalSW:
+                    p1 = new Vector2(1f, 0f);
+                    p2 = new Vector2(0f, 1f);
+                    break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(corner), corner, null);
+                    return;
             }
+
+            Vector2 direction = (p2 - p1).normalized;
+            Vector2 normal = new Vector2(-direction.y, direction.x) * (width * 0.5f);
+
+            Vector2 a = p1 + normal;
+            Vector2 b = p2 + normal;
+            Vector2 c = p2 - normal;
+            Vector2 d = p1 - normal;
+
+            int first = mesh.verts.Count;
+            AddBandVertex(mesh, drawCell, a, altitude, new Vector2(0f, 0f), colour);
+            AddBandVertex(mesh, drawCell, b, altitude, new Vector2(1f, 0f), colour);
+            AddBandVertex(mesh, drawCell, c, altitude, new Vector2(1f, 1f), colour);
+            AddBandVertex(mesh, drawCell, d, altitude, new Vector2(0f, 1f), colour);
+
+            mesh.tris.Add(first);
+            mesh.tris.Add(first + 1);
+            mesh.tris.Add(first + 2);
+            mesh.tris.Add(first);
+            mesh.tris.Add(first + 2);
+            mesh.tris.Add(first + 3);
+        }
+
+        private static void AddBandVertex(
+            LayerSubMesh mesh,
+            IntVec3 drawCell,
+            Vector2 local,
+            float altitude,
+            Vector2 uv,
+            Color colour)
+        {
+            mesh.verts.Add(
+                new Vector3(
+                    drawCell.x + local.x,
+                    altitude,
+                    drawCell.z + local.y));
+            mesh.uvs.Add(uv);
+            mesh.colors.Add(colour);
+        }
+
+        private void AddSubstructureCorner(
+            ThingDef hullDef,
+            CornerType corner,
+            IntVec3 cell,
+            bool substructureSouth,
+            bool gravshipMasked,
+            bool indoorMasked)
+        {
+            Material material = FamilySubstructureMaterial(hullDef);
+            if (material == null)
+                return;
+
+            if (corner == CornerType.CornerNW ||
+                corner == CornerType.DiagonalNW)
+            {
+                AddSubstructureQuad(
+                    material,
+                    cell,
+                    gravshipMasked,
+                    indoorMasked);
+
+                if (!substructureSouth)
+                {
+                    AddSubstructureQuad(
+                        material,
+                        cell + IntVec3.South,
+                        gravshipMasked,
+                        indoorMasked);
+                }
+            }
+
+            if (corner == CornerType.CornerNE ||
+                corner == CornerType.DiagonalNE)
+            {
+                AddSubstructureQuad(
+                    material,
+                    cell,
+                    gravshipMasked,
+                    indoorMasked);
+
+                if (!substructureSouth)
+                {
+                    AddSubstructureQuad(
+                        material,
+                        cell + IntVec3.South,
+                        gravshipMasked,
+                        indoorMasked);
+                }
+            }
+        }
+
+        private void AddSubstructureQuad(
+            Material material,
+            IntVec3 cell,
+            bool gravshipMasked,
+            bool indoorMasked)
+        {
+            AddQuad(GetSubMesh(material), cell.ToVector3(), 1f, SubstructureAltitude, Color.white);
+
+            Texture2D texture = material.mainTexture as Texture2D;
+            if (texture == null)
+                return;
+
+            if (gravshipMasked)
+            {
+                Material mask = MaterialPool.MatFrom(
+                    texture,
+                    ShaderDatabase.GravshipMaskMasked,
+                    material.color);
+                AddQuad(GetSubMesh(mask), cell.ToVector3(), 1f, SubstructureAltitude, Color.white);
+            }
+
+            if (indoorMasked)
+            {
+                Material mask = MaterialPool.MatFrom(
+                    texture,
+                    ShaderDatabase.IndoorMaskMasked,
+                    material.color);
+                AddQuad(GetSubMesh(mask), cell.ToVector3(), 1f, SubstructureAltitude, Color.white);
+            }
+        }
+
+        private static void AddQuad(
+            LayerSubMesh mesh,
+            Vector3 origin,
+            float scale,
+            float altitude,
+            Color colour)
+        {
+            int first = mesh.verts.Count;
+
+            mesh.verts.Add(new Vector3(origin.x, altitude, origin.z));
+            mesh.verts.Add(new Vector3(origin.x, altitude, origin.z + scale));
+            mesh.verts.Add(new Vector3(origin.x + scale, altitude, origin.z + scale));
+            mesh.verts.Add(new Vector3(origin.x + scale, altitude, origin.z));
+
+            mesh.uvs.Add(new Vector2(0f, 0f));
+            mesh.uvs.Add(new Vector2(0f, 1f));
+            mesh.uvs.Add(new Vector2(1f, 1f));
+            mesh.uvs.Add(new Vector2(1f, 0f));
+
+            mesh.colors.Add(colour);
+            mesh.colors.Add(colour);
+            mesh.colors.Add(colour);
+            mesh.colors.Add(colour);
+
+            mesh.tris.Add(first);
+            mesh.tris.Add(first + 1);
+            mesh.tris.Add(first + 2);
+            mesh.tris.Add(first);
+            mesh.tris.Add(first + 2);
+            mesh.tris.Add(first + 3);
         }
 
         private static IntVec3 CornerOffset(CornerType corner)
@@ -373,127 +563,6 @@ namespace WraithNaniteGravtech
                            (cell + IntVec3.West).Roofed(map);
                 default:
                     return false;
-            }
-        }
-
-        private static void AddQuad(
-            LayerSubMesh mesh,
-            Vector3 origin,
-            float scale,
-            float altitude,
-            Color colour)
-        {
-            int first = mesh.verts.Count;
-            for (int i = 0; i < QuadUvs.Length; i++)
-            {
-                Vector2 uv = QuadUvs[i];
-                mesh.verts.Add(
-                    new Vector3(
-                        origin.x + uv.x * scale,
-                        altitude,
-                        origin.z + uv.y * scale));
-                mesh.uvs.Add(uv);
-                mesh.colors.Add(colour);
-            }
-
-            mesh.tris.Add(first);
-            mesh.tris.Add(first + 1);
-            mesh.tris.Add(first + 2);
-            mesh.tris.Add(first);
-            mesh.tris.Add(first + 2);
-            mesh.tris.Add(first + 3);
-        }
-
-        private void AddQuad(
-            Material material,
-            IntVec3 cell,
-            float scale,
-            float altitude,
-            Color colour,
-            bool gravshipMasked,
-            bool indoorMasked)
-        {
-            LayerSubMesh baseMesh = GetSubMesh(material);
-            AddQuad(baseMesh, cell.ToVector3(), scale, altitude, colour);
-
-            Texture2D texture = baseMesh.material.mainTexture as Texture2D;
-            if (texture == null)
-                return;
-
-            if (gravshipMasked)
-            {
-                Material mask = MaterialPool.MatFrom(
-                    texture,
-                    ShaderDatabase.GravshipMaskMasked,
-                    baseMesh.material.color);
-                AddQuad(GetSubMesh(mask), cell.ToVector3(), scale, altitude, colour);
-            }
-
-            if (indoorMasked)
-            {
-                Material mask = MaterialPool.MatFrom(
-                    texture,
-                    ShaderDatabase.IndoorMaskMasked,
-                    baseMesh.material.color);
-                AddQuad(GetSubMesh(mask), cell.ToVector3(), scale, altitude, colour);
-            }
-        }
-
-        private void AddSubstructureCorner(
-            CornerType corner,
-            IntVec3 cell,
-            bool substructureSouth,
-            bool gravshipMasked,
-            bool indoorMasked)
-        {
-            if (corner == CornerType.CornerNW ||
-                corner == CornerType.DiagonalNW)
-            {
-                AddQuad(
-                    substructureWest.Material,
-                    cell,
-                    1f,
-                    SubstructureAltitude,
-                    Color.white,
-                    gravshipMasked,
-                    indoorMasked);
-
-                if (!substructureSouth)
-                {
-                    AddQuad(
-                        substructureTipWest.Material,
-                        cell + IntVec3.South,
-                        1f,
-                        SubstructureAltitude,
-                        Color.white,
-                        gravshipMasked,
-                        indoorMasked);
-                }
-            }
-
-            if (corner == CornerType.CornerNE ||
-                corner == CornerType.DiagonalNE)
-            {
-                AddQuad(
-                    substructureEast.Material,
-                    cell,
-                    1f,
-                    SubstructureAltitude,
-                    Color.white,
-                    gravshipMasked,
-                    indoorMasked);
-
-                if (!substructureSouth)
-                {
-                    AddQuad(
-                        substructureTipEast.Material,
-                        cell + IntVec3.South,
-                        1f,
-                        SubstructureAltitude,
-                        Color.white,
-                        gravshipMasked,
-                        indoorMasked);
-                }
             }
         }
     }
