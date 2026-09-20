@@ -4,7 +4,7 @@
     <defName>WNG_HostSeedGestation</defName>
     <label>seed living forge growth</label>
     <description>Place a living-tech seed into a biological humanlike host, or consume a suitable corpse into an incubation mass. A viable living host matures the organ over one day before producing a minified Living Forge; death before maturation destroys an immature living-host implant.</description>
-    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <iconPath>UI/WNG/Genes/WraithRegeneration</iconPath>
     <hostile>true</hostile>
     <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>

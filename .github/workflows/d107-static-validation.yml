@@ -2502,6 +2502,46 @@ jobs:
           if '<defName>WNG_WraithGravshipShield</defName>' in parity_defs:
               failures.append('D110 regressed Wraith living-hull defense into a generic gravship shield')
 
+          # D117 live-art guard: every WNG non-Replicator Ability/Gene/Xenotype owns a WNG icon path.
+          for def_path in Path('Defs').rglob('*.xml'):
+              try:
+                  def_root = ET.parse(def_path).getroot()
+              except Exception:
+                  continue
+              for node in list(def_root):
+                  if node.tag not in ('AbilityDef', 'GeneDef', 'XenotypeDef'):
+                      continue
+                  def_name = node.findtext('defName') or ''
+                  if not def_name.startswith('WNG_') or 'Replicator' in def_name:
+                      continue
+                  icon_path = node.findtext('iconPath') or ''
+                  if not icon_path.startswith('UI/WNG/'):
+                      failures.append(
+                          f'D117 WNG icon ownership contract failed: {def_name} -> {icon_path or "<missing>"}'
+                      )
+
+          architect_def = Path('Defs/DesignationCategoryDefs/WNG_Architect.xml').read_text(encoding='utf-8')
+          architect_patch = Path('Patches/WNG_ArchitectMenu.xml').read_text(encoding='utf-8')
+          goauld_routing = Path('Patches/WNG_GoauldArchitectRouting.xml').read_text(encoding='utf-8')
+          if '<defName>WNG_Architect</defName>' not in architect_def:
+              failures.append('D117 dedicated WNG Architect category is missing')
+          if 'starts-with(defName,"WNG_")' not in architect_patch or '<designationCategory>WNG_Architect</designationCategory>' not in architect_patch:
+              failures.append('D117 WNG Architect routing patch no longer gathers WNG-owned buildables')
+          if '<designationCategory>ONAC_Architect</designationCategory>' in goauld_routing:
+              failures.append('D117 WNG-owned Goauld transport rings regressed back into the ONAC Architect category')
+
+          human_form_kinds = Path('Defs/PawnKindDefs/PawnKinds_HumanForm.xml').read_text(encoding='utf-8')
+          for token in (
+              '<apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>',
+              '<li>WNG_HumanFormUniform</li>',
+              '<li>WNG_PrecursorFieldArmor</li>',
+              '<li>WNG_PrecursorCommandArmor</li>',
+          ):
+              if token not in human_form_kinds:
+                  failures.append(f'D117 deterministic Asuran apparel contract missing: {token}')
+          if '<apparelMoney>2500~4500</apparelMoney>' in human_form_kinds or '<apparelMoney>3200~5200</apparelMoney>' in human_form_kinds:
+              failures.append('D117 Asuran random apparel budget returned')
+
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:

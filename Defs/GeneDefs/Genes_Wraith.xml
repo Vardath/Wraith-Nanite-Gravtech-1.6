@@ -10,7 +10,7 @@
     <defName>WNG_LifeForceMetabolism</defName>
     <label>life-force metabolism</label>
     <description>This Wraith does not survive on ordinary food. Its tissues store stolen biological vitality as Life Force, which drains over time and is spent by regeneration. Severe depletion causes weakness and eventually life-force torpor; deliberate hibernation greatly slows the drain.</description>
-    <iconPath>UI/Icons/Genes/Gene_Hemogenic</iconPath>
+    <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <displayCategory>Ability</displayCategory>
     <geneClass>WraithNaniteGravtech.Gene_Resource_LifeForce</geneClass>
     <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_LifeForce</resourceGizmoType>
@@ -67,7 +67,7 @@
     <defName>WNG_WraithRegeneration</defName>
     <label>wraith regeneration</label>
     <description>Wraith tissues rebuild injury aggressively when sufficient Life Force is available. Routine healing consumes reserve in proportion to repaired injury. With a high reserve, even missing anatomy can eventually be reconstructed at substantial Life Force cost.</description>
-    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <iconPath>UI/WNG/Genes/WraithRegeneration</iconPath>
     <displayCategory>Ability</displayCategory>
     <geneClass>WraithNaniteGravtech.Gene_WraithRegeneration</geneClass>
     <biostatCpx>3</biostatCpx>
@@ -78,7 +78,7 @@
     <defName>WNG_HostCultivator</defName>
     <label>host cultivator</label>
     <description>Wraith regenerative tissues can be directed into a technological seed that consumes a biological host or corpse and grows into a Living Forge.</description>
-    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <iconPath>UI/WNG/Genes/WraithRegeneration</iconPath>
     <displayCategory>Ability</displayCategory>
     <abilities>
       <li>WNG_HostSeedGestation</li>
@@ -90,7 +90,7 @@
     <defName>WNG_WraithTelepathy</defName>
     <label>wraith telepathy</label>
     <description>Wraith nervous tissue is naturally sensitive to other minds and to the shared psychic signals of the Hive. This grants Hive Sense, deliberate hallucinatory intrusion, the retained Enthrall ability and captive-focused telepathy, while providing the biological substrate used by stronger caste-specific psychic abilities.</description>
-    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <iconPath>UI/WNG/Abilities/WraithFocus</iconPath>
     <displayCategory>Ability</displayCategory>
     <abilities>
       <li>WNG_HiveSense</li>
@@ -111,7 +111,7 @@
     <defName>WNG_HybridRegeneration</defName>
     <label>incomplete wraith regeneration</label>
     <description>An unstable Wraith-derived tissue lattice slowly repairs ordinary non-permanent injuries. It is deliberately weaker than true Wraith regeneration and cannot reconstruct missing anatomy.</description>
-    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <iconPath>UI/WNG/Genes/WraithRegeneration</iconPath>
     <displayCategory>Ability</displayCategory>
     <geneClass>WraithNaniteGravtech.Gene_WraithHybridRegeneration</geneClass>
     <biostatCpx>2</biostatCpx>
@@ -122,7 +122,7 @@
     <defName>WNG_HybridLifeForce</defName>
     <label>unstable life-force metabolism</label>
     <description>This hybrid keeps ordinary food metabolism while carrying a small, unstable Life Force reserve. The reserve drains faster than a true Wraith's and can be replenished only by Partial Feed; complete depletion can still produce Wraith-like weakness and torpor.</description>
-    <iconPath>UI/Icons/Genes/Gene_Hemogenic</iconPath>
+    <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <displayCategory>Ability</displayCategory>
     <geneClass>WraithNaniteGravtech.Gene_Resource_HybridLifeForce</geneClass>
     <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_LifeForce</resourceGizmoType>
@@ -168,7 +168,7 @@
     <defName>WNG_HybridTelepathy</defName>
     <label>attenuated wraith telepathy</label>
     <description>The hybrid can force brief contact with a biological target's surface thoughts, but lacks true Hive Sense, Enthrallment and caste-level Wraith psychic control.</description>
-    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <iconPath>UI/WNG/Abilities/WraithFocus</iconPath>
     <displayCategory>Ability</displayCategory>
     <abilities>
       <li>WNG_TelepathicProbe</li>
@@ -184,7 +184,7 @@
     <defName>WNG_HybridInstability</defName>
     <label>wraith-human genomic instability</label>
     <description>The incomplete graft never reaches stable Wraith equilibrium. Biological and psychic systems periodically fall out of synchronisation, causing deterministic recurring instability flares.</description>
-    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <iconPath>UI/WNG/Genes/HybridInstability</iconPath>
     <displayCategory>Ability</displayCategory>
     <geneClass>WraithNaniteGravtech.Gene_WraithHybridInstability</geneClass>
     <biostatCpx>2</biostatCpx>

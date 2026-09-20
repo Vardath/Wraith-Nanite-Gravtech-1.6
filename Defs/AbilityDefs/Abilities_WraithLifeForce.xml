@@ -4,7 +4,7 @@
     <defName>WNG_LifeDrain</defName>
     <label>feed deeply</label>
     <description>Make full feeding contact with a living biological target. The victim loses about fifty biological years of vitality and receives the life-drained state; the Wraith restores its Life Force and becomes about five biological years younger, never below age eighteen. A second full feeding on a target that has not recovered is lethal.</description>
-    <iconPath>UI/Icons/Genes/Gene_Bloodfeeder</iconPath>
+    <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <hostile>true</hostile>
     <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
@@ -40,7 +40,7 @@
     <defName>WNG_PartialFeed</defName>
     <label>take a partial feeding</label>
     <description>Take a limited portion of a biological target's vitality instead of a full feeding. The victim ages about ten biological years and is temporarily weakened, while the Wraith restores roughly one third of its Life Force and becomes about one year younger, with the same age-eighteen floor.</description>
-    <iconPath>UI/Icons/Genes/Gene_Bloodfeeder</iconPath>
+    <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <hostile>true</hostile>
     <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
@@ -76,7 +76,7 @@
     <defName>WNG_Enthrall</defName>
     <label>enthrall</label>
     <description>Overwhelm the will of a downed humanlike pawn or any prisoner and bind that exact pawn into slavery under the Wraith's faction.</description>
-    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <iconPath>UI/WNG/Abilities/WraithBeckon</iconPath>
     <hostile>true</hostile>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
@@ -101,7 +101,7 @@
     <defName>WNG_ReturnLife</defName>
     <label>return life</label>
     <description>Return a large share of a Wraith Queen's stored vitality to another living biological humanlike. The recipient can recover up to ten biological years and the temporary feeding-trauma state is cleared. The transfer costs two thirds of a full Life Force reserve, cannot make an adult younger than eighteen, cannot resurrect the dead and does not repair unrelated injuries.</description>
-    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <iconPath>UI/WNG/Genes/WraithRegeneration</iconPath>
     <hostile>false</hostile>
     <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>

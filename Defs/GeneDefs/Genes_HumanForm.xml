@@ -62,7 +62,7 @@
     <label>nanite reconstruction</label>
     <description>Coordinated nanomachines repair ordinary injuries and reconstruct missing anatomy. When sufficient Nanite Reserve is available the process is much faster and consumes reserve only after real repair commits; otherwise slower emergency reconstruction continues.</description>
     <displayCategory>Ability</displayCategory>
-    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
+    <iconPath>UI/WNG/Genes/NaniteReconstruction</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_NaniteReconstruction</geneClass>
     <biostatCpx>3</biostatCpx>
     <biostatMet>-3</biostatMet>
@@ -83,7 +83,7 @@
     <label>collective link</label>
     <description>A local same-faction coordination lattice between compatible nanite minds. Nearby linked peers improve reconstruction efficiency; EMP disruption severs the link until the synthetic systems resynchronize. The link can project a bounded temporary intrusion into hostile block Replicators, but ordinary collective membership grants no permanent Queen or implant sovereignty.</description>
     <displayCategory>Ability</displayCategory>
-    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
+    <iconPath>UI/WNG/Genes/AsuranCollectiveLink</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_AsuranCollectiveLink</geneClass>
     <biostatCpx>2</biostatCpx>
     <biostatMet>-2</biostatMet>

@@ -4,7 +4,7 @@
     <defName>WNG_SovereignLatticeDirective</defName>
     <label>issue lattice sovereignty</label>
     <description>The implanted Sovereign Neural Lattice can bind or release one targeted block Replicator while maintaining its other existing bindings. Acquisition is local and explicit, and normal EMP or containment interruption still applies.</description>
-    <iconPath>Things/Item/Implant/WNG_SovereignNeuralLattice</iconPath>
+    <iconPath>UI/WNG/Abilities/NeuralInterface</iconPath>
     <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>

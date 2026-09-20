@@ -5,7 +5,7 @@
     <label>wraith</label>
     <description>A predatory humanlike Wraith phenotype built around stolen Life Force and powerful biological regeneration. Wraith castes are social and functional roles of this same biological identity rather than separate races.</description>
     <descriptionShort>Predatory humanlike Wraith biology sustained by stolen Life Force.</descriptionShort>
-    <iconPath>UI/Icons/Xenotypes/Sanguophage</iconPath>
+    <iconPath>UI/WNG/Xenotypes/Wraith</iconPath>
     <genes>
       <li>WNG_LifeForceMetabolism</li>
       <li>WNG_WraithRegeneration</li>
