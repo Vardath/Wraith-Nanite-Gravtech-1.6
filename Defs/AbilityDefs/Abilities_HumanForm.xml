@@ -4,6 +4,7 @@
     <defName>WNG_NeuralInterface</defName>
     <label>neural interface</label>
     <description>Establish a touch-range nanite interface with another living biological humanlike mind. Player operators can rewrite allegiance, impose a valid captive state, copy learned skills and passions, or reconstruct a fresh human-form copy. Copy fabrication spends its Nanite Reserve only after a usable body has been placed.</description>
+    <iconPath>UI/WNG/Abilities/NeuralInterface</iconPath>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
     <cooldownTicksRange>5000~5000</cooldownTicksRange>
