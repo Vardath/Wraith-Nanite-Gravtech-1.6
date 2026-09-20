@@ -9,6 +9,7 @@
     <label>nanite body</label>
     <description>This humanoid body is continuously maintained by coordinated nanomachines. Ordinary food remains necessary because meals provide raw feedstock, but the synthetic digestive process cannot suffer food poisoning and does not require ordinary sleep, recreation, beauty or physical comfort.</description>
     <displayCategory>Ability</displayCategory>
+    <iconPath>Things/Item/Resource/WNG_AsuranNaniteSlurry</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_NaniteBody</geneClass>
     <foodPoisoningChanceFactor>0</foodPoisoningChanceFactor>
     <disablesNeeds>
@@ -26,6 +27,7 @@
     <label>nanite reserve</label>
     <description>A visible bounded store of active nanomachines and feedstock. Positive Food-need gain replenishes the reserve; the reserve has no passive time drain. It is spent only when accelerated reconstruction actually commits.</description>
     <displayCategory>Ability</displayCategory>
+    <iconPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
     <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_NaniteReserve</resourceGizmoType>
     <resourceLabel>nanite reserve</resourceLabel>
@@ -60,6 +62,7 @@
     <label>nanite reconstruction</label>
     <description>Coordinated nanomachines repair ordinary injuries and reconstruct missing anatomy. When sufficient Nanite Reserve is available the process is much faster and consumes reserve only after real repair commits; otherwise slower emergency reconstruction continues.</description>
     <displayCategory>Ability</displayCategory>
+    <iconPath>UI/Icons/Genes/Gene_TotalHealing</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_NaniteReconstruction</geneClass>
     <biostatCpx>3</biostatCpx>
     <biostatMet>-3</biostatMet>
@@ -70,6 +73,7 @@
     <label>EMP-sensitive nanites</label>
     <description>The nanite lattice is vulnerable to electromagnetic disruption. A real EMP hit temporarily desynchronizes synthetic systems, impairing movement and work and suspending nanite reconstruction until coordination returns.</description>
     <displayCategory>Ability</displayCategory>
+    <iconPath>UI/WNG/AncientAffinity</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_EMPSensitiveNanites</geneClass>
     <biostatCpx>-1</biostatCpx>
     <biostatMet>1</biostatMet>
@@ -79,6 +83,7 @@
     <label>collective link</label>
     <description>A local same-faction coordination lattice between compatible nanite minds. Nearby linked peers improve reconstruction efficiency; EMP disruption severs the link until the synthetic systems resynchronize. The link can project a bounded temporary intrusion into hostile block Replicators, but ordinary collective membership grants no permanent Queen or implant sovereignty.</description>
     <displayCategory>Ability</displayCategory>
+    <iconPath>UI/Icons/Genes/Gene_EnhancedPsychicAbility</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_AsuranCollectiveLink</geneClass>
     <biostatCpx>2</biostatCpx>
     <biostatMet>-2</biostatMet>
@@ -100,6 +105,7 @@
     <label>neural nanite interface</label>
     <description>Specialized nanites can establish a touch-range interface with another biological humanlike mind for bounded allegiance/captive transitions, learned-pattern acquisition and costly human-form reconstruction. This interface grants no sovereign authority over block Replicators.</description>
     <displayCategory>Ability</displayCategory>
+    <iconPath>Things/Item/Implant/WNG_SovereignNeuralLattice</iconPath>
     <biostatCpx>4</biostatCpx>
     <biostatMet>-3</biostatMet>
     <abilities><li>WNG_NeuralInterface</li></abilities>
