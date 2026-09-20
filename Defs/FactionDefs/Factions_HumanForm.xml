@@ -68,8 +68,8 @@
     <techLevel>Spacer</techLevel>
     <humanlikeFaction>true</humanlikeFaction>
     <permanentEnemy>false</permanentEnemy>
-    <canSiege>true</canSiege>
-    <canStageAttacks>true</canStageAttacks>
+    <canSiege>false</canSiege>
+    <canStageAttacks>false</canStageAttacks>
     <autoFlee>true</autoFlee>
     <rescueesCanJoin>true</rescueesCanJoin>
     <caravanTraderKinds><li>WNG_AsuranArtifactExchange</li></caravanTraderKinds>
@@ -83,7 +83,7 @@
     <pawnGroupMakers>
       <li>
         <kindDef>Combat</kindDef><commonality>100</commonality>
-        <options><WNG_HumanFormReplicator>12</WNG_HumanFormReplicator><WNG_PrecursorSoldier>4</WNG_PrecursorSoldier></options>
+        <options><WNG_HumanFormReplicator>12</WNG_HumanFormReplicator><WNG_PrecursorSoldier>4</WNG_PrecursorSoldier><WNG_PrecursorEngineer>1</WNG_PrecursorEngineer></options>
       </li>
       <li>
         <kindDef>Peaceful</kindDef><commonality>80</commonality>
