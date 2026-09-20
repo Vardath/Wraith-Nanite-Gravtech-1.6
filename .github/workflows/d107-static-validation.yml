@@ -2435,6 +2435,14 @@ jobs:
           iratus_text = Path('Defs/ThingDefs/Race_Iratus.xml').read_text(encoding='utf-8')
           if '<anomalyKnowledge>1.25</anomalyKnowledge>' in iratus_text and '<minMonolithLevelForStudy>1</minMonolithLevelForStudy>' not in iratus_text:
               failures.append('Iratus anomalyKnowledge requires nonzero minMonolithLevelForStudy in RimWorld 1.6')
+          # Live DrugPolicy safety: every WNG medical drug that enters DrugPolicy must own CompProperties_Drug.
+          for live_drug_path, live_drug_name in (
+              ('Defs/ThingDefs/Things_HoffanSerum.xml', 'WNG_HoffanSerum'),
+              ('Defs/ThingDefs/Things_FeedingResistance.xml', 'WNG_VitalResistanceDose'),
+          ):
+              live_drug_text = Path(live_drug_path).read_text(encoding='utf-8')
+              if '<drugCategory>' not in live_drug_text or 'CompProperties_Drug' not in live_drug_text:
+                  failures.append(f'{live_drug_name} can enter DrugPolicy without CompProperties_Drug')
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:
