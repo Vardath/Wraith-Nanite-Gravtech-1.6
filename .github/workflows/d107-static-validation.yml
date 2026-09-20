@@ -2378,7 +2378,7 @@ jobs:
           if 'GeneratePawn' in gate_strike:
               failures.append('Asuran gate-strike lifecycle creates replacement pawns instead of preserving exact deployed crew')
 
-          # WNG family gravship hulls must own professional family-matched angled/corner topology.
+          # WNG family gravship hulls must mirror native Odyssey wall/corner topology while using family art.
           family_hull_layer = Path('Source/WraithNaniteGravtech/Gravships/SectionLayer_WNGFamilyGravshipHull.cs').read_text(encoding='utf-8')
           family_hull_defs = Path('Defs/Gravships/Gravship_FamilySystems.xml').read_text(encoding='utf-8')
           goauld_hull_defs = Path('Defs/Gravships/Gravship_Goauld.xml').read_text(encoding='utf-8')
@@ -2387,29 +2387,28 @@ jobs:
               ('Wraith hull recognition', family_hull_layer, 'WNG_OrganicGravshipHull'),
               ('Asuran hull recognition', family_hull_layer, 'WNG_PrecursorGravshipHull'),
               ('Goauld hull recognition', family_hull_layer, 'WNG_GoauldGravshipHull'),
-              ('family hull material reuse', family_hull_layer, 'FamilyHullMaterial'),
-              ('family substructure material reuse', family_hull_layer, 'FamilySubstructureMaterial'),
-              ('angled-band geometry', family_hull_layer, 'AddAngledBand'),
-              ('Wraith substructure art path', family_hull_layer, 'Terrain/Wraith/WNG_WraithGravshipSubstructure'),
-              ('Asuran substructure art path', family_hull_layer, 'Terrain/Precursor/WNG_AsuranGravshipSubstructure'),
-              ('Goauld substructure art path', family_hull_layer, 'Terrain/Goauld/WNG_GoauldGravshipSubstructure'),
+              ('vanilla corner enum parity', family_hull_layer, 'Corner_NW'),
+              ('native full-corner texture use', family_hull_layer, 'AngledGravshipHull_northwest'),
+              ('native partial-corner texture use', family_hull_layer, 'AngledGravshipHull_Partial_northwest'),
+              ('native substructure corner use', family_hull_layer, 'SubstructureCorner_Full_west'),
+              ('native 2x2 corner scale', family_hull_layer, 'HullCornerScale = 2f'),
+              ('native corner offset logic', family_hull_layer, 'GetOffset'),
+              ('native substructure test', family_hull_layer, 'IsCornerSubstructure'),
               ('gravship mask parity', family_hull_layer, 'ShaderDatabase.GravshipMaskMasked'),
               ('indoor mask parity', family_hull_layer, 'ShaderDatabase.IndoorMaskMasked'),
+              ('Wraith corner art root', family_hull_layer, 'Things/Building/Wraith/Gravship/HullCorners'),
+              ('Asuran corner art root', family_hull_layer, 'Things/Building/Precursor/Gravship/HullCorners'),
+              ('Goauld corner art root', family_hull_layer, 'Things/Building/Goauld/Gravship/HullCorners'),
               ('Wraith linked straight hull', family_hull_defs, '<defName>WNG_OrganicGravshipHull</defName>'),
               ('Asuran linked straight hull', family_hull_defs, '<defName>WNG_PrecursorGravshipHull</defName>'),
               ('Goauld hull Def', goauld_hull_defs, '<defName>WNG_GoauldGravshipHull</defName>'),
           ):
               if needle not in haystack:
                   failures.append(f'WNG family gravship hull topology contract missing: {label}')
-          for forbidden in (
-              'AngledGravshipHull_northwest',
-              'AngledGravshipHull_Partial_northwest',
-              'SubstructureCorner_Full_west',
-          ):
-              if forbidden in family_hull_layer:
-                  failures.append(f'Professional WNG hull art pass regressed to vanilla corner texture: {forbidden}')
-          if 'Harmony' in family_hull_layer or '== ThingDefOf.GravshipHull' in family_hull_layer:
-              failures.append('WNG family hull topology must remain a separate family-aware layer, not a native hull patch/hard-code')
+          if 'AddAngledBand' in family_hull_layer:
+              failures.append('WNG family hull topology regressed to the obsolete custom angled-band approximation')
+          if '== ThingDefOf.GravshipHull' in family_hull_layer:
+              failures.append('WNG family hull topology incorrectly hard-codes the vanilla hull Def instead of family Defs')
 
           # Live RimWorld 1.6 Def-load regressions found by the first af251cf playtest.
           live_bad_tokens = {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <DesignationCategoryDef>
+    <defName>WNG_Architect</defName>
+    <label>WNG</label>
+    <description>Wraith &amp; Nanite Gravtech structures, gravship systems, furniture, power, floors and WNG-owned Stargate-era technology.</description>
+    <order>85</order>
+  </DesignationCategoryDef>
+</Defs>

@@ -3,7 +3,7 @@
   <XenotypeDef>
     <defName>WNG_NanitePrecursor</defName>
     <label>nanite precursor</label>
-    <iconPath>Things/Item/Resource/WNG_AsuranNaniteSlurry</iconPath>
+    <iconPath>UI/WNG/Xenotypes/NanitePrecursor</iconPath>
     <description>A synthetic humanoid whose biological presentation is supported by a reconstructive nanite body. Ordinary food supplies nanite feedstock, Nanite Reserve accelerates repair, and nearby same-faction synthetic minds can coordinate reconstruction through a local collective link. Electromagnetic disruption temporarily desynchronizes both body and collective connection.</description>
     <descriptionShort>Synthetic humanoid sustained and reconstructed by a food-fed nanite reserve.</descriptionShort>
     <genes>

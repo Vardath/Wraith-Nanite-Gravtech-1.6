@@ -10,6 +10,8 @@
     <maxGenerationAge>80</maxGenerationAge>
     <allowOldAgeInjuries>false</allowOldAgeInjuries>
     <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
+    <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <apparelMoney>0</apparelMoney>
     <gearHealthRange>0.9~1</gearHealthRange>
     <itemQuality>Good</itemQuality>
     <initialWillRange>12~24</initialWillRange>
@@ -21,6 +23,7 @@
     <label>precursor engineer</label>
     <combatPower>110</combatPower>
     <isFighter>false</isFighter>
+    <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <backstoryFiltersOverride>
       <li><categories><li>AsuranOrigin</li><li>AsuranEngineerAdult</li></categories></li>
     </backstoryFiltersOverride>
@@ -33,7 +36,6 @@
     <isFighter>true</isFighter>
     <weaponMoney>1005~2200</weaponMoney>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
-    <apparelMoney>2500~4500</apparelMoney>
     <apparelRequired><li>WNG_PrecursorFieldArmor</li></apparelRequired>
     <backstoryFiltersOverride>
       <li><categories><li>AsuranOrigin</li><li>AsuranSoldierAdult</li></categories></li>
@@ -48,7 +50,6 @@
     <factionLeader>true</factionLeader>
     <weaponMoney>1400~3000</weaponMoney>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
-    <apparelMoney>3200~5200</apparelMoney>
     <apparelRequired><li>WNG_PrecursorCommandArmor</li></apparelRequired>
     <itemQuality>Excellent</itemQuality>
     <backstoryFiltersOverride>
