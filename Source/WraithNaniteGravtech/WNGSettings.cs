@@ -6,7 +6,7 @@ using Verse;
 
 namespace WraithNaniteGravtech
 {
-    public sealed class WNGSettings : ModSettings
+    public class WNGSettings : ModSettings
     {
         public bool enableUniversalCrafting = false;
         public int livingForgeRawMeatCost = 20;
@@ -69,6 +69,11 @@ namespace WraithNaniteGravtech
             replicatorQueenRecurringRecoveryDays = Mathf.Clamp(replicatorQueenRecurringRecoveryDays, 1f, 10f);
             sovereignLatticeControlCap = Mathf.Clamp(sovereignLatticeControlCap, 20, 50);
         }
+    }
+
+    [Obsolete("Compatibility alias for pre-rebuild settings saves.")]
+    public sealed class WNGModSettings : WNGSettings
+    {
     }
 
     public sealed class WNGMod : Mod

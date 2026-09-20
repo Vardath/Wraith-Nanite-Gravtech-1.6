@@ -10,6 +10,7 @@
     <useHitPoints>true</useHitPoints>
     <selectable>true</selectable>
     <stackLimit>500</stackLimit>
+    <drawGUIOverlay>true</drawGUIOverlay>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_Biomass</texPath>
       <graphicClass>Graphic_Single</graphicClass>

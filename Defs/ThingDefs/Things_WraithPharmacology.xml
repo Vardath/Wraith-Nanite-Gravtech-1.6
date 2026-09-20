@@ -18,6 +18,7 @@
       <Mass>0.08</Mass>
     </statBases>
     <techLevel>Spacer</techLevel>
+    <recipeMaker IsNull="True" />
     <ingestible>
       <joyKind>Chemical</joyKind>
       <joy>0.30</joy>
