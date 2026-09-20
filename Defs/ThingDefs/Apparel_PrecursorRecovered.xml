@@ -75,7 +75,7 @@
       <ComponentSpacer>2</ComponentSpacer>
       <WNG_ReplicatorMatter>8</WNG_ReplicatorMatter>
     </costList>
-    <thingCategories><li>Accessories</li></thingCategories>
+    <thingCategories><li>Apparel</li></thingCategories>
     <apparel>
       <careIfWornByCorpse>false</careIfWornByCorpse>
       <bodyPartGroups><li>Waist</li></bodyPartGroups>
