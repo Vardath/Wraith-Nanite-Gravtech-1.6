@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <AbilityDef ParentName="AbilityBase">
+  <AbilityDef>
     <defName>WNG_SovereignLatticeDirective</defName>
     <label>issue lattice sovereignty</label>
     <description>The implanted Sovereign Neural Lattice can bind or release one targeted block Replicator while maintaining its other existing bindings. Acquisition is local and explicit, and normal EMP or containment interruption still applies.</description>
