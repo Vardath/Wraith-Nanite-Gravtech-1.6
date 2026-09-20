@@ -33,7 +33,7 @@
     <defName>WNG_GoauldGravshipHull</defName><label>Ha'tak gravship hull</label>
     <description>Dense airtight naquadah-reinforced armor forming the angular outer shell of a Ha'tak.</description>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>1805</uiOrder>
-    <graphicData Inherit="False"><graphicClass>Graphic_Linked</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas</texPath><drawSize>(1,1)</drawSize><linkType>CornerFiller</linkType></graphicData>
+    <graphicData Inherit="False"><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas</texPath><drawSize>(1,1)</drawSize><linkType>CornerFiller</linkType></graphicData>
     <statBases><MaxHitPoints>860</MaxHitPoints><WorkToBuild>540</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><ONAC_Naquadah>3</ONAC_Naquadah><Plasteel>5</Plasteel></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
@@ -211,7 +211,7 @@
   <ThingDef ParentName="BuildingBase" MayRequire="idolord.ONAC">
     <defName>WNG_GoauldHeavyPlasmaBattery</defName><label>Ha'tak heavy plasma battery</label>
     <description>A heavy Goa'uld shipboard plasma battery. Native turret AI owns local targeting and firing; its power state is supplied by the exact Ha'tak family grid rather than a hidden vanilla power connection. From an Odyssey Orbit map, the same physical battery can designate a different already-generated Surface map within range for a native RimWorld orbital bombardment.</description>
-    <thingClass>Building_TurretGun</thingClass><tickerType>Normal</tickerType><graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldHeavyPlasmaBattery</texPath><drawSize>(2,2)</drawSize></graphicData><altitudeLayer>Building</altitudeLayer><thingCategories><li>BuildingsSecurity</li></thingCategories><size>(2,2)</size><rotatable>true</rotatable><passability>PassThroughOnly</passability><pathCost>50</pathCost><fillPercent>0.4</fillPercent><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <thingClass>Building_TurretGun</thingClass><tickerType>Normal</tickerType><graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldHeavyPlasmaBattery</texPath><drawSize>(2,2)</drawSize></graphicData><altitudeLayer>Building</altitudeLayer><size>(2,2)</size><rotatable>true</rotatable><passability>PassThroughOnly</passability><pathCost>50</pathCost><fillPercent>0.4</fillPercent><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <designationCategory>ONAC_Architect</designationCategory><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><constructionSkillPrerequisite>9</constructionSkillPrerequisite><uiOrder>2385</uiOrder>
     <statBases><MaxHitPoints>560</MaxHitPoints><Flammability>0</Flammability><WorkToBuild>13000</WorkToBuild><Mass>115</Mass><Beauty>2</Beauty><ShootingAccuracyTurret>0.96</ShootingAccuracyTurret></statBases><costList><ONAC_Naquadah>55</ONAC_Naquadah><Plasteel>160</Plasteel><Gold>30</Gold><ComponentIndustrial>8</ComponentIndustrial><ComponentSpacer>3</ComponentSpacer></costList>
     <comps>
@@ -220,13 +220,13 @@
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>1800</demandWatts></li>
       <li Class="WraithNaniteGravtech.CompProperties_GoauldHatakOrbitalBombardment"><maxWorldRangeTiles>12</maxWorldRangeTiles><cooldownTicks>60000</cooldownTicks><impactAreaRadius>12</impactAreaRadius><explosionRadiusRange>2.8~4.0</explosionRadiusRange><bombIntervalTicks>18</bombIntervalTicks><warmupTicks>120</warmupTicks><randomFireRadius>14</randomFireRadius></li>
     </comps>
-    <building><turretGunDef>WNG_Gun_GoauldHeavyPlasmaCannon</turretGunDef><turretBurstWarmupTime>1.2</turretBurstWarmupTime><turretBurstCooldownTime>3.8</turretBurstCooldownTime><turretTopGraphicPath>Things/Building/Goauld/Gravship/WNG_GoauldHeavyPlasmaBatteryTop</turretTopGraphicPath><turretTopDrawSize>2.2</turretTopDrawSize></building>
+    <building><turretGunDef>WNG_Gun_GoauldHeavyPlasmaCannon</turretGunDef><turretBurstWarmupTime>1.2</turretBurstWarmupTime><turretBurstCooldownTime>3.8</turretBurstCooldownTime><turretTopDrawSize>2.2</turretTopDrawSize></building>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li><li>WraithNaniteGravtech.PlaceWorker_InRangeOfGoauldGravEngine</li></placeWorkers>
   </ThingDef>
 
   <ThingDef ParentName="BaseGun" MayRequire="idolord.ONAC">
     <defName>WNG_Gun_GoauldHeavyPlasmaCannon</defName><label>Ha'tak heavy plasma cannon</label><description>The firing assembly of a Ha'tak heavy plasma battery.</description><smeltable>false</smeltable>
-    <graphicData><texPath>Things/Item/Equipment/WeaponRanged/ChargeRifle</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <graphicData><texPath>Things/Building/Goauld/Gravship/WNG_GoauldHeavyPlasmaBatteryTop</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases><MarketValue>900</MarketValue><Mass>45</Mass><AccuracyTouch>0.35</AccuracyTouch><AccuracyShort>0.72</AccuracyShort><AccuracyMedium>0.86</AccuracyMedium><AccuracyLong>0.80</AccuracyLong><RangedWeapon_Cooldown>3.8</RangedWeapon_Cooldown></statBases>
     <weaponTags><li>TurretGun</li></weaponTags>
     <verbs><li><verbClass>Verb_Shoot</verbClass><defaultProjectile>WNG_Projectile_GoauldHeavyPlasma</defaultProjectile><warmupTime>0</warmupTime><range>45.9</range><forcedMissRadius>5</forcedMissRadius><minRange>6</minRange><burstShotCount>3</burstShotCount><ticksBetweenBurstShots>16</ticksBetweenBurstShots><soundCast>ChargeLance_Fire</soundCast><muzzleFlashScale>12</muzzleFlashScale></li></verbs>
