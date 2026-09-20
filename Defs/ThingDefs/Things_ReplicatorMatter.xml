@@ -65,6 +65,7 @@
     <rotatable>true</rotatable>
     <uiIconPath>UI/WNG/Build/WNG_ReplicatorContainmentProjector</uiIconPath>
     <minifiedDef>MinifiedThing</minifiedDef>
+    <thingCategories><li>Buildings</li></thingCategories>
     <statBases>
       <MaxHitPoints>360</MaxHitPoints>
       <WorkToBuild>4200</WorkToBuild>
