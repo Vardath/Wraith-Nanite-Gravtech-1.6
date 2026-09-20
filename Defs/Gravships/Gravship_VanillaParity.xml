@@ -2,9 +2,7 @@
 <Defs>
   <!--
     D110 Odyssey gravship parity.
-    These defs deliberately reuse CURRENT WNG art only as temporary presentation so this systems
-    pass cannot create missing texture paths. The next dedicated art pass replaces each reused
-    graphic with professional role-specific Stargate-family art.
+    These defs now use dedicated professional role-specific Stargate-family art from the D112 art pass.
   -->
 
   <!-- ============================== WRAITH ============================== -->
@@ -14,7 +12,7 @@
     <description>A ship-grown sensory lobe that performs Odyssey's native orbital-scanner role, passively finding irregular objects in orbit while connected to the Wraith neural grid.</description>
     <thingClass>Building</thingClass>
     <designationCategory>Misc</designationCategory><uiOrder>2242</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithSignalVeil</texPath><drawSize>(2,2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithOrbitalSensorOrgan</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><constructionSkillPrerequisite>8</constructionSkillPrerequisite><canBeUsedUnderRoof>false</canBeUsedUnderRoof>
     <statBases><MaxHitPoints>350</MaxHitPoints><Mass>42</Mass><WorkToBuild>9000</WorkToBuild><Flammability>0.1</Flammability><Beauty>2</Beauty></statBases>
@@ -36,7 +34,7 @@
     <description>A vascular life-support organ that performs Odyssey's native oxygen-pump function, restoring breathable pressure to sealed Wraith gravship rooms.</description>
     <thingClass>Building</thingClass>
     <designationCategory>Misc</designationCategory><uiOrder>2243</uiOrder><tickerType>Rare</tickerType>
-    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_GravshipMetabolicHeart</texPath><drawSize>(1.5,1.5)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithAtmosphereOrgan</texPath><drawSize>(1.5,1.5)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><constructionSkillPrerequisite>7</constructionSkillPrerequisite>
     <statBases><MaxHitPoints>260</MaxHitPoints><Mass>18</Mass><WorkToBuild>4200</WorkToBuild><Flammability>0.12</Flammability><Beauty>1</Beauty></statBases>
@@ -77,7 +75,7 @@
     <label>wraith navigation cortex</label>
     <description>A semi-autonomous flight cortex performing the vanilla pilot-subpersona role. Up to two active cortices reduce Wraith gravship launch risk through Odyssey's native launch-quality system.</description>
     <designationCategory>Misc</designationCategory><uiOrder>2244</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_OrganicPilotNode</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithNavigationCortex</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>240</MaxHitPoints><Mass>12</Mass><WorkToBuild>5200</WorkToBuild><Flammability>0.1</Flammability><Beauty>2</Beauty></statBases>
     <costList><WNG_Biomass>65</WNG_Biomass><GravlitePanel>10</GravlitePanel></costList>
@@ -96,7 +94,7 @@
     <description>A high-resolution Ancient-derived sensor array using Odyssey's native orbital-scanner logic while drawing only from the Asuran power lattice.</description>
     <thingClass>Building</thingClass>
     <designationCategory>Misc</designationCategory><uiOrder>2245</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranSignalJammer</texPath><drawSize>(2,2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranOrbitalScanner</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><constructionSkillPrerequisite>9</constructionSkillPrerequisite><canBeUsedUnderRoof>false</canBeUsedUnderRoof>
     <statBases><MaxHitPoints>420</MaxHitPoints><Mass>38</Mass><WorkToBuild>10500</WorkToBuild><Flammability>0</Flammability><Beauty>7</Beauty></statBases>
@@ -119,7 +117,7 @@
     <description>An Ancient-derived atmospheric regulator using Odyssey's native oxygen-pump behavior to repressurize sealed Asuran gravship compartments.</description>
     <thingClass>Building</thingClass>
     <designationCategory>Misc</designationCategory><uiOrder>2246</uiOrder><tickerType>Rare</tickerType>
-    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranPowerCell</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranAtmosphereRegulator</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>320</MaxHitPoints><Mass>15</Mass><WorkToBuild>5000</WorkToBuild><Flammability>0</Flammability><Beauty>6</Beauty></statBases>
     <costList><Plasteel>60</Plasteel><GravlitePanel>15</GravlitePanel><ComponentIndustrial>2</ComponentIndustrial></costList>
@@ -161,7 +159,7 @@
     <label>Asuran flight submind</label>
     <description>A narrow collective submind specialized in gravship trajectory control. It fills Odyssey's pilot-subpersona role; up to two active subminds improve native gravlaunch quality.</description>
     <designationCategory>Misc</designationCategory><uiOrder>2247</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranFlightSubmind</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>340</MaxHitPoints><Mass>10</Mass><WorkToBuild>6200</WorkToBuild><Flammability>0</Flammability><Beauty>8</Beauty></statBases>
     <costList><Plasteel>75</Plasteel><GravlitePanel>15</GravlitePanel><ComponentSpacer>2</ComponentSpacer></costList>
@@ -181,7 +179,7 @@
     <description>A Goa'uld long-range sensor array using Odyssey's native orbital-scanner logic to detect irregular objects in orbit.</description>
     <thingClass>Building</thingClass>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>2390</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPeltac</texPath><drawSize>(2,2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldOrbitalScanner</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><constructionSkillPrerequisite>9</constructionSkillPrerequisite><canBeUsedUnderRoof>false</canBeUsedUnderRoof>
     <statBases><MaxHitPoints>480</MaxHitPoints><Mass>45</Mass><WorkToBuild>11000</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
@@ -203,7 +201,7 @@
     <description>A naquadah-powered atmospheric system using Odyssey's native oxygen-pump behavior to maintain pressure aboard a Ha'tak.</description>
     <thingClass>Building</thingClass>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>2391</uiOrder><tickerType>Rare</tickerType>
-    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldNaquadahPowerCore</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldLifeSupport</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>380</MaxHitPoints><Mass>18</Mass><WorkToBuild>5500</WorkToBuild><Flammability>0</Flammability><Beauty>3</Beauty></statBases>
     <costList><ONAC_Naquadah>12</ONAC_Naquadah><Plasteel>55</Plasteel><ComponentIndustrial>2</ComponentIndustrial></costList>
@@ -243,7 +241,7 @@
     <label>Ha'tak navigation crystal</label>
     <description>A dedicated Goa'uld flight-calculation crystal filling Odyssey's pilot-subpersona role. Up to two active navigation crystals improve native gravlaunch quality.</description>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>2392</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPeltac</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldNavigationCrystal</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>320</MaxHitPoints><Mass>10</Mass><WorkToBuild>6500</WorkToBuild><Flammability>0</Flammability><Beauty>5</Beauty></statBases>
     <costList><ONAC_Naquadah>18</ONAC_Naquadah><Plasteel>55</Plasteel><Gold>18</Gold><ComponentSpacer>2</ComponentSpacer></costList>
@@ -260,7 +258,7 @@
     <label>Ha'tak signal masker</label>
     <description>A Goa'uld subspace interference array performing Odyssey's native signal-jammer role, allowing a properly equipped Ha'tak to reach defended orbital destinations.</description>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>2393</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldFuelOptimizer</texPath><drawSize>(2,2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldSignalJammer</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.5</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>460</MaxHitPoints><Mass>55</Mass><WorkToBuild>10500</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
     <costList><ONAC_Naquadah>35</ONAC_Naquadah><Plasteel>110</Plasteel><Gold>20</Gold><ComponentSpacer>4</ComponentSpacer></costList>
