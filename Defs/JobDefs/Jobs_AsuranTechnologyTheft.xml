@@ -4,7 +4,6 @@
     <defName>WNG_AsuranStealPattern</defName>
     <driverClass>WraithNaniteGravtech.JobDriver_AsuranStealPattern</driverClass>
     <reportString>scanning TargetA for a technology pattern.</reportString>
-    <checkOverrideOnExpire>true</checkOverrideOnExpire>
     <playerInterruptible>false</playerInterruptible>
   </JobDef>
 
@@ -12,7 +11,6 @@
     <defName>WNG_AsuranRecoverVacuumModule</defName>
     <driverClass>WraithNaniteGravtech.JobDriver_AsuranRecoverVacuumModule</driverClass>
     <reportString>recovering a finite vacuum-energy module from TargetA.</reportString>
-    <checkOverrideOnExpire>true</checkOverrideOnExpire>
     <playerInterruptible>false</playerInterruptible>
   </JobDef>
 </Defs>
