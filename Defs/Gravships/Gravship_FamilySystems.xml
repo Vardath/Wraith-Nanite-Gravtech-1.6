@@ -34,7 +34,7 @@
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
-      <linkType>CornerFiller</linkType>
+      <linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>620</MaxHitPoints>
@@ -788,7 +788,7 @@
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
-      <linkType>CornerFiller</linkType>
+      <linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>720</MaxHitPoints>
