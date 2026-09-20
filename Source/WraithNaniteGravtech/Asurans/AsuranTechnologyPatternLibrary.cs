@@ -45,7 +45,7 @@ namespace WraithNaniteGravtech
             new AsuranTechnologyPatternSpec("core.chain_shotgun", "Gun_ChainShotgun", "WNG_ReconstructChainShotgun", "chain shotgun"),
             new AsuranTechnologyPatternSpec("core.recon_armor", "Apparel_ArmorRecon", "WNG_ReconstructReconArmor", "recon armor"),
             new AsuranTechnologyPatternSpec("royalty.cataphract_armor", "Apparel_ArmorCataphract", "WNG_ReconstructCataphractArmor", "cataphract armor"),
-            new AsuranTechnologyPatternSpec("royalty.cataphract_helmet", "Apparel_ArmorCataphractHelmet", "WNG_ReconstructCataphractHelmet", "cataphract helmet")
+            new AsuranTechnologyPatternSpec("royalty.cataphract_helmet", "Apparel_ArmorHelmetCataphract", "WNG_ReconstructCataphractHelmet", "cataphract helmet")
         };
 
         public static bool TryPatternForSpecimen(ThingDef def, out AsuranTechnologyPatternSpec spec)

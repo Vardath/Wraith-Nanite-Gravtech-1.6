@@ -21,7 +21,7 @@
     <stages>
       <li>
         <statFactors>
-          <GlobalWorkSpeed>0.50</GlobalWorkSpeed>
+          <WorkSpeedGlobal>0.50</WorkSpeedGlobal>
           <MedicalTendSpeed>0.65</MedicalTendSpeed>
           <MoveSpeed>0.55</MoveSpeed>
         </statFactors>

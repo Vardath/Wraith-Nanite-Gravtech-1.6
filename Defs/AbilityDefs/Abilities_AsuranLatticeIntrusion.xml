@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Defs>
-  <AbilityDef ParentName="AbilityBase">
+  <AbilityDef>
     <defName>WNG_AsuranLatticeIntrusion</defName>
     <label>intrude on Replicator lattice</label>
     <description>Inject a temporary Asuran control pattern into one hostile block Replicator. Small bodies can be reversibly hijacked; larger or specialist bodies instead suffer bounded command suppression. The original controller state is preserved for restoration, and EMP or powered containment can interrupt the intrusion.</description>

@@ -10,7 +10,7 @@
     </descriptionHyperlinks>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_WraithBiofluidFuel</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <rotatable>false</rotatable>
     <statBases>
@@ -108,7 +108,7 @@
     <description>A controlled tapering treatment made from measured Wraith enzyme, neutroamine and medical stabilizers. Each dose reduces established Wraith-enzyme dependence and temporarily relieves withdrawal pressure. Multiple doses over time are required; it does not erase addiction instantly.</description>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_WraithBiofluidFuel</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <rotatable>false</rotatable>
     <statBases>

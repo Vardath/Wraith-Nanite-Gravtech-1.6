@@ -7,7 +7,7 @@
     <stackLimit>4</stackLimit><tradeability>All</tradeability><alwaysHaulable>true</alwaysHaulable><drawGUIOverlay>true</drawGUIOverlay>
     <thingCategories><li>Manufactured</li></thingCategories>
     <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Item/Resource/Precursor/WNG_VacuumEnergyModule</texPath><drawSize>(0.85,0.85)</drawSize></graphicData>
-    <statBases><Mass>8</Mass><MarketValue>9800</MarketValue><FuelValue>1</FuelValue><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate></statBases>
+    <statBases><Mass>8</Mass><MarketValue>9800</MarketValue><Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate></statBases>
   </ThingDef>
 
   <ThingDef ParentName="BuildingBase">

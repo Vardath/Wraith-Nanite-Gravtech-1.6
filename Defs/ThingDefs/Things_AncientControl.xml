@@ -15,7 +15,7 @@
       <drawSize>(0.9,0.9)</drawSize>
     </graphicData>
     <statBases>
-      <Mass>4.5</Mass><MarketValue>1050</MarketValue><FuelValue>1</FuelValue>
+      <Mass>4.5</Mass><MarketValue>1050</MarketValue>
       <Flammability>0</Flammability><DeteriorationRate>0</DeteriorationRate>
     </statBases>
   </ThingDef>

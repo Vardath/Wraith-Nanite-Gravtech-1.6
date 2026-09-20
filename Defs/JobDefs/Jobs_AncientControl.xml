@@ -4,7 +4,6 @@
     <defName>WNG_OperateAncientControlChair</defName>
     <driverClass>WraithNaniteGravtech.JobDriver_OperateAncientControlChair</driverClass>
     <reportString>maintaining neural control-chair link.</reportString>
-    <checkOverrideOnExpire>true</checkOverrideOnExpire>
     <playerInterruptible>true</playerInterruptible>
   </JobDef>
 </Defs>

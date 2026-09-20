@@ -13,13 +13,13 @@
     <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
     <cooldownTicksRange>1800~1800</cooldownTicksRange>
     <showPsycastEffects>false</showPsycastEffects>
-    <soundCast>WNG_WraithHiveSense</soundCast>
     <statBases>
       <Ability_EntropyGain>8</Ability_EntropyGain>
       <Ability_PsyfocusCost>0</Ability_PsyfocusCost>
     </statBases>
     <verbProperties>
       <warmupTime>0.5</warmupTime>
+      <soundCast>WNG_WraithHiveSense</soundCast>
       <range>-1</range>
       <drawAimPie>false</drawAimPie>
       <requireLineOfSight>false</requireLineOfSight>
@@ -44,7 +44,6 @@
     <hostile>true</hostile>
     <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
     <cooldownTicksRange>1200~1200</cooldownTicksRange>
-    <soundCast>WNG_WraithHallucination</soundCast>
     <statBases>
       <Ability_EntropyGain>10</Ability_EntropyGain>
       <Ability_PsyfocusCost>0</Ability_PsyfocusCost>
@@ -52,6 +51,7 @@
     </statBases>
     <verbProperties>
       <warmupTime>0.25</warmupTime>
+      <soundCast>WNG_WraithHallucination</soundCast>
       <range>19.9</range>
       <targetParams>
         <canTargetAnimals>true</canTargetAnimals>
@@ -82,7 +82,6 @@
     <hostile>true</hostile>
     <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
     <cooldownTicksRange>2500~2500</cooldownTicksRange>
-    <soundCast>WNG_WraithTelepathicProbe</soundCast>
     <statBases>
       <Ability_EntropyGain>18</Ability_EntropyGain>
       <Ability_PsyfocusCost>0</Ability_PsyfocusCost>
@@ -90,6 +89,7 @@
     </statBases>
     <verbProperties>
       <warmupTime>0.5</warmupTime>
+      <soundCast>WNG_WraithTelepathicProbe</soundCast>
       <range>17.9</range>
       <targetParams>
         <canTargetAnimals>true</canTargetAnimals>

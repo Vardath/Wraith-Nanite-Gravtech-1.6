@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <RecipeDef ParentName="MakeMechanoidBase">
+  <RecipeDef>
     <defName>WNG_MakeChildsToy</defName>
     <label>gestate Child's Toy replicator</label>
     <description>Gestate a domesticated Child's Toy Replicator as a normal player mech.</description>

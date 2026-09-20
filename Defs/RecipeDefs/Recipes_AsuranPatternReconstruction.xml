@@ -256,7 +256,7 @@
       <li><filter><thingDefs><li>WNG_AsuranNaniteSlurry</li></thingDefs></filter><count>40</count></li>
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li><li>WNG_AsuranNaniteSlurry</li></thingDefs></fixedIngredientFilter>
-    <products><Apparel_ArmorCataphractHelmet>1</Apparel_ArmorCataphractHelmet></products>
+    <products><Apparel_ArmorHelmetCataphract>1</Apparel_ArmorHelmetCataphract></products>
     <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
   </RecipeDef>
 

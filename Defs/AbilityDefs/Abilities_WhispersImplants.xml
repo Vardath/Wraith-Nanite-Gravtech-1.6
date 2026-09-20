@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <AbilityDef ParentName="AbilityBase">
+  <AbilityDef>
     <defName>WNG_ReleaseWhispersMist</defName><label>release predatory mist</label>
     <description>Contract the implanted Whispers mist gland and flood the immediate area with dense obscuring biological fog. The fog is non-toxic but strongly interferes with ranged sightlines.</description>
     <iconPath>UI/Abilities/Smokepop</iconPath><displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted><disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted><targetRequired>false</targetRequired><hostile>false</hostile><casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>

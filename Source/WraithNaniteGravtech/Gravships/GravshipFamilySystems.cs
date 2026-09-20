@@ -205,6 +205,26 @@ namespace WraithNaniteGravtech
     {
         protected abstract WNGGravshipFamily Family { get; }
 
+        public override void Init(GraphicRequest req)
+        {
+            data = req.graphicData;
+            path = req.path;
+            maskPath = req.maskPath;
+            color = req.color;
+            colorTwo = req.colorTwo;
+            drawSize = req.drawSize;
+            subGraphic = GraphicDatabase.Get(
+                typeof(Graphic_Single),
+                req.path,
+                req.shader,
+                req.drawSize,
+                req.color,
+                req.colorTwo,
+                req.graphicData,
+                req.shaderParameters,
+                req.maskPath);
+        }
+
         public override bool ShouldLinkWith(IntVec3 c, Thing parent)
         {
             return WNGFamilyPowerUtility.ShouldPowerLinkTo(c, parent, Family);
@@ -333,6 +353,26 @@ namespace WraithNaniteGravtech
     public abstract class Graphic_LinkedWNGFuelConduit : Graphic_Linked
     {
         protected abstract WNGGravshipFamily Family { get; }
+
+        public override void Init(GraphicRequest req)
+        {
+            data = req.graphicData;
+            path = req.path;
+            maskPath = req.maskPath;
+            color = req.color;
+            colorTwo = req.colorTwo;
+            drawSize = req.drawSize;
+            subGraphic = GraphicDatabase.Get(
+                typeof(Graphic_Single),
+                req.path,
+                req.shader,
+                req.drawSize,
+                req.color,
+                req.colorTwo,
+                req.graphicData,
+                req.shaderParameters,
+                req.maskPath);
+        }
 
         public override bool ShouldLinkWith(IntVec3 c, Thing parent)
         {
