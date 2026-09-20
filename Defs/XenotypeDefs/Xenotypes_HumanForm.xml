@@ -3,6 +3,7 @@
   <XenotypeDef>
     <defName>WNG_NanitePrecursor</defName>
     <label>nanite precursor</label>
+    <iconPath>Things/Item/Resource/WNG_AsuranNaniteSlurry</iconPath>
     <description>A synthetic humanoid whose biological presentation is supported by a reconstructive nanite body. Ordinary food supplies nanite feedstock, Nanite Reserve accelerates repair, and nearby same-faction synthetic minds can coordinate reconstruction through a local collective link. Electromagnetic disruption temporarily desynchronizes both body and collective connection.</description>
     <descriptionShort>Synthetic humanoid sustained and reconstructed by a food-fed nanite reserve.</descriptionShort>
     <genes>
@@ -18,6 +19,7 @@
   <XenotypeDef>
     <defName>WNG_HumanFormReplicator</defName>
     <label>human-form replicator</label>
+    <iconPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</iconPath>
     <description>A synthetic human-form Replicator built from coordinated nanomachines. It can pass as a human at ordinary inspection while its food-fed Nanite Reserve powers accelerated reconstruction. Its lattice remains vulnerable to EMP, which also severs its local collective coordination. Infiltration, Neural Interface functions, pattern archives and block-Replicator controller authority remain separate systems rather than hidden properties of this xenotype.</description>
     <descriptionShort>Human-mimicking synthetic Replicator with reconstructive nanite physiology.</descriptionShort>
     <genes>

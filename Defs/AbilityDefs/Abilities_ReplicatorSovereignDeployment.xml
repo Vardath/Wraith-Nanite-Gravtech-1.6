@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <AbilityDef ParentName="AbilityBase">
+  <AbilityDef>
     <defName>WNG_ReplicatorSovereignSummon</defName>
     <label>deploy replicator swarm</label>
     <description>Deploy ten physical Replicator Drones and bind them to the exact Queen or implanted Sovereign Neural Lattice bearer. The ten are created as one latent autonomous swarm, so releasing them later restores the whole group as a coordinated feral force.</description>
@@ -25,7 +25,7 @@
     </comps>
   </AbilityDef>
 
-  <AbilityDef ParentName="AbilityBase">
+  <AbilityDef>
     <defName>WNG_ReplicatorSovereignReleaseSummoned</defName>
     <label>release summoned swarm</label>
     <description>Sever sovereign control over every summoned Replicator on this map. The exact Drones remain physically present, revert to the Replicator swarm faction, and recover their shared feral controller-domain. This is irreversible through this command and the released swarm is hostile to the colony.</description>

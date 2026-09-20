@@ -74,6 +74,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_WraithGrowthChamber</defName>
     <label>wraith growth chamber</label>
+    <thingCategories><li>Buildings</li></thingCategories>
     <description>A cultivated Wraith gestation organ. Player Wraith colonies use it for resource-paid caste gestation, researched Wraith augmentations, and—after dedicated research—permanent Wraith-human hybrid grafting of an exact living subject. Hunter, Warrior and Keeper gestation use biomass and Life Force; Commander gestation additionally consumes an existing Wraith biological template. Hybrid grafting instead preserves the subject as the same pawn and installs only a limited unstable Wraith phenotype. Hostile mature Hives use the same organ under their Hive Heart ecology. A Growth Chamber is produced directly at a Living Forge; it has no separate growth-chamber seed stage.</description>
     <thingClass>Building_WorkTable</thingClass>
     <drawerType>MapMeshAndRealTime</drawerType>

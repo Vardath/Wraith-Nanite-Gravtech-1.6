@@ -23,7 +23,7 @@
         <frequencyTicks>120000</frequencyTicks>
         <knowledgeCategory>Basic</knowledgeCategory>
         <anomalyKnowledge>1.25</anomalyKnowledge>
-        <minMonolithLevelForStudy>0</minMonolithLevelForStudy>
+        <minMonolithLevelForStudy>1</minMonolithLevelForStudy>
         <requiresHoldingPlatform>true</requiresHoldingPlatform>
       </li>
       <li Class="WraithNaniteGravtech.Anomaly.CompProperties_WNGStudyGateAnalyzable">
