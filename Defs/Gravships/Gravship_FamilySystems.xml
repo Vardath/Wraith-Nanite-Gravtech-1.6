@@ -31,7 +31,7 @@
     <designationCategory>Structure</designationCategory>
     <uiOrder>1810</uiOrder>
     <graphicData Inherit="False">
-      <graphicClass>Graphic_Linked</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
       <linkType>CornerFiller</linkType>
@@ -784,7 +784,7 @@
     <designationCategory>Structure</designationCategory>
     <uiOrder>1812</uiOrder>
     <graphicData Inherit="False">
-      <graphicClass>Graphic_Linked</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
       <linkType>CornerFiller</linkType>
