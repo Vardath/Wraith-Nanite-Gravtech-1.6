@@ -51,6 +51,11 @@
       <Neutroamine>10</Neutroamine>
       <MedicineIndustrial>2</MedicineIndustrial>
     </costList>
+    <comps>
+      <li Class="CompProperties_Drug">
+        <listOrder>910</listOrder>
+      </li>
+    </comps>
     <tradeability>Sellable</tradeability>
     <tradeTags><li>ExoticMisc</li></tradeTags>
   </ThingDef>
