@@ -184,7 +184,7 @@
     <defName>WNG_HybridInstability</defName>
     <label>wraith-human genomic instability</label>
     <description>The incomplete graft never reaches stable Wraith equilibrium. Biological and psychic systems periodically fall out of synchronisation, causing deterministic recurring instability flares.</description>
-    <iconPath>UI/WNG/Abilities/WraithFocus</iconPath>
+    <iconPath>UI/WNG/Genes/HybridInstability</iconPath>
     <displayCategory>Ability</displayCategory>
     <geneClass>WraithNaniteGravtech.Gene_WraithHybridInstability</geneClass>
     <biostatCpx>2</biostatCpx>
