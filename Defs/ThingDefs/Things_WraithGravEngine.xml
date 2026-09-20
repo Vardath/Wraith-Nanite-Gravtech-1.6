@@ -95,6 +95,7 @@
           <li>WNG_WraithHeavyDriveOrgan</li>
           <li>WNG_WraithFuelOptimizer</li>
           <li>WNG_WraithSignalVeil</li>
+          <li>WNG_WraithNavigationCortex</li>
         </linkableFacilities>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGAmbientLoop">

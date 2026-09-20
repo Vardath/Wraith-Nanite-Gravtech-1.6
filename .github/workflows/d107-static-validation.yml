@@ -2443,6 +2443,55 @@ jobs:
               live_drug_text = Path(live_drug_path).read_text(encoding='utf-8')
               if '<drugCategory>' not in live_drug_text or 'CompProperties_Drug' not in live_drug_text:
                   failures.append(f'{live_drug_name} can enter DrugPolicy without CompProperties_Drug')
+          # D110: complete WNG parity with vanilla/Odyssey gravship support systems.
+          parity_defs = Path('Defs/Gravships/Gravship_VanillaParity.xml').read_text(encoding='utf-8')
+          parity_source = Path('Source/WraithNaniteGravtech/Gravships/GravshipVanillaParity.cs').read_text(encoding='utf-8')
+          parity_patch = Path('Patches/Gravship_VanillaParity.xml').read_text(encoding='utf-8')
+          wraith_engine = Path('Defs/ThingDefs/Things_WraithGravEngine.xml').read_text(encoding='utf-8')
+          family_systems = Path('Defs/Gravships/Gravship_FamilySystems.xml').read_text(encoding='utf-8')
+          goauld_systems = Path('Defs/Gravships/Gravship_Goauld.xml').read_text(encoding='utf-8')
+
+          parity_defs_required = (
+              'WNG_WraithOrbitalSensorOrgan', 'WNG_WraithAtmosphereOrgan', 'WNG_WraithVacuumMembrane', 'WNG_WraithNavigationCortex',
+              'WNG_AsuranOrbitalScanner', 'WNG_AsuranAtmosphereRegulator', 'WNG_AsuranVacBarrier', 'WNG_AsuranFlightSubmind',
+              'WNG_GoauldOrbitalScanner', 'WNG_GoauldLifeSupport', 'WNG_GoauldVacBarrier', 'WNG_GoauldNavigationCrystal', 'WNG_GoauldSignalJammer',
+              'CompOrbitalScanner', 'CompProperties_OxygenPusher', 'Building_VacBarrier',
+              'CompProperties_WNGFamilyPowerProxy',
+          )
+          for token in parity_defs_required:
+              if token not in parity_defs:
+                  failures.append(f'D110 gravship parity contract missing: {token}')
+
+          for family in ('Wraith', 'Asuran', 'Goauld'):
+              if f'<family>{family}</family>' not in parity_defs:
+                  failures.append(f'D110 gravship parity lost {family} family-power isolation')
+
+          for token in ('CompPowerTrader_WNGFamilyProxy', 'WNGFamilyPowerUtility.IsPowered', 'CompTickRare', 'PowerOn'):
+              if token not in parity_source:
+                  failures.append(f'D110 native Odyssey power-facade contract missing: {token}')
+
+          if 'WNG_WraithNavigationCortex' not in wraith_engine:
+              failures.append('Wraith navigation cortex is not linked to Wraith grav engine')
+          if 'WNG_AsuranFlightSubmind' not in family_systems:
+              failures.append('Asuran flight submind is not linked to Asuran grav engine')
+          for token in ('WNG_GoauldNavigationCrystal', 'WNG_GoauldSignalJammer'):
+              if token not in goauld_systems:
+                  failures.append(f'Ha\'tak grav engine parity link missing: {token}')
+
+          for token in ('WNG_WraithNavigationCortex', 'WNG_AsuranFlightSubmind', '0.15'):
+              if token not in parity_patch:
+                  failures.append(f'D110 gravlaunch quality patch missing: {token}')
+          if 'WNG_GoauldNavigationCrystal' not in parity_patch or 'PatchOperationConditional' not in parity_patch:
+              failures.append('Conditional Goauld navigation-crystal gravlaunch integration missing')
+
+          # GravAnchor is intentionally not cloned: Odyssey hard-codes ThingDefOf.GravAnchor in launch/map lifecycle.
+          if '<defName>WNG_WraithGravAnchor</defName>' in parity_defs or '<defName>WNG_AsuranGravAnchor</defName>' in parity_defs or '<defName>WNG_GoauldGravAnchor</defName>' in parity_defs:
+              failures.append('D110 must not fake custom GravAnchor parity without replacing Odyssey exact-Def lifecycle checks')
+
+          # Current accepted Stargate identity: Wraith defense is living-hull regeneration, not a generic energy shield.
+          if '<defName>WNG_WraithGravshipShield</defName>' in parity_defs:
+              failures.append('D110 regressed Wraith living-hull defense into a generic gravship shield')
+
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:

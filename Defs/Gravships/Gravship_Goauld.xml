@@ -15,7 +15,7 @@
     <comps>
       <li Class="CompProperties_SubstructureFootprint"><radius>18.9</radius></li>
       <li Class="CompProperties_Glower"><glowRadius>8</glowRadius><glowColor>(255,170,55,0)</glowColor></li>
-      <li Class="CompProperties_AffectedByFacilities"><linkableFacilities><li>WNG_GoauldGravFieldProjector</li><li>WNG_GoauldPeltac</li><li>WNG_GoauldNaquadriaTank</li><li>WNG_GoauldLargeNaquadriaTank</li><li>WNG_GoauldSmallSublightDrive</li><li>WNG_GoauldLargeSublightDrive</li><li>WNG_GoauldFuelOptimizer</li><li>WNG_GoauldGravshipShield</li><li>WNG_GoauldHeavyPlasmaBattery</li></linkableFacilities></li>
+      <li Class="CompProperties_AffectedByFacilities"><linkableFacilities><li>WNG_GoauldGravFieldProjector</li><li>WNG_GoauldPeltac</li><li>WNG_GoauldNaquadriaTank</li><li>WNG_GoauldLargeNaquadriaTank</li><li>WNG_GoauldSmallSublightDrive</li><li>WNG_GoauldLargeSublightDrive</li><li>WNG_GoauldFuelOptimizer</li><li>WNG_GoauldSignalJammer</li><li>WNG_GoauldNavigationCrystal</li><li>WNG_GoauldGravshipShield</li><li>WNG_GoauldHeavyPlasmaBattery</li></linkableFacilities></li>
     </comps>
   </ThingDef>
 
