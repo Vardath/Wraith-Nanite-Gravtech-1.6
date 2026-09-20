@@ -33,7 +33,7 @@
     <defName>WNG_GoauldGravshipHull</defName><label>Ha'tak gravship hull</label>
     <description>Dense airtight naquadah-reinforced armor forming the angular outer shell of a Ha'tak.</description>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>1805</uiOrder>
-    <graphicData Inherit="False"><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas</texPath><drawSize>(1,1)</drawSize><linkType>CornerFiller</linkType></graphicData>
+    <graphicData Inherit="False"><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas</texPath><drawSize>(1,1)</drawSize><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <statBases><MaxHitPoints>860</MaxHitPoints><WorkToBuild>540</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><ONAC_Naquadah>3</ONAC_Naquadah><Plasteel>5</Plasteel></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
