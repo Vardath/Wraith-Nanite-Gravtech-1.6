@@ -9,7 +9,7 @@
     <label>nanite body</label>
     <description>This humanoid body is continuously maintained by coordinated nanomachines. Ordinary food remains necessary because meals provide raw feedstock, but the synthetic digestive process cannot suffer food poisoning and does not require ordinary sleep, recreation, beauty or physical comfort.</description>
     <displayCategory>Ability</displayCategory>
-    <iconPath>Things/Item/Resource/WNG_AsuranNaniteSlurry</iconPath>
+    <iconPath>UI/WNG/Genes/NaniteBody</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_NaniteBody</geneClass>
     <foodPoisoningChanceFactor>0</foodPoisoningChanceFactor>
     <disablesNeeds>
@@ -27,7 +27,7 @@
     <label>nanite reserve</label>
     <description>A visible bounded store of active nanomachines and feedstock. Positive Food-need gain replenishes the reserve; the reserve has no passive time drain. It is spent only when accelerated reconstruction actually commits.</description>
     <displayCategory>Ability</displayCategory>
-    <iconPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</iconPath>
+    <iconPath>UI/WNG/Genes/NaniteReserve</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_Resource_NaniteReserve</geneClass>
     <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_NaniteReserve</resourceGizmoType>
     <resourceLabel>nanite reserve</resourceLabel>
@@ -105,7 +105,7 @@
     <label>neural nanite interface</label>
     <description>Specialized nanites can establish a touch-range interface with another biological humanlike mind for bounded allegiance/captive transitions, learned-pattern acquisition and costly human-form reconstruction. This interface grants no sovereign authority over block Replicators.</description>
     <displayCategory>Ability</displayCategory>
-    <iconPath>Things/Item/Implant/WNG_SovereignNeuralLattice</iconPath>
+    <iconPath>UI/WNG/Abilities/NeuralInterface</iconPath>
     <biostatCpx>4</biostatCpx>
     <biostatMet>-3</biostatMet>
     <abilities><li>WNG_NeuralInterface</li></abilities>
