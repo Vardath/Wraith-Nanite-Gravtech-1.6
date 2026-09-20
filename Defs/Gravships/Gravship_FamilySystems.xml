@@ -137,8 +137,8 @@
     <uiOrder>2200</uiOrder>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
-      <texPath>Things/Building/Wraith/Gravship/WNG_OrganicPilotNode</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Wraith/Gravship/WNG_WraithNavigationCortex</texPath>
       <drawSize>(3,2)</drawSize>
     </graphicData>
     <statBases>
@@ -185,7 +185,7 @@
     <size>(2,2)</size>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithFuelBladder</texPath>
       <drawSize>(2,2)</drawSize>
     </graphicData>
@@ -254,7 +254,7 @@
     <size>(3,3)</size>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithLargeFuelBladder</texPath>
       <drawSize>(3,3)</drawSize>
     </graphicData>
@@ -894,8 +894,8 @@
     <uiOrder>2202</uiOrder>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
-      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Precursor/Gravship/WNG_AsuranFlightSubmind</texPath>
       <drawSize>(3,2)</drawSize>
     </graphicData>
     <statBases>
