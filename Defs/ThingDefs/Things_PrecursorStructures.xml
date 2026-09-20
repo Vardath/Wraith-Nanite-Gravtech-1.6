@@ -7,7 +7,7 @@
     <description>A seamless Asuran composite wall built from pale segmented field-bearing material. The current hull-derived presentation is provisional.</description>
     <graphicData Inherit="False">
       <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_Appearances</graphicClass>
       <linkType>CornerFiller</linkType>
       <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
       <damageData><enabled>false</enabled></damageData>
