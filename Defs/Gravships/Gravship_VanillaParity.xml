@@ -58,7 +58,7 @@
     <description>A living pressure membrane using Odyssey's native vacuum-barrier behavior. When energized by the Wraith neural grid it allows passage while preventing atmosphere and heat from bleeding into vacuum.</description>
     <thingClass>Building_VacBarrier</thingClass>
     <designationCategory>Structure</designationCategory><uiOrder>1812</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Wraith/Gravship/WNG_WraithGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>300</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.08</Flammability></statBases>
     <costList Inherit="False"><WNG_Biomass>20</WNG_Biomass><GravlitePanel>4</GravlitePanel></costList>
     <researchPrerequisites Inherit="False"><li>WNG_HiveGravshipArchitecture</li></researchPrerequisites>
@@ -141,7 +141,7 @@
     <description>A precision force threshold using Odyssey's native vacuum-barrier behavior. When the Asuran lattice is powered it permits passage without allowing atmosphere or heat to escape.</description>
     <thingClass>Building_VacBarrier</thingClass>
     <designationCategory>Structure</designationCategory><uiOrder>1813</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>400</MaxHitPoints><WorkToBuild>1100</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><Plasteel>35</Plasteel><GravlitePanel>8</GravlitePanel><ComponentIndustrial>1</ComponentIndustrial></costList>
     <researchPrerequisites Inherit="False"><li>WNG_AsuranGravshipArchitecture</li></researchPrerequisites>
@@ -224,7 +224,7 @@
     <description>A Goa'uld pressure field using Odyssey's native vacuum-barrier behavior, allowing passage while a powered naquadah field retains atmosphere and heat.</description>
     <thingClass>Building_VacBarrier</thingClass>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>1807</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>460</MaxHitPoints><WorkToBuild>1300</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><ONAC_Naquadah>8</ONAC_Naquadah><Plasteel>25</Plasteel></costList>
     <researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>

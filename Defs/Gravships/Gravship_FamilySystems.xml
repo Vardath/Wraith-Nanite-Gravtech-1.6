@@ -58,7 +58,7 @@
     <designationCategory>Structure</designationCategory>
     <uiOrder>1811</uiOrder>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithGravshipDoor</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
@@ -813,7 +813,7 @@
     <designationCategory>Structure</designationCategory>
     <uiOrder>1813</uiOrder>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
