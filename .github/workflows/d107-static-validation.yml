@@ -2414,6 +2414,27 @@ jobs:
               for forbidden in forbidden_tokens:
                   if forbidden in live_text:
                       failures.append(f'Live RimWorld 1.6 Def-load regression returned in {live_path}: {forbidden}')
+          # Second live RimWorld 1.6 load regression set (0636cbdb playtest).
+          for ability_path in Path('Defs/AbilityDefs').rglob('*.xml'):
+              ability_text = ability_path.read_text(encoding='utf-8')
+              if '<AbilityDef ParentName="AbilityBase">' in ability_text:
+                  failures.append(f'Invalid RimWorld 1.6 AbilityBase inheritance returned in {ability_path}')
+          for xml_path in Path('Defs').rglob('*.xml'):
+              xml_text = xml_path.read_text(encoding='utf-8')
+              if '<graphicClass>Graphic_Linked</graphicClass>' in xml_text:
+                  failures.append(f'Bare Graphic_Linked returned in {xml_path}; declare the inner graphic and linkType instead')
+          goauld_text = Path('Defs/Gravships/Gravship_Goauld.xml').read_text(encoding='utf-8')
+          if '<turretTopGraphicPath>' in goauld_text:
+              failures.append('Obsolete turretTopGraphicPath returned to Goauld gravship XML')
+          xenotype_text = Path('Defs/XenotypeDefs/Xenotypes_HumanForm.xml').read_text(encoding='utf-8')
+          for xenotype_name in ('WNG_NanitePrecursor', 'WNG_HumanFormReplicator'):
+              start = xenotype_text.find(f'<defName>{xenotype_name}</defName>')
+              end = xenotype_text.find('</XenotypeDef>', start)
+              if start < 0 or end < 0 or '<iconPath>' not in xenotype_text[start:end]:
+                  failures.append(f'{xenotype_name} is missing its required XenotypeDef iconPath')
+          iratus_text = Path('Defs/ThingDefs/Race_Iratus.xml').read_text(encoding='utf-8')
+          if '<anomalyKnowledge>1.25</anomalyKnowledge>' in iratus_text and '<minMonolithLevelForStudy>1</minMonolithLevelForStudy>' not in iratus_text:
+              failures.append('Iratus anomalyKnowledge requires nonzero minMonolithLevelForStudy in RimWorld 1.6')
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:
