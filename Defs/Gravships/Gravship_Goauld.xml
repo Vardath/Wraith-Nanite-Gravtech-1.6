@@ -225,11 +225,11 @@
   </ThingDef>
 
   <ThingDef ParentName="BaseGun" MayRequire="idolord.ONAC">
-    <defName>WNG_Gun_GoauldHeavyPlasmaCannon</defName><label>Ha'tak heavy plasma cannon</label><description>The firing assembly of a Ha'tak heavy plasma battery.</description>
+    <defName>WNG_Gun_GoauldHeavyPlasmaCannon</defName><label>Ha'tak heavy plasma cannon</label><description>The firing assembly of a Ha'tak heavy plasma battery.</description><smeltable>false</smeltable>
     <graphicData><texPath>Things/Item/Equipment/WeaponRanged/ChargeRifle</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases><MarketValue>900</MarketValue><Mass>45</Mass><AccuracyTouch>0.35</AccuracyTouch><AccuracyShort>0.72</AccuracyShort><AccuracyMedium>0.86</AccuracyMedium><AccuracyLong>0.80</AccuracyLong><RangedWeapon_Cooldown>3.8</RangedWeapon_Cooldown></statBases>
     <weaponTags><li>TurretGun</li></weaponTags>
-    <verbs><li><verbClass>Verb_Shoot</verbClass><defaultProjectile>WNG_Projectile_GoauldHeavyPlasma</defaultProjectile><warmupTime>0</warmupTime><range>45.9</range><minRange>6</minRange><burstShotCount>3</burstShotCount><ticksBetweenBurstShots>16</ticksBetweenBurstShots><soundCast>ChargeLance_Fire</soundCast><muzzleFlashScale>12</muzzleFlashScale></li></verbs>
+    <verbs><li><verbClass>Verb_Shoot</verbClass><defaultProjectile>WNG_Projectile_GoauldHeavyPlasma</defaultProjectile><warmupTime>0</warmupTime><range>45.9</range><forcedMissRadius>5</forcedMissRadius><minRange>6</minRange><burstShotCount>3</burstShotCount><ticksBetweenBurstShots>16</ticksBetweenBurstShots><soundCast>ChargeLance_Fire</soundCast><muzzleFlashScale>12</muzzleFlashScale></li></verbs>
   </ThingDef>
 
   <ThingDef ParentName="BaseBullet" MayRequire="idolord.ONAC">
