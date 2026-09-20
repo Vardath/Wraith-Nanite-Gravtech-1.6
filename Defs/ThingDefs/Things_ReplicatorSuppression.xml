@@ -34,7 +34,7 @@
       <Uranium>25</Uranium>
       <WNG_ReplicatorCoreFragment>2</WNG_ReplicatorCoreFragment>
     </costList>
-    <designationCategory>WNG_Architect</designationCategory>
+    <designationCategory>Misc</designationCategory>
     <constructionSkillPrerequisite>9</constructionSkillPrerequisite>
     <researchPrerequisites>
       <li>WNG_AdvancedNaniteSuppression</li>
