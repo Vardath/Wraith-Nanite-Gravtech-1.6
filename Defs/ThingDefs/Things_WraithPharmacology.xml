@@ -10,7 +10,7 @@
     </descriptionHyperlinks>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_WraithBiofluidFuel</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <rotatable>false</rotatable>
     <statBases>
