@@ -83,7 +83,7 @@
     <defName>WNG_GoauldNaquadriaTank</defName><label>Ha'tak liquid-Naquadria reservoir</label>
     <description>A compact Ha'tak propellant reservoir accepting only ONAC Liquid Naquadria and feeding only same-family Goa'uld drives.</description>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>2155</uiOrder><size>(2,2)</size><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldNaquadriaTank</texPath><drawSize>(2,2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldNaquadriaTank</texPath><drawSize>(2,2)</drawSize></graphicData>
     <statBases><MaxHitPoints>360</MaxHitPoints><Mass>32</Mass><Flammability>0.08</Flammability><Beauty>2</Beauty><WorkToBuild>2800</WorkToBuild></statBases>
     <costList Inherit="False"><ONAC_Naquadah>18</ONAC_Naquadah><Plasteel>90</Plasteel><Gold>10</Gold></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
@@ -99,7 +99,7 @@
     <defName>WNG_GoauldLargeNaquadriaTank</defName><label>large Ha'tak liquid-Naquadria reservoir</label>
     <description>A high-capacity Ha'tak propellant reservoir accepting only ONAC Liquid Naquadria.</description>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>2156</uiOrder><size>(3,3)</size><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldLargeNaquadriaTank</texPath><drawSize>(3,3)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldLargeNaquadriaTank</texPath><drawSize>(3,3)</drawSize></graphicData>
     <statBases><MaxHitPoints>560</MaxHitPoints><Mass>60</Mass><Flammability>0.08</Flammability><Beauty>3</Beauty><WorkToBuild>3900</WorkToBuild></statBases>
     <costList Inherit="False"><ONAC_Naquadah>40</ONAC_Naquadah><Plasteel>150</Plasteel><Gold>18</Gold><ComponentIndustrial>2</ComponentIndustrial></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
