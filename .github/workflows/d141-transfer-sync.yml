@@ -8,6 +8,7 @@ on:
       - 'D141.part01'
       - 'D141.part02'
       - 'D141.part03'
+      - 'D141.missing-tails'
       - '.github/workflows/d141-transfer-sync.yml'
   workflow_dispatch:
 
@@ -24,26 +25,60 @@ jobs:
           ref: d141-transfer
           path: transfer-branch
 
-      - name: Require all three D141 parts
+      - name: Require transfer files
         id: parts
         shell: bash
         run: |
           set -euo pipefail
-          for f in D141.part01 D141.part02 D141.part03; do
+          for f in D141.part01 D141.part02 D141.part03 D141.missing-tails; do
             if [ ! -f "transfer-branch/$f" ]; then
-              echo "All three parts are not present yet; stopping without error."
+              echo "Waiting for all transfer files."
               echo "ready=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
           done
           echo "ready=true" >> "$GITHUB_OUTPUT"
 
-      - name: Recombine and verify authoritative D141 ZIP
+      - name: Restore truncated parts and verify D141
         if: steps.parts.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          cat transfer-branch/D141.part01 transfer-branch/D141.part02 transfer-branch/D141.part03 > /tmp/D141.zip
+
+          echo "31f017f9798845e9ac030d44cc2fe44a72178a946d06e7d37543a8fa8ad273bb  transfer-branch/D141.part01" | sha256sum -c -
+          echo "884d5add24ceef6f102922ee574afaa2119ee4ec0d1c9952edb71f4729f99656  transfer-branch/D141.part02" | sha256sum -c -
+          echo "86581b134d67d9b044ab432bc43689bac09d3a26061293b30011d99c7765cfdc  transfer-branch/D141.part03" | sha256sum -c -
+          echo "2100a75068ab93aec695d0aa3b65f6e3e7da4b85b2488afe0fcd426fabf49d01  transfer-branch/D141.missing-tails" | sha256sum -c -
+
+          python - <<'PY'
+          from pathlib import Path
+
+          t = Path("transfer-branch/D141.missing-tails").read_bytes()
+          lengths = (1240732, 2354844, 8187548)
+          cuts = (0, lengths[0], lengths[0] + lengths[1], sum(lengths))
+
+          prefixes = [
+              Path("transfer-branch/D141.part01").read_bytes(),
+              Path("transfer-branch/D141.part02").read_bytes(),
+              Path("transfer-branch/D141.part03").read_bytes(),
+          ]
+
+          restored = [
+              prefixes[0] + t[cuts[0]:cuts[1]],
+              prefixes[1] + t[cuts[1]:cuts[2]],
+              prefixes[2] + t[cuts[2]:cuts[3]],
+          ]
+
+          for i, data in enumerate(restored, 1):
+              if len(data) != 16379548:
+                  raise SystemExit(f"restored part {i} wrong size: {len(data)}")
+              Path(f"/tmp/D141.part0{i}").write_bytes(data)
+
+          with Path("/tmp/D141.zip").open("wb") as out:
+              for i in range(1, 4):
+                  out.write(Path(f"/tmp/D141.part0{i}").read_bytes())
+          PY
+
           echo "41a79ddae91ae734e8256f64806bd0733f45ad05328e2cda753992821fde0b32  /tmp/D141.zip" | sha256sum -c -
           mkdir -p /tmp/d141
           unzip -q /tmp/D141.zip -d /tmp/d141
@@ -65,15 +100,11 @@ jobs:
           src=/tmp/d141/Wraith-Nanite-Gravtech
           dst="$GITHUB_WORKSPACE/main-repo"
 
-          # Replace every authoritative runtime entry from D141.
           for p in "$src"/*; do
             name="$(basename "$p")"
             rm -rf "$dst/$name"
             cp -a "$p" "$dst/$name"
           done
-
-          # Repository-only development/CI files are intentionally preserved:
-          # .github/, Source/, artupgrades.md
 
           python - <<'PY'
           from pathlib import Path
@@ -97,9 +128,6 @@ jobs:
           print(f"XML: {len(xml)}; parse errors: {len(bad_xml)}")
           print(f"PNG: {len(png)}; bad signatures: {len(bad_png)}; empty: {len(empty_png)}")
           if bad_xml or bad_png or empty_png:
-              print("BAD_XML", bad_xml[:20])
-              print("BAD_PNG", bad_png[:20])
-              print("EMPTY_PNG", empty_png[:20])
               raise SystemExit(1)
           PY
 
