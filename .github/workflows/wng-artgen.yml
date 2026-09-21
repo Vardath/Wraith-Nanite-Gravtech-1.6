@@ -1,10 +1,6 @@
 name: WNG art generator
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/artgen/**'
   workflow_dispatch:
 
 permissions:
