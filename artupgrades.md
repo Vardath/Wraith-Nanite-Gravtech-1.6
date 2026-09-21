@@ -938,7 +938,7 @@ Since the visual-audit commit:
 3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 4. **Asuran Queen Recovery Carrier** — procedural first pass exists in repo; higher-detail professional directional source set prepared; final professional replacement is CURRENT WORK.
 5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — first-pass replacement committed; professional visual sign-off still required.
-6. **Asuran / Goa'uld / Wraith gravship doors** — replacement art committed and Def usage audited. Asuran texture is shared by `WNG_PrecursorDoor` (`Graphic_Multi`) and Asuran vacuum barrier (`Graphic_Single`), so its directional family is required. Goa'uld and Wraith gravship/vacuum doors are `Graphic_Single`; their eight unused directional PNGs were removed in commit `512e99de664baa02adada8e7f4ce9b08ff972be7`. D108 Static Validation, Release Gap Audit and Managed Build all green. Final in-game visual sign-off still required.
+6. **Asuran / Goa'uld / Wraith gravship doors** — replacement art committed, but the earlier conclusion that Goa'uld/Wraith directional art was redundant was WRONG. The eight directional PNGs were restored in commit `0d50f13abe8d486fbfc860ef19d33852367f3658`. The design target is vanilla-door functional parity: cardinal placement/rotation and correct open/closed visual behavior. If the current Def uses `Graphic_Single` while the intended door behavior needs directional/state art, treat that as a Def/function mismatch to fix — never as permission to delete the directional assets. Asuran texture is shared by a `Graphic_Multi` buildable iris door and a `Graphic_Single` vacuum barrier; Goa'uld/Wraith door behavior now requires a full vanilla-parity implementation audit before any art family is removed or consolidated. Final in-game visual sign-off still required.
 7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
 8. **All 35 UI/ability/gene/xenotype/build icons** — 24 / 35 touched; remaining 11 plus professional review of touched icons still required.
 9. **Full 217-apparel re-audit** — 105 / 217 touched; full visual review still required.
@@ -950,6 +950,22 @@ Since the visual-audit commit:
 15. **Regenerate WNG website art page** — intentionally deferred until the mod art pass is complete; website is output only.
 
 **Overall status:** roughly one-third of the art programme is genuinely complete at professional/sign-off level; considerably more has received a first pass but is not yet accepted as finished.
+
+## 25. Deleted directional door art because the current Def said `Graphic_Single`
+Mistake:
+- inferred that Goa'uld/Wraith east/north/south/west door PNGs were dead art and removed them.
+
+Why this was wrong:
+- the intended design is vanilla-door parity;
+- a Def that fails to use required directional/open-state art can itself be the bug;
+- current implementation details must not override the intended gameplay/function specification.
+
+Correct rule:
+- establish intended vanilla-equivalent behavior first;
+- preserve all potentially required directional/state art while auditing;
+- compare the WNG door class/Def behavior against vanilla doors;
+- then change XML/code and art together so rotation and open/closed states are correct;
+- never delete art solely because the current broken/incomplete Def does not reference it.
 
 ---
 
