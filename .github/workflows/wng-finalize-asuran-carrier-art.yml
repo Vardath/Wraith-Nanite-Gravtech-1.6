@@ -1,11 +1,6 @@
 name: WNG Finalize Asuran Recovery Carrier Art
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/artgen/finalize_asuran_recovery_carrier.py"
-      - "Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier_north.png"
   workflow_dispatch:
 
 permissions:
