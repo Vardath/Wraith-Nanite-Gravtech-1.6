@@ -1,0 +1,42 @@
+name: WNG Finalize Professional Door Art
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artgen/finalize_professional_doors.py"
+      - "Textures/Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor_north.png"
+      - "Textures/Things/Building/Wraith/Gravship/WNG_WraithGravshipDoor_north.png"
+      - "Textures/Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor_north.png"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - name: Generate cardinal door art from approved masters
+        run: python .github/artgen/finalize_professional_doors.py
+      - name: Commit generated door variants
+        shell: bash
+        run: |
+          git add Textures/Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor*.png
+          git add Textures/Things/Building/Wraith/Gravship/WNG_WraithGravshipDoor*.png
+          git add Textures/Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor*.png
+          if git diff --cached --quiet; then
+            echo "Door variants already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Finalize professional directional door art"
+          git push

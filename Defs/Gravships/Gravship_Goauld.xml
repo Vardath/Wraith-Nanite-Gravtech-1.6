@@ -43,7 +43,7 @@
     <defName>WNG_GoauldGravshipDoor</defName><label>Ha'tak pressure door</label>
     <description>A heavy Goa'uld pressure door sealing internal Ha'tak compartments.</description>
     <designationCategory>ONAC_Architect</designationCategory><uiOrder>1806</uiOrder>
-    <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>720</MaxHitPoints><WorkToBuild>700</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><ONAC_Naquadah>6</ONAC_Naquadah><Plasteel>12</Plasteel></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight><paintable>false</paintable></building>
