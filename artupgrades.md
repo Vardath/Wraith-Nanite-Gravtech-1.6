@@ -355,6 +355,10 @@ Required redo:
 #### Completion note — Goa'uld projector — 2026-09-22
 The original audit above is retained as history. The broken spear-like placeholder has now been replaced on public `main` with a centred 256×256 transparent 2×2 building sprite using a broad black-naquadah/bronze silhouette, symmetric amber emitter structures and a central gravitic field core. No detached fragments remain. The Def/function was left intact as `WNG_GoauldGravFieldProjector`, a 2×2 `Graphic_Single` +250 support extender with a six-device limit. Completed art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`. Static Validation, Release Gap Audit and Managed Build all passed green on that exact commit.
 
+
+#### Superseding professional pass — Goa'uld projector — 2026-09-22
+The earlier completion note is retained above as history. A new professional replacement was committed at `38d74fbb79254c25140024467e7639bc1aca2b1f`, preserving the same Def/function but replacing the art again with a cleaner centred 256×256 transparent asset. Alpha mass is centred to within one pixel; the silhouette now fully occupies the 2×2 canvas without detached fragments, with a symmetrical black-naquadah/bronze body, amber cardinal emitters and a clear central gravitic ring/core. Static Validation, Release Gap Audit and Managed Build all passed green on this exact latest art commit.
+
 ### 7. Asuran Grav-field Extender
 
 Path:
@@ -375,6 +379,10 @@ Required audit/redo if it shares the same centring/placeholder issues:
 
 #### Completion note — Asuran extender — 2026-09-22
 The original audit above is retained as history. The extender has now been replaced on public `main` with a centred 256×256 transparent 2×2 building sprite: broad clean silver/white nanite-composite geometry, a cyan/blue concentric field core and integrated emitter arms, with no detached decorative lines. It remains visually distinct from the Asuran grav engine and shield generator while communicating the same support-field role as vanilla's Grav Field Extender. Completed art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`. Static Validation, Release Gap Audit and Managed Build all passed green on that exact commit.
+
+#### Superseding professional pass — Asuran extender — 2026-09-22
+The earlier completion note is retained above as history. A new professional replacement was committed at `38d74fbb79254c25140024467e7639bc1aca2b1f`: centred 256×256 transparent 2×2 art with a broad silver/white Ancient/Asuran nanite-composite body, integrated cyan emitter channels and a concentric blue gravitic field core. Alpha mass is centred to within one pixel, with no detached linework or baked panel. Static Validation, Release Gap Audit and Managed Build all passed green on this exact latest art commit.
+
 
 ---
 
@@ -964,7 +972,7 @@ Since the visual-audit commit:
 2. **Goa'uld Death Glider** — **professional rendered replacement COMPLETE**; all directional sprites committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 4. **Asuran Queen Recovery Carrier** — **PROFESSIONAL REPLACEMENT COMPLETE.** Base + north/east/south/west world sprites and a separate centred build icon were replaced with one coherent Asuran/Lattice recovery-craft design in commit `608e6cc311249a7a02ac0b73cb579fa47bc1236e`. The Def remains the correct 3×5 `Graphic_Multi` NPC shuttle. Static Validation, Release Gap Audit and Managed Build all passed on that exact commit.
-5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — **PROFESSIONAL REPLACEMENTS COMPLETE.** Both 2×2 `Graphic_Single` support-field devices were rebuilt as centred transparent building sprites matched to their faction language and functional role. Completed at `e35137a5d243394c403b73589b6c7945ac342b95`; Static Validation, Release Gap Audit and Managed Build all green.
+5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — **PROFESSIONAL REPLACEMENTS COMPLETE — LATEST PASS `38d74fbb79254c25140024467e7639bc1aca2b1f`.** Both 2×2 `Graphic_Single` support-field devices are centred transparent building sprites matched to faction language and function. Latest pass: Goa'uld = broad black/bronze/gold naquadah housing with symmetric amber emitters and central gravitic core; Asuran = broad silver/white nanite-composite emitter with integrated cyan concentric field core. Static Validation, Release Gap Audit and Managed Build all green on the latest art commit. Earlier completion checkpoint `e35137a5d243394c403b73589b6c7945ac342b95` remains documented below as history.
 6. **Asuran / Goa'uld / Wraith gravship doors** — **PROFESSIONAL ART + VANILLA-PARITY DIRECTIONAL SET COMPLETE.** New Stargate-specific masters are installed for all three factions; north/east/south/west/base assets are generated deterministically from each approved master so scale, lighting, centre and alpha remain coherent. `WNG_GoauldGravshipDoor`, `WNG_WraithGravshipDoor`, and `WNG_AsuranGravshipDoor` now use `Graphic_Multi`; vanilla `Building_Door` rendering handles opening/closing from those directional mover graphics. The old automatic whole-art generator push trigger was disabled so procedural first-pass scripts cannot silently overwrite professional art. Finalized door state validated at commit `e20f9f418399753df64c7ed22516b696b08036b2`: D108 Static Validation, Release Gap Audit, and Managed Build all green.
 7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
 8. **All 35 UI/ability/gene/xenotype/build icons** — 24 / 35 touched; remaining 11 plus professional review of touched icons still required.
