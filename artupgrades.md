@@ -921,7 +921,7 @@ Correct rule:
 
 # LIVE ART-PASS PROGRESS — 2026-09-21
 
-Current public `main`: `8a140b4771f5319bb8fdec27e28b596c71756409`
+Current public `main`: `512e99de664baa02adada8e7f4ce9b08ff972be7`
 
 Since the visual-audit commit:
 - 17 commits have advanced the art programme.
@@ -938,7 +938,7 @@ Since the visual-audit commit:
 3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 4. **Asuran Queen Recovery Carrier** — procedural first pass exists in repo; higher-detail professional directional source set prepared; final professional replacement is CURRENT WORK.
 5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — first-pass replacement committed; professional visual sign-off still required.
-6. **Asuran / Goa'uld / Wraith gravship doors** — first-pass replacement committed; professional visual sign-off and rotation/Graphic_Single verification still required.
+6. **Asuran / Goa'uld / Wraith gravship doors** — replacement art committed and Def usage audited. Asuran texture is shared by `WNG_PrecursorDoor` (`Graphic_Multi`) and Asuran vacuum barrier (`Graphic_Single`), so its directional family is required. Goa'uld and Wraith gravship/vacuum doors are `Graphic_Single`; their eight unused directional PNGs were removed in commit `512e99de664baa02adada8e7f4ce9b08ff972be7`. D108 Static Validation, Release Gap Audit and Managed Build all green. Final in-game visual sign-off still required.
 7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
 8. **All 35 UI/ability/gene/xenotype/build icons** — 24 / 35 touched; remaining 11 plus professional review of touched icons still required.
 9. **Full 217-apparel re-audit** — 105 / 217 touched; full visual review still required.
