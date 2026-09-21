@@ -10,9 +10,8 @@
       <HediffDef>WNG_KassaAddiction</HediffDef>
     </descriptionHyperlinks>
     <graphicData>
-      <texPath>Things/Item/Drug/Yayo</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.72,0.28,0.68)</color>
+      <texPath>Things/Item/Goauld/WNG_KassaConcentrate</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
       <drawSize>0.75</drawSize>
     </graphicData>
     <rotatable>false</rotatable>
@@ -137,9 +136,8 @@
       <HediffDef>WNG_KassaAddiction</HediffDef>
     </descriptionHyperlinks>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.58,0.20,0.62)</color>
+      <texPath>Things/Item/Goauld/WNG_KassaDistillate</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <rotatable>false</rotatable>
     <statBases>

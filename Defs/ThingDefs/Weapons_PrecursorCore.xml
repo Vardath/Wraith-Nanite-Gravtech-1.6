@@ -34,7 +34,7 @@
   <ThingDef ParentName="BaseBullet">
     <defName>WNG_ProjectilePrecursorPulse</defName>
     <label>precursor pulse</label>
-    <graphicData><texPath>Things/Projectile/Charge_Small</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
+    <graphicData><texPath>Things/Projectile/WNG/WNG_ProjectilePrecursorPulse</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <projectile><damageDef>Bullet</damageDef><damageAmountBase>18</damageAmountBase><armorPenetrationBase>0.38</armorPenetrationBase><speed>90</speed></projectile>
   </ThingDef>
 </Defs>

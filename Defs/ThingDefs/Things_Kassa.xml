@@ -54,9 +54,8 @@
     <socialPropernessMatters>true</socialPropernessMatters>
     <tickerType>Rare</tickerType>
     <graphicData>
-      <texPath>Things/Item/Resource/PlantFoodRaw/Corn</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.68,0.50,0.24)</color>
+      <texPath>Things/Item/Goauld/WNG_Kassa</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>5.5</MarketValue>

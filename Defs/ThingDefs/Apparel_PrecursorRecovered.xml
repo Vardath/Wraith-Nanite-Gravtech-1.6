@@ -11,7 +11,7 @@
     <description>A high-grade Ancient-derived combat shell combining dense precursor composites with field-distribution layers. The current visual is provisional; its protection and acquisition path are functional independently of later art replacement.</description>
     <techLevel>Ultra</techLevel>
     <graphicData>
-      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath>
+      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorFieldArmor</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <statBases>
@@ -33,7 +33,7 @@
         <li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li>
       </bodyPartGroups>
       <layers><li>Shell</li></layers>
-      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</wornGraphicPath>
+      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorFieldArmor</wornGraphicPath>
       <tags><li>WNG_PrecursorArmor</li></tags>
       <defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
@@ -56,7 +56,7 @@
     <techLevel>Ultra</techLevel>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <texPath>Things/Pawn/Humanlike/Apparel/ShieldBelt/ShieldBelt</texPath>
+      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorPersonalShield</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <statBases>

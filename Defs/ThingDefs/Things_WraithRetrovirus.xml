@@ -5,9 +5,8 @@
     <label>Wraith retrovirus dose</label>
     <description>A cultured retroviral injection engineered to suppress the Iratus-derived portions of Wraith biology while leaving the treated individual's identity intact. One dose initiates humanization; it does not maintain the state without the separate suppression drug.</description>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.55,0.72,0.82)</color>
+      <texPath>Things/Item/WraithMedical/WNG_WraithRetrovirusDose</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <stackLimit>10</stackLimit>
     <rotatable>false</rotatable>
@@ -42,9 +41,8 @@
     <label>Wraith suppression injection</label>
     <description>A maintenance drug used after Wraith retroviral humanization. It suppresses re-emergence of the Wraith phenotype for a little more than one day. Doses do not stack into long-term immunity: treatment must remain regular.</description>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.70,0.82,0.92)</color>
+      <texPath>Things/Item/WraithMedical/WNG_WraithSuppressionDose</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <stackLimit>20</stackLimit>
     <rotatable>false</rotatable>

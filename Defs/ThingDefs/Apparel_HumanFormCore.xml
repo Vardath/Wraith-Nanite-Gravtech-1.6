@@ -33,7 +33,7 @@
     <!-- Dedicated clean uniform art remains part of the later non-Replicator presentation pass.
          Until then this retained apparel reuses current clean human-form artwork rather than old forbidden bytes. -->
     <graphicData>
-      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath>
+      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormUniform</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <statBases>
@@ -55,7 +55,7 @@
         <li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li>
       </bodyPartGroups>
       <layers><li>Shell</li></layers>
-      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</wornGraphicPath>
+      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormUniform</wornGraphicPath>
       <tags><li>WNG_HumanFormClothing</li></tags>
     </apparel>
     <recipeMaker>

@@ -42,7 +42,7 @@
     <description>A command-grade presentation of precursor field armor used by Asuran coordinators. Protection and manufacture track the standard field suit; the current field-armor visual is temporary pending professional command-armour art.</description>
     <techLevel>Ultra</techLevel>
     <graphicData>
-      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath>
+      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorCommandArmor</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <statBases>
@@ -53,7 +53,7 @@
     <apparel>
       <bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
       <layers><li>Shell</li></layers>
-      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</wornGraphicPath>
+      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorCommandArmor</wornGraphicPath>
       <tags><li>WNG_PrecursorArmor</li><li>WNG_PrecursorCommandArmor</li></tags>
       <defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>

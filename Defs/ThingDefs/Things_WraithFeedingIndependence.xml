@@ -5,9 +5,8 @@
     <label>feeding-independence gene vector</label>
     <description>An unstable late-generation retroviral vector carrying Iratus-queen regenerative controls and Wraith enzyme stabilisers. In a Wraith it can permanently replace Life Force metabolism with ordinary digestion, but systemic rejection remains dangerously common.</description>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.58,0.82,0.74)</color>
+      <texPath>Things/Item/WraithMedical/WNG_FeedingIndependenceVector</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <stackLimit>10</stackLimit>
     <rotatable>false</rotatable>

@@ -11,9 +11,8 @@
       <HediffDef>WNG_FeedingRejectionBacklash</HediffDef>
     </descriptionHyperlinks>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.52,0.72,0.86)</color>
+      <texPath>Things/Item/WraithMedical/WNG_VitalResistanceDose</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <rotatable>false</rotatable>
     <statBases>

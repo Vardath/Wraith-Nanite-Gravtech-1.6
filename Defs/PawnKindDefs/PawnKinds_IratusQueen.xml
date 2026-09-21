@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <Defs>
   <PawnKindDef ParentName="AnimalKindBase">
     <defName>WNG_IratusQueen</defName>
@@ -11,12 +11,11 @@
     <lifeStages>
       <li>
         <bodyGraphicData>
-          <texPath>Things/Pawn/Animal/Megascarab/Megascarab</texPath>
+          <texPath>Things/Pawn/Animal/Iratus/WNG_IratusQueen</texPath>
           <drawSize>1.65</drawSize>
-          <color>(28,36,30)</color>
         </bodyGraphicData>
         <dessicatedBodyGraphicData>
-          <texPath>Things/Pawn/Animal/Megascarab/Dessicated_Megascarab</texPath>
+          <texPath>Things/Pawn/Animal/Iratus/WNG_IratusQueenDessicated</texPath>
           <drawSize>1.65</drawSize>
         </dessicatedBodyGraphicData>
       </li>

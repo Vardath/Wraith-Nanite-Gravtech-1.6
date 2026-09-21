@@ -5,9 +5,8 @@
     <label>hybrid stabiliser dose</label>
     <description>A short-lived biological stabilisation cocktail built from Wraith, Iratus and Michael-hybrid material. It cannot initiate humanisation and it cannot cure Wraith ancestry. When administered to an already retrovirally humanized Wraith, it temporarily buffers the suppressed phenotype against abrupt reversion if ordinary maintenance treatment lapses.</description>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.40,0.68,0.63)</color>
+      <texPath>Things/Item/WraithMedical/WNG_HybridStabiliserDose</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <stackLimit>10</stackLimit>
     <rotatable>false</rotatable>

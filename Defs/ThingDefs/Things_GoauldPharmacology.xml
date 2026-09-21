@@ -8,9 +8,8 @@
       <HediffDef>WNG_RoshnaDependence</HediffDef>
     </descriptionHyperlinks>
     <graphicData>
-      <texPath>Things/Item/Drug/Beer</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.20,0.55,0.95)</color>
+      <texPath>Things/Item/Goauld/WNG_Roshna</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <rotatable>false</rotatable>
     <stackLimit>50</stackLimit>

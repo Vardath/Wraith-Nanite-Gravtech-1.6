@@ -10,8 +10,8 @@
     <thingCategories><li>BuildingsArt</li></thingCategories>
     <tradeTags><li>Art</li></tradeTags>
     <graphicData>
-      <graphicClass>Graphic_Random</graphicClass>
-      <texPath>Things/Building/Art/SculptureLarge</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Precursor/Art/WNG_AsuranSleeperStatue</texPath>
       <drawSize>(3,3)</drawSize>
     </graphicData>
     <fillPercent>0.5</fillPercent>
@@ -54,8 +54,8 @@
     <thingCategories><li>BuildingsArt</li></thingCategories>
     <tradeTags><li>Art</li></tradeTags>
     <graphicData>
-      <graphicClass>Graphic_Random</graphicClass>
-      <texPath>Things/Building/Art/SculptureLarge</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Building/Precursor/Art/WNG_AsuranFeederStatue</texPath>
       <drawSize>(3,3)</drawSize>
     </graphicData>
     <fillPercent>0.5</fillPercent>

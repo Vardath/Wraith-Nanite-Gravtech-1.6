@@ -5,9 +5,8 @@
     <label>Iratus biological extract</label>
     <description>A chilled sample of secretions and glandular material harvested from a living Iratus bug. The extract contains compounds associated with the bug's feeding-induced immobilisation and extreme regenerative physiology. It is unstable biological feedstock, not a finished medicine.</description>
     <graphicData>
-      <texPath>Things/Item/Resource/AnimalProductRaw/InsectJelly</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.20,0.34,0.24)</color>
+      <texPath>Things/Item/WraithMedical/WNG_IratusGlandExtract</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <stackLimit>25</stackLimit>
     <rotatable>false</rotatable>
@@ -29,9 +28,8 @@
     <description>A stabilized injectable derived from Iratus feeding secretions. It sharply suppresses voluntary movement while leaving respiration and basic awareness comparatively intact, making it useful for dangerous biological handling and controlled restraint. The formulation is a WNG xenopharmacological extrapolation from Iratus biology rather than a named Atlantis medicine.</description>
     <descriptionHyperlinks><HediffDef>WNG_IratusParalysis</HediffDef></descriptionHyperlinks>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.18,0.46,0.28)</color>
+      <texPath>Things/Item/WraithMedical/WNG_IratusParalytic</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <rotatable>false</rotatable>
     <statBases>

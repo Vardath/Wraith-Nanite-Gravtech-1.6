@@ -29,9 +29,10 @@
     <drawHighlight>true</drawHighlight>
     <highlightColor>(0.48,0.82,0.95)</highlightColor>
     <uiIconScale>1</uiIconScale>
+    <uiIconPath>UI/WNG/Build/WNG_AsuranQueenRecoveryCarrier</uiIconPath>
     <graphicData>
       <graphicClass>Graphic_Multi</graphicClass>
-      <texPath>Things/Building/PassengerShuttle/PassengerShuttle</texPath>
+      <texPath>Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier</texPath>
       <shaderType>CutoutComplex</shaderType>
       <drawSize>(3,5)</drawSize>
       <shadowData><volume>(1.8,1.0,4.1)</volume><offset>(-0.1,0,0)</offset></shadowData>

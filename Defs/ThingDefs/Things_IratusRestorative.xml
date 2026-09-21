@@ -5,9 +5,8 @@
     <label>Iratus queen restorative extract</label>
     <description>A rare glandular sample taken from a living Iratus queen. Its regenerative signaling differs sharply from ordinary Iratus material and can be used to recreate the dangerous Wraith restorative pathway associated with queen feeding.</description>
     <graphicData>
-      <texPath>Things/Item/Resource/AnimalProductRaw/InsectJelly</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.12,0.28,0.16)</color>
+      <texPath>Things/Item/WraithMedical/WNG_IratusQueenExtract</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <stackLimit>10</stackLimit>
     <rotatable>false</rotatable>
@@ -28,9 +27,8 @@
     <label>Iratus queen restorative</label>
     <description>A stabilized Wraith-only restorative derived from live Iratus queen tissue and refined Wraith enzyme. It attempts to trigger the same regenerative pathway once achieved by allowing a queen to feed on a sick Wraith. The reaction is excruciating and usually fatal; surviving Wraith can recover from otherwise catastrophic physical damage.</description>
     <graphicData>
-      <texPath>Things/Item/Drug/GoJuice</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
-      <color>(0.10,0.32,0.18)</color>
+      <texPath>Things/Item/WraithMedical/WNG_IratusQueenRestorative</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <stackLimit>10</stackLimit>
     <rotatable>false</rotatable>

@@ -5,9 +5,8 @@
     <label>Nish'ta dispersal canister</label>
     <description>A single-use canister containing a cultured Goa'uld Nish'ta conditioning organism. On impact it disperses a visible aerosol; susceptible humanlike pawns inside the cloud can be conditioned to the thrower's faction until electrically deprogrammed. Survivors of proper electrical clearance become resistant to reinfection.</description>
     <graphicData>
-      <texPath>Things/Item/Equipment/WeaponRanged/Grenades</texPath>
+      <texPath>Things/Item/Goauld/WNG_NishtaCanister</texPath>
       <graphicClass>Graphic_Single</graphicClass>
-      <color>(0.35,0.70,0.45)</color>
     </graphicData>
     <uiIconScale>1.3</uiIconScale>
     <soundInteract>Interact_Grenade</soundInteract>
@@ -63,9 +62,8 @@
     <label>Nish'ta canister</label>
     <thingClass>WraithNaniteGravtech.Projectile_NishtaCanister</thingClass>
     <graphicData>
-      <texPath>Things/Projectile/Grenade</texPath>
+      <texPath>Things/Projectile/Goauld/WNG_ProjectileNishtaCanister</texPath>
       <graphicClass>Graphic_Single</graphicClass>
-      <color>(0.35,0.70,0.45)</color>
     </graphicData>
     <projectile>
       <speed>12</speed>

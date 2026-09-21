@@ -218,7 +218,7 @@
     <label>staff stun discharge</label>
     <thingClass>WraithNaniteGravtech.Projectile_WraithStunStaff</thingClass>
     <graphicData>
-      <texPath>Things/Projectile/Charge_Small</texPath>
+      <texPath>Things/Projectile/WNG/WNG_ProjectileStunStaff</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <projectile>
@@ -286,7 +286,7 @@
     <defName>WNG_ProjectileStunner</defName>
     <label>stunner pulse</label>
     <graphicData>
-      <texPath>Things/Projectile/Charge_Small</texPath>
+      <texPath>Things/Projectile/WNG/WNG_ProjectileStunner</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <projectile>
@@ -357,7 +357,7 @@
     <defName>WNG_ProjectileLivingCarbine</defName>
     <label>living carbine shot</label>
     <graphicData>
-      <texPath>Things/Projectile/Charge_Small</texPath>
+      <texPath>Things/Projectile/WNG/WNG_ProjectileLivingCarbine</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <projectile>
@@ -429,7 +429,7 @@
     <defName>WNG_ProjectileHeavyBio</defName>
     <label>heavy bio shot</label>
     <graphicData>
-      <texPath>Things/Projectile/ChargeLanceShot</texPath>
+      <texPath>Things/Projectile/WNG/WNG_ProjectileHeavyBio</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <projectile>
