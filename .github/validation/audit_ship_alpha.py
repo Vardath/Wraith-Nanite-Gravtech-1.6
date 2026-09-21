@@ -20,7 +20,13 @@ for root in ROOTS:
         continue
     for p in sorted(root.glob("*.png")):
         count += 1
-        im = Image.open(p).convert("RGBA")
+        try:
+            im = Image.open(p).convert("RGBA")
+        except Exception as exc:
+            issues = [f"CORRUPT_OR_UNREADABLE {type(exc).__name__}: {exc}"]
+            flagged.append((str(p), issues, None))
+            print(f"{p}: {'; '.join(issues)}")
+            continue
         w,h = im.size
         alpha = im.getchannel("A")
         bbox = alpha.getbbox()
