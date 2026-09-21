@@ -919,6 +919,23 @@ Correct rule:
 
 ---
 
+
+## PERMANENT VANILLA-DOOR ART RULE — DO NOT VIOLATE
+
+**This rule overrides any earlier inference based only on `Graphic_Single`.** Before changing, deleting, or replacing any door texture, inspect the actual RimWorld 1.6 `Building_Door` / relevant subclass rendering path and the WNG Def that uses it.
+
+For vanilla 1x1 `Building_Door`:
+- `DoorPreDraw()` derives the door rotation from surrounding walls via `DoorUtility.DoorRotationAt`.
+- `DrawMovers()` draws the mover graphic **twice**, with one mesh UV-flipped, and offsets the two copies in opposite directions as `OpenPct` increases from closed to open.
+- Therefore the correct texture concept is a **single half-door mover on transparency**, designed so its flipped duplicate forms the other half when closed and the two halves visibly separate when opening.
+- Rotatable faction doors must use `Graphic_Multi` with north/south/east/west mover assets (or an explicitly validated equivalent). Never delete cardinal assets merely because an inherited/current XML node says `Graphic_Single`.
+- Do **not** generate four unrelated AI renders. Create one approved faction master mover and derive cardinal variants deterministically so shape, lighting, scale, centre, alpha and design remain coherent.
+- No frame/background/baked square. Transparent canvas only. Test closed overlap, partial-open separation, fully-open separation, centering, wall alignment and pawn-scale readability.
+- Vacuum barriers are a separate subclass (`Building_VacBarrier : Building_SupportedDoor`): they force `OpenPct=1`, disable mover drawing, and draw their field graphic only when powered in vacuum. Do not assume their art requirements are identical to a physical door even if they currently share a texPath.
+
+### Mistake added 2026-09-21
+I incorrectly inferred that Goa'uld/Wraith cardinal door PNGs were dead solely because the current Def used `Graphic_Single`, removed them, then restored the same obsolete art when challenged. Both actions were wrong. The correct process is **lore/function/vanilla-render-path first, professional replacement second, repo mutation last**. Generated front-facing full-door concepts from that mistaken pass are rejected and must not be committed.
+
 # LIVE ART-PASS PROGRESS — 2026-09-21
 
 Current public `main`: `512e99de664baa02adada8e7f4ce9b08ff972be7`
