@@ -352,6 +352,9 @@ Required redo:
 - readable as a grav-field projector even without text;
 - use vanilla Grav Field Extender as the functional presentation benchmark, not as an image to copy.
 
+#### Completion note — Goa'uld projector — 2026-09-22
+The original audit above is retained as history. The broken spear-like placeholder has now been replaced on public `main` with a centred 256×256 transparent 2×2 building sprite using a broad black-naquadah/bronze silhouette, symmetric amber emitter structures and a central gravitic field core. No detached fragments remain. The Def/function was left intact as `WNG_GoauldGravFieldProjector`, a 2×2 `Graphic_Single` +250 support extender with a six-device limit. Completed art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`. Static Validation, Release Gap Audit and Managed Build all passed green on that exact commit.
+
 ### 7. Asuran Grav-field Extender
 
 Path:
@@ -369,6 +372,9 @@ Required audit/redo if it shares the same centring/placeholder issues:
 - no detached decorative lines;
 - blue/cyan field core;
 - visually distinct from grav engine and shield generator.
+
+#### Completion note — Asuran extender — 2026-09-22
+The original audit above is retained as history. The extender has now been replaced on public `main` with a centred 256×256 transparent 2×2 building sprite: broad clean silver/white nanite-composite geometry, a cyan/blue concentric field core and integrated emitter arms, with no detached decorative lines. It remains visually distinct from the Asuran grav engine and shield generator while communicating the same support-field role as vanilla's Grav Field Extender. Completed art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`. Static Validation, Release Gap Audit and Managed Build all passed green on that exact commit.
 
 ---
 
@@ -942,7 +948,7 @@ I incorrectly inferred that Goa'uld/Wraith cardinal door PNGs were dead solely b
 
 # LIVE ART-PASS PROGRESS — 2026-09-21
 
-Current public `main`: `e20f9f418399753df64c7ed22516b696b08036b2`
+Current public `main`: see repository HEAD. Latest completed grav-field art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`
 
 Since the visual-audit commit:
 - 17 commits have advanced the art programme.
@@ -958,7 +964,7 @@ Since the visual-audit commit:
 2. **Goa'uld Death Glider** — **professional rendered replacement COMPLETE**; all directional sprites committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 4. **Asuran Queen Recovery Carrier** — **PROFESSIONAL REPLACEMENT COMPLETE.** Base + north/east/south/west world sprites and a separate centred build icon were replaced with one coherent Asuran/Lattice recovery-craft design in commit `608e6cc311249a7a02ac0b73cb579fa47bc1236e`. The Def remains the correct 3×5 `Graphic_Multi` NPC shuttle. Static Validation, Release Gap Audit and Managed Build all passed on that exact commit.
-5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — first-pass replacement committed; professional visual sign-off still required.
+5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — **PROFESSIONAL REPLACEMENTS COMPLETE.** Both 2×2 `Graphic_Single` support-field devices were rebuilt as centred transparent building sprites matched to their faction language and functional role. Completed at `e35137a5d243394c403b73589b6c7945ac342b95`; Static Validation, Release Gap Audit and Managed Build all green.
 6. **Asuran / Goa'uld / Wraith gravship doors** — **PROFESSIONAL ART + VANILLA-PARITY DIRECTIONAL SET COMPLETE.** New Stargate-specific masters are installed for all three factions; north/east/south/west/base assets are generated deterministically from each approved master so scale, lighting, centre and alpha remain coherent. `WNG_GoauldGravshipDoor`, `WNG_WraithGravshipDoor`, and `WNG_AsuranGravshipDoor` now use `Graphic_Multi`; vanilla `Building_Door` rendering handles opening/closing from those directional mover graphics. The old automatic whole-art generator push trigger was disabled so procedural first-pass scripts cannot silently overwrite professional art. Finalized door state validated at commit `e20f9f418399753df64c7ed22516b696b08036b2`: D108 Static Validation, Release Gap Audit, and Managed Build all green.
 7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
 8. **All 35 UI/ability/gene/xenotype/build icons** — 24 / 35 touched; remaining 11 plus professional review of touched icons still required.
@@ -1009,6 +1015,18 @@ Correct rule:
 - do not replace them with geometric rotations merely because rotation is convenient;
 - validate each uploaded PNG before allowing any automation to propagate it;
 - narrow finalizer workflows must be manual-only unless their derivation is explicitly the intended authoritative art process.
+
+
+## 28. Lost the active art target and generated unrelated door art
+Mistake:
+- after finishing the Asuran recovery-carrier checkpoint, the active task was the Goa'uld Grav-field Projector + Asuran Grav-field Extender;
+- I lost that task state after a freeze and generated another door-art concept sheet instead.
+
+Correct rule:
+- before every image-generation call, re-read the current unchecked item in this file and the exact Def/path being worked on;
+- never generate art from the previous family merely because its visual language is still in context;
+- one active family at a time: verify path + Def + footprint + function, generate, commit, validate green, mark complete, then advance;
+- if a freeze occurs, verify the last committed repo state and this progress list before generating anything else.
 
 
 ---
