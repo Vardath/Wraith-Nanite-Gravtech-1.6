@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/validation/audit_ship_alpha.py"
       - ".github/workflows/wng-ship-alpha-audit.yml"
+      - "Textures/Things/Building/**/Shuttle/*.png"
   workflow_dispatch:
 
 jobs:
