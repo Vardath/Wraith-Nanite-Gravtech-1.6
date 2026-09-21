@@ -1704,12 +1704,10 @@ jobs:
                   failures.append('Human-form uniform material contract regressed')
               if uniform.findtext('./apparel/tags/li') != 'WNG_HumanFormClothing':
                   failures.append('Human-form uniform lost its retained clothing identity tag')
-              if uniform.findtext('./graphicData/texPath') != 'Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor':
-                  failures.append('Human-form uniform temporary clean-art reuse changed before dedicated art replacement')
-              if uniform.findtext('./apparel/wornGraphicPath') != 'Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor':
-                  failures.append('Human-form uniform worn-art path no longer uses current clean temporary presentation')
-              if 'WNG_HumanFormUniform</texPath>' in human_form_apparel or 'WNG_HumanFormUniform</wornGraphicPath>' in human_form_apparel:
-                  failures.append('Human-form uniform regressed to forbidden historical presentation path')
+              if uniform.findtext('./graphicData/texPath') != 'Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormUniform':
+                  failures.append('Human-form uniform lost its dedicated professional ground art')
+              if uniform.findtext('./apparel/wornGraphicPath') != 'Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormUniform':
+                  failures.append('Human-form uniform lost its dedicated professional worn art')
           if combat_armor is None:
               failures.append('Human-form combat armor disappeared while restoring the civilian uniform')
           elif uniform is not None:
@@ -1855,8 +1853,8 @@ jobs:
           if dose is None:
               failures.append('Vital Resistance dose is missing')
           else:
-              if dose.findtext('./graphicData/texPath') != 'Things/Item/Drug/GoJuice':
-                  failures.append('Vital Resistance dose must use current clean/native presentation until dedicated art exists')
+              if dose.findtext('./graphicData/texPath') != 'Things/Item/WraithMedical/WNG_VitalResistanceDose':
+                  failures.append('Vital Resistance dose lost its dedicated WNG presentation')
               if dose.findtext('./recipeMaker/researchPrerequisite') != 'WNG_FeedingResistance':
                   failures.append('Vital Resistance dose lost its dedicated research gate')
               if dose.findtext('./recipeMaker/recipeUsers/li') != 'DrugLab':
