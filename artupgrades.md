@@ -317,6 +317,10 @@ Required redo:
 - transparent clean edges;
 - separate clean build icon.
 
+
+#### Completion note — 2026-09-21
+The original audit above is retained as history. It has now been resolved in the public mod repo at `608e6cc311249a7a02ac0b73cb579fa47bc1236e`: all four directional world sprites plus base and a dedicated transparent build icon were replaced with the coherent professional Asuran/Lattice carrier set. The failed one-master rotation finalizer was made manual-only so it cannot overwrite the four authored facings. All current validation/build checks passed green on the completed carrier commit.
+
 ### 6. Goa'uld Grav-field Projector
 
 Path:
@@ -953,7 +957,7 @@ Since the visual-audit commit:
 1. **Precursor Field Armour + Personal Shield** — first-pass replacement committed; still requires professional visual sign-off at pawn scale.
 2. **Goa'uld Death Glider** — **professional rendered replacement COMPLETE**; all directional sprites committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
-4. **Asuran Queen Recovery Carrier** — procedural first pass exists in repo; higher-detail professional directional source set prepared; final professional replacement is CURRENT WORK.
+4. **Asuran Queen Recovery Carrier** — **PROFESSIONAL REPLACEMENT COMPLETE.** Base + north/east/south/west world sprites and a separate centred build icon were replaced with one coherent Asuran/Lattice recovery-craft design in commit `608e6cc311249a7a02ac0b73cb579fa47bc1236e`. The Def remains the correct 3×5 `Graphic_Multi` NPC shuttle. Static Validation, Release Gap Audit and Managed Build all passed on that exact commit.
 5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — first-pass replacement committed; professional visual sign-off still required.
 6. **Asuran / Goa'uld / Wraith gravship doors** — **PROFESSIONAL ART + VANILLA-PARITY DIRECTIONAL SET COMPLETE.** New Stargate-specific masters are installed for all three factions; north/east/south/west/base assets are generated deterministically from each approved master so scale, lighting, centre and alpha remain coherent. `WNG_GoauldGravshipDoor`, `WNG_WraithGravshipDoor`, and `WNG_AsuranGravshipDoor` now use `Graphic_Multi`; vanilla `Building_Door` rendering handles opening/closing from those directional mover graphics. The old automatic whole-art generator push trigger was disabled so procedural first-pass scripts cannot silently overwrite professional art. Finalized door state validated at commit `e20f9f418399753df64c7ed22516b696b08036b2`: D108 Static Validation, Release Gap Audit, and Managed Build all green.
 7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
@@ -994,6 +998,18 @@ Correct rule:
 - the broad art-generator workflow is manual-only (`workflow_dispatch`) until every generator is itself a professional authoritative source;
 - narrowly scoped safe finalizers may run automatically only when they deterministically derive variants from an approved master;
 - never allow an old generator to overwrite approved repo art merely because a workflow was triggered.
+
+## 27. Tried to auto-derive a four-view craft from one facing
+Mistake:
+- a temporary Asuran carrier finalizer was set to rotate one north-facing master into east/south/west;
+- that would have overwritten the four separately authored, coherent directional renders and the first uploaded north master was also unreadable by Pillow.
+
+Correct rule:
+- for craft with genuinely authored directional views, preserve those views;
+- do not replace them with geometric rotations merely because rotation is convenient;
+- validate each uploaded PNG before allowing any automation to propagate it;
+- narrow finalizer workflows must be manual-only unless their derivation is explicitly the intended authoritative art process.
+
 
 ---
 
