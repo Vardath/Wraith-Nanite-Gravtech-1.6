@@ -938,7 +938,7 @@ I incorrectly inferred that Goa'uld/Wraith cardinal door PNGs were dead solely b
 
 # LIVE ART-PASS PROGRESS — 2026-09-21
 
-Current public `main`: `512e99de664baa02adada8e7f4ce9b08ff972be7`
+Current public `main`: `e20f9f418399753df64c7ed22516b696b08036b2`
 
 Since the visual-audit commit:
 - 17 commits have advanced the art programme.
@@ -955,7 +955,7 @@ Since the visual-audit commit:
 3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 4. **Asuran Queen Recovery Carrier** — procedural first pass exists in repo; higher-detail professional directional source set prepared; final professional replacement is CURRENT WORK.
 5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — first-pass replacement committed; professional visual sign-off still required.
-6. **Asuran / Goa'uld / Wraith gravship doors** — replacement art committed, but the earlier conclusion that Goa'uld/Wraith directional art was redundant was WRONG. The eight directional PNGs were restored in commit `0d50f13abe8d486fbfc860ef19d33852367f3658`. The design target is vanilla-door functional parity: cardinal placement/rotation and correct open/closed visual behavior. If the current Def uses `Graphic_Single` while the intended door behavior needs directional/state art, treat that as a Def/function mismatch to fix — never as permission to delete the directional assets. Asuran texture is shared by a `Graphic_Multi` buildable iris door and a `Graphic_Single` vacuum barrier; Goa'uld/Wraith door behavior now requires a full vanilla-parity implementation audit before any art family is removed or consolidated. Final in-game visual sign-off still required.
+6. **Asuran / Goa'uld / Wraith gravship doors** — **PROFESSIONAL ART + VANILLA-PARITY DIRECTIONAL SET COMPLETE.** New Stargate-specific masters are installed for all three factions; north/east/south/west/base assets are generated deterministically from each approved master so scale, lighting, centre and alpha remain coherent. `WNG_GoauldGravshipDoor`, `WNG_WraithGravshipDoor`, and `WNG_AsuranGravshipDoor` now use `Graphic_Multi`; vanilla `Building_Door` rendering handles opening/closing from those directional mover graphics. The old automatic whole-art generator push trigger was disabled so procedural first-pass scripts cannot silently overwrite professional art. Finalized door state validated at commit `e20f9f418399753df64c7ed22516b696b08036b2`: D108 Static Validation, Release Gap Audit, and Managed Build all green.
 7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
 8. **All 35 UI/ability/gene/xenotype/build icons** — 24 / 35 touched; remaining 11 plus professional review of touched icons still required.
 9. **Full 217-apparel re-audit** — 105 / 217 touched; full visual review still required.
@@ -983,6 +983,17 @@ Correct rule:
 - compare the WNG door class/Def behavior against vanilla doors;
 - then change XML/code and art together so rotation and open/closed states are correct;
 - never delete art solely because the current broken/incomplete Def does not reference it.
+
+## 26. Automatic art-generator push could overwrite approved professional art
+Mistake:
+- the legacy `WNG art generator` workflow ran every `.github/artgen/*.py` script automatically whenever art-generator files changed;
+- several of those scripts are first-pass/procedural generators, so a successful run could overwrite later professional rendered assets such as the Death Glider and doors.
+
+Correct rule:
+- professional approved art is authoritative;
+- the broad art-generator workflow is manual-only (`workflow_dispatch`) until every generator is itself a professional authoritative source;
+- narrowly scoped safe finalizers may run automatically only when they deterministically derive variants from an approved master;
+- never allow an old generator to overwrite approved repo art merely because a workflow was triggered.
 
 ---
 
