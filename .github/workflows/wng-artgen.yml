@@ -35,32 +35,58 @@ jobs:
             python "$script"
           done
 
-      - name: Validate generated PNGs
+      - name: Validate changed PNGs
         run: |
+          set -euo pipefail
+          git diff --name-only -- '*.png' > /tmp/wng_changed_pngs.txt
+          cat /tmp/wng_changed_pngs.txt
           python - <<'PY'
           from pathlib import Path
           from PIL import Image
-          paths = [
-              *Path("Textures/Things/Building/Goauld/Shuttle").glob("WNG_GoauldDeathGlider*.png"),
-          ]
-          assert len(paths) >= 5, f"Expected Death Glider family, got {len(paths)}"
-          for p in paths:
+
+          changed=[Path(x.strip()) for x in Path('/tmp/wng_changed_pngs.txt').read_text().splitlines() if x.strip()]
+          if not changed:
+              print('No PNG changes; generators are already current.')
+          for p in changed:
               im=Image.open(p)
               im.verify()
-              im=Image.open(p).convert("RGBA")
-              assert im.size == (512,512), (p, im.size)
-              alpha=im.getchannel("A")
-              assert alpha.getbbox(), f"empty alpha: {p}"
-              assert alpha.getextrema()[0] == 0, f"no transparency: {p}"
+              im=Image.open(p).convert('RGBA')
+              alpha=im.getchannel('A')
+              assert alpha.getbbox(), f'empty alpha: {p}'
+              assert alpha.getextrema()[0] == 0, f'no transparency: {p}'
               print(p, im.size, alpha.getbbox())
+
+          gliders=list(Path('Textures/Things/Building/Goauld/Shuttle').glob('WNG_GoauldDeathGlider*.png'))
+          assert len(gliders) >= 5, f'Expected Death Glider family, got {len(gliders)}'
+          for p in gliders:
+              assert Image.open(p).size == (512,512), (p, Image.open(p).size)
+
+          field=list(Path('Textures/Things/Pawn/Humanlike/Apparel/Precursor').glob('WNG_PrecursorFieldArmor*.png'))
+          if field:
+              assert len(field) == 26, f'Expected 26 Precursor Field Armour PNGs, got {len(field)}'
+              for p in field:
+                  assert Image.open(p).size == (192,192), (p, Image.open(p).size)
           PY
+
+      - name: Build review artifact
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/wng-art-review
+          mkdir -p /tmp/wng-art-review
+          if [ -s /tmp/wng_changed_pngs.txt ]; then
+            while IFS= read -r p; do
+              mkdir -p "/tmp/wng-art-review/$(dirname "$p")"
+              cp "$p" "/tmp/wng-art-review/$p"
+            done < /tmp/wng_changed_pngs.txt
+          else
+            cp Textures/Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider*.png /tmp/wng-art-review/
+          fi
 
       - name: Upload generated art for review
         uses: actions/upload-artifact@v4
         with:
           name: wng-generated-art
-          path: |
-            Textures/Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider*.png
+          path: /tmp/wng-art-review
           if-no-files-found: error
           retention-days: 14
 
@@ -69,10 +95,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Textures/Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider*.png
+          git add Textures
           if git diff --cached --quiet; then
             echo "Generated art already current."
             exit 0
           fi
-          git commit -m "Upgrade Goa'uld Death Glider art"
+          git commit -m "Generate professional WNG art upgrades"
           git push origin HEAD:main
