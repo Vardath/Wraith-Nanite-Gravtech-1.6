@@ -919,6 +919,40 @@ Correct rule:
 
 ---
 
+# LIVE ART-PASS PROGRESS — 2026-09-21
+
+Current public `main`: `8a140b4771f5319bb8fdec27e28b596c71756409`
+
+Since the visual-audit commit:
+- 17 commits have advanced the art programme.
+- 161 PNG files have changed.
+- 105 / 217 apparel PNGs have been touched (48%).
+- 24 / 35 WNG UI PNGs have been touched (69%).
+- 15 shuttle PNGs have been touched across Death Glider, Puddle Jumper and Asuran Queen Recovery Carrier families.
+- 17 gravship PNGs have been touched across field devices and door families.
+
+## Execution-order status
+
+1. **Precursor Field Armour + Personal Shield** — first-pass replacement committed; still requires professional visual sign-off at pawn scale.
+2. **Goa'uld Death Glider** — **professional rendered replacement COMPLETE**; all directional sprites committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
+3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
+4. **Asuran Queen Recovery Carrier** — procedural first pass exists in repo; higher-detail professional directional source set prepared; final professional replacement is CURRENT WORK.
+5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — first-pass replacement committed; professional visual sign-off still required.
+6. **Asuran / Goa'uld / Wraith gravship doors** — first-pass replacement committed; professional visual sign-off and rotation/Graphic_Single verification still required.
+7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
+8. **All 35 UI/ability/gene/xenotype/build icons** — 24 / 35 touched; remaining 11 plus professional review of touched icons still required.
+9. **Full 217-apparel re-audit** — 105 / 217 touched; full visual review still required.
+10. **Replicator visual review** — not yet completed.
+11. **Combat Extended compatibility assets** — not yet completed.
+12. **Final weapons/projectiles/furniture/buildings pass** — not yet completed.
+13. **Full validation** — current professional Death Glider and Puddle Jumper commits both passed all D108 validation workflows; repeat after each later batch and once at final completion.
+14. **Representative RimWorld playtest** — not yet completed.
+15. **Regenerate WNG website art page** — intentionally deferred until the mod art pass is complete; website is output only.
+
+**Overall status:** roughly one-third of the art programme is genuinely complete at professional/sign-off level; considerably more has received a first pass but is not yet accepted as finished.
+
+---
+
 # CURRENT STATUS AFTER THIS AUDIT
 
 ## Repository
