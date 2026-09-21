@@ -1,0 +1,120 @@
+name: D141 transfer rebuild and sync
+
+on:
+  push:
+    branches:
+      - d141-transfer
+    paths:
+      - 'D141.part01'
+      - 'D141.part02'
+      - 'D141.part03'
+      - '.github/workflows/d141-transfer-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild-and-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout transfer branch
+        uses: actions/checkout@v4
+        with:
+          ref: d141-transfer
+          path: transfer-branch
+
+      - name: Require all three D141 parts
+        id: parts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in D141.part01 D141.part02 D141.part03; do
+            if [ ! -f "transfer-branch/$f" ]; then
+              echo "All three parts are not present yet; stopping without error."
+              echo "ready=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: Recombine and verify authoritative D141 ZIP
+        if: steps.parts.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat transfer-branch/D141.part01 transfer-branch/D141.part02 transfer-branch/D141.part03 > /tmp/D141.zip
+          echo "41a79ddae91ae734e8256f64806bd0733f45ad05328e2cda753992821fde0b32  /tmp/D141.zip" | sha256sum -c -
+          mkdir -p /tmp/d141
+          unzip -q /tmp/D141.zip -d /tmp/d141
+          test -d /tmp/d141/Wraith-Nanite-Gravtech
+
+      - name: Checkout main
+        if: steps.parts.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          path: main-repo
+
+      - name: Replace runtime mod contents with D141
+        if: steps.parts.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=/tmp/d141/Wraith-Nanite-Gravtech
+          dst="$GITHUB_WORKSPACE/main-repo"
+
+          # Replace every authoritative runtime entry from D141.
+          for p in "$src"/*; do
+            name="$(basename "$p")"
+            rm -rf "$dst/$name"
+            cp -a "$p" "$dst/$name"
+          done
+
+          # Repository-only development/CI files are intentionally preserved:
+          # .github/, Source/, artupgrades.md
+
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          root=Path("main-repo")
+          xml=list(root.rglob("*.xml"))
+          png=list(root.rglob("*.png"))
+          bad_xml=[]
+          for p in xml:
+              try: ET.parse(p)
+              except Exception as e: bad_xml.append((str(p),str(e)))
+          bad_png=[]
+          empty_png=[]
+          sig=b"\x89PNG\r\n\x1a\n"
+          for p in png:
+              data=p.read_bytes()
+              if not data:
+                  empty_png.append(str(p))
+              elif not data.startswith(sig):
+                  bad_png.append(str(p))
+          print(f"XML: {len(xml)}; parse errors: {len(bad_xml)}")
+          print(f"PNG: {len(png)}; bad signatures: {len(bad_png)}; empty: {len(empty_png)}")
+          if bad_xml or bad_png or empty_png:
+              print("BAD_XML", bad_xml[:20])
+              print("BAD_PNG", bad_png[:20])
+              print("EMPTY_PNG", empty_png[:20])
+              raise SystemExit(1)
+          PY
+
+      - name: Commit D141 to main
+        if: steps.parts.outputs.ready == 'true'
+        shell: bash
+        working-directory: main-repo
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "main already matches D141 runtime contents."
+            exit 0
+          fi
+          git commit -m "Sync authoritative WNG D141 mod"
+          git push origin HEAD:main
