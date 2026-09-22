@@ -1,0 +1,28 @@
+name: WNG Replicator Visual Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artqa/replicator_visual_audit.py"
+      - ".github/workflows/wng-replicator-visual-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - run: python .github/artqa/replicator_visual_audit.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: replicator-visual-audit
+          path: qa/replicator/replicator-contact-sheet.jpg
+          if-no-files-found: error
