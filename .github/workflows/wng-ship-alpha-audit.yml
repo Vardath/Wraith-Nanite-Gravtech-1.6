@@ -4,10 +4,12 @@ on:
   push:
     branches: [main]
     paths:
-      - ".github/validation/audit_ship_alpha.py"
+      - ".github/artqa/ship_alpha_audit.py"
       - ".github/workflows/wng-ship-alpha-audit.yml"
-      - "Textures/Things/Building/**/Shuttle/*.png"
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   audit:
@@ -18,5 +20,4 @@ jobs:
         with:
           python-version: "3.x"
       - run: python -m pip install --disable-pip-version-check pillow
-      - name: Audit shuttle and craft alpha
-        run: python .github/validation/audit_ship_alpha.py
+      - run: python .github/artqa/ship_alpha_audit.py
