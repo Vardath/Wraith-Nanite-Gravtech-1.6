@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - ".github/artgen/generate_replicator_titan.py"
+      - ".github/artgen/generate_replicator_siege_mass.py"
       - ".github/workflows/wng-generate-replicator-pawns.yml"
   workflow_dispatch:
 
@@ -22,17 +22,17 @@ jobs:
         with:
           python-version: "3.x"
       - run: python -m pip install --disable-pip-version-check pillow
-      - name: Generate Replicator Titan only
-        run: python .github/artgen/generate_replicator_titan.py
-      - name: Commit Titan family only
+      - name: Generate Replicator Siege Mass only
+        run: python .github/artgen/generate_replicator_siege_mass.py
+      - name: Commit Siege Mass family only
         shell: bash
         run: |
-          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorTitan*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorSiegeMass*.png
           if git diff --cached --quiet; then
-            echo "Replicator Titan art already current."
+            echo "Replicator Siege Mass art already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+Vardath@users.noreply.github.com"
-          git commit -m "Rebuild Replicator Titan art"
+          git commit -m "Rebuild Replicator Siege Mass art"
           git push
