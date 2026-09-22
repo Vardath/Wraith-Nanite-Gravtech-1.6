@@ -215,12 +215,12 @@ def make_north():
     for x,y in [(C,912),(C-196,958),(C+196,958),(C-254,1270),(C+254,1270),(C,1376)]:
         d.ellipse((x-7,y-7,x+7,y+7), fill=(17,16,14,255), outline=LIGHT, width=2)
 
-    # Crop to an accurate long-hull planform (roughly 35m x 19.5m), then centre on a square transparent texture.
+    # Crop to an accurate long-hull planform (the RimWorld 5x7 long footprint), then centre on a square transparent texture.
     box = im.getchannel('A').getbbox()
     if not box:
         raise RuntimeError('Al\'kesh render has empty alpha')
     crop = im.crop(box)
-    target_w, target_h = 274, 456
+    target_w, target_h = 336, 470
     scale = min(target_w/crop.width, target_h/crop.height)
     crop = crop.resize((round(crop.width*scale), round(crop.height*scale)), Image.Resampling.LANCZOS)
     out = Image.new('RGBA',(FINAL,FINAL),(0,0,0,0))
@@ -242,9 +242,9 @@ def validate(path):
             raise RuntimeError(f'{path}: alpha touches edge')
         w,h=bbox[2]-bbox[0],bbox[3]-bbox[1]
         # north/south should be a long pyramid body; east/west naturally reverse the bbox ratio.
-        if path.name.endswith(('_north.png','Transport.png','_south.png')) and not (0.48 <= w/h <= 0.68):
+        if path.name.endswith(('_north.png','Transport.png','_south.png')) and not (0.66 <= w/h <= 0.76):
             raise RuntimeError(f'{path}: north/south hull ratio {w/h:.3f} is not Al\'kesh-like')
-        if path.name.endswith(('_east.png','_west.png')) and not (1.47 <= w/h <= 2.10):
+        if path.name.endswith(('_east.png','_west.png')) and not (1.31 <= w/h <= 1.52):
             raise RuntimeError(f'{path}: east/west hull ratio {w/h:.3f} is not rotated Al\'kesh-like')
 
 
