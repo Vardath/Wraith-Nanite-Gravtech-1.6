@@ -1,3 +1,4 @@
+# Re-run after the 2026-09-22 full Replicator professional art pass.
 from pathlib import Path
 from PIL import Image, ImageDraw
 import json
@@ -54,7 +55,6 @@ for i,p in enumerate(files):
     tmp.alpha_composite(im,((cellw-im.width)//2,(160-im.height)//2))
     sheet.paste(tmp.convert("RGB"),(x,y),None)
     label=str(p).replace("Textures/","").replace("Compatibility/CombatExtended/Textures/","CE/")
-    # split label into two short lines
     tail=label[-34:]
     d.text((x+5,y+174),tail,fill=(255,255,255))
 sheet.save(OUT/"replicator-contact-sheet.jpg",quality=92)
