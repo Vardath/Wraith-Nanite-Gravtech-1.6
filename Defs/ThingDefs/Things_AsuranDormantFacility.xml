@@ -22,7 +22,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_AsuranDormantReconstructionPlinth</defName><label>empty Asuran reconstruction plinth</label>
     <description>An empty reconstruction plinth whose active pattern hardware has been removed. It cannot copy, repair, reconstruct or store any pawn.</description>
-    <thingClass>Building</thingClass><graphicData><texPath>Things/Building/Precursor/Control/WNG_AncientControlChair</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(1.2,1.2)</drawSize></graphicData>
+    <thingClass>Building</thingClass><graphicData><texPath>Things/Building/Precursor/Control/WNG_AsuranDormantReconstructionPlinth</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(1.2,1.2)</drawSize></graphicData>
     <size>(1,1)</size><passability>PassThroughOnly</passability><fillPercent>0.4</fillPercent>
     <statBases><MaxHitPoints>240</MaxHitPoints><Mass>22</Mass><Flammability>0</Flammability><Beauty>6</Beauty></statBases>
   </ThingDef>
