@@ -1,0 +1,42 @@
+name: WNG Repair Approved Asuran Carrier Facings
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artgen/repair_asuran_carrier_facings.py"
+      - ".github/workflows/wng-repair-asuran-carrier-facings.yml"
+      - "Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier.png"
+      - "Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier_north.png"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - name: Repair only incomplete carrier facings
+        run: python .github/artgen/repair_asuran_carrier_facings.py
+      - name: Commit repaired facings
+        shell: bash
+        run: |
+          git add Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier.png
+          git add Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier_north.png
+          git add Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier_east.png
+          if git diff --cached --quiet; then
+            echo "Carrier incomplete facings already repaired."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Repair approved Asuran carrier facings"
+          git push
