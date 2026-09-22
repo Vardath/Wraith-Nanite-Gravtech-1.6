@@ -1,0 +1,37 @@
+name: WNG Resize Alkesh Geometry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artgen/resize_alkesh.py"
+      - ".github/workflows/wng-resize-alkesh.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  resize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Correct Al'kesh footprint and visual geometry
+        run: python .github/artgen/resize_alkesh.py
+      - name: Commit Al'kesh geometry only
+        shell: bash
+        run: |
+          git add Defs/ThingDefs/Shuttle_Goauld.xml
+          if git diff --cached --quiet; then
+            echo "Al'kesh geometry already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+Vardath@users.noreply.github.com"
+          git commit -m "Correct Al'kesh footprint and hull proportions"
+          git push
