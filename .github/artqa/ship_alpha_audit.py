@@ -13,7 +13,11 @@ for root in roots:
     if not root.exists():
         continue
     for p in sorted(root.glob("*.png")):
-        im=Image.open(p).convert("RGBA")
+        try:
+            im=Image.open(p).convert("RGBA")
+        except Exception as e:
+            rows.append({"path":str(p),"error":repr(e)})
+            continue
         w,h=im.size
         px=im.load()
         xs=[]; ys=[]; edge_alpha=0; semi=0; semi_light=0; transparent_light=0
