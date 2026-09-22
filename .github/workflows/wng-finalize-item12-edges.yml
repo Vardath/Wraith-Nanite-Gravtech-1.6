@@ -1,0 +1,37 @@
+name: WNG Finalize Item 12 Edges
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artqa/finalize_item12_edges.py"
+      - ".github/workflows/wng-finalize-item12-edges.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - run: python .github/artqa/finalize_item12_edges.py
+      - name: Commit item 12 edge cleanup
+        shell: bash
+        run: |
+          git add Textures/Things/Building/Goauld/Gravship/WNG_GoauldGravFieldProjector.png                   Textures/Things/Building/Precursor/Gravship/WNG_AsuranGravFieldExtender.png                   Textures/Things/Projectile/WNG/WNG_ProjectileHeavyBio.png                   Textures/Things/Projectile/WNG/WNG_ProjectileLivingCarbine.png                   Textures/Things/Projectile/WNG/WNG_ProjectilePrecursorPulse.png                   Textures/Things/Projectile/WNG/WNG_ProjectileStunStaff.png                   Textures/Things/Projectile/WNG/WNG_ProjectileStunner.png
+          if git diff --cached --quiet; then
+            echo "No edge cleanup needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Finalize item 12 sprite edge cleanup"
+          git push
