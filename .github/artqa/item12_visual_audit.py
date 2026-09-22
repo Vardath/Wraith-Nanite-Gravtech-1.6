@@ -76,4 +76,4 @@ for key,files in sorted(groups.items()):
 print("WNG_ITEM12_GROUPS",len(groups))
 for k,v in sorted(groups.items()): print("WNG_ITEM12_GROUP",k,len(v))
 
-# repaired-gravfield checkpoint 2026-09-22
+# final-item12-edge checkpoint 2026-09-22
