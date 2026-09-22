@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
 from pathlib import Path
 import math, random
 ROOT=Path(__file__).resolve().parents[2]
-SRC=Image.open(ROOT/'.github/artgen/assets/replicator_master.webp').convert('RGBA').resize((1254,1254),Image.Resampling.LANCZOS)
+SRC=Image.open(ROOT/'.github/artgen/assets/replicator_master.png').convert('RGBA').resize((1254,1254),Image.Resampling.LANCZOS)
 OUT=ROOT/'Textures/Things/Pawn/Replicator'; OUT.mkdir(parents=True,exist_ok=True)
 S=512
 
