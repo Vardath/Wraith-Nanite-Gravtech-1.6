@@ -1,0 +1,2 @@
+Professional six-legged Replicator pawn art v3 installed on main.
+This marker forces the standard validation and managed playtest build to run against the generated art commit.
