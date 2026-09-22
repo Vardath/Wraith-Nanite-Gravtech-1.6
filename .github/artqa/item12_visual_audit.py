@@ -75,3 +75,5 @@ for key,files in sorted(groups.items()):
     sheet.save(OUT/f"{key}.jpg",quality=92)
 print("WNG_ITEM12_GROUPS",len(groups))
 for k,v in sorted(groups.items()): print("WNG_ITEM12_GROUP",k,len(v))
+
+# repaired-gravfield checkpoint 2026-09-22
