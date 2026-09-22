@@ -103,10 +103,10 @@
   <ThingDef ParentName="LightMechanoidGunRanged">
     <defName>WNG_ReplicatorArtilleryCaster</defName>
     <label>integrated Replicator artillery caster</label>
-    <description>A long-range pulse array grown into the dedicated Artillery body. The current presentation deliberately reuses retained WNG pulse-caster art rather than importing or generating an old specialist weapon asset.</description>
+    <description>A long-range twin pulse array grown into the dedicated Artillery body. Its larger paired emitter assembly is an integrated Replicator machine organ and is destroyed if separated from its body.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
-      <texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorPulseCaster</texPath>
+      <texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorArtilleryCaster</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <drawSize>(1.05,1.05)</drawSize>
     </graphicData>
