@@ -13,7 +13,7 @@ The next GPT should start by reading the current public `main`, this file, the e
 
 # CURRENT ART TASKS
 
-## 1. Goa'uld small sublight drive — adjust or replace
+## 1. Goa'uld small sublight drive — COMPLETED 2026-09-22
 
 **Live Def:** `Defs/Gravships/Gravship_Goauld.xml`  
 **DefName:** `WNG_GoauldSmallSublightDrive`  
@@ -42,6 +42,14 @@ Required work:
 - no clipped housing, floating pieces, square panel, halo, or dirty alpha.
 
 Do not touch the large sublight drive unless direct comparison shows a shared visual problem that must be fixed for family consistency.
+
+**Completion note (2026-09-22):**
+- replaced the small-drive family with the approved compact Ha'tak module: dark naquadah/gunmetal mass, bronze-gold structural framing and restrained amber drive energy;
+- preserved the fixed 1×2 thruster function and made thrust/exhaust direction explicit in north/east/south/west facings;
+- for this symmetric mechanical module, the cardinal family is deterministically derived from the approved north master rather than inventing unrelated side-view artwork;
+- finalizer fully decoded all five outputs as 512×512 RGBA and rejected any sprite whose alpha touches the canvas edge;
+- finalizer completed successfully; source-commit static validation and release-gap audit also passed.
+
 
 ## 2. Goa'uld power coupler — adjust or replace
 
