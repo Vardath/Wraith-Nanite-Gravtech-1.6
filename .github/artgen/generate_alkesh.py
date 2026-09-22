@@ -221,8 +221,7 @@ def make_north():
         raise RuntimeError('Al\'kesh render has empty alpha')
     crop = im.crop(box)
     target_w, target_h = 336, 470
-    scale = min(target_w/crop.width, target_h/crop.height)
-    crop = crop.resize((round(crop.width*scale), round(crop.height*scale)), Image.Resampling.LANCZOS)
+    crop = crop.resize((target_w, target_h), Image.Resampling.LANCZOS)
     out = Image.new('RGBA',(FINAL,FINAL),(0,0,0,0))
     out.alpha_composite(crop,((FINAL-crop.width)//2,(FINAL-crop.height)//2))
     return out
