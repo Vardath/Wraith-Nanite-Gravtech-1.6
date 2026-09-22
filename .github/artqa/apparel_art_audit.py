@@ -34,7 +34,22 @@ for r in rows:
     print(json.dumps(r,sort_keys=True))
 print("WNG_APPAREL_AUDIT_END")
 print("WNG_APPAREL_COUNT",len(rows))
-bad=[r for r in rows if "error" in r or r.get("edge_alpha_pixels",0)>0 or (r.get("center_offset") and (abs(r["center_offset"][0])>12 or abs(r["center_offset"][1])>12))]
+bad=[]
+for r in rows:
+    if "error" in r or r.get("edge_alpha_pixels",0)>0:
+        bad.append(r); continue
+    off=r.get("center_offset")
+    size=r.get("size")
+    if off and size==[192,192]:
+        # RimWorld worn apparel is intentionally lower than canvas centre.
+        # Flag only lateral drift or vertical placement outside the observed body-overlay band.
+        if abs(off[0])>4 or not (20 <= off[1] <= 40):
+            bad.append(r)
+    elif off and size!=[256,256]:
+        if abs(off[0])>4 or abs(off[1])>4:
+            bad.append(r)
 print("WNG_APPAREL_FLAGGED",len(bad))
 for r in bad:
     print("WNG_APPAREL_FLAG",json.dumps(r,sort_keys=True))
+
+# apparel-template centring rule 2026-09-22
