@@ -1,5 +1,6 @@
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 ROOT=Path("Textures/Things/Building/Precursor/Shuttle")
 NAMES=[
