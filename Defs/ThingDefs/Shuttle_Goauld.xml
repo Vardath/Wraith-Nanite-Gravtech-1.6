@@ -3,19 +3,19 @@
   <!-- Al'kesh: WNG-owned Goa'uld medium transport on Odyssey's native player-shuttle stack. -->
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_AlkeshIncoming</defName><label>Al'kesh (incoming)</label><thingClass>PassengerShuttleIncoming</thingClass>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(8.8,6.4)</drawSize></graphicData>
-    <size>(8,6)</size>
-    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(8.8,6.4)</shadowSize></skyfaller>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(9,9)</drawSize></graphicData>
+    <size>(5,9)</size>
+    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(5.2,9)</shadowSize></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_AlkeshLeaving</defName><label>Al'kesh (leaving)</label><thingClass>PassengerShuttleLeaving</thingClass><rotatable>true</rotatable>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(8.8,6.4)</drawSize></graphicData>
-    <size>(8,6)</size>
-    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(8.8,6.4)</shadowSize></skyfaller>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(9,9)</drawSize></graphicData>
+    <size>(5,9)</size>
+    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(5.2,9)</shadowSize></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_AlkeshBombingPass</defName><label>Al'kesh bombing pass</label><thingClass>WraithNaniteGravtech.Skyfaller_GoauldAlkeshBombingPass</thingClass><drawOffscreen>true</drawOffscreen>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(8.8,6.4)</drawSize></graphicData><size>(8,6)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(9,9)</drawSize></graphicData><size>(5,9)</size>
     <skyfaller><ticksToImpactRange>165~205</ticksToImpactRange><anticipationSoundTicks>-1</anticipationSoundTicks><rotationCurve><points><li>(0,12)</li><li>(0.5,2)</li><li>(0.9,-2)</li><li>(1,0)</li></points></rotationCurve><zPositionCurve><points><li>(0,5)</li><li>(0.85,3)</li><li>(1,1.5)</li></points></zPositionCurve><speedCurve><points><li>(0,1.05)</li><li>(0.8,0.85)</li><li>(1,0.7)</li></points></speedCurve></skyfaller>
   </ThingDef>
   <WorldObjectDef ParentName="ShuttleWorldObjectBase">
@@ -27,13 +27,13 @@
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_AlkeshTransport</defName><label>Al'kesh transport</label>
     <description>A Goa'uld Al'kesh mid-range bomber and transport. Odyssey owns ordinary boarding, cargo, launch and world travel; WNG adds a physical same-map bombing run using the exact craft. It uses Chemfuel when ONAC is absent and ONAC's Goa'uld material/fuel economy when ONAC is installed.</description>
-    <thingClass>Building_PassengerShuttle</thingClass><preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>50</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.5</fillPercent><size>(8,6)</size><drawHighlight>true</drawHighlight><highlightColor>(0.72,0.52,0.22)</highlightColor><uiIconScale>1</uiIconScale>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(8.8,6.4)</drawSize><shadowData><volume>(7.8,1.4,5.4)</volume><offset>(0,0,0)</offset></shadowData></graphicData>
+    <thingClass>Building_PassengerShuttle</thingClass><preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>50</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.5</fillPercent><size>(5,9)</size><drawHighlight>true</drawHighlight><highlightColor>(0.72,0.52,0.22)</highlightColor><uiIconScale>1</uiIconScale>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(9,9)</drawSize><shadowData><volume>(4.8,1.6,8.2)</volume><offset>(0,0,0)</offset></shadowData></graphicData>
     <uiIconPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</uiIconPath>
     <statBases><MaxHitPoints>1500</MaxHitPoints><Flammability>0.08</Flammability><WorkToBuild>62000</WorkToBuild><Mass>650</Mass><Comfort>0.68</Comfort></statBases>
     <tickerType>Normal</tickerType><designationCategory>Misc</designationCategory><constructionSkillPrerequisite>9</constructionSkillPrerequisite>
     <costList><Plasteel>160</Plasteel><Gold>35</Gold><ComponentSpacer>6</ComponentSpacer><ShuttleEngine>1</ShuttleEngine></costList>
-    <canOverlapZones>true</canOverlapZones><rotatable>true</rotatable><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-4)</interactionCellOffset><defaultPlacingRot>North</defaultPlacingRot><selectable>true</selectable><terrainAffordanceNeeded>Light</terrainAffordanceNeeded><soundImpactDefault>BulletImpact_Metal</soundImpactDefault><preventSkyfallersLandingOn>true</preventSkyfallersLandingOn><drawerType>RealtimeOnly</drawerType><repairEffect>ConstructMetal</repairEffect>
+    <canOverlapZones>true</canOverlapZones><rotatable>true</rotatable><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-5)</interactionCellOffset><defaultPlacingRot>North</defaultPlacingRot><selectable>true</selectable><terrainAffordanceNeeded>Light</terrainAffordanceNeeded><soundImpactDefault>BulletImpact_Metal</soundImpactDefault><preventSkyfallersLandingOn>true</preventSkyfallersLandingOn><drawerType>RealtimeOnly</drawerType><repairEffect>ConstructMetal</repairEffect>
     <building><claimable>false</claimable><destroySound>BuildingDestroyed_Metal_Big</destroySound><paintable>false</paintable><isInert>true</isInert><forcedCostLeavings><li MayRequire="Ludeon.RimWorld.Odyssey">ShuttleEngine</li></forcedCostLeavings></building>
     <inspectorTabs><li>ITab_ContentsTransporter</li></inspectorTabs><researchPrerequisites><li>WNG_GoauldShuttles</li></researchPrerequisites>
     <comps>
