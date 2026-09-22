@@ -7,16 +7,11 @@ on:
       - ".github/workflows/wng-sync-static-art-hashes.yml"
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Refresh approved Replicator ruin art hashes
         shell: bash
         run: |
@@ -36,15 +31,10 @@ jobs:
               text = text.replace(old, new, 1)
           path.write_text(text, encoding='utf-8')
           PY
-      - name: Commit refreshed validation contract
-        shell: bash
-        run: |
-          git add .github/workflows/d107-static-validation.yml
-          if git diff --cached --quiet; then
-            echo "Static Replicator ruin hashes already current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Sync static validation with upgraded Replicator ruin art"
-          git push
+      - name: Upload patched static validation file
+        uses: actions/upload-artifact@v4
+        with:
+          name: patched-static-validation
+          path: .github/workflows/d107-static-validation.yml
+          if-no-files-found: error
+          retention-days: 1
