@@ -73,6 +73,14 @@ Required work:
 - dark naquadah body, bronze/gold structure and integrated amber/orange energy/crystal cues;
 - no decorative loose linework or detached pieces.
 
+**Completion note (2026-09-22) — power coupler:**
+- replaced the weak/generic coupler art with a compact 1×1 Ha'tak power-interface device rather than another ship-shaped object or generator;
+- visual language now matches the Goa'uld family: dark naquadah/gunmetal chassis, bronze-gold structural clamping and a restrained integrated amber crystal/energy junction;
+- silhouette remains strong at RimWorld scale and reads as an interface/bridge between power systems, not a reactor;
+- no loose wires, detached decoration or floating linework;
+- finalized production PNG is 512×512 RGBA, visibly centred at approximately (256,256), with non-empty alpha and fully transparent canvas edges.
+
+
 **Completion note (2026-09-22):**
 - replaced the coupler with a dedicated 512×512 RGBA Goa'uld interface sprite generated from a repo-owned renderer;
 - preserved the live 1×1 `Graphic_Single` role and `drawSize (1.5,1.5)`;
