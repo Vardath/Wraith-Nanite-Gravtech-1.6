@@ -1,201 +1,201 @@
-from PIL import Image, ImageDraw, ImageFilter
 from pathlib import Path
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
 import math, random
 
-# Professional SG-1 block-form Replicator renderer.
-# Six articulated legs (three pairs), built from individual machine blocks.
-# Oversampled for crisp RimWorld-scale sprites while retaining worn metallic detail.
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'Textures' / 'Things' / 'Pawn' / 'Replicator'
-OUT.mkdir(parents=True, exist_ok=True)
-HI = 1024
-OUTSIZE = 512
-GLOW = (184, 224, 248, 255)
-EDGE_DARK = (13, 15, 17, 245)
+ROOT=Path(__file__).resolve().parents[2]
+OUT=ROOT/'Textures'/'Things'/'Pawn'/'Replicator'; OUT.mkdir(parents=True,exist_ok=True)
+S=1024
+FINAL=512
+ROLES=['Drone','Hunter','Bulwark','Titan','SiegeMass','Controller','Repairer','Burrower','Artillery']
+DIRANG={'south':0,'west':90,'north':180,'east':270}
+# restrained steel palette, closer to Stargate block Replicators than neon mech art
+EDGE=(20,24,25,255); DEEP=(34,39,40,255); STEEL=(92,99,99,255); MID=(110,118,117,255); LIGHT=(172,181,178,255)
+BRIGHT=(215,220,216,255); ACCENT=(91,188,184,255); ACCENT_HI=(151,232,222,255); AMBER=(191,135,70,255)
 
+RNG=random.Random(137)
 
-def metal_block(w, h, seed=0, corner=10, damage=1.0, light=1.0):
-    w = max(8, int(w)); h = max(8, int(h))
-    im = Image.new('RGBA', (w, h), (0, 0, 0, 0))
-    m = Image.new('L', (w, h), 0)
-    md = ImageDraw.Draw(m)
-    c = max(3, int(corner))
-    md.rounded_rectangle((2, 2, w - 3, h - 3), radius=c, fill=255)
-    pix = Image.new('RGBA', (w, h), (0, 0, 0, 0)); pp = pix.load()
-    rnd = random.Random(seed)
-    for y in range(h):
-        ny = abs((y / max(1, h - 1)) - .5) * 2
-        for x in range(w):
-            nx = abs((x / max(1, w - 1)) - .5) * 2
-            edge = max(nx, ny)
-            base = int((82 - 36 * edge) * light)
-            streak = 8 * math.sin((x * .07) + (seed % 11)) + 4 * math.sin((y * .13) + (seed % 7))
-            grain = rnd.randint(-7, 7)
-            v = max(18, min(150, int(base + streak + grain)))
-            pp[x, y] = (v, min(160, v + 3), min(165, v + 5), 255)
-    pix.putalpha(m)
-    im.alpha_composite(pix)
-    d = ImageDraw.Draw(im)
-    d.rounded_rectangle((2, 2, w - 3, h - 3), radius=c, outline=EDGE_DARK, width=max(3, min(w, h) // 18))
-    d.line((c + 3, 5, w - c - 5, 5), fill=(205, 209, 211, 180), width=max(2, min(w, h) // 28))
-    d.line((5, c + 3, 5, h - c - 5), fill=(144, 150, 154, 120), width=max(2, min(w, h) // 32))
-    d.line((c + 4, h - 6, w - c - 6, h - 6), fill=(5, 7, 8, 180), width=max(2, min(w, h) // 24))
-    rnd = random.Random(seed * 131 + 17)
-    for _ in range(max(2, int((w + h) / 70 * damage))):
-        x = rnd.randint(8, max(8, w - 9)); y = rnd.randint(7, max(7, h - 8)); ln = rnd.randint(8, max(9, min(34, w // 2)))
-        if rnd.random() < .5:
-            d.line((x, y, min(w - 7, x + ln), y + rnd.randint(-2, 2)), fill=(205, 207, 206, rnd.randint(45, 95)), width=1)
-        else:
-            d.line((x, y, x + rnd.randint(-2, 2), min(h - 7, y + ln)), fill=(6, 8, 9, rnd.randint(55, 110)), width=1)
-    if w > 38 and h > 28:
-        pos = max(10, int(h * .63))
-        d.line((9, pos, w - 10, pos), fill=(16, 18, 20, 150), width=2)
-        d.line((10, pos + 2, w - 11, pos + 2), fill=(120, 124, 126, 55), width=1)
-    return im
+def ptrot(p,ang,c=(S/2,S/2)):
+    x,y=p; cx,cy=c; r=math.radians(ang); dx=x-cx; dy=y-cy
+    return (cx+dx*math.cos(r)-dy*math.sin(r), cy+dx*math.sin(r)+dy*math.cos(r))
 
+def rounded_mask(size,r):
+    m=Image.new('L',size,0); d=ImageDraw.Draw(m); d.rounded_rectangle((0,0,size[0]-1,size[1]-1),radius=r,fill=255); return m
 
-def joint(radius, seed=0):
-    s = radius * 2 + 12
-    im = Image.new('RGBA', (s, s), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    d.ellipse((5, 5, s - 6, s - 6), fill=(13, 15, 17, 255), outline=(132, 136, 139, 230), width=4)
-    d.ellipse((10, 10, s - 11, s - 11), fill=(44, 48, 51, 255), outline=(8, 9, 10, 255), width=3)
-    d.ellipse((radius * .55 + 6, radius * .55 + 6, s - radius * .55 - 7, s - radius * .55 - 7), fill=(27, 30, 32, 255), outline=(170, 174, 176, 150), width=2)
-    return im
+def metal_block(canvas, center, size, angle, tone=0, accent=False, inset=True, rivets=True, glow=False):
+    w,h=max(10,int(size[0])),max(10,int(size[1])); pad=18
+    tile=Image.new('RGBA',(w+pad*2,h+pad*2),(0,0,0,0));
+    sh=Image.new('RGBA',tile.size,(0,0,0,0)); sd=ImageDraw.Draw(sh); r=max(5,min(w,h)//8)
+    sd.rounded_rectangle((pad+5,pad+7,pad+w+5,pad+h+7),radius=r,fill=(0,0,0,105)); sh=sh.filter(ImageFilter.GaussianBlur(5)); tile.alpha_composite(sh)
+    d=ImageDraw.Draw(tile)
+    base_choices=[(75,82,83,255),(90,97,97,255),(105,111,110,255)]
+    base=base_choices[max(-1,min(1,tone))+1]
+    d.rounded_rectangle((pad,pad,pad+w,pad+h),radius=r,fill=EDGE)
+    d.rounded_rectangle((pad+4,pad+4,pad+w-4,pad+h-4),radius=max(3,r-3),fill=base)
+    for i in range(0,max(1,h-10),4):
+        t=i/max(1,h-10)
+        v=int(18*(0.5-t))
+        col=tuple(max(0,min(255,c+v)) for c in base[:3])+(255,)
+        y=pad+5+i
+        d.line((pad+8,y,pad+w-8,y),fill=col,width=4)
+    d.line((pad+r,pad+5,pad+w-r,pad+5),fill=(190,199,196,220),width=3)
+    d.line((pad+5,pad+r,pad+5,pad+h-r),fill=(154,164,163,180),width=2)
+    d.line((pad+r,pad+h-5,pad+w-r,pad+h-5),fill=(18,22,23,230),width=4)
+    d.line((pad+w-5,pad+r,pad+w-5,pad+h-r),fill=(24,29,30,220),width=3)
+    if inset and w>35 and h>24:
+        ix0=pad+int(w*.18); ix1=pad+int(w*.82); iy0=pad+int(h*.30); iy1=pad+int(h*.70)
+        d.rounded_rectangle((ix0,iy0,ix1,iy1),radius=max(2,r//3),fill=(42,48,49,255),outline=(128,137,136,220),width=2)
+        d.line((ix0+4,iy0+3,ix1-4,iy0+3),fill=(170,178,175,150),width=2)
+        if accent:
+            cy=(iy0+iy1)//2
+            if glow:
+                gm=Image.new('L',tile.size,0); gd=ImageDraw.Draw(gm); gd.rounded_rectangle((ix0+8,cy-4,ix1-8,cy+4),radius=3,fill=210); gm=gm.filter(ImageFilter.GaussianBlur(10))
+                gl=Image.new('RGBA',tile.size,(*ACCENT[:3],0)); gl.putalpha(gm.point(lambda x:int(x*.38))); tile.alpha_composite(gl); d=ImageDraw.Draw(tile)
+            d.rounded_rectangle((ix0+8,cy-3,ix1-8,cy+3),radius=2,fill=ACCENT_HI)
+    if rivets and w>28 and h>20:
+        rr=max(2,min(w,h)//16)
+        for x,y in [(pad+10,pad+10),(pad+w-10,pad+h-10)]:
+            d.ellipse((x-rr,y-rr,x+rr,y+rr),fill=(28,34,35,255),outline=(176,184,181,230),width=1)
+    for _ in range(max(0,(w*h)//7000)):
+        x=RNG.randint(pad+7,pad+w-7); y=RNG.randint(pad+7,pad+h-7)
+        d.line((x,y,min(pad+w-7,x+RNG.randint(3,10)),y),fill=(206,211,206,70),width=1)
+    rot=tile.rotate(angle,Image.Resampling.BICUBIC,expand=True)
+    canvas.alpha_composite(rot,(round(center[0]-rot.width/2),round(center[1]-rot.height/2)))
 
+def chain(canvas,a,b,width,blocks=3,accent_last=False,tone=0):
+    ax,ay=a; bx,by=b
+    dx,dy=bx-ax,by-ay; L=math.hypot(dx,dy)
+    if L<1:return
+    ang=math.degrees(math.atan2(dy,dx)); ux,uy=dx/L,dy/L
+    gap=max(4,width*.11); seg=(L-gap*(blocks-1))/blocks
+    for i in range(blocks):
+        s=i*(seg+gap); cx=ax+ux*(s+seg/2); cy=ay+uy*(s+seg/2)
+        metal_block(canvas,(cx,cy),(seg,width),ang,tone=tone,accent=(accent_last and i==blocks-1),glow=False)
 
-def glow_node(radius=13, color=GLOW):
-    s = radius * 6
-    im = Image.new('RGBA', (s, s), (0, 0, 0, 0)); cx = s // 2
-    mask = Image.new('L', (s, s), 0); md = ImageDraw.Draw(mask)
-    md.ellipse((cx - radius * 2, cx - radius * 2, cx + radius * 2, cx + radius * 2), fill=170)
-    blur = mask.filter(ImageFilter.GaussianBlur(radius * 1.25))
-    halo = Image.new('RGBA', (s, s), (*color[:3], 0)); halo.putalpha(blur)
-    im.alpha_composite(halo)
-    d = ImageDraw.Draw(im)
-    d.ellipse((cx - radius - 4, cx - radius - 4, cx + radius + 4, cx + radius + 4), fill=(14, 17, 19, 255), outline=(180, 186, 190, 255), width=3)
-    d.ellipse((cx - radius, cx - radius, cx + radius, cx + radius), fill=color)
-    d.ellipse((cx - radius // 2, cx - radius // 2, cx + radius // 2, cx + radius // 2), fill=(239, 249, 255, 250))
-    return im
+def joint(canvas,p,r=13,accent=False):
+    x,y=p
+    lay=Image.new('RGBA',canvas.size,(0,0,0,0)); d=ImageDraw.Draw(lay)
+    if accent:
+        gm=Image.new('L',canvas.size,0); gd=ImageDraw.Draw(gm); gd.ellipse((x-r*1.8,y-r*1.8,x+r*1.8,y+r*1.8),fill=140); gm=gm.filter(ImageFilter.GaussianBlur(r)); gl=Image.new('RGBA',canvas.size,(*ACCENT[:3],0)); gl.putalpha(gm.point(lambda q:int(q*.28))); canvas.alpha_composite(gl)
+    d.ellipse((x-r,y-r,x+r,y+r),fill=EDGE,outline=(178,185,182,255),width=3)
+    d.ellipse((x-r*.58,y-r*.58,x+r*.58,y+r*.58),fill=ACCENT if accent else (62,69,69,255),outline=(205,211,207,230),width=2)
+    canvas.alpha_composite(lay)
 
+def leg(canvas,hip,knee,ankle,foot,width=30,blade=False,accent=False):
+    chain(canvas,hip,knee,width,blocks=3,tone=0)
+    joint(canvas,knee,width*.32)
+    chain(canvas,knee,ankle,width*.88,blocks=3,tone=-1)
+    joint(canvas,ankle,width*.27,accent=accent)
+    chain(canvas,ankle,foot,width*.72,blocks=2,tone=-1)
+    fx,fy=foot; vx,vy=foot[0]-ankle[0],foot[1]-ankle[1]; L=math.hypot(vx,vy) or 1; ux,uy=vx/L,vy/L
+    tip=(fx+ux*(36 if blade else 24),fy+uy*(36 if blade else 24))
+    chain(canvas,foot,tip,max(11,width*.42),blocks=1,tone=1)
 
-def paste_rot(canvas, comp, center, angle, shadow=True):
-    obj = comp.rotate(angle, Image.Resampling.BICUBIC, expand=True)
-    x = int(center[0] - obj.width / 2); y = int(center[1] - obj.height / 2)
-    if shadow:
-        a = obj.getchannel('A')
-        sh = Image.new('RGBA', obj.size, (0, 0, 0, 0))
-        sh.putalpha(a.filter(ImageFilter.GaussianBlur(7)).point(lambda p: int(p * .42)))
-        canvas.alpha_composite(sh, (x + 8, y + 10))
-    canvas.alpha_composite(obj, (x, y))
+def body_plate(canvas,center,size,angle=0,accent=False,tone=0):
+    metal_block(canvas,center,size,angle,tone=tone,accent=accent,glow=accent)
 
+def glow_core(canvas,center,r=28,amber=False):
+    x,y=center; col=AMBER if amber else ACCENT
+    gm=Image.new('L',canvas.size,0); gd=ImageDraw.Draw(gm); gd.ellipse((x-r*1.7,y-r*1.7,x+r*1.7,y+r*1.7),fill=170); gm=gm.filter(ImageFilter.GaussianBlur(r*.9)); gl=Image.new('RGBA',canvas.size,(*col[:3],0)); gl.putalpha(gm.point(lambda q:int(q*.30))); canvas.alpha_composite(gl)
+    d=ImageDraw.Draw(canvas); d.ellipse((x-r,y-r,x+r,y+r),fill=EDGE,outline=(180,187,184,255),width=4); d.ellipse((x-r*.66,y-r*.66,x+r*.66,y+r*.66),fill=(37,45,46,255),outline=col,width=5); d.ellipse((x-r*.25,y-r*.25,x+r*.25,y+r*.25),fill=(*col[:3],235))
 
-def limb(canvas, hip, knee, foot, thick, seed, blade=False, tool=False):
-    def seg(a, b, width, s):
-        dx = b[0] - a[0]; dy = b[1] - a[1]
-        length = math.hypot(dx, dy); angle = math.degrees(math.atan2(dy, dx)) + 90
-        block = metal_block(width, length, seed=s, corner=max(6, width // 7), damage=1.15)
-        paste_rot(canvas, block, ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2), angle)
-    seg(knee, foot, thick, seed + 2)
-    seg(hip, knee, int(thick * 1.05), seed + 1)
-    j = joint(max(9, int(thick * .28)), seed)
-    paste_rot(canvas, j, knee, 0, False); paste_rot(canvas, j, hip, 0, False)
-    if blade:
-        f = metal_block(int(thick * .72), int(thick * 2.0), seed + 8, corner=5, damage=1.25, light=.9)
-    else:
-        f = metal_block(int(thick * .95), int(thick * 1.35), seed + 8, corner=6, damage=1.2, light=.86)
-    paste_rot(canvas, f, foot, math.degrees(math.atan2(foot[1] - knee[1], foot[0] - knee[0])) + 90)
-    if tool:
-        paste_rot(canvas, glow_node(max(5, int(thick * .13))), foot, 0, False)
+def cfg(role):
+    return {
+        'Drone':dict(body=(170,205),y=520,legw=29,span=300,fore=205,rear=185,scale=0.88),
+        'Hunter':dict(body=(164,235),y=515,legw=27,span=355,fore=245,rear=230,scale=0.97),
+        'Bulwark':dict(body=(235,225),y=520,legw=40,span=320,fore=210,rear=205,scale=1.05),
+        'Titan':dict(body=(270,270),y=520,legw=48,span=370,fore=250,rear=245,scale=1.12),
+        'SiegeMass':dict(body=(330,285),y=525,legw=56,span=405,fore=260,rear=250,scale=1.18),
+        'Controller':dict(body=(215,240),y=515,legw=34,span=320,fore=220,rear=205,scale=1.00),
+        'Repairer':dict(body=(185,220),y=520,legw=29,span=315,fore=215,rear=210,scale=0.96),
+        'Burrower':dict(body=(200,245),y=520,legw=32,span=325,fore=210,rear=205,scale=0.98),
+        'Artillery':dict(body=(230,255),y=530,legw=38,span=355,fore=230,rear=230,scale=1.06),
+    }[role]
 
+def six_legs(canvas,role):
+    c=cfg(role); cx=512; cy=c['y']; span=c['span']; w=c['legw']
+    pairs=[
+        ((cx-70,cy-72),(cx-span*.52,cy-155),(cx-span*.69,cy-260),(cx-span*.82,cy-315)),
+        ((cx-92,cy+5),(cx-span*.63,cy-8),(cx-span*.78,cy+28),(cx-span*.91,cy+42)),
+        ((cx-70,cy+75),(cx-span*.52,cy+150),(cx-span*.67,cy+235),(cx-span*.78,cy+295)),
+    ]
+    right=[]
+    for pts in pairs:
+        right.append(tuple((1024-x,y) for x,y in pts))
+    alllegs=[]
+    for idx,pts in enumerate(pairs+right):
+        side_idx=idx%3
+        alllegs.append((sum(p[1] for p in pts)/4, side_idx, pts))
+    alllegs.sort()
+    for _,pair_idx,pts in alllegs:
+        blade=(role=='Hunter' and pair_idx==0) or (role in ('Titan','SiegeMass') and pair_idx==0)
+        acc=(role=='Repairer' and pair_idx==0)
+        leg(canvas,*pts,width=w,blade=blade,accent=acc)
 
-def body_block(canvas, center, size, angle, seed, light=1.0, damage=1.0):
-    paste_rot(canvas, metal_block(size[0], size[1], seed=seed, corner=max(8, int(min(size) // 9)), damage=damage, light=light), center, angle)
-
+def body(canvas,role):
+    c=cfg(role); cx=512; cy=c['y']; bw,bh=c['body']
+    body_plate(canvas,(cx,cy+28),(bw,bh),90,accent=False,tone=-1)
+    body_plate(canvas,(cx,cy-40),(bw*.80,bh*.44),0,accent=(role in ('Controller','Artillery')),tone=0)
+    body_plate(canvas,(cx-0.30*bw,cy+15),(bh*.48,bw*.22),90,tone=1)
+    body_plate(canvas,(cx+0.30*bw,cy+15),(bh*.48,bw*.22),90,tone=1)
+    for yy,scale in [(cy-75,.58),(cy-8,.70),(cy+60,.58)]:
+        body_plate(canvas,(cx,yy),(bw*scale,30),0,accent=(role=='Controller' and yy==cy-8),tone=0)
+    if role=='Drone':
+        for s in (-1,1): chain(canvas,(cx+s*45,cy-105),(cx+s*72,cy-178),22,blocks=2,tone=-1)
+    elif role=='Hunter':
+        for s in (-1,1): chain(canvas,(cx+s*43,cy-115),(cx+s*67,cy-205),25,blocks=3,tone=-1)
+    elif role=='Bulwark':
+        body_plate(canvas,(cx,cy-118),(bw*.74,52),0,tone=1)
+        body_plate(canvas,(cx,cy+125),(bw*.68,46),0,tone=-1)
+    elif role=='Titan':
+        body_plate(canvas,(cx,cy-150),(bw*.72,58),0,accent=True,tone=1)
+        for s in (-1,1): body_plate(canvas,(cx+s*108,cy-35),(110,48),90,tone=-1)
+    elif role=='SiegeMass':
+        for yy in (cy-150,cy-105): body_plate(canvas,(cx,yy),(bw*.76,58),0,tone=1)
+        body_plate(canvas,(cx,cy+155),(bw*.82,58),0,tone=-1)
+    elif role=='Controller':
+        glow_core(canvas,(cx,cy-95),34)
+        for s in (-1,1): chain(canvas,(cx+s*55,cy-105),(cx+s*95,cy-178),16,blocks=3,accent_last=True,tone=-1)
+    elif role=='Repairer':
+        glow_core(canvas,(cx,cy-72),24)
+        for s in (-1,1): body_plate(canvas,(cx+s*78,cy-78),(58,30),0,accent=True,tone=-1)
+    elif role=='Burrower':
+        for i,(ww,hh) in enumerate([(120,46),(92,40),(64,34),(38,26)]): body_plate(canvas,(cx,cy-135-i*40),(ww,hh),0,accent=(i==3),tone=1 if i<2 else -1)
+    elif role=='Artillery':
+        glow_core(canvas,(cx,cy-72),22,amber=True)
+        for i,(ww,hh) in enumerate([(92,50),(76,44),(62,38),(50,32),(42,28)]): body_plate(canvas,(cx,cy-145-i*43),(ww,hh),0,accent=(i==4),tone=1 if i<2 else -1)
+        for s in (-1,1): body_plate(canvas,(cx+s*112,cy+18),(90,44),90,tone=-1)
 
 def render(role):
-    cfg = {
-        'Drone': dict(scale=1.00, leg=72, reach=1.00, width=.86),
-        'Hunter': dict(scale=.91, leg=58, reach=1.16, width=.72),
-        'Bulwark': dict(scale=1.08, leg=82, reach=.93, width=1.03),
-        'Titan': dict(scale=1.15, leg=92, reach=1.00, width=1.09),
-        'SiegeMass': dict(scale=1.20, leg=98, reach=.92, width=1.17),
-        'Controller': dict(scale=1.01, leg=72, reach=.98, width=.88),
-        'Repairer': dict(scale=.94, leg=64, reach=1.05, width=.82),
-        'Burrower': dict(scale=.96, leg=69, reach=1.02, width=.84),
-        'Artillery': dict(scale=1.05, leg=78, reach=.98, width=.94),
-    }[role]
-    c = Image.new('RGBA', (HI, HI), (0, 0, 0, 0)); cx, cy = 512, 500
-    scale = cfg['scale']; reach = cfg['reach']; thick = cfg['leg']; rseed = sum((i + 1) * ord(ch) for i, ch in enumerate(role))
-    pairs = [(-145, -125, -300, -225, -405, -300), (-168, 0, -330, 20, -442, 82), (-140, 130, -292, 230, -390, 330)]
-    if role == 'Hunter': pairs = [(-130, -140, -310, -255, -438, -340), (-160, 0, -350, 28, -470, 80), (-128, 132, -300, 248, -410, 355)]
-    if role in ('Bulwark', 'Titan', 'SiegeMass'): pairs = [(-164, -130, -315, -225, -410, -292), (-185, 0, -350, 15, -445, 78), (-160, 135, -310, 235, -405, 330)]
-    for i, p in enumerate(pairs):
-        hx, hy, kx, ky, fx, fy = p
-        for side in (-1, 1):
-            hip = (cx + side * abs(hx) * scale, cy + hy * scale)
-            knee = (cx + side * abs(kx) * scale * reach, cy + ky * scale)
-            foot = (cx + side * abs(fx) * scale * reach, cy + fy * scale)
-            limb(c, hip, knee, foot, int(thick * scale), 100 + i * 20 + (1 if side > 0 else 0) + (rseed & 255), blade=(role == 'Hunter'), tool=(role == 'Repairer' and i == 0))
-    bw = 200 * cfg['width'] * scale; bh = 390 * scale
-    body_block(c, (cx, cy + 20 * scale), (bw, bh), 0, 301 + rseed % 200, light=.82)
-    body_block(c, (cx, cy - 145 * scale), (bw * .70, bh * .42), 0, 302 + rseed % 200, light=.88)
-    for side in (-1, 1):
-        body_block(c, (cx + side * bw * .53, cy + 30 * scale), (bw * .34, bh * .58), side * 3, 310 + (side + 1) * 7 + rseed % 100, light=.80)
-        body_block(c, (cx + side * bw * .43, cy - 170 * scale), (bw * .26, bh * .26), side * 6, 320 + (side + 1) * 11 + rseed % 100, light=.86)
-    for j, (yy, ww, hh) in enumerate([(-270, 92, 110), (-215, 105, 95), (-155, 115, 86), (-92, 120, 72)]):
-        body_block(c, (cx, cy + yy * scale), (ww * scale, hh * scale), 0, 350 + j + rseed % 90, light=.93)
-    if role == 'Hunter':
-        for side in (-1, 1): body_block(c, (cx + side * 70, cy - 320), (42, 190), side * 12, 510 + (side + 1), light=.95, damage=1.2)
-    elif role == 'Bulwark':
-        for side in (-1, 1): body_block(c, (cx + side * 145, cy + 15), (105, 325), side * 2, 520 + (side + 1), light=.69, damage=1.4)
-    elif role == 'Titan':
-        body_block(c, (cx, cy + 35), (270, 280), 0, 530, light=.68, damage=1.45)
-        for side in (-1, 1): body_block(c, (cx + side * 165, cy + 30), (110, 340), side * 2, 532 + (side + 1), light=.65, damage=1.5)
-    elif role == 'SiegeMass':
-        body_block(c, (cx, cy + 65), (330, 320), 0, 540, light=.60, damage=1.65)
-        body_block(c, (cx, cy - 330), (125, 260), 0, 541, light=.74, damage=1.6)
-        for side in (-1, 1): body_block(c, (cx + side * 92, cy - 330), (65, 220), side * 8, 542 + (side + 1), light=.70, damage=1.5)
-    elif role == 'Controller':
-        body_block(c, (cx, cy - 310), (140, 210), 0, 550, light=.98, damage=.8)
-        paste_rot(c, glow_node(18), (cx, cy - 70), 0, False)
-        for side in (-1, 1): paste_rot(c, glow_node(9), (cx + side * 118, cy - 125), 0, False)
-    elif role == 'Repairer':
-        for side in (-1, 1):
-            body_block(c, (cx + side * 118, cy - 155), (58, 180), side * 5, 560 + (side + 1), light=.92, damage=.9)
-            paste_rot(c, glow_node(8), (cx + side * 118, cy - 250), 0, False)
-        paste_rot(c, glow_node(11), (cx, cy - 50), 0, False)
-    elif role == 'Burrower':
-        for j, (ww, hh, yy) in enumerate([(120, 130, -300), (90, 105, -395), (60, 90, -475), (35, 70, -545)]): body_block(c, (cx, cy + yy), (ww, hh), 0, 570 + j, light=.86 + .025 * j, damage=1.2)
-    elif role == 'Artillery':
-        for side in (-1, 1):
-            body_block(c, (cx + side * 78, cy - 300), (48, 310), side * 1.5, 580 + (side + 1), light=.83, damage=1.15)
-            paste_rot(c, glow_node(7), (cx + side * 78, cy - 470), 0, False)
-    if role not in ('Controller', 'Repairer'): paste_rot(c, glow_node(8), (cx, cy - 120 * scale), 0, False)
-    bbox = c.getchannel('A').getbbox(); c = c.crop(bbox)
-    sc = min(452 / c.width, 452 / c.height)
-    c = c.resize((max(1, int(c.width * sc)), max(1, int(c.height * sc))), Image.Resampling.LANCZOS)
-    out = Image.new('RGBA', (OUTSIZE, OUTSIZE), (0, 0, 0, 0))
-    a = c.getchannel('A'); sh = a.filter(ImageFilter.GaussianBlur(5)).point(lambda p: int(p * .16))
-    shadow = Image.new('RGBA', c.size, (0, 0, 0, 0)); shadow.putalpha(sh)
-    x = (OUTSIZE - c.width) // 2; y = (OUTSIZE - c.height) // 2
-    out.alpha_composite(shadow, (x + 3, y + 5)); out.alpha_composite(c, (x, y))
-    return out
+    canvas=Image.new('RGBA',(S,S),(0,0,0,0))
+    six_legs(canvas,role)
+    body(canvas,role)
+    box=canvas.getchannel('A').getbbox()
+    crop=canvas.crop(box)
+    target={'Drone':700,'Hunter':760,'Bulwark':760,'Titan':800,'SiegeMass':830,'Controller':750,'Repairer':735,'Burrower':750,'Artillery':800}[role]
+    sc=min(target/crop.width,target/crop.height)
+    crop=crop.resize((max(1,round(crop.width*sc)),max(1,round(crop.height*sc))),Image.Resampling.LANCZOS)
+    hi=Image.new('RGBA',(S,S),(0,0,0,0)); hi.alpha_composite(crop,((S-crop.width)//2,(S-crop.height)//2))
+    final=hi.resize((FINAL,FINAL),Image.Resampling.LANCZOS)
+    px=final.load()
+    for y in range(FINAL):
+        for x in range(FINAL):
+            if px[x,y][3]==0: px[x,y]=(0,0,0,0)
+    return final
 
-roles = ['Drone', 'Hunter', 'Bulwark', 'Titan', 'SiegeMass', 'Controller', 'Repairer', 'Burrower', 'Artillery']
-for role in roles:
-    north = render(role)
-    views = {'north': north, 'east': north.transpose(Image.Transpose.ROTATE_270), 'south': north.transpose(Image.Transpose.ROTATE_180), 'west': north.transpose(Image.Transpose.ROTATE_90)}
-    for direction, im in views.items(): im.save(OUT / f'WNG_Replicator{role}_{direction}.png', 'PNG', optimize=True)
-    views['south'].save(OUT / f'WNG_Replicator{role}.png', 'PNG', optimize=True)
+for role in ROLES:
+    south=render(role)
+    south.save(OUT/f'WNG_Replicator{role}.png','PNG',optimize=True)
+    south.save(OUT/f'WNG_Replicator{role}_south.png','PNG',optimize=True)
+    south.rotate(180,Image.Resampling.BICUBIC).save(OUT/f'WNG_Replicator{role}_north.png','PNG',optimize=True)
+    south.rotate(90,Image.Resampling.BICUBIC).save(OUT/f'WNG_Replicator{role}_west.png','PNG',optimize=True)
+    south.rotate(270,Image.Resampling.BICUBIC).save(OUT/f'WNG_Replicator{role}_east.png','PNG',optimize=True)
+print('Generated',len(ROLES)*5,'professional six-legged Replicator sprites')
 
-for role in roles:
+for role in ROLES:
     for suffix in ['', '_north', '_east', '_south', '_west']:
-        p = OUT / f'WNG_Replicator{role}{suffix}.png'
-        with Image.open(p) as chk:
-            chk.load()
-            if chk.mode != 'RGBA' or chk.size != (512, 512): raise RuntimeError(f'{p}: expected 512x512 RGBA')
-            alpha = chk.getchannel('A')
-            if not alpha.getbbox(): raise RuntimeError(f'{p}: empty alpha')
-            edges = [alpha.crop((0, 0, 512, 1)).getextrema()[1], alpha.crop((0, 511, 512, 512)).getextrema()[1], alpha.crop((0, 0, 1, 512)).getextrema()[1], alpha.crop((511, 0, 512, 512)).getextrema()[1]]
-            if any(edges): raise RuntimeError(f'{p}: alpha touches canvas edge {edges}')
-print(f'Generated {len(roles) * 5} professional six-legged Replicator sprites.')
+        p=OUT/f'WNG_Replicator{role}{suffix}.png'
+        with Image.open(p) as im:
+            im.load()
+            if im.mode!='RGBA' or im.size!=(512,512): raise RuntimeError(f'{p}: bad mode/size')
+            if not im.getchannel('A').getbbox(): raise RuntimeError(f'{p}: empty alpha')
+print('Validated',len(ROLES)*5,'Replicator sprites')
