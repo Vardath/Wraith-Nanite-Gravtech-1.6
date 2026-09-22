@@ -1,0 +1,28 @@
+name: WNG Apparel Visual Contact Sheets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artqa/apparel_contact_sheets.py"
+      - ".github/workflows/wng-apparel-contact-sheets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sheets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - run: python .github/artqa/apparel_contact_sheets.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apparel-contact-sheets
+          path: qa/apparel_contact_sheets/*.jpg
+          if-no-files-found: error
