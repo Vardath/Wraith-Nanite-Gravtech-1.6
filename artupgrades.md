@@ -81,7 +81,7 @@ Required work:
 - generator validates non-empty alpha, 512×512 RGBA output, safe transparent margins and no edge contact before the PNG is committed;
 - temporary binary-transfer fragments were deleted and are not production sources.
 
-## 3. Ancient control chair — full redo; current art is cut off
+## 3. Ancient control chair — COMPLETED 2026-09-22
 
 **Primary Def:** `Defs/ThingDefs/Things_AncientControl.xml`  
 **DefName:** `WNG_AncientControlChair`  
@@ -115,6 +115,16 @@ Required work:
 - no clipping, no half-object, no baked square background.
 
 **Important shared-texture check:** `Defs/ThingDefs/Things_AsuranDormantFacility.xml` currently uses this same chair texture family for `WNG_AsuranDormantReconstructionPlinth` at `drawSize (1.2,1.2)`. Before committing the chair redo, inspect that use. If the plinth should not visually be a control chair, give it its own texture instead of forcing one image to serve two different objects.
+
+**Completion note (2026-09-22):**
+- fully redrew the Ancient control chair rather than padding the clipped source;
+- south/default orientation now clearly places the back/headrest to the north and the open seat/entry toward the south interaction cell, with north/east/west derived as true cardinal rotations;
+- the complete 2×2 composition uses an integrated circular Ancient base, silver/white seating, bronze-neutral structure, restrained cyan neural lighting, a blue-lit headrest and readable arm-control surfaces;
+- generated a separate clean 256×256 build icon from the approved south-facing design;
+- resolved the shared-texture defect: `WNG_AsuranDormantReconstructionPlinth` now points to its own `WNG_AsuranDormantReconstructionPlinth` texture family rather than displaying a miniature control chair;
+- the new plinth art is an empty 1×1 Ancient/Asuran reconstruction platform with its own five-sprite Graphic_Multi family;
+- generation validates every world sprite as 512×512 RGBA with non-empty alpha, safe transparent margins and no edge contact before commit.
+
 
 ## 4. Asuran Queen Recovery Carrier — preserve approved craft, finish incomplete pieces
 
