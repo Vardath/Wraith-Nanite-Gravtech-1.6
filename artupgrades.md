@@ -321,6 +321,9 @@ Required redo:
 #### Completion note — 2026-09-21
 The original audit above is retained as history. It has now been resolved in the public mod repo at `608e6cc311249a7a02ac0b73cb579fa47bc1236e`: all four directional world sprites plus base and a dedicated transparent build icon were replaced with the coherent professional Asuran/Lattice carrier set. The failed one-master rotation finalizer was made manual-only so it cannot overwrite the four authored facings. All current validation/build checks passed green on the completed carrier commit.
 
+#### Integrity correction note — 2026-09-22
+The earlier completion note is retained above as history. A later full-decode ship audit discovered that the then-current east/south/west carrier PNG streams were corrupt and that base/north were offset. The family was repaired in public `main` without rotating or replacing the authored directional views. A narrow repo finalizer rewrote/centred each facing independently and padded recovered edge-touching facings inward. The post-repair audit at `b3ac8df631c893cf9c9956a2bfd538dc013a7fd3` reports: all five sprites fully decode; edge-alpha pixels = 0; transparent-light pixels = 0; centre offsets = 0–0.5 px. Static Validation, Release Gap Audit, Managed Build and WNG Ship Alpha Audit all passed green.
+
 ### 6. Goa'uld Grav-field Projector
 
 Path:
@@ -978,10 +981,10 @@ Since the visual-audit commit:
 1. **Precursor Field Armour + Personal Shield** — first-pass replacement committed; still requires professional visual sign-off at pawn scale.
 2. **Goa'uld Death Glider** — **professional rendered replacement COMPLETE**; all directional sprites committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
 3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
-4. **Asuran Queen Recovery Carrier** — **PROFESSIONAL REPLACEMENT COMPLETE.** Base + north/east/south/west world sprites and a separate centred build icon were replaced with one coherent Asuran/Lattice recovery-craft design in commit `608e6cc311249a7a02ac0b73cb579fa47bc1236e`. The Def remains the correct 3×5 `Graphic_Multi` NPC shuttle. Static Validation, Release Gap Audit and Managed Build all passed on that exact commit.
+4. **Asuran Queen Recovery Carrier** — **PROFESSIONAL REPLACEMENT + INTEGRITY/ALPHA CORRECTION COMPLETE.** The original professional replacement remains part of the history below. A later full-decode ship audit found corrupt east/south/west streams plus base/north centring/edge issues that signature-only validation had missed. The family was repaired without rotating or redesigning authored facings, then padded/centred independently. Final audited state is on `b3ac8df631c893cf9c9956a2bfd538dc013a7fd3`: all five world sprites decode, edge-alpha = 0, transparent-light = 0, and centre offsets are 0–0.5 px. Static Validation, Release Gap Audit, Managed Build and WNG Ship Alpha Audit all green on that state. The separate build icon remains the professional centred icon.
 5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — **PROFESSIONAL REPLACEMENTS COMPLETE — LATEST PASS `95e11131ee10c7bc673874689b1b9cdf5f195f7f`.** Both 2×2 `Graphic_Single` support-field devices are centred transparent building sprites matched to faction language and function. Latest pass: Goa'uld = broad black/bronze/gold naquadah housing with four integrated amber emitter pylons and central gravitic ring/core; Asuran = broad silver/white nanite-composite emitter with integrated cyan channels and concentric blue gravitic field core. Static Validation, Release Gap Audit and Managed Build all green on the latest art commit. Earlier completion checkpoints remain documented below as history.
 6. **Asuran / Goa'uld / Wraith gravship doors** — **PROFESSIONAL ART + VANILLA-PARITY DIRECTIONAL SET COMPLETE.** New Stargate-specific masters are installed for all three factions; north/east/south/west/base assets are generated deterministically from each approved master so scale, lighting, centre and alpha remain coherent. `WNG_GoauldGravshipDoor`, `WNG_WraithGravshipDoor`, and `WNG_AsuranGravshipDoor` now use `Graphic_Multi`; vanilla `Building_Door` rendering handles opening/closing from those directional mover graphics. The old automatic whole-art generator push trigger was disabled so procedural first-pass scripts cannot silently overwrite professional art. Finalized door state validated at commit `e20f9f418399753df64c7ed22516b696b08036b2`: D108 Static Validation, Release Gap Audit, and Managed Build all green.
-7. **All ship alpha-border cleanup** — partial: professional Death Glider and Puddle Jumper families cleaned; remaining craft still require full-family audit.
+7. **All ship alpha-border cleanup** — **COMPLETE FOR CURRENT SHUTTLE/CRAFT FAMILIES.** Full-family Pillow audit now covers Goa'uld Alkesh, Death Glider, Asuran Recovery Carrier, Puddle Jumper, Wraith Cruiser, Wraith Dart and Wraith StrikeCraft. All files fully decode; transparent-light contamination is 0; the repaired Asuran carrier now has edge-alpha 0 and 0–0.5 px centring. Alkesh, Puddle Jumper, Wraith Cruiser/Dart/StrikeCraft are centred with edge-alpha 0; Death Glider retains only its small authored facing offset while edge-alpha remains 0. Audit/checkpoint `b3ac8df631c893cf9c9956a2bfd538dc013a7fd3` is green.
 8. **All 35 UI/ability/gene/xenotype/build icons** — 24 / 35 touched; remaining 11 plus professional review of touched icons still required.
 9. **Full 217-apparel re-audit** — 105 / 217 touched; full visual review still required.
 10. **Replicator visual review** — not yet completed.
@@ -1044,6 +1047,19 @@ Correct rule:
 - if a freeze occurs, verify the last committed repo state and this progress list before generating anything else.
 
 
+## 29. PNG signature/non-empty checks were not enough
+Mistake:
+- earlier validation treated a PNG as healthy if it existed, was non-empty and had a plausible PNG signature;
+- three Asuran recovery-carrier directional files passed that shallow test but later failed full Pillow decoding;
+- this allowed corrupt binary art to be described as validated/green.
+
+Correct rule:
+- every PNG validation pass must fully decode the image, not merely inspect its header/signature;
+- use Pillow `Image.open(...).load()` (and/or `verify()` followed by reopen+load) for every PNG in the mod;
+- art-family QA must also measure alpha at the canvas edge, transparent-pixel RGB contamination and logical centring;
+- a workflow is not "green for PNG integrity" unless the complete decode pass succeeds for every file it claims to validate.
+
+
 ---
 
 # CURRENT STATUS AFTER THIS AUDIT
@@ -1073,3 +1089,7 @@ Begin with the Priority 0 families, commit/checkpoint changes in the public WNG 
 Do not touch Cosmology.
 Do not use the WNG website page as the art workflow.
 Do not declare visual completion from file/reference validation alone.
+
+
+## Superseding live progress — 2026-09-22
+The historical audit-status text above is intentionally retained. Work has proceeded since that audit. Current completed checkpoints include the professional Death Glider, Puddle Jumper, Asuran Recovery Carrier integrity/alpha correction, grav-field support devices, gravship doors and the full current shuttle/craft alpha audit. Overall visual quality is still **NOT GREEN** because UI/icon review, full apparel re-audit, Replicator review, CE assets and the final weapons/projectiles/furniture/buildings pass remain.
