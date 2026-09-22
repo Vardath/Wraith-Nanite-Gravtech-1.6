@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/artqa/ship_alpha_audit.py"
       - ".github/workflows/wng-ship-alpha-audit.yml"
+      - "Textures/Things/Building/**/Shuttle/*.png"
   workflow_dispatch:
 
 permissions:
