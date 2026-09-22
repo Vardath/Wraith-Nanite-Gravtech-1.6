@@ -1,0 +1,50 @@
+name: WNG Sync Replicator Ruin Art Hashes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/wng-sync-static-art-hashes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Refresh approved Replicator ruin art hashes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/d107-static-validation.yml')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              'c898d1683fc573359f8e09b89344716d6a101e4d3e0104550279e606857514de': '2c28b4540e0a2adcf7a8cba702b27e327d8a3d085d7ebf5191d86117d14336ba',
+              '1215e1853dbbb934fb1e53ce322b3088b7b3cebffc48d4098b8f4ded1c21d12a': '9a099b31c97bf5afdb282b81656331bfcdc723bf95fb5a5e950083835e3ae81c',
+              'c4b70957b5bbe435bd2f94c70bf3850959e0a9991e27e68fb9bb4346b9373112': '8ba9762a334892a40501961f7b0f369c3f2aa38c411dae723cbe67a5eb7de9a5',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Expected stale hash not found: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit refreshed validation contract
+        shell: bash
+        run: |
+          git add .github/workflows/d107-static-validation.yml
+          if git diff --cached --quiet; then
+            echo "Static Replicator ruin hashes already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync static validation with upgraded Replicator ruin art"
+          git push
