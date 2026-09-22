@@ -1,402 +1,335 @@
-# WNG ART UPGRADE CONTINUATION / VISUAL QA CONTRACT
+# WNG ART UPGRADES — ACTIVE HANDOFF
 
-**Updated:** 2026-09-21  
 **Project:** Wraith-Nanite-Gravtech (WNG), RimWorld 1.6  
-**Public mod repo:** `Vardath/Wraith-Nanite-Gravtech-1.6`  
-**Current authoritative branch:** `main`  
-**Current D141 sync commit:** `74704a47dfea4664510c4c56b75260339273ad07`  
-**Website repo:** `Vardath/Vardath.github.io`  
-**WNG art page:** `wng-art.html`  
-**Cosmology site/gallery:** OUT OF SCOPE. DO NOT TOUCH IT.
+**Production repo:** `Vardath/Wraith-Nanite-Gravtech-1.6`  
+**Branch:** `main`  
+**Updated:** 2026-09-22
+
+This file is now the active continuation brief. The previous completed-art list, stale progress summaries, old user-instruction blocks, old website notes, and superseded audit commentary have been removed. The numbered Errors / Mistakes section at the bottom is retained.
+
+The next GPT should start by reading the current public `main`, this file, the exact live Defs, and the current PNGs. Do not assume an old local copy, ZIP, earlier branch, generated preview, website thumbnail, or previous completion claim is authoritative.
 
 ---
 
-# READ THIS FIRST
+# CURRENT ART TASKS
 
-This file replaces the stale D117/D141 handoff state and is now the authoritative art-continuation file.
+## 1. Goa'uld small sublight drive — adjust or replace
 
-The mod itself is now safely back in the public GitHub repository. D141 was reconstructed on GitHub, checksum-verified, extracted, validated, and committed to `main`.
+**Live Def:** `Defs/Gravships/Gravship_Goauld.xml`  
+**DefName:** `WNG_GoauldSmallSublightDrive`  
+**World texture family:**
+- `Textures/Things/Building/Goauld/Gravship/WNG_GoauldSmallSublightDrive.png`
+- `..._north.png`
+- `..._east.png`
+- `..._south.png`
+- `..._west.png`
 
-## Current validated repository state
+Current game use:
+- parent: `WNG_SmallThrusterBase`
+- `Graphic_Multi`
+- `drawSize (1.2, 2.2)`
+- compact Ha'tak sublight drive
+- requires the Goa'uld family power grid and Liquid-Naquadria fuel feed
+- adds gravship range and has a real thruster exclusion/flame direction
 
-- authoritative D141 ZIP SHA-256 verified on GitHub:
-  `41a79ddae91ae734e8256f64806bd0733f45ad05328e2cda753992821fde0b32`
-- 258 XML files parsed
-- 0 XML parse errors
-- 696 PNG files
-- 0 corrupt PNG signatures
-- 0 empty PNGs
-- D141 runtime tree committed to public `main`
+Required work:
+- inspect every current facing at full size and RimWorld scale;
+- compare against the **actual Stargate Ha'tak / Goa'uld propulsion visual language** before drawing;
+- compare with how vanilla RimWorld/Odyssey presents small gravship thrusters: clear front/back orientation, readable engine body, exhaust relationship, centred footprint and clean silhouette;
+- adjust or replace the whole family if needed so it looks like professional Goa'uld ship technology rather than a generic engine;
+- use dark naquadah / black structure, bronze-gold framing and restrained amber/orange energy where appropriate;
+- preserve correct directional function and exhaust orientation;
+- no clipped housing, floating pieces, square panel, halo, or dirty alpha.
 
-**Important:** these checks prove file integrity and reference completeness. They do **not** prove that the art is good, centred, lore-appropriate, correctly scaled, or visually suitable in RimWorld.
+Do not touch the large sublight drive unless direct comparison shows a shared visual problem that must be fixed for family consistency.
 
-That distinction was missed earlier and must never be missed again.
+## 2. Goa'uld power coupler — adjust or replace
+
+**Live Def:** `Defs/Gravships/Gravship_Goauld.xml`  
+**DefName:** `WNG_GoauldPowerCoupler`  
+**Texture:** `Textures/Things/Building/Goauld/Gravship/WNG_GoauldPowerCoupler.png`
+
+Current game use:
+- `Graphic_Single`
+- `size (1,1)`
+- `drawSize (1.5,1.5)`
+- intentional interface between a vanilla colony power net and the isolated Goa'uld ship grid
+- family role: Coupler
+- capacity: 8000 W
+
+Required work:
+- inspect current art and redo it if it does not immediately read as a compact Goa'uld power-interface/coupling device;
+- ground the design in Stargate Goa'uld / Ha'tak power and crystal/naquadah technology rather than generic sci-fi;
+- compare with vanilla RimWorld 1×1 power infrastructure for silhouette/readability, without copying vanilla art;
+- professional centred 1×1 building sprite, strong readable mass, clean transparent edge;
+- dark naquadah body, bronze/gold structure and integrated amber/orange energy/crystal cues;
+- no decorative loose linework or detached pieces.
+
+## 3. Ancient control chair — full redo; current art is cut off
+
+**Primary Def:** `Defs/ThingDefs/Things_AncientControl.xml`  
+**DefName:** `WNG_AncientControlChair`  
+**World texture family:**
+- `Textures/Things/Building/Precursor/Control/WNG_AncientControlChair.png`
+- `..._north.png`
+- `..._east.png`
+- `..._south.png`
+- `..._west.png`
+**Build icon:** `Textures/UI/WNG/Build/WNG_AncientControlChair.png`
+
+Current game use:
+- `FurnitureBase`
+- `Graphic_Multi`
+- `size (2,2)`
+- `drawSize (2.2,2.2)`
+- rotatable, default south
+- interaction cell south of the chair
+- powered Ancient neural command station
+- operates the WNG drone-control / allied command network
+
+Known defect:
+- a substantial part of the chair is cut off. Do not merely pad the broken image; **redo the chair composition** so the complete object is present.
+
+Required work:
+- research/inspect Stargate Ancient/Lantean control-chair references before drawing;
+- compare with vanilla RimWorld furniture/building presentation for a 2×2 interactable object;
+- create a complete, centred, professional Ancient control chair with readable seat/back/control structure and Ancient silver/white/bronze-neutral material language plus restrained blue/cyan active elements;
+- ensure all authored directions make sense and the interaction-facing orientation is readable;
+- make a separate clean build icon from the same approved design;
+- no clipping, no half-object, no baked square background.
+
+**Important shared-texture check:** `Defs/ThingDefs/Things_AsuranDormantFacility.xml` currently uses this same chair texture family for `WNG_AsuranDormantReconstructionPlinth` at `drawSize (1.2,1.2)`. Before committing the chair redo, inspect that use. If the plinth should not visually be a control chair, give it its own texture instead of forcing one image to serve two different objects.
+
+## 4. Asuran Queen Recovery Carrier — preserve approved craft, finish incomplete pieces
+
+**Def:** `Defs/ThingDefs/Things_ReplicatorQueenRecovery.xml`  
+**DefName:** `WNG_AsuranQueenRecoveryCarrier`  
+**World family:**
+- `Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier.png`
+- `..._north.png`
+- `..._east.png`
+- `..._south.png`
+- `..._west.png`
+**Build icon:** `Textures/UI/WNG/Build/WNG_AsuranQueenRecoveryCarrier.png`
+
+Current game use:
+- NPC-only autonomous Asuran/Lattice recovery shuttle
+- `Graphic_Multi`
+- `size (3,5)`, `drawSize (3,5)`
+- real Odyssey passenger-shuttle/transporter/launch machinery
+
+Current visual decision:
+- **the main carrier looks good and should be preserved.**
+- Some associated art pieces are incomplete.
+
+Required work:
+- visually inspect **all six current carrier art pieces** side-by-side and identify the incomplete/mismatched pieces instead of redesigning the approved ship;
+- finish only the incomplete pieces so every facing and the build icon share the same hull design, lighting, detail level, crop, transparency and quality;
+- preserve individually authored facings; **do not derive east/south/west by blindly rotating one master**;
+- full-decode every finished PNG and verify centring/edge alpha after commit.
+
+## 5. Replicator graphics — upgrade the entire current Replicator art family
+
+The earlier conclusion that the existing Replicator graphics should simply be preserved is **superseded**. The user has explicitly reopened the full Replicator family for a professional upgrade.
+
+Start by enumerating every live PNG whose path/name is Replicator-related and tracing its real Def usage. Current scope includes at least the following.
+
+### Replicator blocks
+**Def:** `Defs/ThingDefs/Things_ReplicatorMatter.xml`  
+**DefName:** `WNG_ReplicatorMatter`  
+**Label:** `replicator blocks`  
+**Texture:** `Textures/Things/Item/Resource/Replicator/WNG_ReplicatorMatter.png`
+
+Function:
+- loose self-organizing physical Replicator blocks;
+- stacks can reconstruct a hostile Drone if left uncontained.
+
+Required visual:
+- unmistakable Stargate block-Replicator material: small precision metallic interlocking blocks/components, not generic ore, rocks, scrap or nanite dust;
+- readable as a stackable RimWorld resource at inventory/map scale.
+
+### Replicator core fragment
+**Def:** `Defs/ThingDefs/Things_SovereignLattice.xml`  
+**DefName:** `WNG_ReplicatorCoreFragment`  
+**Texture:** `Textures/Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment.png`
+
+Function:
+- fractured reusable Replicator command-lattice fragment recovered from stronger block-form Replicators;
+- also reused by several other systems/icons, so trace every current use before replacing it.
+
+Required visual:
+- a fractured but obviously sophisticated Replicator command/core lattice made from the same block technology;
+- visually distinct from ordinary Replicator Blocks;
+- not a generic crystal/gem.
+
+### Replicator pulse caster
+**Def:** `Defs/ThingDefs/Weapons_ReplicatorAdaptation.xml`  
+**DefName:** `WNG_ReplicatorPulseCaster`  
+**Texture:** `Textures/Things/Item/Weapon/Replicator/WNG_ReplicatorPulseCaster.png`
+
+Function:
+- integrated machine organ reproduced from assimilated ranged technology;
+- `Graphic_Single`, `drawSize (0.8,0.8)`;
+- also currently reused by the Replicator artillery caster.
+
+Required visual:
+- should look **grown/assembled into a Replicator body**, not like a normal handheld human rifle;
+- use modular metallic Replicator geometry with a clear emitter/aperture and readable firing direction;
+- if the artillery caster needs a visually distinct asset, split it rather than reusing the pulse-caster sprite merely for convenience.
+
+### Replicator shield disruptor
+**Def:** `Defs/ThingDefs/Weapons_ReplicatorAdaptation.xml`  
+**DefName:** `WNG_ReplicatorShieldDisruptor`  
+**Weapon texture:** `Textures/Things/Item/Weapon/Replicator/WNG_ReplicatorShieldDisruptor.png`  
+**Projectile texture:** `Textures/Things/Projectile/WNG_ReplicatorShieldDisruptor.png`
+
+Function:
+- integrated Replicator phase disruptor grown after shield engagements;
+- focused EMP/phase-disruption weapon;
+- `Graphic_Single`, weapon `drawSize (0.82,0.82)`, projectile `drawSize (0.42,0.42)`.
+
+Required visual:
+- clearly different from the ordinary pulse caster;
+- still an integrated Replicator machine organ, not a handheld conventional gun;
+- weapon and projectile should share a coherent phase-disruption visual language.
+
+### Block-form Replicator pawns
+Upgrade the current directional families under:
+`Textures/Things/Pawn/Replicator/`
+
+This currently includes:
+- Artillery
+- Bulwark
+- Burrower
+- Controller
+- Drone
+- Hunter
+- Repairer
+- Siege Mass
+- Titan
+
+For each class:
+- inspect its live race/behavior Def and C# role before drawing;
+- retain recognizably Stargate **block-form** construction while giving each role a clear silhouette;
+- the whole family must feel assembled from the same physical block technology;
+- do not make them generic RimWorld mechs;
+- make north/east/south/west/base sets coherent and professionally authored.
+
+### Other Replicator art that is part of this pass
+Inspect and upgrade as needed:
+- `Textures/Things/Building/Replicator/Containment/WNG_ReplicatorContainmentProjector*.png`
+- `Textures/UI/WNG/Build/WNG_ReplicatorContainmentProjector.png`
+- `Textures/Things/Building/Replicator/Ruins/*.png`
+- `Textures/Things/Pawn/Replicator/Adaptation/*.png`
+- any Replicator-related projectile, resource, weapon, UI icon or shared texture discovered by the live Def/reference audit.
+
+**Lore distinction:** block-form SG-1 Replicators and human-form Asuran/Lantean-derived Replicators are related concepts but should not be collapsed into one generic visual style. Check the specific Def/role and the relevant Stargate reference before drawing each family.
 
 ---
 
-# PERMANENT WORKFLOW RULE
+# HOW TO EXECUTE THE NEXT PASS
 
-The public WNG repository is the production source.
+For **every** active item above:
 
-1. Work from current public `main` or a current public checkpoint branch.
-2. Inspect actual mod files and the Defs that use them.
-3. Judge art against its **in-game purpose**, footprint, `drawSize`, graphic class and Stargate identity.
-4. Make art changes in the mod repository.
-5. Validate the mod.
-6. Playtest/visually inspect in RimWorld where practical.
-7. Only after the mod art itself is approved should the website display page be regenerated.
+1. Read the exact live Def/C# use first: function, `size`, `drawSize`, graphic class, rotation, interaction cell, projectile origin, shared texture use and UI icon use.
+2. Inspect the current PNGs directly from the public repo.
+3. Check relevant **Stargate visual references and lore** for that exact object/faction before generating or editing art. Do not invent generic sci-fi when a recognizable Stargate visual language exists.
+4. Check how **vanilla RimWorld / Odyssey** presents a comparable object at the same footprint and use that as the readability/composition benchmark, not as art to copy.
+5. Produce professional transparent game art:
+   - strong readable silhouette at actual RimWorld zoom;
+   - complete object inside canvas;
+   - no accidental crop;
+   - no square background;
+   - no white/bright alpha halo;
+   - no detached junk unless it is intentionally part of the object;
+   - logical centre and margins;
+   - coherent lighting/perspective across directional families.
+6. World sprites and UI/build icons are different presentation jobs. Do not blindly reuse one as the other when a dedicated icon composition is needed.
+7. For directional art, preserve the correct `Graphic_Multi` behavior and authored directions. Do not delete directions merely because a broken Def fails to reference them, and do not manufacture all directions by rotating one view unless that is genuinely appropriate.
+8. Commit in **small bounded families** to public `main`. Re-read `main` before each write so a stale parent cannot overwrite newer work.
+9. After each family, run the existing validation/build gates and inspect the actual result:
+   - full PNG decode with Pillow, not signature-only checks;
+   - alpha edge / contamination check;
+   - centring and clipping check;
+   - XML/static validation;
+   - release-gap audit;
+   - managed build.
+10. Do not call a family complete merely because automation is green. Visually inspect the finished family against its function, Stargate reference and RimWorld scale.
+11. Update this file with a short completion note beneath the relevant active item, but **do not delete the Errors / Mistakes section**.
+12. If a new failure mode occurs, append a new numbered mistake.
 
-## The WNG website art page is OUTPUT ONLY
+Recommended work order:
+1. Goa'uld small sublight drive
+2. Goa'uld power coupler
+3. Ancient control chair
+4. Queen Recovery Carrier incomplete pieces
+5. Replicator blocks + core fragment
+6. Replicator pulse caster + shield disruptor + projectile
+7. Replicator pawn families
+8. remaining Replicator buildings/ruins/adaptation/UI
+9. whole-pass validation and representative in-game visual check
 
-**Do not use `wng-art.html` as an art source, art cache, art pipeline, comparison tool, transfer mechanism or authority.**
-
-The correct source of truth is:
-- the WNG mod repository,
-- the PNG files in that repository,
-- the XML/C# Defs that determine how those PNGs are used in-game.
-
-The page is only a convenient final display of the current repository after art work has been completed.
-
-When the mod art changes in the future:
-1. read the current WNG `main` tree,
-2. enumerate every PNG,
-3. generate a fresh static WNG art page,
-4. replace `wng-art.html`,
-5. do not use the old page to determine what should be in the new one.
-
-Never touch the Cosmology art/gallery while doing WNG work.
-
----
-
-# WHY SOME ART MAY HAVE APPEARED IN THE PHONE GALLERY
-
-The website thumbnails themselves are ordinary web images and should normally remain browser/cache data.
-
-However, the previous page design made cards/open actions point directly at raw GitHub PNG endpoints. On some mobile browser workflows, opening/saving a raw image can place a real PNG in a Downloads/browser-media directory. Android's media scanner then indexes that file, which makes it appear in Samsung Gallery or another gallery app.
-
-Therefore:
-- do not use the website/raw-image links as the internal art-review workflow;
-- inspect repository art directly through the work tools instead;
-- do not intentionally download hundreds of WNG PNGs to the user's phone;
-- if the display page's click behaviour is changed later, prefer a GitHub file/blob view for click-through unless the user explicitly wants raw-download behaviour.
-
-No website change is authorized by this audit. This note is here to prevent the same mobile-media pollution mistake later.
+The WNG website art page is **not** the source for this work. After these mod-art changes are finished and accepted, regenerate `wng-art.html` from the then-current public WNG repo. Do not touch the cosmology page.
 
 ---
 
-# ART STANDARD — RIMWORLD / VANILLA PARITY
+# ERRORS / MISTAKES — PRESERVE AND EXTEND
 
-Use vanilla as the **presentation standard**, not as a source to copy blindly.
+These are historical failures from the art rebuild. Keep them so future work does not repeat them. Add new numbered mistakes when a new failure mode is discovered; do not erase or rewrite the old ones.
 
-Reference rules established by RimWorld's modding guidance:
+## 1. Followed an obsolete local-only workflow
+Mistake:
+- allowed D118-D141 work to remain local/File-Library while public GitHub stayed stale.
 
-- transparent PNGs are the normal texture format;
-- vanilla is generally vector-like and deliberately readable rather than hyper-detailed;
-- roughly 64 px/tile is common in older vanilla art; 128 px/tile is a sensible modern/DLC baseline;
-- interactive items/buildings normally use a strong readable outline;
-- building canvas should match logical `drawSize` and the object should be centred on that canvas;
-- projectile origin must be centred exactly;
-- apparel should be built from vanilla body/apparel templates because worn art is overlaid 1:1 on pawn bodies;
-- body apparel must fit the five vanilla body types and directional facings;
-- white/bright fringe around transparent sprites is a known texture-processing problem: preserve dark RGB in transparent pixels or use a very low-opacity dark edge rather than leaving discarded white matte data.
+Correct rule:
+- public WNG repo is the production source;
+- current checkpoints belong in GitHub.
 
-For Odyssey specifically:
-- vanilla Grav Engine is a 3×3 building;
-- vanilla Grav Field Extender is a compact field-support device that adds 250 supported tiles, up to six;
-- vanilla Passenger Shuttle is a 3×5 rotatable building;
-- vanilla gravship components are individually readable at normal zoom rather than looking like screenshots pasted into squares.
+## 2. Replaced a working display page with a ZIP-loader
+Mistake:
+- made the user select a WNG ZIP in the website.
 
-**WNG art should read clearly at actual RimWorld scale first.**
+Correct rule:
+- the website is a generated display page only;
+- no ZIP upload/file picker.
 
----
+## 3. Hid art behind filters/comparison state
+Mistake:
+- gallery logic obscured art and confused what actually existed.
 
-# STARGATE VISUAL / LORE RULES TO APPLY
+Correct rule:
+- final display is a straightforward whole-mod page;
+- never use gallery filters as proof of mod content.
 
-## Ancient / Lantean / Asuran
-Use:
-- clean advanced geometry,
-- smooth metallic/ceramic surfaces,
-- restrained silver/gray/white,
-- luminous blue/cyan field or control elements,
-- elegant integrated technology rather than loose mechanical clutter.
+## 4. Pointed a page at stale mod content
+Mistake:
+- website could technically work while GitHub still contained an old mod.
 
-Puddle Jumper lore:
-- compact Ancient shuttle,
-- roughly cylindrical/streamlined body with angled front/rear,
-- designed to fit through a Stargate,
-- cockpit at the front,
-- retractable propulsion,
-- drone weapon capability,
-- cloak/field technology,
-- neural/ATA control.
+Correct rule:
+- mod repository first;
+- website last.
 
-Asuran technology is Ancient-derived, but can look more exact, crystalline, synthetic and lattice-like.
+## 5. Overcomplicated asset transfer
+Mistake:
+- gallery archives, delta manifests, base64 transfer detours and cache systems.
 
-## Goa'uld
-Use:
-- dark naquadah/black surfaces,
-- bronze/gold framing,
-- Egyptian/temple geometry,
-- strong symmetrical forms,
-- amber/orange energy,
-- physical-looking staff/plasma emitters.
+Correct rule:
+- keep the mod repo current;
+- use bounded deterministic transfers only when needed.
 
-Do not turn every Goa'uld object into a flat picture-frame rectangle.
+## 6. Compared changed files when the user asked for all art
+Mistake:
+- spent time on deltas rather than the requested whole-mod view.
 
-Death Glider lore:
-- two-seat attack fighter,
-- wide swept/wind-like wings,
-- narrow central cockpit/fuselage,
-- twin staff cannons,
-- visually unmistakable silhouette even at small scale.
+Correct rule:
+- change history is irrelevant to the display page unless explicitly requested.
 
-## Wraith
-Use:
-- organic/biomechanical shapes,
-- dark living surfaces,
-- green/teal/purple glow,
-- asymmetry where appropriate,
-- avoid clean human/Ancient rectangular panels unless the object function requires it.
+## 7. Created misleading branch names
+Mistake:
+- `d141-current-art` existed while still pointing at D117.
 
-## Replicators / Asurans
-Do not automatically preserve simplistic placeholder-looking art merely because it is old.
-Replicator self-art was previously marked "preserve unless requested"; the current visual review reopens **quality review** of any Replicator asset shown to be obviously unfinished, off-centre, crude or inconsistent. Do not replace good distinctive Replicator art unnecessarily.
-
----
-
-# CURRENT VISUAL AUDIT — WHAT NEEDS FIXING
-
-This section is based on the user's screenshots plus direct inspection of the current Defs and repository paths.
-
-## PRIORITY 0 — definite redo / correction
-
-### 1. Precursor Field Armour — entire family
-
-Path family:
-`Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorFieldArmor*`
-
-The XML itself explicitly says:
-- the visual is deliberately temporary/provisional,
-- later professional art replacement was still pending.
-
-Therefore this family must never again be marked "completed".
-
-Current visible problems:
-- noisy gray photographic/rock-like texture,
-- crude body cut-outs,
-- obvious vertical/cyan seam or guide line,
-- poor correspondence with a clean Ancient/Asuran combat shell,
-- reads as a placeholder pasted over body shapes.
-
-In-game purpose:
-- ultra-tech Ancient-derived combat shell,
-- shell layer,
-- covers torso/neck/shoulders/arms/legs,
-- high sharp/blunt/heat protection.
-
-Required replacement:
-- redo the ground sprite plus all five body-type families;
-- use vanilla body/apparel templates;
-- preserve correct male/female/thin/hulk/fat fit;
-- use north/east/south facings and only separate west where actually needed;
-- no guide lines or construction marks in exported PNG;
-- transparent background;
-- visual language: smooth Ancient/Asuran shell, restrained silver/white/gray, blue field-distribution nodes or seams;
-- make it visually distinct from Precursor Command Armour and Human Form Combat Armour.
-
-Expected family size currently present: 26 PNGs (one base/ground plus body/directional variants).
-
-### 2. Precursor Personal Shield
-
-Path:
-`Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorPersonalShield.png`
-
-The XML also states this visual is provisional.
-
-In-game purpose:
-- belt/waist-layer personal field emitter,
-- compact defensive field generator,
-- rechargeable WNG shield mechanics,
-- EMP vulnerability,
-- wearer can fire outward.
-
-Stargate lore target:
-- Ancient personal shield emitter is a small body-worn device activated through Ancient/ATA/neural compatibility and projects a whole-body protective field.
-
-Required art:
-- small elegant Ancient emitter/device, not full armour;
-- clearly centred and readable as an item;
-- optional subtle cyan field motif but do not bake a giant bubble into the inventory sprite;
-- transparent background;
-- no generic vanilla-belt placeholder.
-
-### 3. Goa'uld Death Glider — complete directional family
-
-Paths:
-`Textures/Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider*.png`
-
-Current purpose from the Def:
-- 5×4 physical passenger shuttle/fighter;
-- two crew;
-- short-range Odyssey travel;
-- WNG two-pass staff-cannon attack sortie;
-- exact physical fighter and exact crew are used during the sortie;
-- two staff-cannon bolts per pass.
-
-Current visible problems:
-- low-resolution/blob-like silhouette;
-- muddy white/gray fringe;
-- shape does not strongly read as a canonical Death Glider;
-- inconsistent presentation between facings;
-- far below the quality of the better Goa'uld transport rings / grav engine art.
-
-Required redo:
-- all directional ship sprites as one coherent set;
-- wide swept wings;
-- narrow central cockpit/fuselage;
-- visible twin staff-cannon positions;
-- dark/black naquadah body with bronze/gold detail;
-- amber energy accents;
-- crisp transparent alpha;
-- no rectangular border or glow matte around craft;
-- preserve the 5×4 footprint and interaction/readability at game zoom.
-
-### 4. Puddle Jumper — world sprites + build icon
-
-Paths:
-- `Textures/Things/Building/Precursor/Shuttle/WNG_PuddleJumper*.png`
-- `Textures/UI/WNG/Build/WNG_PuddleJumper.png`
-
-In-game purpose:
-- 3×5 player shuttle;
-- passenger transporter;
-- Ancient/ATA-compatible launch and neural systems;
-- cloak;
-- reconstructed-drone capability;
-- Odyssey shuttle lifecycle.
-
-Current visible problems:
-- pale/white fringe around outer silhouette;
-- some facings look blurry/soft and over-bordered;
-- directional consistency is weak;
-- current presentation does not fully exploit the recognizable canonical Puddle Jumper shape.
-
-Required redo/cleanup:
-- coherent top-down directional set;
-- compact cylindrical/streamlined gate-fitting hull;
-- cockpit clearly at front;
-- clean Ancient panel language;
-- subtle engine/drone pod cues;
-- no square or cloudy background;
-- no halo around transparent silhouette;
-- dedicated UI/build icon derived from the same design but composed as an icon, not a pasted world sprite.
-
-### 5. Asuran Queen Recovery Carrier — world sprites + UI icon
-
-Paths:
-- `Textures/Things/Building/Precursor/Shuttle/WNG_AsuranQueenRecoveryCarrier*.png`
-- `Textures/UI/WNG/Build/WNG_AsuranQueenRecoveryCarrier.png`
-
-In-game purpose:
-- NPC-only 3×5 autonomous Asuran/Lattice recovery carrier;
-- used specifically for Replicator Queen recovery;
-- real shuttle transporter/launch boundary;
-- not a player Puddle Jumper progression object.
-
-Current visible problems:
-- reads too much like a reused/modified Jumper;
-- conspicuous central oval/control-marker shape looks baked onto the hull;
-- some facings retain border/halo;
-- does not communicate "autonomous Asuran recovery craft" strongly enough.
-
-Required redo:
-- same functional 3×5 shuttle readability;
-- visually related to Ancient technology but distinctly Asuran/Lattice;
-- synthetic crystalline/lattice geometry;
-- no baked UI marker/button on the hull;
-- transparent clean edges;
-- separate clean build icon.
-
-
-#### Completion note — 2026-09-21
-The original audit above is retained as history. It has now been resolved in the public mod repo at `608e6cc311249a7a02ac0b73cb579fa47bc1236e`: all four directional world sprites plus base and a dedicated transparent build icon were replaced with the coherent professional Asuran/Lattice carrier set. The failed one-master rotation finalizer was made manual-only so it cannot overwrite the four authored facings. All current validation/build checks passed green on the completed carrier commit.
-
-#### Integrity correction note — 2026-09-22
-The earlier completion note is retained above as history. A later full-decode ship audit discovered that the then-current east/south/west carrier PNG streams were corrupt and that base/north were offset. The family was repaired in public `main` without rotating or replacing the authored directional views. A narrow repo finalizer rewrote/centred each facing independently and padded recovered edge-touching facings inward. The post-repair audit at `b3ac8df631c893cf9c9956a2bfd538dc013a7fd3` reports: all five sprites fully decode; edge-alpha pixels = 0; transparent-light pixels = 0; centre offsets = 0–0.5 px. Static Validation, Release Gap Audit, Managed Build and WNG Ship Alpha Audit all passed green.
-
-### 6. Goa'uld Grav-field Projector
-
-Path:
-`Textures/Things/Building/Goauld/Gravship/WNG_GoauldGravFieldProjector.png`
-
-In-game purpose from the Def:
-- Goa'uld equivalent of the Odyssey Grav Field Extender;
-- 2×2 building;
-- extends the Ha'tak grav engine support envelope;
-- +250 `SubstructureSupport`;
-- maximum six;
-- must be associated with the Goa'uld gravship system;
-- consumes family power.
-
-Current visible problems:
-- substantially off-centre;
-- tall thin object leaves poor use of its 2×2 canvas;
-- detached horizontal line/floating fragment to one side;
-- looks like broken spear art instead of a gravitic projector;
-- does not visually communicate connection/support-field function.
-
-Required redo:
-- centre logical mass on a 2×2 canvas;
-- no disconnected fragments;
-- broad enough footprint to read as a building;
-- black/bronze/gold Goa'uld housing;
-- symmetrical naquadah/amber field emitters;
-- visible central field core or ring language;
-- readable as a grav-field projector even without text;
-- use vanilla Grav Field Extender as the functional presentation benchmark, not as an image to copy.
-
-#### Completion note — Goa'uld projector — 2026-09-22
-The original audit above is retained as history. The broken spear-like placeholder has now been replaced on public `main` with a centred 256×256 transparent 2×2 building sprite using a broad black-naquadah/bronze silhouette, symmetric amber emitter structures and a central gravitic field core. No detached fragments remain. The Def/function was left intact as `WNG_GoauldGravFieldProjector`, a 2×2 `Graphic_Single` +250 support extender with a six-device limit. Completed art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`. Static Validation, Release Gap Audit and Managed Build all passed green on that exact commit.
-
-
-#### Superseding professional pass — Goa'uld projector — 2026-09-22
-The earlier completion note is retained above as history. A new professional replacement was committed at `38d74fbb79254c25140024467e7639bc1aca2b1f`, preserving the same Def/function but replacing the art again with a cleaner centred 256×256 transparent asset. Alpha mass is centred to within one pixel; the silhouette now fully occupies the 2×2 canvas without detached fragments, with a symmetrical black-naquadah/bronze body, amber cardinal emitters and a clear central gravitic ring/core. Static Validation, Release Gap Audit and Managed Build all passed green on this exact latest art commit.
-
-#### Latest professional pass — Goa'uld projector — 2026-09-22
-The earlier completion and superseding notes are retained above as history. The current public `main` art was replaced again at `95e11131ee10c7bc673874689b1b9cdf5f195f7f` with a clean centred 256×256 transparent 2×2 projector: broad black/bronze/gold naquadah housing, four integrated amber emitter pylons and a central amber gravitic ring/core. There are no detached fragments or baked background panels. Static Validation, Release Gap Audit and Managed Build all passed green on this exact commit.
-
-### 7. Asuran Grav-field Extender
-
-Path:
-`Textures/Things/Building/Precursor/Gravship/WNG_AsuranGravFieldExtender.png`
-
-In-game purpose:
-- Asuran version of the same +250 support system;
-- 2×2;
-- maximum six;
-- Asuran family power consumer.
-
-Required audit/redo if it shares the same centring/placeholder issues:
-- centred 2×2 composition;
-- clean Ancient/Asuran emitter geometry;
-- no detached decorative lines;
-- blue/cyan field core;
-- visually distinct from grav engine and shield generator.
-
-#### Completion note — Asuran extender — 2026-09-22
-The original audit above is retained as history. The extender has now been replaced on public `main` with a centred 256×256 transparent 2×2 building sprite: broad clean silver/white nanite-composite geometry, a cyan/blue concentric field core and integrated emitter arms, with no detached decorative lines. It remains visually distinct from the Asuran grav engine and shield generator while communicating the same support-field role as vanilla's Grav Field Extender. Completed art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`. Static Validation, Release Gap Audit and Managed Build all passed green on that exact commit.
-
-#### Superseding professional pass — Asuran extender — 2026-09-22
-The earlier completion note is retained above as history. A new professional replacement was committed at `38d74fbb79254c25140024467e7639bc1aca2b1f`: centred 256×256 transparent 2×2 art with a broad silver/white Ancient/Asuran nanite-composite body, integrated cyan emitter channels and a concentric blue gravitic field core. Alpha mass is centred to within one pixel, with no detached linework or baked panel. Static Validation, Release Gap Audit and Managed Build all passed green on this exact latest art commit.
-
-
-
-#### Latest professional pass — Asuran extender — 2026-09-22
-The earlier completion and superseding notes are retained above as history. The current public `main` art was replaced again at `95e11131ee10c7bc673874689b1b9cdf5f195f7f` with a clean centred 256×256 transparent 2×2 extender: broad silver/white Ancient/Asuran nanite-composite body, integrated cyan emitter channels and a bright concentric blue gravitic field core. There are no detached decorative lines or baked panel backgrounds. Static Validation, Release Gap Audit and Managed Build all passed green on this exact commit.
-
----
-
-# PRIORITY 1 — doors, hull and gravship readability
+Correct rule:
+- verify commit/tree before claiming branch content.
 
 ## 8. Asuran Gravship Door family
 
@@ -471,364 +404,6 @@ Use it as a quality benchmark:
 Linked wall/hull atlases must preserve RimWorld linked-atlas requirements. Do not turn wall textures into ordinary independent squares.
 
 ---
-
-# PRIORITY 1 — UI / ABILITY / GENE / BUILD ICON CLEANUP
-
-There are currently 35 PNGs under:
-`Textures/UI/WNG/`
-
-The screenshots show a recurring icon problem:
-- square photographic/rendered panels left behind inside the icon;
-- art not centred in the square;
-- clipped visual mass;
-- world-sprite imagery pasted into an icon canvas;
-- mixed quality/style between neighboring icons.
-
-## Audit all 35 UI PNGs, including
-
-### Abilities
-- `UI/WNG/Abilities/*`
-
-### Genes
-- `UI/WNG/Genes/*`
-
-### Xenotypes
-- `UI/WNG/Xenotypes/*`
-
-### Build icons
-- `UI/WNG/Build/*`
-
-### Other WNG UI
-- Ancient affinity/drone/recovered modules/mod logo.
-
-## Required icon standard
-
-For each icon:
-- true transparent background unless a deliberate badge shape is part of the icon;
-- no accidental square source-image panel;
-- centre the actual visible alpha mass;
-- consistent padding around the symbol;
-- no stray pixels detached from the main symbol;
-- readable at small RimWorld UI size;
-- simple symbolic composition rather than mini concept-art screenshot;
-- faction palette should communicate identity without dominating readability.
-
-### Xenotype icons in particular
-Current portrait-like square panels should be reviewed.
-Prefer a centred RimWorld-style emblem/head/silhouette treatment with transparent surroundings rather than a rectangular portrait photograph/render.
-
-### Build icons
-A build icon may derive from the same object design, but should be composed for the UI.
-Do not simply paste a world sprite with large empty margins, a background square or misaligned center.
-
-#### Technical cleanup checkpoint — 2026-09-22
-A repo-wide Pillow decode/layout audit now checks all 35 `Textures/UI/WNG/*.png` assets. It found and repaired one truncated Puddle Jumper build icon, recentred the Asuran recovery-carrier build icon, and replaced three opaque gameplay panels (`AncientDrone`, `RecoveredAncientDrone`, `RecoveredVacuumModule`) with transparent centred symbols derived from the corresponding authoritative in-repo item art. Post-repair audit at `9b023b5afdc4be790be701c3168882f5190a67af` shows those repaired assets fully decoding with zero edge alpha and no panel flag. `WNG_ModLogo.png` is intentionally excluded from gameplay-icon transparency requirements because it is an unreferenced branding asset. Do not call the whole UI family visually finished until the remaining icons receive small-scale professional visual review.
-
----
-
-# PRIORITY 1 — ALL SHIP SPRITES: BORDER / HALO CLEANUP
-
-The user specifically identified visible borders around ships.
-
-Audit **every shuttle / strike craft / gravship craft sprite**, not only the three families above.
-
-Look for:
-- white fringe,
-- gray fringe,
-- dark rectangular canvas edge,
-- pasted background,
-- shadow baked into alpha incorrectly,
-- inconsistent margins between directions,
-- craft not centred on the logical footprint.
-
-Technical correction:
-- preserve dark RGB in fully transparent pixels;
-- avoid white matte data in transparent areas;
-- use a minimal dark fringe only if needed to survive RimWorld texture compression;
-- re-export with clean alpha;
-- compare north/east/south/west bounding boxes;
-- logical craft center must remain stable as direction changes.
-
----
-
-# PRIORITY 2 — APPAREL FULL RE-AUDIT
-
-There are currently **217 apparel PNG files** under:
-`Textures/Things/Pawn/Humanlike/Apparel/`
-
-Previous handoff text claimed several apparel families were completed. The visual review proves that claim cannot be trusted as a quality sign-off.
-
-Re-audit all families against actual vanilla pawn templates:
-
-Precursor/Asuran:
-- `WNG_HumanFormCombatArmor`
-- `WNG_HumanFormUniform`
-- `WNG_PrecursorCommandArmor`
-- `WNG_PrecursorFieldArmor`
-- `WNG_PrecursorPersonalShield`
-
-Wraith:
-- `WNG_CommanderCarapace`
-- `WNG_HunterCoat`
-- `WNG_QueenRaiment`
-- `WNG_WarriorCarapace`
-
-For each:
-- correct body-type template;
-- correct directional fit;
-- shoulders/torso/arms/legs align to pawn body rather than concept-art proportions;
-- no baked mannequin/body underneath;
-- no guide lines;
-- no square background;
-- no copied noisy photographic texture;
-- ground sprite visually consistent with worn sprite;
-- no redundant west file unless it is genuinely asymmetric.
-
-Do not mark an apparel family complete until its worn variants have been checked visually at pawn scale.
-
----
-
-# PRIORITY 2 — WEAPONS / PROJECTILES / COMBAT ART
-
-## Projectiles
-
-Current projectile families include the recently changed:
-- `WNG_ProjectileLivingCarbine`
-- `WNG_ProjectileHeavyBio`
-- `WNG_ProjectileStunner`
-- `WNG_ProjectileStunStaff`
-- `WNG_ProjectilePrecursorPulse`
-
-Do not redo automatically merely because they are simple.
-
-RimWorld projectile art is supposed to be compact and readable.
-
-Audit criteria:
-- projectile faces upward in source;
-- exact center is the in-game projectile origin;
-- no detached pixels;
-- no square background;
-- size/readability checked at actual projectile draw size;
-- color/faction identity is clear.
-
-Death Glider staff pulse:
-- ensure it reads as Goa'uld staff/plasma energy and matches the redone fighter.
-
-## Replicator weapons / structures / pawn art
-
-Screenshots show multiple Replicator sprites that remain highly schematic/pixel-like.
-
-Previous rule "preserve Replicator self-art unless requested" is no longer an excuse to ignore obvious quality defects.
-
-New rule:
-- **review, do not indiscriminately replace**;
-- preserve distinctive intentional Replicator visual language;
-- replace only sprites that are clearly placeholders, malformed, badly centred or inconsistent with surrounding WNG quality.
-
-## Combat Extended compatibility ammo
-
-Current compatibility images shown:
-- `WNG_ReplicatorChargeCell.png`
-- `WNG_WraithBiochargePack.png`
-
-These are extremely simple.
-
-Before redrawing:
-1. verify whether the current CE defs actually reference them by explicit path or convention;
-2. if dead/unreferenced art, remove or leave out rather than spending art time blindly;
-3. if used, redraw as clean inventory icons with transparent backgrounds, faction identity and proper centring.
-
----
-
-# PRIORITY 2 — ART THAT CURRENTLY LOOKS STRONGER
-
-Do not destroy good work while fixing poor work.
-
-From current review, examples that look substantially stronger include:
-- Goa'uld grav engine;
-- Goa'uld transport rings;
-- some angled gravship hull pieces;
-- some newer gene/build icon concepts;
-- some projectile concepts that are readable at small scale.
-
-These still require alpha/centering checks, but they should be treated as **keep/polish candidates**, not automatic full redraws.
-
----
-
-# REQUIRED ART QA TESTS BEFORE CALLING THE NEXT PASS COMPLETE
-
-## A. File integrity
-- all XML parses;
-- all PNGs open;
-- zero empty PNGs;
-- zero missing required art references.
-
-## B. Alpha / border test
-For every new or changed PNG:
-- inspect transparent margins;
-- detect square background panels;
-- detect white/gray halo;
-- detect stray isolated pixels;
-- ensure no accidental full-canvas opaque rectangle.
-
-## C. Centring test
-For every object/icon:
-- calculate visible-alpha bounding box;
-- compare visual centre to canvas centre;
-- allow intentional offset only where the Def/interaction orientation requires it;
-- reject obvious off-centre composition.
-
-## D. Directional consistency
-For multi-direction art:
-- same perceived scale;
-- same center;
-- same palette/material;
-- same hull/body proportions;
-- no direction with a completely different source render.
-
-## E. In-game purpose check
-Before drawing an asset:
-- read its Def;
-- record footprint;
-- `drawSize`;
-- graphic class;
-- rotation behavior;
-- UI vs world use;
-- gameplay function.
-
-Do not generate a picture first and then try to force it into the Def.
-
-## F. Faction/lore check
-Before final:
-- Ancient/Asuran → clean advanced blue/silver/lattice;
-- Goa'uld → black/bronze/gold/amber/Egyptian;
-- Wraith → organic/biomechanical/dark/teal-purple;
-- Replicator → deliberate modular/nanite identity.
-
-## G. Vanilla parity check
-Compare against vanilla at the same functional scale:
-- building vs building;
-- shuttle vs passenger shuttle;
-- grav-field support device vs Grav Field Extender;
-- apparel vs vanilla body overlays;
-- projectile vs vanilla projectile;
-- icon vs vanilla UI icon.
-
-The comparison is about **readability, centring and game fit**, not copying vanilla art.
-
----
-
-# RECOMMENDED EXECUTION ORDER
-
-Do not attempt everything at once.
-
-1. Precursor Field Armour + Personal Shield.
-2. Goa'uld Death Glider.
-3. Puddle Jumper.
-4. Asuran Queen Recovery Carrier.
-5. Goa'uld Grav-field Projector + Asuran Grav-field Extender.
-6. Asuran / Goa'uld / Wraith gravship doors.
-7. all ship alpha-border cleanup.
-8. all 35 UI/ability/gene/xenotype/build icons.
-9. full 217-apparel re-audit and repair anything still below standard.
-10. Replicator visual review.
-11. CE compatibility assets.
-12. final weapons/projectiles/furniture/buildings pass.
-13. run full validation.
-14. playtest representative art in RimWorld.
-15. only then regenerate the WNG website art page from current public `main`.
-
----
-
-# MISTAKES / WHAT NOT TO DO — KEEP AND EXPAND THIS SECTION
-
-These are explicit failure modes. Do not delete this section in future handoffs.
-
-## 1. Followed an obsolete local-only workflow
-Mistake:
-- allowed D118-D141 work to remain local/File-Library while public GitHub stayed stale.
-
-Correct rule:
-- public WNG repo is the production source;
-- current checkpoints belong in GitHub.
-
-## 2. Replaced a working display page with a ZIP-loader
-Mistake:
-- made the user select a WNG ZIP in the website.
-
-Correct rule:
-- the website is a generated display page only;
-- no ZIP upload/file picker.
-
-## 3. Hid art behind filters/comparison state
-Mistake:
-- gallery logic obscured art and confused what actually existed.
-
-Correct rule:
-- final display is a straightforward whole-mod page;
-- never use gallery filters as proof of mod content.
-
-## 4. Pointed a page at stale mod content
-Mistake:
-- website could technically work while GitHub still contained an old mod.
-
-Correct rule:
-- mod repository first;
-- website last.
-
-## 5. Overcomplicated asset transfer
-Mistake:
-- gallery archives, delta manifests, base64 transfer detours and cache systems.
-
-Correct rule:
-- keep the mod repo current;
-- use bounded deterministic transfers only when needed.
-
-## 6. Compared changed files when the user asked for all art
-Mistake:
-- spent time on deltas rather than the requested whole-mod view.
-
-Correct rule:
-- change history is irrelevant to the display page unless explicitly requested.
-
-## 7. Created misleading branch names
-Mistake:
-- `d141-current-art` existed while still pointing at D117.
-
-Correct rule:
-- verify commit/tree before claiming branch content.
-
-## 8. Used huge unbounded GitHub blob loops
-Mistake:
-- hit connector/tool ceilings and froze repeatedly.
-
-Correct rule:
-- bounded operations;
-- checkpoints;
-- verify after every repository mutation.
-
-## 9. Reported success before deployment/live verification
-Mistake:
-- source commit was treated as a completed live page.
-
-Correct rule:
-- repository state, build/deploy state and live result are separate checks.
-
-## 10. Repeated explanations instead of completing the operation
-Mistake:
-- excessive status/explanation while requested work remained unfinished.
-
-Correct rule:
-- execute first;
-- report concrete state.
-
-## 11. Used wrong file IDs / assumed persistence
-Mistake:
-- incorrect Library IDs and stale overwrite assumptions.
-
-Correct rule:
-- use exact returned IDs;
-- verify persisted contents after mutation.
 
 ## 12. Risked touching the wrong website area
 Permanent rule:
@@ -950,55 +525,6 @@ Correct rule:
 
 ---
 
-
-## PERMANENT VANILLA-DOOR ART RULE — DO NOT VIOLATE
-
-**This rule overrides any earlier inference based only on `Graphic_Single`.** Before changing, deleting, or replacing any door texture, inspect the actual RimWorld 1.6 `Building_Door` / relevant subclass rendering path and the WNG Def that uses it.
-
-For vanilla 1x1 `Building_Door`:
-- `DoorPreDraw()` derives the door rotation from surrounding walls via `DoorUtility.DoorRotationAt`.
-- `DrawMovers()` draws the mover graphic **twice**, with one mesh UV-flipped, and offsets the two copies in opposite directions as `OpenPct` increases from closed to open.
-- Therefore the correct texture concept is a **single half-door mover on transparency**, designed so its flipped duplicate forms the other half when closed and the two halves visibly separate when opening.
-- Rotatable faction doors must use `Graphic_Multi` with north/south/east/west mover assets (or an explicitly validated equivalent). Never delete cardinal assets merely because an inherited/current XML node says `Graphic_Single`.
-- Do **not** generate four unrelated AI renders. Create one approved faction master mover and derive cardinal variants deterministically so shape, lighting, scale, centre, alpha and design remain coherent.
-- No frame/background/baked square. Transparent canvas only. Test closed overlap, partial-open separation, fully-open separation, centering, wall alignment and pawn-scale readability.
-- Vacuum barriers are a separate subclass (`Building_VacBarrier : Building_SupportedDoor`): they force `OpenPct=1`, disable mover drawing, and draw their field graphic only when powered in vacuum. Do not assume their art requirements are identical to a physical door even if they currently share a texPath.
-
-### Mistake added 2026-09-21
-I incorrectly inferred that Goa'uld/Wraith cardinal door PNGs were dead solely because the current Def used `Graphic_Single`, removed them, then restored the same obsolete art when challenged. Both actions were wrong. The correct process is **lore/function/vanilla-render-path first, professional replacement second, repo mutation last**. Generated front-facing full-door concepts from that mistaken pass are rejected and must not be committed.
-
-# LIVE ART-PASS PROGRESS — 2026-09-21
-
-Current public `main`: see repository HEAD. Latest completed grav-field art checkpoint: `e35137a5d243394c403b73589b6c7945ac342b95`
-
-Since the visual-audit commit:
-- 17 commits have advanced the art programme.
-- 161 PNG files have changed.
-- 105 / 217 apparel PNGs have been touched (48%).
-- 24 / 35 WNG UI PNGs have been touched (69%).
-- 15 shuttle PNGs have been touched across Death Glider, Puddle Jumper and Asuran Queen Recovery Carrier families.
-- 17 gravship PNGs have been touched across field devices and door families.
-
-## Execution-order status
-
-1. **Precursor Field Armour + Personal Shield** — **PROFESSIONAL VISUAL REVIEW COMPLETE, pending only representative in-game pawn-scale playtest.** These families were included in the nine-family/217-PNG apparel contact-sheet review at `eaa207cb1d1e7f865853c9ce24a91f1d5d514fb2`; the provisional guide-line/noisy look is gone, the armour reads as deliberate Ancient/Asuran shell plating, and the shield reads as a compact Ancient emitter rather than a generic belt/bubble. Structural/template audit is also clean.
-2. **Goa'uld Death Glider** — **professional rendered replacement COMPLETE**; all directional sprites committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
-3. **Puddle Jumper** — **professional rendered replacement COMPLETE**; base/N/E/S/W plus build icon committed; D108 Static Validation, Release Gap Audit and Managed Build all green.
-4. **Asuran Queen Recovery Carrier** — **PROFESSIONAL REPLACEMENT + INTEGRITY/ALPHA CORRECTION COMPLETE.** The original professional replacement remains part of the history below. A later full-decode ship audit found corrupt east/south/west streams plus base/north centring/edge issues that signature-only validation had missed. The family was repaired without rotating or redesigning authored facings, then padded/centred independently. Final audited state is on `b3ac8df631c893cf9c9956a2bfd538dc013a7fd3`: all five world sprites decode, edge-alpha = 0, transparent-light = 0, and centre offsets are 0–0.5 px. Static Validation, Release Gap Audit, Managed Build and WNG Ship Alpha Audit all green on that state. The separate build icon remains the professional centred icon.
-5. **Goa'uld Grav-field Projector + Asuran Grav-field Extender** — **PROFESSIONAL REPLACEMENTS COMPLETE — CURRENT CLEAN PASS `75bf69313048fec18730975063e0af9fd51d2e22`, edge-finalized at `c79745ae5f003531a948e30085808d349db2ef11`.** The earlier `95e11131...` transfer is retained below only as history: the later full-decode audit proved those two uploaded PNG streams were truncated. They were regenerated from clean repo source with the same approved faction/function brief, then padded clear of the canvas edge. Goa'uld = broad black/bronze/gold naquadah projector with integrated amber emitters/core; Asuran = silver/white Ancient/Asuran emitter with cyan gravitic core/channels. Final item-12 audit fully decodes both with edge-alpha 0.
-6. **Asuran / Goa'uld / Wraith gravship doors** — **PROFESSIONAL ART + VANILLA-PARITY DIRECTIONAL SET COMPLETE.** New Stargate-specific masters are installed for all three factions; north/east/south/west/base assets are generated deterministically from each approved master so scale, lighting, centre and alpha remain coherent. `WNG_GoauldGravshipDoor`, `WNG_WraithGravshipDoor`, and `WNG_AsuranGravshipDoor` now use `Graphic_Multi`; vanilla `Building_Door` rendering handles opening/closing from those directional mover graphics. The old automatic whole-art generator push trigger was disabled so procedural first-pass scripts cannot silently overwrite professional art. Finalized door state validated at commit `e20f9f418399753df64c7ed22516b696b08036b2`: D108 Static Validation, Release Gap Audit, and Managed Build all green.
-7. **All ship alpha-border cleanup** — **COMPLETE FOR CURRENT SHUTTLE/CRAFT FAMILIES.** Full-family Pillow audit now covers Goa'uld Alkesh, Death Glider, Asuran Recovery Carrier, Puddle Jumper, Wraith Cruiser, Wraith Dart and Wraith StrikeCraft. All files fully decode; transparent-light contamination is 0; the repaired Asuran carrier now has edge-alpha 0 and 0–0.5 px centring. Alkesh, Puddle Jumper, Wraith Cruiser/Dart/StrikeCraft are centred with edge-alpha 0; Death Glider retains only its small authored facing offset while edge-alpha remains 0. Audit/checkpoint `b3ac8df631c893cf9c9956a2bfd538dc013a7fd3` is green.
-8. **All 35 UI/ability/gene/xenotype/build icons** — **TECHNICAL + PROFESSIONAL VISUAL REVIEW COMPLETE.** Full-decode/layout audit covers all 35 PNGs. Hard defects already repaired: truncated `Build/WNG_PuddleJumper.png`; off-centre `Build/WNG_AsuranQueenRecoveryCarrier.png`; opaque panel-style `AncientDrone.png`, `RecoveredAncientDrone.png`, and `RecoveredVacuumModule.png` replaced with transparent centred icons derived from matching in-repo art. Direct-repo contact sheet at `14137b8ddf6ee1da8774de1a716acaab48163b6a` was reviewed across abilities, genes, xenotypes, build icons and recovered-item icons: faction language is consistent, silhouettes are readable, and no new square-panel/off-centre visual defect remains. `WNG_ModLogo.png` is a deliberate standalone opaque branding asset and is not referenced by gameplay code/Defs.
-9. **Full 217-apparel re-audit** — **PROFESSIONAL REVIEW COMPLETE, pending only representative in-game playtest.** The current `WNG Apparel Art Audit` fully decodes all 217 apparel PNGs and applies separate rules for inventory/base sprites versus worn overlays. Latest structural state at `93f9d7a1c573f3fb40d1f0223a1bab6bf94d6176`: `WNG_APPAREL_COUNT 217`, `WNG_APPAREL_FLAGGED 0`; no edge-alpha failures and no horizontal/template-position violations. Repo-generated contact sheets at checkpoint `eaa207cb1d1e7f865853c9ce24a91f1d5d514fb2` were then visually reviewed across all nine apparel families: Human Form Combat Armour, Human Form Uniform, Precursor Command Armour, Precursor Field Armour, Precursor Personal Shield, Wraith Commander Carapace, Hunter Coat, Queen Raiment and Warrior Carapace. No remaining square backgrounds, guide marks, baked mannequin bodies, or family-scale/directional mismatches were identified. Final confirmation in RimWorld remains part of item 14, not a reason to keep the art family open.
-10. **Replicator visual review** — **COMPLETE; preserve current intentional modular/nanite art.** A bounded full-decode/alpha audit at `8af184409206f79fd2375e7d81603010207e20d8` covered all 65 Replicator-related PNGs and returned `WNG_REPLICATOR_COUNT 65`, `WNG_REPLICATOR_FLAGGED 0`. A direct-repo contact sheet was visually reviewed across the eight pawn classes, containment, ruins, resources, weapons, adaptation icons, projectile and build icon. The schematic/vector/block language is consistent across the family and reads as deliberate Replicator/nanite construction rather than accidental placeholder art. No blanket redraw is authorized or needed from this review; future changes should be targeted only to a specific in-game defect.
-11. **Combat Extended compatibility assets** — **COMPLETE.** Current CE ammo defs use `Things/Item/Resource/WNG_Biomass` for all Wraith biocharges and `Things/Item/Resource/Replicator/WNG_ReplicatorMatter` for all Replicator cells. Repo-wide search found the legacy `WNG_WraithBiochargePack` and `WNG_ReplicatorChargeCell` names only in this handoff file, with no live XML/code references. Both dead PNGs were removed in commit `4cbea19b0c4225c486999d71ee997f4c9f17b4fc` rather than redrawn.
-12. **Final weapons/projectiles/furniture/buildings pass** — **COMPLETE.** Direct-repo contact sheets and a full-decode/alpha audit covered 345 item-12 assets: 13 weapons, 9 projectiles, 46 Wraith furniture sprites, and all current building groups. Visual review found the weapon, furniture and remaining building families coherent with their established faction languages. The audit identified seven real technical edge issues: five projectile sprites plus the regenerated Goa'uld projector and Asuran extender. Those seven were padded/scaled inward without redesign at `c79745ae5f003531a948e30085808d349db2ef11`. Final audit checkpoint `40148639f2146aaccbb53237af3c4240c927a609` reports `WNG_ITEM12_COUNT 345` and `WNG_ITEM12_FLAGGED 0`; tileable gravship HullCorners are intentionally exempt from edge-alpha warnings because their art must meet the tile boundary.
-13. **Full validation** — **COMPLETE.** Final whole-mod art-integrity checkpoint `5bca3d69fd454ebfe08c74c9756dfa6b2db0abde` passed `WNG Final Art Integrity`, `D108 Static Validation`, `D108 Release Gap Audit`, and `D108 Managed Build and Playtest Package`. Final integrity results: 694 PNGs fully decoded, 258 XMLs parsed, 35 UI PNGs present, 217 apparel PNGs present, required three-faction gravship door directional sets present, repaired carrier/grav-field/projectile targets edge-clean, dead legacy CE icons absent, and `WNG_FINAL_ART_ERRORS 0`.
-14. **Representative RimWorld playtest** — **READY; actual in-game visual spot check still required.** The managed playtest package builds green at `5bca3d69fd454ebfe08c74c9756dfa6b2db0abde`. Static/tool validation cannot substitute for viewing representative pawns, doors, ships, projectiles and 2×2 support buildings inside RimWorld.
-15. **Regenerate WNG website art page** — intentionally deferred until the mod art pass is complete; website is output only.
-
-**Overall status:** **items 1–13 are complete and green.** The only remaining art-programme gate is item 14: representative in-game RimWorld visual spot-check of pawns, doors, ships, projectiles and 2×2 support buildings. Item 15 (regenerating `wng-art.html`) remains intentionally deferred until that playtest is accepted. No further blanket art redraw is authorized unless the in-game spot-check exposes a specific defect.
-
 ## 25. Deleted directional door art because the current Def said `Graphic_Single`
 Mistake:
 - inferred that Goa'uld/Wraith east/north/south/west door PNGs were dead art and removed them.
@@ -1037,7 +563,6 @@ Correct rule:
 - validate each uploaded PNG before allowing any automation to propagate it;
 - narrow finalizer workflows must be manual-only unless their derivation is explicitly the intended authoritative art process.
 
-
 ## 28. Lost the active art target and generated unrelated door art
 Mistake:
 - after finishing the Asuran recovery-carrier checkpoint, the active task was the Goa'uld Grav-field Projector + Asuran Grav-field Extender;
@@ -1048,7 +573,6 @@ Correct rule:
 - never generate art from the previous family merely because its visual language is still in context;
 - one active family at a time: verify path + Def + footprint + function, generate, commit, validate green, mark complete, then advance;
 - if a freeze occurs, verify the last committed repo state and this progress list before generating anything else.
-
 
 ## 29. PNG signature/non-empty checks were not enough
 Mistake:
@@ -1061,7 +585,6 @@ Correct rule:
 - use Pillow `Image.open(...).load()` (and/or `verify()` followed by reopen+load) for every PNG in the mod;
 - art-family QA must also measure alpha at the canvas edge, transparent-pixel RGB contamination and logical centring;
 - a workflow is not "green for PNG integrity" unless the complete decode pass succeeds for every file it claims to validate.
-
 
 ## 30. Copied truncated base64 into live PNG art
 Mistake:
@@ -1077,56 +600,3 @@ Correct rule:
 
 
 ---
-
-# CURRENT STATUS AFTER THIS AUDIT
-
-## Repository
-D141 is safely on public `main`.
-
-## Structural validation
-Green for XML and PNG integrity.
-
-## Visual quality
-**NOT GREEN.**
-
-The screenshots and Def audit expose substantial remaining work.
-
-## No art changes made by this audit
-This update changes only `artupgrades.md`.
-Do not interpret it as authorization that the art replacements above have already been executed.
-
-## Next objective when the user says to proceed
-Begin with the Priority 0 families, commit/checkpoint changes in the public WNG repo, validate each batch, and keep this file updated with:
-- exact files changed,
-- exact validation result,
-- what remains,
-- any new mistake discovered.
-
-Do not touch Cosmology.
-Do not use the WNG website page as the art workflow.
-Do not declare visual completion from file/reference validation alone.
-
-
-
-### Apparel audit checkpoint — 2026-09-22
-The technical re-audit has now reached all 217 apparel PNGs. The latest workflow at `93f9d7a1c573f3fb40d1f0223a1bab6bf94d6176` reports `WNG_APPAREL_COUNT 217` and `WNG_APPAREL_FLAGGED 0`. All files fully decode; edge alpha is clean; worn overlays fall inside the intended lower-canvas template band; bare Wraith inventory/base sprites are evaluated separately rather than being falsely flagged as worn overlays. Remaining apparel work is visual design/pawn-scale sign-off, not structural repair.
-
-### Apparel visual-review checkpoint — 2026-09-22
-Internal QA contact sheets were generated directly from current public-repo apparel files at `eaa207cb1d1e7f865853c9ce24a91f1d5d514fb2` and reviewed family-by-family. All nine current apparel families present coherent faction styling, body-type progression and directional treatment. The Ancient/Asuran families are clean, simplified and readable; Field Armour no longer has the provisional noisy/guide-line look and Personal Shield is a compact emitter rather than a generic belt/bubble. The Wraith families retain intentional organic/biomechanical texture without square backgrounds or detached overlays. No new art mutation was required from this visual review. Representative pawn-scale validation remains for the final RimWorld playtest step.
-
-### Replicator visual-review checkpoint — 2026-09-22
-A full Replicator visual audit/contact sheet was generated directly from current public `main` at `8af184409206f79fd2375e7d81603010207e20d8`. All 65 related PNGs fully decode and no edge-alpha failures were flagged. Visual review confirms a coherent intentional modular/nanite design across Artillery, Bulwark, Burrower, Controller, Drone, Hunter, Repairer and Siege Mass/Titan families, with matching containment/adaptation language. The current family should be preserved rather than indiscriminately replaced. This closes the earlier "review, do not blanket-replace" requirement.
-
-### Combat Extended asset checkpoint — 2026-09-22
-The earlier CE icon question is resolved. `Compatibility/CombatExtended/Defs/Ammo_WNG.xml` explicitly points Wraith ammunition to `Things/Item/Resource/WNG_Biomass` and Replicator ammunition to `Things/Item/Resource/Replicator/WNG_ReplicatorMatter`. Repo-wide search found no live references to the separate legacy `WNG_WraithBiochargePack.png` or `WNG_ReplicatorChargeCell.png`. Those two dead files were therefore removed at `4cbea19b0c4225c486999d71ee997f4c9f17b4fc`. This follows the rule to verify use before spending art time on compatibility assets.
-
-### Item 12 final-pass checkpoint — 2026-09-22
-The final weapons/projectiles/furniture/buildings pass is complete. Direct-repo QA reviewed all grouped contact sheets and the technical audit covered 345 assets. Five projectile sprites were found to have glow/trail alpha clipped to the canvas and the two grav-field support devices were discovered to be corrupt from an earlier truncated binary transfer. The devices were regenerated from clean deterministic repo source at `75bf69313048fec18730975063e0af9fd51d2e22`; all seven edge/clipping cases were finalized at `c79745ae5f003531a948e30085808d349db2ef11`. Final item-12 audit at `40148639f2146aaccbb53237af3c4240c927a609`: `WNG_ITEM12_COUNT 345`, `WNG_ITEM12_FLAGGED 0`.
-
-### UI visual-review checkpoint — 2026-09-22
-A direct-repo contact sheet of all 35 current `Textures/UI/WNG` PNGs was generated and reviewed at `14137b8ddf6ee1da8774de1a716acaab48163b6a`. The current set is visually coherent: Ancient/Asuran icons use clean cyan/blue geometric language; Wraith icons use purple/green organic language; build/recovered-item icons use the actual matching world/item art; Replicator icons retain the intentional schematic/nanite language. No remaining gameplay icon has the old square panel/background or obvious centring defect. The opaque WNG logo is branding-only and intentionally exempt.
-
-### Final whole-mod art-validation checkpoint — 2026-09-22
-Final integrity validation at `5bca3d69fd454ebfe08c74c9756dfa6b2db0abde` is green across every automated gate: `WNG Final Art Integrity`, `D108 Static Validation`, `D108 Release Gap Audit`, and `D108 Managed Build and Playtest Package`. The final art-integrity run reports 694 fully decodable PNGs, 258 parseable XML files, 35 UI PNGs, 217 apparel PNGs and `WNG_FINAL_ART_ERRORS 0`. All art-program work that can be validated outside the game is now complete. Remaining before website regeneration: representative in-game RimWorld visual spot check only.
-## Superseding live progress — 2026-09-22
-The historical audit-status text above is intentionally retained. Work has proceeded since that audit. Current completed checkpoints include the professional Death Glider, Puddle Jumper, Asuran Recovery Carrier integrity/alpha correction, grav-field support devices, gravship doors and the full current shuttle/craft alpha audit. Overall visual quality is still **NOT GREEN** because UI/icon review, full apparel re-audit, Replicator review, CE assets and the final weapons/projectiles/furniture/buildings pass remain.
