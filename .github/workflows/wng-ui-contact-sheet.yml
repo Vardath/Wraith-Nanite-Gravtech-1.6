@@ -1,0 +1,28 @@
+name: WNG UI Visual Contact Sheet
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artqa/ui_contact_sheet.py"
+      - ".github/workflows/wng-ui-contact-sheet.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sheet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - run: python .github/artqa/ui_contact_sheet.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ui-contact-sheet
+          path: qa/ui/ui-contact-sheet.jpg
+          if-no-files-found: error
