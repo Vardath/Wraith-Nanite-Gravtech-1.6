@@ -997,7 +997,7 @@ Since the visual-audit commit:
 14. **Representative RimWorld playtest** — **READY; actual in-game visual spot check still required.** The managed playtest package builds green at `5bca3d69fd454ebfe08c74c9756dfa6b2db0abde`. Static/tool validation cannot substitute for viewing representative pawns, doors, ships, projectiles and 2×2 support buildings inside RimWorld.
 15. **Regenerate WNG website art page** — intentionally deferred until the mod art pass is complete; website is output only.
 
-**Overall status:** roughly one-third of the art programme is genuinely complete at professional/sign-off level; considerably more has received a first pass but is not yet accepted as finished.
+**Overall status:** **items 1–13 are complete and green.** The only remaining art-programme gate is item 14: representative in-game RimWorld visual spot-check of pawns, doors, ships, projectiles and 2×2 support buildings. Item 15 (regenerating `wng-art.html`) remains intentionally deferred until that playtest is accepted. No further blanket art redraw is authorized unless the in-game spot-check exposes a specific defect.
 
 ## 25. Deleted directional door art because the current Def said `Graphic_Single`
 Mistake:
