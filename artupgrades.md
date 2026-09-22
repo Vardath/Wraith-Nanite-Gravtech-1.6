@@ -51,7 +51,7 @@ Do not touch the large sublight drive unless direct comparison shows a shared vi
 - finalizer completed successfully; source-commit static validation and release-gap audit also passed.
 
 
-## 2. Goa'uld power coupler — adjust or replace
+## 2. Goa'uld power coupler — COMPLETED 2026-09-22
 
 **Live Def:** `Defs/Gravships/Gravship_Goauld.xml`  
 **DefName:** `WNG_GoauldPowerCoupler`  
@@ -72,6 +72,14 @@ Required work:
 - professional centred 1×1 building sprite, strong readable mass, clean transparent edge;
 - dark naquadah body, bronze/gold structure and integrated amber/orange energy/crystal cues;
 - no decorative loose linework or detached pieces.
+
+**Completion note (2026-09-22):**
+- replaced the coupler with a dedicated 512×512 RGBA Goa'uld interface sprite generated from a repo-owned renderer;
+- preserved the live 1×1 `Graphic_Single` role and `drawSize (1.5,1.5)`;
+- the object reads as a compact power bridge rather than a generator: dark naquadah chassis, bronze/gold coupling jaws, two clear interface sockets and one restrained amber crystal junction;
+- kept the glow localized to the crystal/conduits so it remains legible at game scale without turning the whole tile into an energy effect;
+- generator validates non-empty alpha, 512×512 RGBA output, safe transparent margins and no edge contact before the PNG is committed;
+- temporary binary-transfer fragments were deleted and are not production sources.
 
 ## 3. Ancient control chair — full redo; current art is cut off
 
