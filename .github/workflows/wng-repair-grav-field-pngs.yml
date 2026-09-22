@@ -1,0 +1,37 @@
+name: WNG Repair Grav Field PNG Integrity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artqa/repair_grav_field_pngs.py"
+      - ".github/workflows/wng-repair-grav-field-pngs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - run: python .github/artqa/repair_grav_field_pngs.py
+      - name: Commit repaired PNG streams
+        shell: bash
+        run: |
+          git add Textures/Things/Building/Goauld/Gravship/WNG_GoauldGravFieldProjector.png Textures/Things/Building/Precursor/Gravship/WNG_AsuranGravFieldExtender.png
+          if git diff --cached --quiet; then
+            echo "No grav-field PNG rewrite needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Repair grav-field support PNG integrity"
+          git push
