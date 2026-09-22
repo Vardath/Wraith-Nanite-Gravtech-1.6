@@ -41,9 +41,14 @@ for r in rows:
     off=r.get("center_offset")
     size=r.get("size")
     if off and size==[192,192]:
-        # RimWorld worn apparel is intentionally lower than canvas centre.
-        # Flag only lateral drift or vertical placement outside the observed body-overlay band.
-        if abs(off[0])>4 or not (20 <= off[1] <= 40):
+        stem=Path(r["path"]).stem
+        # Bare Wraith family roots are centred inventory/base sprites; their worn body/direction
+        # variants exist separately. Worn apparel itself is intentionally lower on the canvas.
+        bare_wraith = "/Wraith/" in r["path"] and not re.search(r"_(Male|Female|Thin|Fat|Hulk|north|south|east|west)$", stem)
+        if bare_wraith:
+            if abs(off[0])>4 or abs(off[1])>4:
+                bad.append(r)
+        elif abs(off[0])>4 or not (20 <= off[1] <= 40):
             bad.append(r)
     elif off and size!=[256,256]:
         if abs(off[0])>4 or abs(off[1])>4:
@@ -53,3 +58,5 @@ for r in bad:
     print("WNG_APPAREL_FLAG",json.dumps(r,sort_keys=True))
 
 # apparel-template centring rule 2026-09-22
+
+# distinguish Wraith inventory roots from worn overlays 2026-09-22
