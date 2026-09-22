@@ -1,0 +1,39 @@
+name: WNG Finalize Goauld Small Sublight Drive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artgen/finalize_goauld_small_drive.py"
+      - ".github/workflows/wng-finalize-goauld-small-drive.yml"
+      - "Textures/Things/Building/Goauld/Gravship/WNG_GoauldSmallSublightDrive_north.png"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - name: Derive cardinal sprites from approved north master
+        run: python .github/artgen/finalize_goauld_small_drive.py
+      - name: Commit finalized drive family
+        shell: bash
+        run: |
+          git add Textures/Things/Building/Goauld/Gravship/WNG_GoauldSmallSublightDrive*.png
+          if git diff --cached --quiet; then
+            echo "Drive family already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Finalize Goa'uld small sublight drive art"
+          git push
