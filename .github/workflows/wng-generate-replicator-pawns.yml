@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - ".github/artgen/generate_replicator_pawns.py"
+      - ".github/artgen/assets/replicator_master.png"
       - ".github/workflows/wng-generate-replicator-pawns.yml"
   workflow_dispatch:
 
