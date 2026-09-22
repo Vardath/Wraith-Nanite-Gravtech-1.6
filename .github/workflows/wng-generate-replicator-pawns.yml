@@ -1,0 +1,46 @@
+name: WNG Generate Replicator Pawn Art
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artgen/generate_replicator_pawns.py"
+      - ".github/workflows/wng-generate-replicator-pawns.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - name: Generate block-form Replicator directional families
+        run: python .github/artgen/generate_replicator_pawns.py
+      - name: Commit generated pawn families
+        shell: bash
+        run: |
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorArtillery*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorBulwark*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorBurrower*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorController*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorDrone*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorHunter*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorRepairer*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorSiegeMass*.png
+          git add Textures/Things/Pawn/Replicator/WNG_ReplicatorTitan*.png
+          if git diff --cached --quiet; then
+            echo "Replicator pawn art already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Upgrade block-form Replicator pawn art"
+          git push
