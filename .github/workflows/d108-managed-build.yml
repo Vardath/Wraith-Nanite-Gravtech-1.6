@@ -1,4 +1,4 @@
-name: D108 Managed Build and Playtest Package
+name: D108 Release Build
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           echo "Managed assembly:"
           ls -lh Assemblies/WraithNaniteGravtech.dll
 
-      - name: Build installable playtest ZIP
+      - name: Build installable release ZIP
         shell: bash
         run: |
           python3 - <<'PY'
@@ -39,27 +39,40 @@ jobs:
           import shutil
 
           root = Path('.')
-          stage = Path('playtest-stage/Wraith-Nanite-Gravtech')
+          stage = Path('release-stage/Wraith-Nanite-Gravtech')
           stage.mkdir(parents=True, exist_ok=True)
-          excluded = {'.git', '.github', 'Source', 'playtest-stage'}
-          for entry in root.iterdir():
-              if entry.name in excluded:
-                  continue
-              target = stage / entry.name
-              if entry.is_dir():
-                  shutil.copytree(entry, target, dirs_exist_ok=True)
-              elif entry.is_file():
-                  shutil.copy2(entry, target)
-          PY
-          cd playtest-stage
-          zip -qr ../Wraith-Nanite-Gravtech-playtest.zip Wraith-Nanite-Gravtech
-          cd ..
-          unzip -l Wraith-Nanite-Gravtech-playtest.zip | grep 'Assemblies/WraithNaniteGravtech.dll'
 
-      - name: Upload playtest package
+          runtime_dirs = [
+              'About',
+              'Assemblies',
+              'Compatibility',
+              'Defs',
+              'Patches',
+              'Sounds',
+              'Textures',
+          ]
+          runtime_files = ['LoadFolders.xml']
+
+          for name in runtime_dirs:
+              src = root / name
+              if src.exists():
+                  shutil.copytree(src, stage / name, dirs_exist_ok=True)
+
+          for name in runtime_files:
+              src = root / name
+              if src.exists():
+                  shutil.copy2(src, stage / name)
+          PY
+          cd release-stage
+          zip -qr ../Wraith-Nanite-Gravtech-1.6-release.zip Wraith-Nanite-Gravtech
+          cd ..
+          unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll'
+          unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/About/About.xml'
+
+      - name: Upload release package
         uses: actions/upload-artifact@v4
         with:
-          name: Wraith-Nanite-Gravtech-playtest
-          path: Wraith-Nanite-Gravtech-playtest.zip
+          name: Wraith-Nanite-Gravtech-1.6-release
+          path: Wraith-Nanite-Gravtech-1.6-release.zip
           if-no-files-found: error
           retention-days: 14
