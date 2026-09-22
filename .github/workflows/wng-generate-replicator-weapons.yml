@@ -1,0 +1,41 @@
+name: WNG Generate Replicator Weapon Art
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/artgen/generate_replicator_weapons.py"
+      - ".github/workflows/wng-generate-replicator-weapons.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --disable-pip-version-check pillow
+      - name: Generate distinct Replicator weapon family
+        run: python .github/artgen/generate_replicator_weapons.py
+      - name: Commit generated weapon art
+        shell: bash
+        run: |
+          git add Textures/Things/Item/Weapon/Replicator/WNG_ReplicatorPulseCaster.png
+          git add Textures/Things/Item/Weapon/Replicator/WNG_ReplicatorArtilleryCaster.png
+          git add Textures/Things/Item/Weapon/Replicator/WNG_ReplicatorShieldDisruptor.png
+          git add Textures/Things/Projectile/WNG_ReplicatorShieldDisruptor.png
+          if git diff --cached --quiet; then
+            echo "Replicator weapon art already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Upgrade Replicator integrated weapon art"
+          git push
