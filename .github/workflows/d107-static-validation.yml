@@ -1786,8 +1786,8 @@ jobs:
                       failures.append(f'Faction interior floors regressed into gravship substructure semantics: {forbidden}')
 
           # Retained Asuran equipment plinth: ordinary low-profile furniture, not a powered
-          # archive, stockpile container, or reconstruction system. Dedicated art remains open;
-          # current clean precursor-console presentation is temporary.
+          # archive, stockpile container, or reconstruction system. It now owns dedicated
+          # settlement presentation rather than reusing the gravship pilot console.
           precursor_furniture = Path('Defs/ThingDefs/Furniture_Precursor.xml').read_text(encoding='utf-8')
           precursor_furniture_root = ET.fromstring(precursor_furniture)
           precursor_furniture_defs = {n.findtext('defName'): n for n in list(precursor_furniture_root) if n.findtext('defName')}
@@ -1805,8 +1805,8 @@ jobs:
                   failures.append('Asuran equipment plinth research gate regressed')
               if plinth.findtext('./costList/Plasteel') != '15':
                   failures.append('Asuran equipment plinth material cost regressed')
-              if plinth.findtext('./graphicData/texPath') != 'Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole':
-                  failures.append('Asuran equipment plinth temporary clean-art reuse changed before dedicated presentation replacement')
+              if plinth.findtext('./graphicData/texPath') != 'Things/Building/Precursor/Furniture/WNG_PrecursorStoragePlinth':
+                  failures.append('Asuran equipment plinth lost its dedicated settlement presentation')
               for forbidden in ('thingClass>Building_Storage', 'CompProperties_Storage', 'WNG_AsuranPatternArchive', 'WNG_NeuralInterface'):
                   if forbidden in ET.tostring(plinth, encoding='unicode'):
                       failures.append(f'Asuran equipment plinth gained unintended powered/storage semantics: {forbidden}')
