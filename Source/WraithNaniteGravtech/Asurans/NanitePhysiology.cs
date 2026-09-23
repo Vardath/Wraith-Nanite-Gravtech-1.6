@@ -103,6 +103,22 @@ namespace WraithNaniteGravtech
             Value = Math.Max(0f, Value - amount);
             return true;
         }
+
+        /// <summary>
+        /// Commits player-directed physical feedstock assimilation without letting the ordinary
+        /// Food-observer count the same synthetic meal a second time on its next sample.
+        /// </summary>
+        public void AddAssimilatedFeedstock(float foodLevelGain, float reserveGain)
+        {
+            Need_Food food = pawn?.needs?.food;
+            if (food != null && foodLevelGain > 0f)
+                food.CurLevel = Math.Min(food.MaxLevel, food.CurLevel + foodLevelGain);
+
+            if (reserveGain > 0f)
+                Value = Math.Min(Max, Value + reserveGain);
+
+            lastObservedFoodLevel = food?.CurLevel ?? -1f;
+        }
     }
 
     public sealed class GeneGizmo_Resource_NaniteReserve : GeneGizmo_Resource
