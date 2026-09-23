@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <!-- Retained Asuran/Precursor settlement structures. Current gravship graphics are temporary until professional structure art replaces them. -->
+  <!-- Retained Asuran/Precursor settlement structures with dedicated settlement presentation. -->
   <ThingDef ParentName="Wall">
     <defName>WNG_PrecursorWall</defName>
     <label>precursor wall</label>
-    <description>A seamless Asuran composite wall built from pale segmented field-bearing material. The current hull-derived presentation is provisional.</description>
+    <description>A seamless Asuran composite wall built from pale segmented field-bearing material, crossed by luminous field seams and reinforced corner nodes.</description>
     <graphicData Inherit="False">
-      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
+      <texPath>Things/Building/Precursor/Structure/WNG_PrecursorWall</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <linkType>CornerFiller</linkType>
       <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
@@ -29,9 +29,9 @@
   <ThingDef ParentName="DoorBase">
     <defName>WNG_PrecursorDoor</defName>
     <label>precursor iris door</label>
-    <description>A fast powered Asuran composite partition. Its current gravship-door presentation is provisional pending professional settlement art.</description>
+    <description>A fast powered Asuran composite iris partition using the same field-bearing architecture as precursor settlement walls.</description>
     <graphicData>
-      <texPath>Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor</texPath>
+      <texPath>Things/Building/Precursor/Structure/WNG_PrecursorDoor</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
       <damageData><enabled>false</enabled></damageData>
     </graphicData>
