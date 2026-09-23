@@ -6,6 +6,7 @@
     <label>precursor pulse rifle</label>
     <description>A precise high-energy rifle built around compact field accelerators and self-aligning emitter geometry. Its internals are maintained by precursor nanite systems.</description>
     <techLevel>Spacer</techLevel>
+    <equippedAngleOffset>180</equippedAngleOffset>
     <graphicData><texPath>Things/Item/Weapon/Precursor/WNG_PrecursorPulseRifle</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases>
       <WorkToMake>42000</WorkToMake><Mass>4.1</Mass>
