@@ -46,6 +46,7 @@
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>720</MaxHitPoints><WorkToBuild>700</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><ONAC_Naquadah>6</ONAC_Naquadah><Plasteel>12</Plasteel></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight><paintable>false</paintable></building>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
   </ThingDef>
