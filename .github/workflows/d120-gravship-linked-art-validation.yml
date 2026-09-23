@@ -67,17 +67,17 @@ jobs:
 
           
           linked_defs = [
-              ("WNG_GoauldGravshipHull", goauld, "Graphic_Single", "Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas"),
-              ("WNG_PrecursorGravshipHull", family, "Graphic_Single", "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas"),
-              ("WNG_OrganicGravshipHull", family, "Graphic_Single", "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas"),
-              ("WNG_GoauldPowerConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower", "Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas"),
-              ("WNG_GoauldFuelConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit", "Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas"),
-              ("WNG_AsuranPowerConduit", family, "WraithNaniteGravtech.Graphic_LinkedAsuranFamilyPower", "Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas"),
-              ("WNG_AsuranFuelConduit", family, "WraithNaniteGravtech.Graphic_LinkedAsuranFuelConduit", "Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas"),
-              ("WNG_WraithNeuralConduit", family, "WraithNaniteGravtech.Graphic_LinkedWraithFamilyPower", "Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas"),
-              ("WNG_WraithFuelConduit", family, "WraithNaniteGravtech.Graphic_LinkedWraithFuelConduit", "Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas"),
+              ("WNG_GoauldGravshipHull", goauld, "Graphic_Single", "Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure"),
+              ("WNG_PrecursorGravshipHull", family, "Graphic_Single", "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure"),
+              ("WNG_OrganicGravshipHull", family, "Graphic_Single", "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure"),
+              ("WNG_GoauldPowerConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower", "Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure"),
+              ("WNG_GoauldFuelConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit", "Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure"),
+              ("WNG_AsuranPowerConduit", family, "WraithNaniteGravtech.Graphic_LinkedAsuranFamilyPower", "Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure"),
+              ("WNG_AsuranFuelConduit", family, "WraithNaniteGravtech.Graphic_LinkedAsuranFuelConduit", "Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure"),
+              ("WNG_WraithNeuralConduit", family, "WraithNaniteGravtech.Graphic_LinkedWraithFamilyPower", "Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure"),
+              ("WNG_WraithFuelConduit", family, "WraithNaniteGravtech.Graphic_LinkedWraithFuelConduit", "Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas", "WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure"),
           ]
-          for name, defs, graphic_class, tex_path in linked_defs:
+          for name, defs, graphic_class, tex_path, worker in linked_defs:
               node = defs.get(name)
               if node is None:
                   failures.append(f"{name} missing")
@@ -88,8 +88,9 @@ jobs:
                   failures.append(f"{name} no longer points at the approved linked atlas")
               if node.findtext("./graphicData/drawSize") != "(1,1)":
                   failures.append(f"{name} drawSize is no longer tile-aligned at (1,1)")
-              if node.findtext("terrainAffordanceNeeded") != "Substructure":
-                  failures.append(f"{name} no longer requires Odyssey Substructure")
+              workers = [x.text for x in node.findall("./placeWorkers/li")]
+              if worker not in workers:
+                  failures.append(f"{name} lost its same-family gravship-substructure placement worker")
 
           atlases = [
               "Textures/Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas.png",
