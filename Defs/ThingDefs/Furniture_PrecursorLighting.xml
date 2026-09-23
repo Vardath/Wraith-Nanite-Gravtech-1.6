@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <!-- Retained Precursor lighting; existing Precursor system art is a temporary visual placeholder. -->
+  <!-- Dedicated Asuran/Precursor settlement lighting. -->
   <ThingDef ParentName="LampBase">
     <defName>WNG_PrecursorLumen</defName>
     <label>precursor lumen</label>
-    <description>A compact field-driven precursor light source. The current housing visual is provisional pending professional art replacement.</description>
-    <graphicData><texPath>Things/Building/Precursor/Gravship/WNG_AsuranSignalJammer</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(0.8,0.8)</drawSize></graphicData>
+    <description>A compact field-driven precursor lumen with a faceted composite housing and a contained cyan light core.</description>
+    <graphicData><texPath>Things/Building/Precursor/Furniture/WNG_PrecursorLumen</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(0.8,0.8)</drawSize></graphicData>
     <designationCategory>Furniture</designationCategory>
     <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
     <costList><Plasteel>6</Plasteel><Steel>8</Steel><ComponentIndustrial>1</ComponentIndustrial></costList>
@@ -20,9 +20,9 @@
   <ThingDef ParentName="LampBase">
     <defName>WNG_PrecursorWallLumen</defName>
     <label>precursor wall lumen</label>
-    <description>A compact precursor field light intended for wall-adjacent placement. The current housing visual is provisional pending professional art replacement.</description>
+    <description>A slim wall-mounted precursor lumen that projects a controlled field glow from a faceted composite housing.</description>
     <rotatable>true</rotatable>
-    <graphicData><texPath>Things/Building/Precursor/Gravship/WNG_AsuranSignalJammer</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(0.65,0.65)</drawSize></graphicData>
+    <graphicData><texPath>Things/Building/Precursor/Furniture/WNG_PrecursorWallLumen</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(0.65,0.65)</drawSize></graphicData>
     <designationCategory>Furniture</designationCategory>
     <researchPrerequisites><li>WNG_PrecursorFabrication</li></researchPrerequisites>
     <costList><Plasteel>4</Plasteel><Steel>6</Steel></costList>
