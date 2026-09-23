@@ -2573,6 +2573,39 @@ jobs:
           if '<apparelMoney>2500~4500</apparelMoney>' in human_form_kinds or '<apparelMoney>3200~5200</apparelMoney>' in human_form_kinds:
               failures.append('D117 Asuran random apparel budget returned')
 
+          # Live 2026-09-23 playtest log regressions: linked walls, Replicator salvage XML and ambient sound.
+          live_wraith_infra = Path('Defs/ThingDefs/Things_WraithPlayerInfrastructure.xml').read_text(encoding='utf-8')
+          live_precursor_structures = Path('Defs/ThingDefs/Things_PrecursorStructures.xml').read_text(encoding='utf-8')
+          for label, live_wall_text in (
+              ('Wraith living wall', live_wraith_infra),
+              ('Precursor wall', live_precursor_structures),
+          ):
+              if '<graphicClass>Graphic_Appearances</graphicClass>' in live_wall_text:
+                  failures.append(f'{label} returned to stuff-dependent Graphic_Appearances and will NullRef when printed')
+              if '<graphicClass>Graphic_Single</graphicClass>' not in live_wall_text or '<linkType>CornerFiller</linkType>' not in live_wall_text:
+                  failures.append(f'{label} lost the non-stuff linked-wall graphic contract')
+
+          live_rep_races = Path('Defs/ThingDefs/Races_Replicator.xml').read_text(encoding='utf-8')
+          for token in (
+              '<WNG_ReplicatorMatter>3</WNG_ReplicatorMatter>',
+              '<WNG_ReplicatorMatter>9</WNG_ReplicatorMatter>',
+              '<butcherProducts>',
+          ):
+              if token not in live_rep_races:
+                  failures.append(f'Replicator live-log salvage contract missing: {token}')
+          if '<thingDef>WNG_ReplicatorMatter</thingDef>' in live_rep_races:
+              failures.append('Replicator killedLeavings regressed to nested ThingDefCountClass XML that produced WNG_ReplicatorMatter3/9 cross-reference errors')
+
+          live_toy_race = Path('Defs/ThingDefs/Race_ChildsToy.xml').read_text(encoding='utf-8')
+          if '<butcherProducts>' not in live_toy_race or '<WNG_ReplicatorMatter>1</WNG_ReplicatorMatter>' not in live_toy_race:
+              failures.append("Child's Toy mech salvage metadata regressed; RimWorld will report missing butcher products")
+
+          live_sounds = Path('Defs/SoundDefs/Sounds_WNG_Fresh.xml').read_text(encoding='utf-8')
+          dart_sound_start = live_sounds.find('<defName>WNG_WraithDartDrive</defName>')
+          dart_sound_end = live_sounds.find('</SoundDef>', dart_sound_start)
+          if dart_sound_start < 0 or dart_sound_end < 0 or '<sustain>true</sustain>' not in live_sounds[dart_sound_start:dart_sound_end]:
+              failures.append('WNG_WraithDartDrive is no longer a sustainer even though AmbientSound spawns it as one')
+
           if failures:
               print('\nVALIDATION FAILURES:')
               for failure in failures:
