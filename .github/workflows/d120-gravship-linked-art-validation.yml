@@ -65,7 +65,7 @@ jobs:
               "Textures/Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas.png",
           ]
 
-          # MaterialAtlasPool indexes 0..15 from the image BOTTOM row upward:
+          # MaterialAtlasPool indexes 0..15 from the image BOTTOM row upward; the repair is direction-aware:
           # Up=1, Right=2, Down=4, Left=8.  Check the four one-direction
           # variants and the all-directions variant against the actual alpha at the
           # cropped submaterial boundaries used by RimWorld.
