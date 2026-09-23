@@ -65,6 +65,26 @@
     </xenotypeSet>
     <combatPower>180</combatPower>
     <isFighter>true</isFighter>
+    <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
+    <initialWillRange>0~0</initialWillRange>
+    <initialResistanceRange>0~0</initialResistanceRange>
+    <backstoryFiltersOverride>
+      <li><categories><li>AsuranOrigin</li><li>AsuranHumanFormAdult</li></categories></li>
+    </backstoryFiltersOverride>
+  </PawnKindDef>
+
+  <!-- Covert human-form body: uses ordinary-looking cover clothing rather than the visible Asuran uniform. -->
+  <PawnKindDef ParentName="WNG_NaniteHumanoidBase">
+    <defName>WNG_HumanFormInfiltrator</defName>
+    <label>human-form traveller</label>
+    <xenotypeSet>
+      <xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances>
+    </xenotypeSet>
+    <combatPower>160</combatPower>
+    <isFighter>true</isFighter>
+    <apparelMoney>180~420</apparelMoney>
+    <apparelTags><li>IndustrialBasic</li></apparelTags>
+    <apparelAllowHeadgearChance>0.30</apparelAllowHeadgearChance>
     <initialWillRange>0~0</initialWillRange>
     <initialResistanceRange>0~0</initialResistanceRange>
     <backstoryFiltersOverride>
@@ -81,6 +101,7 @@
     </xenotypeSet>
     <combatPower>180</combatPower>
     <isFighter>true</isFighter>
+    <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <initialWillRange>0~0</initialWillRange>
     <initialResistanceRange>0~0</initialResistanceRange>
     <backstoryFiltersOverride>
@@ -97,6 +118,7 @@
     </xenotypeSet>
     <combatPower>120</combatPower>
     <isFighter>false</isFighter>
+    <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <initialWillRange>0~0</initialWillRange>
     <initialResistanceRange>0~0</initialResistanceRange>
   </PawnKindDef>
@@ -111,6 +133,7 @@
     <allowOldAgeInjuries>false</allowOldAgeInjuries>
     <combatPower>55</combatPower>
     <isFighter>false</isFighter>
+    <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <apparelMoney>0</apparelMoney>
     <weaponMoney>0</weaponMoney>
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
