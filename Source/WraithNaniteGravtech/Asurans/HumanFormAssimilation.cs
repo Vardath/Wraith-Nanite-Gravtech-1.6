@@ -146,6 +146,7 @@ namespace WraithNaniteGravtech
         private const string ReplicatorMatterDefName = "WNG_ReplicatorMatter";
         private const string ReplicatorCoreFragmentDefName = "WNG_ReplicatorCoreFragment";
         private const string EmpDisruptionDefName = "WNG_NaniteEMPDisruption";
+        private const string QueenChildKindDefName = "WNG_ReplicatorQueenChild";
 
         public static bool CanConsume(Pawn caster, LocalTargetInfo target, out string reason, bool requireTouch = false)
         {
@@ -196,6 +197,15 @@ namespace WraithNaniteGravtech
                     return false;
                 }
 
+                // The Queen's recovered child-form body keeps the non-violent feedstock function,
+                // but does not gain adult-scale structural assimilation. It may consume loose
+                // items and plants, never buildings/natural rock or map substrate.
+                if (IsRestrictedChildForm(caster) && thing.def.category == ThingCategory.Building)
+                {
+                    reason = "This child-form nanite body can assimilate loose matter and plants, but not structural mass.";
+                    return false;
+                }
+
                 if (requireTouch && !caster.Position.AdjacentTo8WayOrInside(thing.Position))
                 {
                     reason = "The material is no longer within assimilation range.";
@@ -203,6 +213,12 @@ namespace WraithNaniteGravtech
                 }
 
                 return true;
+            }
+
+            if (IsRestrictedChildForm(caster))
+            {
+                reason = "This child-form nanite body cannot assimilate roof, floor, or ground layers.";
+                return false;
             }
 
             IntVec3 cell = target.Cell;
@@ -265,13 +281,19 @@ namespace WraithNaniteGravtech
                     return false;
             }
 
+            if (map.roofGrid.Roofed(cell))
+                return true;
+
+            if (map.terrainGrid.CanRemoveTopLayerAt(cell))
+                return true;
+
             TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
             bool isVoid = terrain == null ||
                           string.Equals(terrain.defName, "Space", StringComparison.OrdinalIgnoreCase);
 
-            return map.roofGrid.Roofed(cell) ||
-                   map.terrainGrid.CanRemoveTopLayerAt(cell) ||
-                   !isVoid;
+            // Gravel is the terminal stripped-ground state. Treating it as consumable would let
+            // repeated casts generate free Food/Nanite Reserve without removing any matter.
+            return !isVoid && terrain != TerrainDefOf.Gravel;
         }
 
         public static bool TryConsumeSubstrate(Pawn caster, IntVec3 cell)
@@ -282,30 +304,44 @@ namespace WraithNaniteGravtech
             Map map = caster.Map;
             try
             {
+                // One cast consumes exactly one physical substrate layer. A roof over a floor is
+                // therefore two separate feedstock actions rather than one cast deleting both.
                 if (map.roofGrid.Roofed(cell))
+                {
                     map.roofGrid.SetRoof(cell, null);
+                    FilthMaker.RemoveAllFilth(cell, map);
+                    return true;
+                }
 
                 if (map.terrainGrid.CanRemoveTopLayerAt(cell))
                 {
                     map.terrainGrid.RemoveTopLayer(cell, doLeavings: false);
-                }
-                else
-                {
-                    TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
-                    bool isVoid = terrain == null ||
-                                  string.Equals(terrain.defName, "Space", StringComparison.OrdinalIgnoreCase);
-                    if (!isVoid && terrain != TerrainDefOf.Gravel)
-                        map.terrainGrid.SetTerrain(cell, TerrainDefOf.Gravel);
+                    FilthMaker.RemoveAllFilth(cell, map);
+                    return true;
                 }
 
-                FilthMaker.RemoveAllFilth(cell, map);
-                return true;
+                TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
+                bool isVoid = terrain == null ||
+                              string.Equals(terrain.defName, "Space", StringComparison.OrdinalIgnoreCase);
+                if (!isVoid && terrain != TerrainDefOf.Gravel)
+                {
+                    map.terrainGrid.SetTerrain(cell, TerrainDefOf.Gravel);
+                    FilthMaker.RemoveAllFilth(cell, map);
+                    return true;
+                }
+
+                return false;
             }
             catch (Exception ex)
             {
                 Log.Error("[WNG] Human-form substrate assimilation failed: " + ex);
                 return false;
             }
+        }
+
+        private static bool IsRestrictedChildForm(Pawn caster)
+        {
+            return caster?.kindDef?.defName == QueenChildKindDefName;
         }
 
         public static float EffectiveMass(Thing thing)
