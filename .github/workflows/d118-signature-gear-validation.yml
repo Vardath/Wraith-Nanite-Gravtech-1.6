@@ -1,0 +1,89 @@
+name: D118 Signature Gear Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  signature-gear:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate WNG signature gear retention
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          failures = []
+
+          source_path = Path("Source/WraithNaniteGravtech/Equipment/WNGSignatureGearRetention.cs")
+          if not source_path.exists():
+              failures.append("signature gear retention MapComponent is missing")
+          else:
+              source = source_path.read_text(encoding="utf-8")
+              for label, needle in (
+                  ("spawn retention window", "SpawnRetentionTicks"),
+                  ("native forced apparel", "forcedHandler?.SetForced"),
+                  ("dropped apparel recovery", "pawn.apparel.Wear"),
+                  ("dropped weapon recovery", "pawn.equipment.AddEquipment"),
+                  ("weapon tag matching", "candidateTags"),
+                  ("save/load first-seen state", "Scribe_Collections.Look"),
+              ):
+                  if needle not in source:
+                      failures.append(f"signature gear retention lost {label}")
+
+          human_root = ET.parse("Defs/PawnKindDefs/PawnKinds_HumanForm.xml").getroot()
+          human = {n.findtext("defName"): n for n in list(human_root) if n.findtext("defName")}
+
+          for name in ("WNG_PrecursorEngineer", "WNG_HumanFormReplicator", "WNG_PlayerHumanFormReplicator"):
+              node = human.get(name)
+              if node is None:
+                  failures.append(f"{name} missing")
+                  continue
+              if node.findtext("./weaponTags/li") != "WNG_PrecursorWeapon":
+                  failures.append(f"{name} lost Precursor spawn weapon tag")
+              if not node.findtext("weaponMoney"):
+                  failures.append(f"{name} lost spawn weapon budget")
+
+          infiltrator = human.get("WNG_HumanFormInfiltrator")
+          if infiltrator is None:
+              failures.append("WNG_HumanFormInfiltrator missing")
+          elif infiltrator.findtext("./weaponTags/li") == "WNG_PrecursorWeapon":
+              failures.append("covert infiltrator unexpectedly received visible Precursor weapon loadout")
+
+          queen_child = human.get("WNG_ReplicatorQueenChild")
+          if queen_child is None or queen_child.findtext("weaponMoney") != "0":
+              failures.append("Replicator Queen child lost no-weapon rule")
+
+          wraith_root = ET.parse("Defs/PawnKindDefs/PawnKinds_Wraith.xml").getroot()
+          wraith = {n.findtext("defName"): n for n in list(wraith_root) if n.findtext("defName")}
+          expected = {
+              "WNG_WraithHunter": "WNG_WraithHunterCoat",
+              "WNG_WraithWarrior": "WNG_WraithWarriorCarapace",
+              "WNG_WraithCommander": "WNG_WraithCommanderCarapace",
+              "WNG_WraithKeeper": "WNG_WraithKeeperMantle",
+              "WNG_WraithQueen": "WNG_WraithQueenRaiment",
+              "WNG_PlayerWraithHunter": "WNG_WraithHunterCoat",
+          }
+          for name, apparel in expected.items():
+              node = wraith.get(name)
+              if node is None:
+                  failures.append(f"{name} missing")
+                  continue
+              required = [x.text for x in node.findall("./apparelRequired/li")]
+              tags = [x.text for x in node.findall("./weaponTags/li")]
+              if apparel not in required:
+                  failures.append(f"{name} lost required caste apparel {apparel}")
+              if not tags:
+                  failures.append(f"{name} lost Wraith spawn weapon tags")
+
+          if failures:
+              print("SIGNATURE GEAR VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("WNG signature gear validation passed.")
