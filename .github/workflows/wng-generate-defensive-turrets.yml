@@ -1,0 +1,35 @@
+name: WNG Generate Defensive Turrets
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/artgen/generate_wng_defensive_turrets.py"
+      - ".github/workflows/wng-generate-defensive-turrets.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Generate defensive turret art
+        run: python .github/artgen/generate_wng_defensive_turrets.py
+      - name: Commit generated art
+        run: |
+          if [ -z "$(git status --porcelain -- Textures/Things/Building/Defense/WNG)" ]
+          then
+            echo "No generated turret art changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Textures/Things/Building/Defense/WNG
+          git commit -m "Generate Wraith and Asuran defensive turret art"
+          git push origin HEAD:main
