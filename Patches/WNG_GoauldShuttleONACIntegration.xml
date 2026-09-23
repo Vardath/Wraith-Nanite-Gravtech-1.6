@@ -2,10 +2,6 @@
 <Patch>
   <Operation Class="PatchOperationSequence" MayRequire="idolord.onac">
     <operations>
-      <li Class="PatchOperationReplace">
-        <xpath>Defs/ThingDef[defName="WNG_AlkeshTransport"]/designationCategory</xpath>
-        <value><designationCategory>ONAC_Architect</designationCategory></value>
-      </li>
       <li Class="PatchOperationAdd">
         <xpath>Defs/ThingDef[defName="WNG_AlkeshTransport"]/costList</xpath>
         <value><ONAC_Naquadah>85</ONAC_Naquadah></value>
@@ -23,10 +19,6 @@
         <value><fuelGizmoLabel>Liquid Naquadria</fuelGizmoLabel></value>
       </li>
 
-      <li Class="PatchOperationReplace">
-        <xpath>Defs/ThingDef[defName="WNG_GoauldDeathGlider"]/designationCategory</xpath>
-        <value><designationCategory>ONAC_Architect</designationCategory></value>
-      </li>
       <li Class="PatchOperationAdd">
         <xpath>Defs/ThingDef[defName="WNG_GoauldDeathGlider"]/costList</xpath>
         <value><ONAC_Naquadah>55</ONAC_Naquadah></value>
