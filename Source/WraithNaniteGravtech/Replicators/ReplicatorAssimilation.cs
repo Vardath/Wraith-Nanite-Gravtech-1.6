@@ -48,10 +48,6 @@ namespace WraithNaniteGravtech
                 TemporaryAsuranIntrusionUtility.IsCommandSuppressed(pawn))
                 return false;
 
-            // Mature-swarm Controllers are coordination support bodies, not matter harvesters.
-            if (ReplicatorCoordinationUtility.IsController(pawn))
-                return false;
-
             if (pawn.Spawned && ReplicatorContainmentUtility.IsContained(pawn.Map, pawn.Position))
                 return false;
 
@@ -63,7 +59,7 @@ namespace WraithNaniteGravtech
             if (!CanAutonomouslyAssimilate(pawn) || target == null || target.Destroyed || !target.Spawned || target == pawn)
                 return false;
 
-            if (target is Pawn)
+            if (target is Pawn || target is Corpse)
                 return false;
 
             ThingDef def = target.def;
@@ -84,13 +80,13 @@ namespace WraithNaniteGravtech
             if (ReplicatorContainmentUtility.BlocksAssimilation(pawn, target))
                 return false;
 
-            // Phase 1 deliberately limits ordinary assimilation to physical items and artificial
-            // buildings. Plants/natural rock can be added later only after their yield semantics are
-            // explicitly decided, rather than inheriting old behavior by accident.
+            // Autonomous block Replicators consume the physical map before turning on biology:
+            // loose items, all buildings (including walls and natural rock), and plants are valid mass.
             if (def.category == ThingCategory.Item)
                 return target.stackCount > 0;
 
-            return def.category == ThingCategory.Building && def.building != null && !def.building.isNaturalRock;
+            return def.category == ThingCategory.Building ||
+                   def.category == ThingCategory.Plant;
         }
 
         /// <summary>
@@ -269,33 +265,17 @@ namespace WraithNaniteGravtech
                     return postureTarget;
             }
 
-            Thing item = GenClosest.ClosestThing_Global_Reachable(
+            // Final ecology search deliberately uses every spawned Thing. The validator keeps
+            // biological pawns/corpses out until the 95% map-consumption threshold while allowing
+            // plants, natural rock, constructed walls, loose items and every other physical target.
+            return GenClosest.ClosestThing_Global_Reachable(
                 pawn.Position,
                 pawn.Map,
-                pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver),
+                pawn.Map.listerThings.AllThings,
                 PathEndMode.Touch,
                 traverse,
                 radius,
                 validator);
-
-            Thing building = GenClosest.ClosestThing_Global_Reachable(
-                pawn.Position,
-                pawn.Map,
-                pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.BuildingArtificial),
-                PathEndMode.Touch,
-                traverse,
-                radius,
-                validator);
-
-            if (item == null)
-                return building;
-            if (building == null)
-                return item;
-
-            return pawn.Position.DistanceToSquared(item.Position) <=
-                   pawn.Position.DistanceToSquared(building.Position)
-                ? item
-                : building;
         }
 
         public static int CountHostileBlocks(Map map)
@@ -326,16 +306,26 @@ namespace WraithNaniteGravtech
                 : Math.Max(1, ext?.hostilePopulationCap ?? 120);
         }
 
-        public static bool HasPopulationRoom(Pawn parent, int offspringCount)
+        public static int AvailablePopulationSlots(Pawn parent, int requestedOffspring)
         {
             ReplicatorBlockExtension ext = ExtensionFor(parent);
-            if (parent?.Map == null || ext == null || offspringCount <= 0)
-                return false;
+            if (parent?.Map == null || ext == null || requestedOffspring <= 0)
+                return 0;
 
-            if (Faction.OfPlayer != null && parent.Faction != null && parent.Faction.HostileTo(Faction.OfPlayer))
-                return CountHostileBlocks(parent.Map) + offspringCount <= HostilePopulationCap(ext);
+            if (Faction.OfPlayer != null &&
+                parent.Faction != null &&
+                parent.Faction.HostileTo(Faction.OfPlayer))
+            {
+                int available = Math.Max(0, HostilePopulationCap(ext) - CountHostileBlocks(parent.Map));
+                return Math.Min(requestedOffspring, available);
+            }
 
-            return true;
+            return requestedOffspring;
+        }
+
+        public static bool HasPopulationRoom(Pawn parent, int offspringCount)
+        {
+            return AvailablePopulationSlots(parent, offspringCount) >= offspringCount;
         }
 
         public static bool TryCommitAssimilation(Pawn parent, Thing target)
@@ -348,11 +338,10 @@ namespace WraithNaniteGravtech
                 return false;
 
             int offspringCount = Math.Max(1, ext.assimilationOffspringCount);
-            if (!HasPopulationRoom(parent, offspringCount))
-                return false;
+            int offspringToSpawn = AvailablePopulationSlots(parent, offspringCount);
 
             PawnKindDef droneKind = DefDatabase<PawnKindDef>.GetNamedSilentFail(DroneKindDefName);
-            if (droneKind == null || parent.Map == null || parent.Faction == null)
+            if ((offspringToSpawn > 0 && droneKind == null) || parent.Map == null || parent.Faction == null)
                 return false;
 
             Map map = parent.Map;
@@ -362,19 +351,16 @@ namespace WraithNaniteGravtech
                 ReplicatorMaterialProfileUtility.GradeFromSource(target);
             bool consumedHighTierAsuranTechnology = IsHighTierAsuranTechnology(target);
             string consumedTechnologyLabel = consumedHighTierAsuranTechnology ? target.LabelCap : null;
-            List<Pawn> staged = new List<Pawn>(offspringCount);
+            List<Pawn> staged = new List<Pawn>(offspringToSpawn);
 
             try
             {
-                // Recheck the cap immediately before each placement. RimWorld is single-threaded, but
-                // multiple Replicator jobs can complete on adjacent ticks and must not leapfrog the cap.
-                for (int i = 0; i < offspringCount; i++)
+                // Population limits cap simultaneous bodies, not consumption. If the swarm is at
+                // its body cap, the target is still eaten and its mass is banked for later Drone creation.
+                for (int i = 0; i < offspringToSpawn; i++)
                 {
-                    if (!HasPopulationRoom(parent, offspringCount - staged.Count))
-                    {
-                        Rollback(staged);
-                        return false;
-                    }
+                    if (AvailablePopulationSlots(parent, 1) < 1)
+                        break;
 
                     Pawn child = PawnGenerator.GeneratePawn(droneKind, parent.Faction);
                     ReplicatorDomainUtility.CopyDomain(parent, child);
@@ -421,6 +407,13 @@ namespace WraithNaniteGravtech
                 {
                     Rollback(staged);
                     return false;
+                }
+
+                int deferredOffspring = Math.Max(0, offspringCount - staged.Count);
+                if (deferredOffspring > 0)
+                {
+                    map.GetComponent<MapComponent_ReplicatorConsumption>()
+                        ?.AddStoredCellMatter(deferredOffspring * MapComponent_ReplicatorConsumption.CellMatterPerDrone);
                 }
 
                 // Adaptation is post-commit knowledge. A learning/share failure must never roll back
@@ -533,15 +526,11 @@ namespace WraithNaniteGravtech
             if (!ReplicatorAssimilationUtility.CanAutonomouslyAssimilate(pawn))
                 return null;
 
-            ReplicatorBlockExtension ext = ReplicatorAssimilationUtility.ExtensionFor(pawn);
-            if (ext == null ||
-                !ReplicatorAssimilationUtility.HasPopulationRoom(
-                    pawn,
-                    Math.Max(1, ext.assimilationOffspringCount)))
-            {
+            if (ReplicatorAssimilationUtility.ExtensionFor(pawn) == null)
                 return null;
-            }
 
+            // The population cap limits simultaneous Replicator bodies, not appetite. At cap the
+            // swarm keeps stripping the map and banks consumed mass for later replacement Drones.
             Thing target = ReplicatorAssimilationUtility.FindClosestAssimilationTarget(pawn);
             if (target == null)
                 return null;
