@@ -24,7 +24,7 @@
     <graphicData>
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider</texPath>
-      <shaderType>CutoutComplex</shaderType><drawSize>(5,4)</drawSize>
+      <shaderType>CutoutComplex</shaderType><drawSize>(5.5,4.4)</drawSize>
       <shadowData><volume>(4.2,1,3.2)</volume><offset>(0,0,0)</offset></shadowData>
     </graphicData>
     <uiIconPath>Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider</uiIconPath>
