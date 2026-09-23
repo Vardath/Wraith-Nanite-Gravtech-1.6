@@ -1,0 +1,144 @@
+name: D124 Shuttle Geometry and Restoration Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  shuttles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate shuttle restoration and presentation scale
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          failures = []
+
+          def blocks(path):
+              text = Path(path).read_text(encoding="utf-8")
+              return text, re.findall(r"<ThingDef\b[\s\S]*?</ThingDef>", text)
+
+          scale_contracts = {
+              "Defs/ThingDefs/Shuttle_WraithDart.xml": {
+                  "WNG_WraithDartIncoming": ("3,5", "3.3,5.5"),
+                  "WNG_WraithDartLeaving": ("3,5", "3.3,5.5"),
+                  "WNG_WraithDartFlyover": ("3,5", "3.3,5.5"),
+              },
+              "Defs/ThingDefs/Shuttle_WraithStrikeCraft.xml": {
+                  "WNG_WraithStrikeCraftIncoming": ("4,6", "4.4,6.6"),
+                  "WNG_WraithStrikeCraftLeaving": ("4,6", "4.4,6.6"),
+                  "WNG_WraithStrikeCraft": ("4,6", "4.4,6.6"),
+              },
+              "Defs/ThingDefs/Shuttle_WraithCruiser.xml": {
+                  "WNG_WraithCruiserIncoming": ("5,7", "5.5,7.7"),
+                  "WNG_WraithCruiserLeaving": ("5,7", "5.5,7.7"),
+                  "WNG_WraithCruiser": ("5,7", "5.5,7.7"),
+              },
+              "Defs/ThingDefs/Shuttle_PuddleJumper.xml": {
+                  "WNG_PuddleJumperIncoming": ("3,5", "3.3,5.5"),
+                  "WNG_PuddleJumperLeaving": ("3,5", "3.3,5.5"),
+                  "WNG_PuddleJumper": ("3,5", "3.3,5.5"),
+              },
+              "Defs/ThingDefs/Shuttle_Goauld.xml": {
+                  "WNG_AlkeshIncoming": ("5,7", "5.5,7.7"),
+                  "WNG_AlkeshLeaving": ("5,7", "5.5,7.7"),
+                  "WNG_AlkeshBombingPass": ("5,7", "5.5,7.7"),
+                  "WNG_AlkeshTransport": ("5,7", "5.5,7.7"),
+                  "WNG_GoauldDeathGliderIncoming": ("5,4", "5.5,4.4"),
+                  "WNG_GoauldDeathGliderLeaving": ("5,4", "5.5,4.4"),
+                  "WNG_GoauldDeathGlider": ("5,4", "5.5,4.4"),
+              },
+              "Defs/ThingDefs/Shuttle_WraithStrategic_NPC.xml": {
+                  "WNG_WraithStrikeCraft_NPC": ("4,6", "4.4,6.6"),
+                  "WNG_WraithCruiser_NPC": ("5,7", "5.5,7.7"),
+              },
+              "Defs/ThingDefs/Shuttle_PuddleJumper_NPC.xml": {
+                  "WNG_PuddleJumper_NPC": ("3,5", "3.3,5.5"),
+              },
+              "Defs/ThingDefs/Shuttle_Goauld_NPC.xml": {
+                  "WNG_GoauldDeathGlider_NPC": ("5,4", "5.5,4.4"),
+              },
+          }
+
+          for path, expected in scale_contracts.items():
+              text, found_blocks = blocks(path)
+              by_name = {}
+              for block in found_blocks:
+                  m = re.search(r"<defName>([^<]+)</defName>", block)
+                  if m:
+                      by_name[m.group(1)] = block
+              for name, (footprint, draw) in expected.items():
+                  block = by_name.get(name)
+                  if block is None:
+                      failures.append(f"{name} missing from {path}")
+                      continue
+                  if f"<size>({footprint})</size>" not in block:
+                      failures.append(f"{name} footprint changed; expected ({footprint})")
+                  if f"<drawSize>({draw})</drawSize>" not in block:
+                      failures.append(f"{name} presentation scale changed; expected ({draw})")
+
+          # Wraith Dart's landed/player/NPC defs inherit the shared 3x5 base.
+          dart_text = Path("Defs/ThingDefs/Shuttle_WraithDart.xml").read_text(encoding="utf-8")
+          dart_base_start = dart_text.find('Name="WNG_WraithDartBase"')
+          dart_base_end = dart_text.find("</ThingDef>", dart_base_start)
+          dart_base = dart_text[dart_base_start:dart_base_end]
+          for token in ("<size>(3,5)</size>", "<drawSize>(3.3,5.5)</drawSize>",
+                        "<defName>WNG_WraithDart</defName>", "<defName>WNG_WraithDart_NPC</defName>"):
+              if token not in dart_text if token.startswith("<defName>") else token not in dart_base:
+                  failures.append(f"Wraith Dart shared geometry/identity contract missing: {token}")
+
+          # Actual Al'kesh must remain a real buildable landed craft, not merely skyfaller names.
+          goauld = Path("Defs/ThingDefs/Shuttle_Goauld.xml").read_text(encoding="utf-8")
+          alkesh_required = (
+              "<defName>WNG_AlkeshTransport</defName>",
+              "<thingClass>Building_PassengerShuttle</thingClass>",
+              "<designationCategory>Misc</designationCategory>",
+              "<researchPrerequisites><li>WNG_GoauldShuttles</li></researchPrerequisites>",
+              "<defName>WNG_Ship_Alkesh</defName>",
+              "<shipThing>WNG_AlkeshTransport</shipThing>",
+              "<arrivingSkyfaller>WNG_AlkeshIncoming</arrivingSkyfaller>",
+              "<leavingSkyfaller>WNG_AlkeshLeaving</leavingSkyfaller>",
+              "<worldObject>WNG_AlkeshWorld</worldObject>",
+              "<defName>WNG_AlkeshBombingPass</defName>",
+              "CompProperties_Shuttle",
+              "CompProperties_Launchable",
+              "CompProperties_Transporter",
+              "CompProperties_Refuelable",
+              "CompProperties_GoauldAlkeshBombingRun",
+          )
+          for token in alkesh_required:
+              if token not in goauld:
+                  failures.append(f"Al'kesh restoration contract missing: {token}")
+          alkesh_start = goauld.find("<defName>WNG_AlkeshTransport</defName>")
+          alkesh_end = goauld.find("</ThingDef>", alkesh_start)
+          alkesh_block = goauld[alkesh_start:alkesh_end]
+          if "<neverBuildable>true</neverBuildable>" in alkesh_block:
+              failures.append("player Al'kesh regressed to neverBuildable")
+          if "<forceDebugSpawnable>false</forceDebugSpawnable>" in alkesh_block:
+              failures.append("player Al'kesh was hidden from normal build/spawn paths")
+
+          # Physical Death Glider sortie must keep the exact craft rather than proxying it.
+          death_source = Path("Source/WraithNaniteGravtech/Goauld/DeathGliderMission.cs").read_text(encoding="utf-8")
+          for token in ("TryBeginPhysicalPass", "innerContainer.TryAdd(craft)", "LandExactCraft",
+                        "WNG_GoauldDeathGliderAttackPass"):
+              if token not in death_source:
+                  failures.append(f"Death Glider physical-craft contract missing: {token}")
+
+          # Presentation scaling is Def-only: do not replace authored directional craft art.
+          art_generators = Path(".github/artgen/fix_ship_alpha.py").read_text(encoding="utf-8")
+          if "WNG_WraithStrikeCraft" in art_generators or "WNG_WraithCruiser" in art_generators:
+              failures.append("Step 7 must not auto-derive authored Wraith strategic craft facings")
+
+          if failures:
+              print("SHUTTLE VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("WNG shuttle restoration/scale validated: real Al'kesh, exact-craft attack paths, preserved footprints and 110% presentation scale.")
