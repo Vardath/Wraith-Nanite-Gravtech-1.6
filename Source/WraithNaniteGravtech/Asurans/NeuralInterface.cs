@@ -241,6 +241,7 @@ namespace WraithNaniteGravtech
                 CopyExactPattern(subject, copy);
                 LayerHumanFormNanites(copy);
                 StripGeneratedGear(copy);
+                AsuranDefaultApparelUtility.EnsureRoleApparel(copy);
 
                 // Physical placement is the transaction commit boundary. Resource debit follows
                 // successful placement; a debit race rolls the just-placed copy back immediately.
