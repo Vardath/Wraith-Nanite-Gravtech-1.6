@@ -23,7 +23,7 @@ jobs:
         run: python .github/artgen/generate_precursor_settlement_furniture.py
       - name: Commit generated art
         run: |
-          if git diff --quiet -- Textures/Things/Building/Precursor/Furniture
+          if [ -z "$(git status --porcelain -- Textures/Things/Building/Precursor/Furniture)" ]
           then
             echo "No generated furniture changes required."
             exit 0
