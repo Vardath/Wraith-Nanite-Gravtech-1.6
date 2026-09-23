@@ -2554,12 +2554,25 @@ jobs:
           architect_def = Path('Defs/DesignationCategoryDefs/WNG_Architect.xml').read_text(encoding='utf-8')
           architect_patch = Path('Patches/WNG_ArchitectMenu.xml').read_text(encoding='utf-8')
           goauld_routing = Path('Patches/WNG_GoauldArchitectRouting.xml').read_text(encoding='utf-8')
-          if '<defName>WNG_Architect</defName>' not in architect_def:
-              failures.append('D117 dedicated WNG Architect category is missing')
-          if 'starts-with(defName,"WNG_")' not in architect_patch or '<designationCategory>WNG_Architect</designationCategory>' not in architect_patch:
-              failures.append('D117 WNG Architect routing patch no longer gathers WNG-owned buildables')
+          architect_source = Path('Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs').read_text(encoding='utf-8')
+          for category in ('WNG_WraithArchitect', 'WNG_AsuranArchitect', 'WNG_GoauldArchitect'):
+              if f'<defName>{category}</defName>' not in architect_def:
+                  failures.append(f'WNG family Architect category missing: {category}')
+          if 'starts-with(defName,"WNG_")' in architect_patch or '<designationCategory>WNG_Architect</designationCategory>' in architect_patch:
+              failures.append('Obsolete blanket WNG Architect reroute returned')
           if '<designationCategory>ONAC_Architect</designationCategory>' in goauld_routing:
-              failures.append('D117 WNG-owned Goauld transport rings regressed back into the ONAC Architect category')
+              failures.append('WNG-owned Goauld transport rings regressed back into the ONAC Architect category')
+          for token in (
+              'resolvedDesignators',
+              'new Designator_Build(def)',
+              'WNG_WraithArchitect',
+              'WNG_AsuranArchitect',
+              'WNG_GoauldArchitect',
+              'Odyssey',
+              'def.designationCategory != null',
+          ):
+              if token not in architect_source:
+                  failures.append(f'WNG multi-category Architect routing contract missing: {token}')
 
           human_form_kinds = Path('Defs/PawnKindDefs/PawnKinds_HumanForm.xml').read_text(encoding='utf-8')
           for token in (
