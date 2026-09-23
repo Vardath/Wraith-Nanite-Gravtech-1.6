@@ -73,6 +73,7 @@
     <researchPrerequisites Inherit="False">
       <li>WNG_HiveGravshipArchitecture</li>
     </researchPrerequisites>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <building>
       <isAirtight>true</isAirtight>
@@ -829,6 +830,7 @@
     <researchPrerequisites Inherit="False">
       <li>WNG_AsuranGravshipArchitecture</li>
     </researchPrerequisites>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <building>
       <isAirtight>true</isAirtight>
