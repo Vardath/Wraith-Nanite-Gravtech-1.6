@@ -12,6 +12,7 @@
     <iconPath>UI/WNG/Genes/NaniteBody</iconPath>
     <geneClass>WraithNaniteGravtech.Gene_NaniteBody</geneClass>
     <foodPoisoningChanceFactor>0</foodPoisoningChanceFactor>
+    <abilities><li>WNG_HumanFormConsume</li></abilities>
     <disablesNeeds>
       <li>Rest</li>
       <li>Joy</li>
