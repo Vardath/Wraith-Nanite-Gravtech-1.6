@@ -39,6 +39,15 @@ jobs:
               ("WNG_GoauldVacBarrier", parity),
           ]
 
+          door_workers = {
+              "WNG_WraithGravshipDoor": "WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure",
+              "WNG_AsuranGravshipDoor": "WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure",
+              "WNG_GoauldGravshipDoor": "WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure",
+              "WNG_WraithVacuumMembrane": "WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure",
+              "WNG_AsuranVacBarrier": "WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure",
+              "WNG_GoauldVacBarrier": "WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure",
+          }
+
           for name, defs in door_sets:
               node = defs.get(name)
               if node is None:
@@ -52,6 +61,35 @@ jobs:
                   failures.append(f"{name} still inherits stuff terrain affordance")
               if node.findtext("terrainAffordanceNeeded") != "Substructure":
                   failures.append(f"{name} no longer explicitly requires Odyssey Substructure")
+              workers = [x.text for x in node.findall("./placeWorkers/li")]
+              if door_workers[name] not in workers:
+                  failures.append(f"{name} lost its same-family gravship-substructure placement worker")
+
+          
+          linked_defs = [
+              ("WNG_GoauldGravshipHull", goauld, "Graphic_Single", "Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas"),
+              ("WNG_AsuranGravshipHull", family, "Graphic_Single", "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas"),
+              ("WNG_WraithGravshipHull", family, "Graphic_Single", "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas"),
+              ("WNG_GoauldPowerConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower", "Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas"),
+              ("WNG_GoauldFuelConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit", "Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas"),
+              ("WNG_AsuranPowerConduit", family, "WraithNaniteGravtech.Graphic_LinkedAsuranFamilyPower", "Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas"),
+              ("WNG_AsuranFuelConduit", family, "WraithNaniteGravtech.Graphic_LinkedAsuranFuelConduit", "Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas"),
+              ("WNG_WraithNeuralConduit", family, "WraithNaniteGravtech.Graphic_LinkedWraithFamilyPower", "Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas"),
+              ("WNG_WraithFuelConduit", family, "WraithNaniteGravtech.Graphic_LinkedWraithFuelConduit", "Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas"),
+          ]
+          for name, defs, graphic_class, tex_path in linked_defs:
+              node = defs.get(name)
+              if node is None:
+                  failures.append(f"{name} missing")
+                  continue
+              if node.findtext("./graphicData/graphicClass") != graphic_class:
+                  failures.append(f"{name} lost its intended linked rendering class")
+              if node.findtext("./graphicData/texPath") != tex_path:
+                  failures.append(f"{name} no longer points at the approved linked atlas")
+              if node.findtext("./graphicData/drawSize") != "(1,1)":
+                  failures.append(f"{name} drawSize is no longer tile-aligned at (1,1)")
+              if node.findtext("terrainAffordanceNeeded") != "Substructure":
+                  failures.append(f"{name} no longer requires Odyssey Substructure")
 
           atlases = [
               "Textures/Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas.png",
@@ -69,13 +107,15 @@ jobs:
           # Up=1, Right=2, Down=4, Left=8.  Check the four one-direction
           # variants and the all-directions variant against the actual alpha at the
           # cropped submaterial boundaries used by RimWorld.
+          direction_bits = (
+              (1, "up"),
+              (2, "right"),
+              (4, "down"),
+              (8, "left"),
+          )
           expected = {
-              0: set(),
-              1: {"up"},
-              2: {"right"},
-              4: {"down"},
-              8: {"left"},
-              15: {"up", "right", "down", "left"},
+              index: {name for bit, name in direction_bits if index & bit}
+              for index in range(16)
           }
 
           def edge_links(image, index):
