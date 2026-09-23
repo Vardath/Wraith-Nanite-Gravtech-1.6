@@ -887,18 +887,26 @@ jobs:
           if 'IsColonyMechPlayerControlled' in toy_thought:
               failures.append("Child's Toy thought uses the obsolete generic mech check instead of the current Toy overseer contract")
 
-          # Retained starvation biological assimilation (#55): environmental assimilation
-          # remains first priority; only autonomous hostile block forms may fall back to living prey.
+          # Full Replicator ecology: all autonomous block forms consume the physical map first.
+          # Biological predation is locked until at least 95% of initially consumable map cells are stripped.
           rep_bio = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorBiologicalPredation.cs').read_text(encoding='utf-8')
           rep_assim = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorAssimilation.cs').read_text(encoding='utf-8')
+          rep_env = Path('Source/WraithNaniteGravtech/Replicators/ReplicatorEnvironmentalAssimilation.cs').read_text(encoding='utf-8')
           rep_jobs = Path('Defs/JobDefs/Jobs_Replicator.xml').read_text(encoding='utf-8')
           rep_tree = Path('Defs/ThinkTreeDefs/ThinkTree_Replicator.xml').read_text(encoding='utf-8')
           for label, haystack, needle in (
-              ('canonical environmental target finder', rep_assim, 'FindClosestAssimilationTarget(Pawn pawn)'),
-              ('biological assimilation JobDef', rep_jobs, '<defName>WNG_ReplicatorAssimilateBiological</defName>'),
-              ('biological assimilation driver', rep_jobs, 'JobDriver_ReplicatorAssimilateBiological'),
-              ('environmental starvation gate', rep_bio, 'IsEnvironmentallyStarved'),
-              ('environment-first recheck', rep_bio, 'FindClosestAssimilationTarget(hunter) == null'),
+              ('canonical Thing target finder', rep_assim, 'FindClosestAssimilationTarget(Pawn pawn)'),
+              ('plant consumption', rep_assim, 'ThingCategory.Plant'),
+              ('natural rock/building consumption', rep_assim, 'ThingCategory.Building'),
+              ('all spawned Thing fallback', rep_assim, 'pawn.Map.listerThings.AllThings'),
+              ('substrate assimilation JobDef', rep_jobs, '<defName>WNG_ReplicatorAssimilateCell</defName>'),
+              ('substrate assimilation driver', rep_jobs, 'JobDriver_ReplicatorAssimilateCell'),
+              ('map consumption component', rep_env, 'MapComponent_ReplicatorConsumption'),
+              ('95 percent biological threshold', rep_env, 'BiologicalPredationThreshold = 0.95f'),
+              ('roof consumption', rep_env, 'map.roofGrid.SetRoof(cell, null)'),
+              ('floor removal', rep_env, 'map.terrainGrid.RemoveTopLayer(cell, doLeavings: false)'),
+              ('ground stripping fallback', rep_env, 'map.terrainGrid.SetTerrain(cell, TerrainDefOf.Gravel)'),
+              ('biological threshold gate', rep_bio, 'consumption?.BiologicalPredationUnlocked == true'),
               ('player-faction exclusion', rep_bio, 'hunter.Faction.HostileTo(Faction.OfPlayer)'),
               ('current nanite synthetic identity', rep_bio, 'AsuranCollectiveUtility.IsNaniteSynthetic'),
               ('same-faction prey exclusion', rep_bio, 'prey.Faction == hunter.Faction'),
@@ -906,8 +914,7 @@ jobs:
               ('downed conversion requirement', rep_bio, 'requireDowned: true'),
               ('living hunt melee job', rep_bio, 'JobDefOf.AttackMelee'),
               ('one-or-two prey yield', rep_bio, 'Math.Max(1, Math.Min(2, requestedChildren))'),
-              ('whole-block cap', rep_bio, 'ReplicatorAssimilationUtility.HostilePopulationCap'),
-              ('hostile block population count', rep_bio, 'ReplicatorAssimilationUtility.CountHostileBlocks'),
+              ('shared body-cap utility', rep_bio, 'ReplicatorAssimilationUtility.AvailablePopulationSlots'),
               ('exact Drone offspring', rep_bio, 'PawnGenerator.GeneratePawn'),
               ('controller-domain inheritance', rep_bio, 'ReplicatorDomainUtility.CopyDomain'),
               ('temporary-Asuran state inheritance', rep_bio, 'TemporaryAsuranIntrusionUtility.CopyState'),
@@ -917,23 +924,48 @@ jobs:
               ('consumed corpse cleanup', rep_bio, 'corpse.Destroy(DestroyMode.Vanish)'),
           ):
               if needle not in haystack:
-                  failures.append(f'Replicator biological-predation contract missing: {label}')
+                  failures.append(f'Replicator full-ecology contract missing: {label}')
           env_node = '<li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />'
+          cell_node = '<li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateCell" />'
           downed_node = '<li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />'
           hunt_node = '<li Class="WraithNaniteGravtech.JobGiver_ReplicatorBiologicalHunt" />'
-          if rep_tree.count(env_node) != 3 or rep_tree.count(downed_node) != 3 or rep_tree.count(hunt_node) != 3:
-              failures.append('Replicator biological starvation nodes are not present exactly in the three current assimilating ThinkTrees')
+          if rep_tree.count(env_node) != 4 or rep_tree.count(cell_node) != 4 or rep_tree.count(downed_node) != 4 or rep_tree.count(hunt_node) != 4:
+              failures.append('Replicator full ecology nodes are not present exactly in all four autonomous block ThinkTrees')
           for chunk in rep_tree.split('<ThinkTreeDef>')[1:]:
               if downed_node in chunk or hunt_node in chunk:
-                  if env_node not in chunk or not (chunk.find(env_node) < chunk.find(downed_node) < chunk.find(hunt_node)):
-                      failures.append('Replicator ThinkTree no longer preserves environmental -> downed-biological -> living-hunt priority')
-          controller_chunk = rep_tree.split('<defName>WNG_ReplicatorController</defName>', 1)[1].split('</ThinkTreeDef>', 1)[0] if '<defName>WNG_ReplicatorController</defName>' in rep_tree else ''
-          if downed_node in controller_chunk or hunt_node in controller_chunk:
-              failures.append('Replicator Controller incorrectly gained starvation biological predation')
+                  if env_node not in chunk or cell_node not in chunk or not (chunk.find(env_node) < chunk.find(cell_node) < chunk.find(downed_node) < chunk.find(hunt_node)):
+                      failures.append('Replicator ThinkTree no longer preserves Thing -> substrate -> downed-biological -> living-hunt priority')
           if 'WNG_ReplicatorMatter' in rep_bio:
-              failures.append('Biological predation creates/owns Replicator Matter instead of bounded exact Drone offspring')
+              failures.append('Biological predation creates/owns loose Replicator Matter instead of exact/banked body mass')
           if 'Faction.OfPlayer' not in rep_bio:
               failures.append('Biological predation lost its explicit player-control boundary')
+
+          # Playtest regressions caught after the rebuild audits: childhood feeding, Asuran clothing
+          # persistence, reconstruction clothing, and held precursor-rifle orientation.
+          wraith_genes = Path('Defs/GeneDefs/Genes_Wraith.xml').read_text(encoding='utf-8')
+          human_form_kinds = Path('Defs/PawnKindDefs/PawnKinds_HumanForm.xml').read_text(encoding='utf-8')
+          default_apparel = Path('Source/WraithNaniteGravtech/Asurans/AsuranDefaultApparel.cs').read_text(encoding='utf-8')
+          neural_interface = Path('Source/WraithNaniteGravtech/Asurans/NeuralInterface.cs').read_text(encoding='utf-8')
+          pattern_archive = Path('Source/WraithNaniteGravtech/Asurans/AsuranPatternArchive.cs').read_text(encoding='utf-8')
+          precursor_rifle = Path('Defs/ThingDefs/Weapons_PrecursorCore.xml').read_text(encoding='utf-8')
+          recovered_rifle = Path('Defs/ThingDefs/Weapons_RecoveredPrecursor.xml').read_text(encoding='utf-8')
+          if '<minAgeActive>13</minAgeActive>' not in wraith_genes:
+              failures.append('Wraith Life Force still disables ordinary food before age 13')
+          for token in (
+              '<li>WNG_HumanFormUniform</li>',
+              '<li>WNG_PrecursorFieldArmor</li>',
+              '<li>WNG_PrecursorCommandArmor</li>',
+              '<defName>WNG_HumanFormInfiltrator</defName>',
+          ):
+              if token not in human_form_kinds:
+                  failures.append(f'Asuran deterministic apparel/cover contract missing: {token}')
+          for haystack, label in ((neural_interface, 'Neural Interface'), (pattern_archive, 'Pattern Archive')):
+              if 'AsuranDefaultApparelUtility.EnsureRoleApparel(copy)' not in haystack:
+                  failures.append(f'{label} reconstruction can still leave Asurans naked')
+          if '<equippedAngleOffset>180</equippedAngleOffset>' not in precursor_rifle:
+              failures.append('Precursor pulse rifle held orientation regression returned')
+          if '<equippedAngleOffset>180</equippedAngleOffset>' not in recovered_rifle:
+              failures.append('Recovered precursor pulse rifle held orientation regression returned')
 
           # Wraith anti-Asuran existential response (#56): synthetic nanite humanoids are
           # strategic replication threats to Sable/Cinder, not feeding/culling targets.
@@ -1454,7 +1486,8 @@ jobs:
               ('emergency posture before high-tier tech', rep_assim, 'Immediate survival doctrine outranks high-value technology'),
               ('high-tier #65 priority retained', rep_assim, 'Predicate<Thing> highTierValidator'),
               ('non-emergency posture after high-tier tech', rep_assim, 'preserve #65\'s high-tier Asuran'),
-              ('natural-rock exclusion retained', rep_assim, '!def.building.isNaturalRock'),
+              ('natural rock and wall consumption', rep_assim, 'def.category == ThingCategory.Building'),
+              ('plant consumption', rep_assim, 'def.category == ThingCategory.Plant'),
           ):
               if needle not in haystack:
                   failures.append(f'Replicator swarm-posture contract missing: {label}')
