@@ -11,10 +11,9 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Starvation fallback for autonomous hostile block Replicators.
     ///
-    /// Environmental items/buildings remain authoritative first food through
-    /// ReplicatorAssimilationUtility.FindClosestAssimilationTarget. Only when that canonical search
-    /// returns no reachable target may an uncontrolled hostile block hunt living prey. Player-owned
-    /// or command-suppressed bodies never enter this branch.
+    /// The physical map remains authoritative first food. Living prey is hard-locked until the
+    /// map-scoped consumption tracker confirms that at least 95% of the initially consumable
+    /// environment has been stripped. Player-owned or command-suppressed bodies never enter this branch.
     /// </summary>
     public static class ReplicatorBiologicalPredationUtility
     {
