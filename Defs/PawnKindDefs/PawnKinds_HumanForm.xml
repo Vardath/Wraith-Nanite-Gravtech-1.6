@@ -23,6 +23,8 @@
     <label>precursor engineer</label>
     <combatPower>110</combatPower>
     <isFighter>false</isFighter>
+    <weaponMoney>1005~1400</weaponMoney>
+    <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <backstoryFiltersOverride>
       <li><categories><li>AsuranOrigin</li><li>AsuranEngineerAdult</li></categories></li>
@@ -65,6 +67,8 @@
     </xenotypeSet>
     <combatPower>180</combatPower>
     <isFighter>true</isFighter>
+    <weaponMoney>1005~1600</weaponMoney>
+    <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <initialWillRange>0~0</initialWillRange>
     <initialResistanceRange>0~0</initialResistanceRange>
@@ -101,6 +105,8 @@
     </xenotypeSet>
     <combatPower>180</combatPower>
     <isFighter>true</isFighter>
+    <weaponMoney>1005~1600</weaponMoney>
+    <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <initialWillRange>0~0</initialWillRange>
     <initialResistanceRange>0~0</initialResistanceRange>
