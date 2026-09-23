@@ -2,12 +2,12 @@
 <Defs>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithCruiserIncoming</defName><label>Wraith cruiser (incoming)</label><thingClass>PassengerShuttleIncoming</thingClass>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithCruiser</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5,7)</drawSize></graphicData><size>(5,7)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithCruiser</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5.5,7.7)</drawSize></graphicData><size>(5,7)</size>
     <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>320</anticipationSoundTicks><ticksToImpactRange>260~330</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(5.5,7.5)</shadowSize></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithCruiserLeaving</defName><label>Wraith cruiser (leaving)</label><thingClass>PassengerShuttleLeaving</thingClass><rotatable>true</rotatable>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithCruiser</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5,7)</drawSize></graphicData><size>(5,7)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithCruiser</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5.5,7.7)</drawSize></graphicData><size>(5,7)</size>
     <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-55~-22</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(5.5,7.5)</shadowSize></skyfaller>
   </ThingDef>
   <WorldObjectDef ParentName="ShuttleWorldObjectBase"><defName>WNG_WraithCruiserWorld</defName><label>Wraith cruiser</label><description>A Wraith cruiser in native Odyssey world flight.</description><expandingIconTexture>UI/WNG/Build/WNG_WraithCruiser</expandingIconTexture><expandingIconDrawSize>1.1</expandingIconDrawSize></WorldObjectDef>
@@ -17,7 +17,7 @@
     <defName>WNG_WraithCruiser</defName><label>Wraith cruiser</label>
     <description>A medium Wraith cruiser organism grown for long-range assault and troop transport. It is the heaviest shuttle-scale Wraith craft before a true Hive gravship, with deep bio-fluid organs and sustained living-hull repair from carried Biomass.</description>
     <thingClass>Building_PassengerShuttle</thingClass><preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>70</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.6</fillPercent><size>(5,7)</size><drawHighlight>true</drawHighlight><highlightColor>(0.18,0.67,0.54)</highlightColor><uiIconScale>1.05</uiIconScale>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithCruiser</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5,7)</drawSize><shadowData><volume>(3.3,1.5,5.9)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithCruiser</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5.5,7.7)</drawSize><shadowData><volume>(3.3,1.5,5.9)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
     <statBases><MaxHitPoints>1800</MaxHitPoints><Flammability>0.08</Flammability><WorkToBuild>82000</WorkToBuild><Mass>240</Mass><Comfort>0.70</Comfort></statBases>
     <tickerType>Normal</tickerType><designationCategory>Misc</designationCategory><constructionSkillPrerequisite>10</constructionSkillPrerequisite>
     <costList><WNG_Biomass>650</WNG_Biomass><GravlitePanel>110</GravlitePanel><ComponentSpacer>8</ComponentSpacer><ShuttleEngine>2</ShuttleEngine></costList>
