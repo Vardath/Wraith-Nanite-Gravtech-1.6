@@ -103,6 +103,49 @@ jobs:
               if tex and not texture_exists(tex, graphic):
                   failures.append(f"{name} references missing presentation art: {tex}")
 
+
+          dedicated_precursor_art = {
+              "WNG_PrecursorRestPlatform": ("Things/Building/Precursor/Furniture/WNG_PrecursorRestPlatform", "Graphic_Multi"),
+              "WNG_PrecursorRestPlatformDouble": ("Things/Building/Precursor/Furniture/WNG_PrecursorRestPlatformDouble", "Graphic_Multi"),
+              "WNG_PrecursorFormChair": ("Things/Building/Precursor/Furniture/WNG_PrecursorFormChair", "Graphic_Multi"),
+              "WNG_PrecursorSettee": ("Things/Building/Precursor/Furniture/WNG_PrecursorSettee", "Graphic_Multi"),
+              "WNG_PrecursorTableSmall": ("Things/Building/Precursor/Furniture/WNG_PrecursorTableSmall", "Graphic_Multi"),
+              "WNG_PrecursorTable": ("Things/Building/Precursor/Furniture/WNG_PrecursorTable", "Graphic_Single"),
+              "WNG_PrecursorBedsideConsole": ("Things/Building/Precursor/Furniture/WNG_PrecursorBedsideConsole", "Graphic_Multi"),
+              "WNG_PrecursorStoragePlinth": ("Things/Building/Precursor/Furniture/WNG_PrecursorStoragePlinth", "Graphic_Multi"),
+              "WNG_PrecursorLumen": ("Things/Building/Precursor/Furniture/WNG_PrecursorLumen", "Graphic_Multi"),
+              "WNG_PrecursorWallLumen": ("Things/Building/Precursor/Furniture/WNG_PrecursorWallLumen", "Graphic_Multi"),
+          }
+
+          for name, (tex, graphic) in dedicated_precursor_art.items():
+              node, _ = defs.get(name, (None, None))
+              if node is None:
+                  continue
+              if node.findtext("./graphicData/texPath") != tex:
+                  failures.append(f"{name} regressed to placeholder/non-dedicated settlement art")
+              if node.findtext("./graphicData/graphicClass") != graphic:
+                  failures.append(f"{name} unexpected graphic class: {node.findtext('./graphicData/graphicClass')}")
+              base = Path("Textures") / (tex + ".png")
+              if not base.exists():
+                  failures.append(f"{name} base art missing: {base}")
+              if graphic == "Graphic_Multi":
+                  for suffix in ("_north", "_east", "_south", "_west"):
+                      directional = Path("Textures") / (tex + suffix + ".png")
+                      if not directional.exists():
+                          failures.append(f"{name} directional art missing: {directional}")
+
+          placeholder_tokens = (
+              "Things/Building/Precursor/Collective/WNG_AsuranPatternArchive",
+              "Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole",
+              "Things/Building/Precursor/Gravship/WNG_AsuranSignalJammer",
+          )
+          for file in ("Defs/ThingDefs/Furniture_Precursor.xml", "Defs/ThingDefs/Furniture_PrecursorLighting.xml"):
+              text = Path(file).read_text(encoding="utf-8")
+              for token in placeholder_tokens:
+                  if token in text:
+                      failures.append(f"{file} still uses placeholder art: {token}")
+
+
           wraith_wall = defs.get("WNG_WraithLivingWall", (None,))[0]
           precursor_wall = defs.get("WNG_PrecursorWall", (None,))[0]
           precursor_door = defs.get("WNG_PrecursorDoor", (None,))[0]
