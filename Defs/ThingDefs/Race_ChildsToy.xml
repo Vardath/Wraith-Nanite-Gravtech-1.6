@@ -29,6 +29,9 @@
         </li>
       </lifeStageAges>
     </race>
+    <butcherProducts>
+      <WNG_ReplicatorMatter>1</WNG_ReplicatorMatter>
+    </butcherProducts>
     <comps Inherit="False">
       <li Class="WraithNaniteGravtech.CompProperties_ChildsToyOverseerSubject">
         <uncontrolledTicksToFeral>60000</uncontrolledTicksToFeral>
