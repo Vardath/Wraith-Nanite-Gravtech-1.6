@@ -39,6 +39,9 @@ jobs:
                   "EMP rejection": "WNG_NaniteEMPDisruption",
                   "Food + reserve commit": "AddAssimilatedFeedstock",
                   "mass-bounded yield": "EffectiveMass",
+                  "child-form restriction": "IsRestrictedChildForm",
+                  "terminal gravel rejection": "terrain != TerrainDefOf.Gravel",
+                  "single-layer substrate commit": "One cast consumes exactly one physical substrate layer",
               }
               for label, needle in required.items():
                   if needle not in text:
@@ -46,6 +49,12 @@ jobs:
               for forbidden in ("PawnGenerator.GeneratePawn", "TrySpawnDrone", "assimilationOffspringCount"):
                   if forbidden in text:
                       failures.append(f"human-form assimilation must never create Replicator offspring: {forbidden}")
+              if 'QueenChildKindDefName = "WNG_ReplicatorQueenChild"' not in text:
+                  failures.append("Queen child assimilation restriction is no longer explicit")
+              if 'thing.def.category == ThingCategory.Building' not in text:
+                  failures.append("child-form structural assimilation restriction regressed")
+              if 'This child-form nanite body cannot assimilate roof, floor, or ground layers.' not in text:
+                  failures.append("child-form substrate restriction regressed")
 
           if physiology.exists():
               text = physiology.read_text(encoding="utf-8")
