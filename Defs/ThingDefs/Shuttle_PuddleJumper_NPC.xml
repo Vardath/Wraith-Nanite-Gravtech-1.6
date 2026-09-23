@@ -31,7 +31,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Precursor/Shuttle/WNG_PuddleJumper</texPath>
       <shaderType>CutoutComplex</shaderType>
-      <drawSize>(3,5)</drawSize>
+      <drawSize>(3.3,5.5)</drawSize>
       <shadowData><volume>(1.8,1.0,4.1)</volume><offset>(-0.1,0,0)</offset></shadowData>
     </graphicData>
     <statBases><MaxHitPoints>850</MaxHitPoints><Flammability>0</Flammability><Mass>82</Mass><Comfort>0.82</Comfort></statBases>
