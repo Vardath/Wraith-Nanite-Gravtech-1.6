@@ -1,0 +1,132 @@
+name: D121 Settlement Family Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  settlement-families:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Wraith and Precursor settlement families
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          failures = []
+
+          files = [
+              "Defs/ThingDefs/Things_WraithPlayerInfrastructure.xml",
+              "Defs/ThingDefs/Furniture_WraithLiving.xml",
+              "Defs/ThingDefs/Things_WraithHiveEcology.xml",
+              "Defs/ThingDefs/Things_WraithLivingTechnology.xml",
+              "Defs/ThingDefs/Things_PrecursorStructures.xml",
+              "Defs/ThingDefs/Furniture_Precursor.xml",
+              "Defs/ThingDefs/Furniture_PrecursorLighting.xml",
+              "Defs/ThingDefs/Things_SovereignLattice.xml",
+              "Defs/ThingDefs/Things_PrecursorPowerCell.xml",
+          ]
+
+          defs = {}
+          for file in files:
+              path = Path(file)
+              if not path.exists():
+                  failures.append(f"missing family file: {file}")
+                  continue
+              root = ET.parse(path).getroot()
+              for node in list(root):
+                  name = node.findtext("defName")
+                  if name:
+                      defs[name] = (node, file)
+
+          expected_wraith = [
+              "WNG_WraithLivingWall",
+              "WNG_WraithMembraneDoor",
+              "WNG_WraithNutrientNiche",
+              "WNG_BioelectricOrgan",
+              "WNG_LivingPowerCell",
+              "WNG_WraithRestCradle",
+              "WNG_WraithRestNestDouble",
+              "WNG_WraithGrowthSeat",
+              "WNG_WraithLounge",
+              "WNG_WraithFeastTableSmall",
+              "WNG_WraithFeastTable",
+              "WNG_WraithBedsideNode",
+              "WNG_WraithLumenOrgan",
+              "WNG_WraithWallLumen",
+              "WNG_WraithHibernationPod",
+              "WNG_WraithFeedingNiche",
+              "WNG_LivingForge",
+              "WNG_WraithGrowthChamber",
+          ]
+
+          expected_precursor = [
+              "WNG_PrecursorWall",
+              "WNG_PrecursorDoor",
+              "WNG_PrecursorRestPlatform",
+              "WNG_PrecursorRestPlatformDouble",
+              "WNG_PrecursorFormChair",
+              "WNG_PrecursorSettee",
+              "WNG_PrecursorTableSmall",
+              "WNG_PrecursorTable",
+              "WNG_PrecursorBedsideConsole",
+              "WNG_PrecursorStoragePlinth",
+              "WNG_PrecursorLumen",
+              "WNG_PrecursorWallLumen",
+              "WNG_PrecursorFabricator",
+              "WNG_PrecursorPowerCell",
+          ]
+
+          for name in expected_wraith + expected_precursor:
+              if name not in defs:
+                  failures.append(f"player settlement family member missing: {name}")
+
+          def texture_exists(tex_path, graphic_class):
+              base = Path("Textures") / tex_path
+              if (base.with_suffix(".png")).exists():
+                  return True
+              if graphic_class == "Graphic_Multi":
+                  return any(Path(str(base) + suffix + ".png").exists()
+                             for suffix in ("_north", "_east", "_south", "_west"))
+              return False
+
+          for name in expected_wraith + expected_precursor:
+              if name not in defs:
+                  continue
+              node, file = defs[name]
+              tex = node.findtext("./graphicData/texPath")
+              graphic = node.findtext("./graphicData/graphicClass")
+              if tex and not texture_exists(tex, graphic):
+                  failures.append(f"{name} references missing presentation art: {tex}")
+
+          wraith_wall = defs.get("WNG_WraithLivingWall", (None,))[0]
+          precursor_wall = defs.get("WNG_PrecursorWall", (None,))[0]
+          precursor_door = defs.get("WNG_PrecursorDoor", (None,))[0]
+
+          if wraith_wall is not None:
+              if wraith_wall.findtext("./graphicData/texPath") != "Things/Building/Wraith/Structure/WNG_LivingWall":
+                  failures.append("Wraith living wall lost its dedicated settlement texture")
+              if wraith_wall.findtext("./graphicData/graphicClass") != "Graphic_Single":
+                  failures.append("Wraith living wall returned to a stuff-dependent or invalid graphic class")
+
+          if precursor_wall is not None:
+              if precursor_wall.findtext("./graphicData/texPath") != "Things/Building/Precursor/Structure/WNG_PrecursorWall":
+                  failures.append("Precursor wall is no longer using dedicated settlement wall art")
+              if precursor_wall.findtext("./graphicData/graphicClass") != "Graphic_Single":
+                  failures.append("Precursor wall lost its safe non-stuff graphic class")
+
+          if precursor_door is not None:
+              if precursor_door.findtext("./graphicData/texPath") != "Things/Building/Precursor/Structure/WNG_PrecursorDoor":
+                  failures.append("Precursor settlement door regressed to the gravship asset path")
+
+          if failures:
+              print("SETTLEMENT FAMILY VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("Wraith and Precursor player settlement families validated.")
