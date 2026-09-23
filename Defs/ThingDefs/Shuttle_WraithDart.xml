@@ -2,17 +2,17 @@
 <Defs>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithDartIncoming</defName><label>Wraith Dart (incoming)</label><thingClass>PassengerShuttleIncoming</thingClass>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize></graphicData><size>(3,5)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3.3,5.5)</drawSize></graphicData><size>(3,5)</size>
     <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(3.5,5.5)</shadowSize></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithDartLeaving</defName><label>Wraith Dart (leaving)</label><thingClass>WraithNaniteGravtech.Skyfaller_WNGWraithDartLeaving</thingClass><rotatable>true</rotatable>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize></graphicData><size>(3,5)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3.3,5.5)</drawSize></graphicData><size>(3,5)</size>
     <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(3.5,5.5)</shadowSize></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithDartFlyover</defName><label>Wraith Dart flyover</label><thingClass>WraithNaniteGravtech.Skyfaller_WNGWraithDartFlyover</thingClass><rotatable>true</rotatable>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize></graphicData><size>(3,5)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3.3,5.5)</drawSize></graphicData><size>(3,5)</size>
     <skyfaller><reversed>true</reversed><ticksToImpactRange>90~130</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(3.5,5.5)</shadowSize></skyfaller>
   </ThingDef>
   <WorldObjectDef ParentName="ShuttleWorldObjectBase"><defName>WNG_WraithDartWorld</defName><label>Wraith Dart</label><description>A Wraith Dart in native Odyssey world flight.</description><expandingIconTexture>UI/WNG/Build/WNG_WraithDart</expandingIconTexture><expandingIconDrawSize>1</expandingIconDrawSize></WorldObjectDef>
@@ -22,7 +22,7 @@
   <ThingDef Name="WNG_WraithDartBase" ParentName="BuildingBase" Abstract="True">
     <label>Wraith Dart</label><description>A compact Wraith culling and transport craft grown around a living gravitic drive. It uses Odyssey's native passenger-shuttle lifecycle and cultivated Wraith bio-fluid propulsion.</description>
     <thingClass>Building_PassengerShuttle</thingClass><preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>50</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.5</fillPercent><size>(3,5)</size><drawHighlight>true</drawHighlight><highlightColor>(0.25,0.75,0.62)</highlightColor><uiIconScale>1</uiIconScale>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3,5)</drawSize><shadowData><volume>(1.8,1.0,4.1)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3.3,5.5)</drawSize><shadowData><volume>(1.8,1.0,4.1)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
     <statBases><MaxHitPoints>760</MaxHitPoints><Flammability>0.12</Flammability><WorkToBuild>38000</WorkToBuild><Mass>90</Mass><Comfort>0.58</Comfort></statBases><tickerType>Normal</tickerType>
     <canOverlapZones>true</canOverlapZones><rotatable>true</rotatable><hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(2,0,0)</interactionCellOffset><defaultPlacingRot>East</defaultPlacingRot><selectable>true</selectable><terrainAffordanceNeeded>Light</terrainAffordanceNeeded><soundImpactDefault>BulletImpact_Metal</soundImpactDefault><preventSkyfallersLandingOn>true</preventSkyfallersLandingOn><drawerType>RealtimeOnly</drawerType><repairEffect>ConstructDirt</repairEffect><forceDebugSpawnable>true</forceDebugSpawnable>
     <building><claimable>false</claimable><paintable>false</paintable><isInert>true</isInert><destroySound>BuildingDestroyed_Wood_Big</destroySound><forcedCostLeavings><li MayRequire="Ludeon.RimWorld.Odyssey">ShuttleEngine</li></forcedCostLeavings></building>
