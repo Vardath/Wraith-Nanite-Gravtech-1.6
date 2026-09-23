@@ -28,6 +28,9 @@
         </li>
       </lifeStageAges>
     </race>
+    <butcherProducts>
+      <WNG_ReplicatorMatter>1</WNG_ReplicatorMatter>
+    </butcherProducts>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorDomain" />
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorTemporaryAsuranState" />
@@ -90,10 +93,7 @@
     <label>replicator drone</label>
     <description>The irreducible mobile block form of an autonomous Replicator swarm. Two compatible Drones can reorganize into a Hunter.</description>
     <killedLeavings>
-      <li>
-        <thingDef>WNG_ReplicatorMatter</thingDef>
-        <count>3</count>
-      </li>
+      <WNG_ReplicatorMatter>3</WNG_ReplicatorMatter>
     </killedLeavings>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorHierarchy">
@@ -286,10 +286,7 @@
       </li>
     </tools>
     <killedLeavings>
-      <li>
-        <thingDef>WNG_ReplicatorMatter</thingDef>
-        <count>9</count>
-      </li>
+      <WNG_ReplicatorMatter>9</WNG_ReplicatorMatter>
     </killedLeavings>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorController" />
