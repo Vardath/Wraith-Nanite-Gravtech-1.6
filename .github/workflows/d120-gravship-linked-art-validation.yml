@@ -68,8 +68,8 @@ jobs:
           
           linked_defs = [
               ("WNG_GoauldGravshipHull", goauld, "Graphic_Single", "Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas"),
-              ("WNG_AsuranGravshipHull", family, "Graphic_Single", "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas"),
-              ("WNG_WraithGravshipHull", family, "Graphic_Single", "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas"),
+              ("WNG_PrecursorGravshipHull", family, "Graphic_Single", "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas"),
+              ("WNG_OrganicGravshipHull", family, "Graphic_Single", "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas"),
               ("WNG_GoauldPowerConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower", "Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas"),
               ("WNG_GoauldFuelConduit", goauld, "WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit", "Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas"),
               ("WNG_AsuranPowerConduit", family, "WraithNaniteGravtech.Graphic_LinkedAsuranFamilyPower", "Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas"),
