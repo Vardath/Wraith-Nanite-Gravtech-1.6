@@ -1,0 +1,86 @@
+name: D119 Human-form Assimilation Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  human-form-assimilation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate targeted material assimilation
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          failures = []
+
+          src = Path("Source/WraithNaniteGravtech/Asurans/HumanFormAssimilation.cs")
+          physiology = Path("Source/WraithNaniteGravtech/Asurans/NanitePhysiology.cs")
+          ability_file = Path("Defs/AbilityDefs/Abilities_HumanForm.xml")
+          gene_file = Path("Defs/GeneDefs/Genes_HumanForm.xml")
+
+          for path in (src, physiology, ability_file, gene_file):
+              if not path.exists():
+                  failures.append(f"missing required human-form assimilation file: {path}")
+
+          if src.exists():
+              text = src.read_text(encoding="utf-8")
+              required = {
+                  "Thing assimilation": "IsConsumableThing",
+                  "substrate assimilation": "TryConsumeSubstrate",
+                  "item/building/plant categories": "ThingCategory.Plant",
+                  "natural-rock capable buildings": "ThingCategory.Building",
+                  "containment check": "ReplicatorContainmentUtility.BlocksAssimilation",
+                  "EMP rejection": "WNG_NaniteEMPDisruption",
+                  "Food + reserve commit": "AddAssimilatedFeedstock",
+                  "mass-bounded yield": "EffectiveMass",
+              }
+              for label, needle in required.items():
+                  if needle not in text:
+                      failures.append(f"human-form assimilation lost {label}")
+              for forbidden in ("PawnGenerator.GeneratePawn", "TrySpawnDrone", "assimilationOffspringCount"):
+                  if forbidden in text:
+                      failures.append(f"human-form assimilation must never create Replicator offspring: {forbidden}")
+
+          if physiology.exists():
+              text = physiology.read_text(encoding="utf-8")
+              if "public void AddAssimilatedFeedstock" not in text:
+                  failures.append("Nanite Reserve lacks explicit assimilated-feedstock transaction")
+              if "lastObservedFoodLevel = food?.CurLevel ?? -1f;" not in text:
+                  failures.append("assimilated Food gain can be double-counted by ordinary food observer")
+
+          if ability_file.exists():
+              root = ET.parse(ability_file).getroot()
+              ability = next((x for x in list(root) if x.findtext("defName") == "WNG_HumanFormConsume"), None)
+              if ability is None:
+                  failures.append("WNG_HumanFormConsume AbilityDef missing")
+              else:
+                  for path, expected in (
+                      ("./verbProperties/targetParams/canTargetItems", "true"),
+                      ("./verbProperties/targetParams/canTargetBuildings", "true"),
+                      ("./verbProperties/targetParams/canTargetPlants", "true"),
+                      ("./verbProperties/targetParams/canTargetLocations", "true"),
+                      ("./verbProperties/targetParams/canTargetPawns", "false"),
+                  ):
+                      if ability.findtext(path) != expected:
+                          failures.append(f"WNG_HumanFormConsume target contract regressed at {path}")
+
+          if gene_file.exists():
+              root = ET.parse(gene_file).getroot()
+              nanite_body = next((x for x in list(root) if x.findtext("defName") == "WNG_NaniteBody"), None)
+              abilities = [] if nanite_body is None else [x.text for x in nanite_body.findall("./abilities/li")]
+              if "WNG_HumanFormConsume" not in abilities:
+                  failures.append("nanite body no longer grants targeted assimilation")
+
+          if failures:
+              print("HUMAN-FORM ASSIMILATION VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("Human-form targeted assimilation validation passed.")
