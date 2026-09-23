@@ -290,6 +290,7 @@
   </SoundDef>
   <SoundDef>
     <defName>WNG_WraithDartDrive</defName>
+    <sustain>true</sustain>
     <context>MapOnly</context>
     <maxVoices>4</maxVoices>
     <subSounds>
