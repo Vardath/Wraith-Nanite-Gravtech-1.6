@@ -4,7 +4,7 @@
     <defName>WNG_WraithLivingWall</defName>
     <label>wraith living wall</label>
     <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms, supports roofs like an ordinary wall, and slowly regenerates damage while alive.</description>
-    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_LivingWall</texPath><graphicClass>Graphic_Appearances</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_LivingWall</texPath><graphicClass>Graphic_Single</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><WNG_Biomass>5</WNG_Biomass></costList>
     <statBases><MaxHitPoints>420</MaxHitPoints><WorkToBuild>180</WorkToBuild><Flammability>0.25</Flammability><Beauty>2</Beauty></statBases>
