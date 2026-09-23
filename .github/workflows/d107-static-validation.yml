@@ -1159,7 +1159,7 @@ jobs:
               ('technology history recording', rep_adaptation_history, 'ReplicatorAdaptationHistoryUtility.RecordEvidence'),
               ('barrier history recording', rep_adaptation_history, 'ReplicatorAdaptationHistoryUtility'),
               ('historical target validator', rep_assim_history, 'HistoricalInterestMatches'),
-              ('ordinary assimilation fallback', rep_assim_history, 'Thing item = GenClosest.ClosestThing_Global_Reachable'),
+              ('ordinary assimilation fallback', rep_assim_history, 'pawn.Map.listerThings.AllThings'),
           ):
               if needle not in haystack:
                   failures.append(f'Replicator adaptation-history contract missing: {label}')
@@ -1173,7 +1173,7 @@ jobs:
               if forbidden in rep_history:
                   failures.append(f'Replicator adaptation history grants/changes live control or learned state: {forbidden}')
           history_priority = rep_assim_history.find('HistoricalInterestMatches')
-          normal_fallback = rep_assim_history.find('Thing item = GenClosest.ClosestThing_Global_Reachable')
+          normal_fallback = rep_assim_history.find('pawn.Map.listerThings.AllThings')
           if history_priority < 0 or normal_fallback < 0 or history_priority > normal_fallback:
               failures.append('Replicator historical reacquisition priority no longer runs before ordinary closest-target fallback')
           share_call = rep_assim_history.find('ReplicatorAdaptationUtility.ShareEvidence(parent, adaptationEvidence)')
@@ -1444,7 +1444,7 @@ jobs:
               ('existing evidence derivation', 'ReplicatorAdaptationUtility.EvidenceFrom(target)'),
               ('existing post-commit evidence share', 'ReplicatorAdaptationUtility.ShareEvidence(parent, adaptationEvidence)'),
               ('existing offspring count', 'int offspringCount = Math.Max(1, ext.assimilationOffspringCount);'),
-              ('existing hostile-cap check', 'HasPopulationRoom(parent, offspringCount)'),
+              ('existing hostile-cap accounting', 'AvailablePopulationSlots(parent, offspringCount)'),
           ):
               if needle not in rep_assim:
                   failures.append(f'High-tier Asuran assimilation contract missing: {label}')
