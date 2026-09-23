@@ -1,0 +1,35 @@
+name: WNG Fix Linked Atlas Row Order
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/artfix/reorder_linked_atlas_rows.py"
+      - ".github/workflows/wng-fix-linked-atlases.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  reorder-linked-atlases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Reorder linked atlas row bands without changing art
+        run: python .github/artfix/reorder_linked_atlas_rows.py
+      - name: Commit corrected atlases
+        run: |
+          if git diff --quiet --             Textures/Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas.png             Textures/Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas.png             Textures/Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas.png             Textures/Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas.png             Textures/Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas.png             Textures/Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas.png             Textures/Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas.png             Textures/Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas.png             Textures/Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas.png
+          then
+            echo "No linked-atlas changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             Textures/Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas.png             Textures/Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas.png             Textures/Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas.png             Textures/Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas.png             Textures/Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas.png             Textures/Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas.png             Textures/Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas.png             Textures/Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas.png             Textures/Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas.png
+          git commit -m "Fix linked wall and conduit atlas alignment"
+          git push origin HEAD:main
