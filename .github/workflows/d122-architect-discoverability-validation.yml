@@ -1,0 +1,122 @@
+name: D122 Architect Discoverability Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  architect-routing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate family and vanilla Architect discoverability
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          failures = []
+
+          category_path = Path("Defs/DesignationCategoryDefs/WNG_Architect.xml")
+          root = ET.parse(category_path).getroot()
+          cats = {n.findtext("defName"): n for n in list(root)}
+          expected = {
+              "WNG_WraithArchitect": "WNG — Wraith",
+              "WNG_AsuranArchitect": "WNG — Asuran",
+              "WNG_GoauldArchitect": "WNG — Goa'uld",
+          }
+          for name, label in expected.items():
+              node = cats.get(name)
+              if node is None:
+                  failures.append(f"missing family Architect category: {name}")
+              elif node.findtext("label") != label:
+                  failures.append(f"{name} label changed unexpectedly")
+
+          if "WNG_Architect" in cats:
+              failures.append("obsolete single giant WNG Architect category still exists")
+
+          blanket = Path("Patches/WNG_ArchitectMenu.xml").read_text(encoding="utf-8")
+          if "PatchOperationReplace" in blanket or "starts-with(defName" in blanket:
+              failures.append("blanket designationCategory replacement returned")
+
+          rings_patch = Path("Patches/WNG_GoauldArchitectRouting.xml").read_text(encoding="utf-8")
+          if "designationCategory" in rings_patch:
+              failures.append("Goa'uld rings are still being stolen from their native category")
+
+          shuttle_patch = Path("Patches/WNG_GoauldShuttleONACIntegration.xml").read_text(encoding="utf-8")
+          if "/designationCategory" in shuttle_patch or "<designationCategory>ONAC_Architect</designationCategory>" in shuttle_patch:
+              failures.append("ONAC integration still steals WNG shuttle Architect ownership")
+
+          source = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs").read_text(encoding="utf-8")
+          required_source = (
+              "resolvedDesignators",
+              "new Designator_Build(def)",
+              "WNG_WraithArchitect",
+              "WNG_AsuranArchitect",
+              "WNG_GoauldArchitect",
+              "Odyssey",
+              "FamilyCategoryFor",
+              "IsWNGGravshipBuildable",
+              "def.designationCategory",
+          )
+          for token in required_source:
+              if token not in source:
+                  failures.append(f"Architect runtime duplication contract missing: {token}")
+
+          for forbidden in (
+              "def.designationCategory =",
+              "IsResearchFinished",
+              "researchPrerequisites",
+          ):
+              if forbidden in source:
+                  failures.append(f"Architect runtime routing must not destructively reroute or prefilter by research: {forbidden}")
+
+          # Native category examples must remain native now that blanket WNG rerouting is gone.
+          native_expectations = {
+              ("Defs/ThingDefs/Things_WraithPlayerInfrastructure.xml", "WNG_WraithLivingWall"): "Structure",
+              ("Defs/ThingDefs/Furniture_WraithLiving.xml", "WNG_WraithRestCradle"): "Furniture",
+              ("Defs/ThingDefs/Things_WraithPlayerInfrastructure.xml", "WNG_BioelectricOrgan"): "Power",
+              ("Defs/ThingDefs/Things_PrecursorStructures.xml", "WNG_PrecursorWall"): "Structure",
+              ("Defs/ThingDefs/Furniture_Precursor.xml", "WNG_PrecursorFormChair"): "Furniture",
+              ("Defs/ThingDefs/Things_SovereignLattice.xml", "WNG_PrecursorFabricator"): "Production",
+              ("Defs/ThingDefs/Things_PrecursorPowerCell.xml", "WNG_PrecursorPowerCell"): "Power",
+              ("Defs/ThingDefs/Things_GoauldTransportRings.xml", "WNG_GoauldTransportRings"): "Misc",
+              ("Defs/ThingDefs/Shuttle_Goauld.xml", "WNG_AlkeshTransport"): "Misc",
+              ("Defs/ThingDefs/Shuttle_Goauld.xml", "WNG_GoauldDeathGlider"): "Misc",
+          }
+
+          for (path, defname), expected_category in native_expectations.items():
+              r = ET.parse(path).getroot()
+              node = next((n for n in list(r) if n.findtext("defName") == defname), None)
+              if node is None:
+                  failures.append(f"native-category example missing: {defname}")
+                  continue
+              actual = node.findtext("designationCategory")
+              if actual != expected_category:
+                  failures.append(f"{defname} native category is {actual!r}, expected {expected_category!r}")
+
+          # No WNG Def should be permanently assigned to the family tabs.
+          # They are duplicate views only, preserving ordinary RimWorld discoverability.
+          family_names = set(expected)
+          for path in Path("Defs").rglob("*.xml"):
+              try:
+                  r = ET.parse(path).getroot()
+              except Exception:
+                  continue
+              for node in list(r):
+                  name = node.findtext("defName") or ""
+                  if not name.startswith("WNG_"):
+                      continue
+                  cat = node.findtext("designationCategory")
+                  if cat in family_names or cat == "WNG_Architect":
+                      failures.append(f"{name} is destructively assigned to {cat} in {path}")
+
+          if failures:
+              print("ARCHITECT DISCOVERABILITY FAILURES:")
+              for f in failures:
+                  print(" -", f)
+              raise SystemExit(1)
+
+          print("WNG Architect routing preserves native categories, adds three family views, and duplicates gravship construction into Odyssey.")
