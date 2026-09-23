@@ -2569,7 +2569,7 @@ jobs:
               'WNG_AsuranArchitect',
               'WNG_GoauldArchitect',
               'Odyssey',
-              'def.designationCategory != null',
+              'designationCategory != null',
           ):
               if token not in architect_source:
                   failures.append(f'WNG multi-category Architect routing contract missing: {token}')
