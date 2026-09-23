@@ -21,13 +21,16 @@ ATLAS_PATHS = [
     Path("Textures/Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas.png"),
 ]
 
+DIRECTION_BITS = (
+    (1, "up"),
+    (2, "right"),
+    (4, "down"),
+    (8, "left"),
+)
+
 EXPECTED = {
-    0: set(),
-    1: {"up"},
-    2: {"right"},
-    4: {"down"},
-    8: {"left"},
-    15: {"up", "right", "down", "left"},
+    index: {name for bit, name in DIRECTION_BITS if index & bit}
+    for index in range(16)
 }
 
 
