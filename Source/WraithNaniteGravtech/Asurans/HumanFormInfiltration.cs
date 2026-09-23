@@ -29,7 +29,7 @@ namespace WraithNaniteGravtech
     internal static class HumanFormInfiltrationUtility
     {
         public const string HostileFactionDefName = "WNG_PrecursorCollective";
-        public const string HumanFormKindDefName = "WNG_HumanFormReplicator";
+        public const string HumanFormKindDefName = "WNG_HumanFormInfiltrator";
 
         public static bool IsUnderCover(Pawn pawn)
         {
