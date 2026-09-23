@@ -44,7 +44,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft</texPath>
       <shaderType>CutoutComplex</shaderType>
-      <drawSize>(4,6)</drawSize>
+      <drawSize>(4.4,6.6)</drawSize>
       <shadowData><volume>(2.5,1.2,5.0)</volume><offset>(-0.1,0,0)</offset></shadowData>
     </graphicData>
     <statBases>
@@ -126,7 +126,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Wraith/Shuttle/WNG_WraithCruiser</texPath>
       <shaderType>CutoutComplex</shaderType>
-      <drawSize>(5,7)</drawSize>
+      <drawSize>(5.5,7.7)</drawSize>
       <shadowData><volume>(3.3,1.5,5.9)</volume><offset>(-0.1,0,0)</offset></shadowData>
     </graphicData>
     <statBases>
