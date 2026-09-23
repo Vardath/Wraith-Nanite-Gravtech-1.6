@@ -23,8 +23,10 @@ namespace WraithNaniteGravtech
                 case "WNG_PrecursorCommander":
                     apparelDefName = "WNG_PrecursorCommandArmor";
                     break;
-                case "WNG_PrecursorEngineer":
                 case "WNG_HumanFormReplicator":
+                    apparelDefName = "WNG_HumanFormCombatArmor";
+                    break;
+                case "WNG_PrecursorEngineer":
                 case "WNG_PlayerHumanFormReplicator":
                 case "WNG_HumanFormCopy":
                 case "WNG_ReplicatorQueenChild":
