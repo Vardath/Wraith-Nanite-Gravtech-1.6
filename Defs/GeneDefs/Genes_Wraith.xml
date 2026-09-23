@@ -12,6 +12,7 @@
     <description>This Wraith does not survive on ordinary food. Its tissues store stolen biological vitality as Life Force, which drains over time and is spent by regeneration. Severe depletion causes weakness and eventually life-force torpor; deliberate hibernation greatly slows the drain.</description>
     <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <displayCategory>Ability</displayCategory>
+    <minAgeActive>13</minAgeActive>
     <geneClass>WraithNaniteGravtech.Gene_Resource_LifeForce</geneClass>
     <resourceGizmoType>WraithNaniteGravtech.GeneGizmo_Resource_LifeForce</resourceGizmoType>
     <resourceLabel>life force</resourceLabel>
