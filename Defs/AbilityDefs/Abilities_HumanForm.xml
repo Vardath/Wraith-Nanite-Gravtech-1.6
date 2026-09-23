@@ -27,4 +27,43 @@
       </li>
     </comps>
   </AbilityDef>
+
+  <AbilityDef ParentName="AbilityTouchBase">
+    <defName>WNG_HumanFormConsume</defName>
+    <label>assimilate matter</label>
+    <description>Consume a chosen physical item, building, natural rock, plant, roof, floor or ground layer as synthetic feedstock. Unlike block Replicators this never creates offspring: the consumed matter replenishes this human-form synthetic's ordinary Food need and Nanite Reserve.</description>
+    <iconPath>UI/WNG/Genes/NaniteReserve</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <verbProperties>
+      <verbClass>Verb_CastAbilityTouch</verbClass>
+      <drawAimPie>false</drawAimPie>
+      <range>-1</range>
+      <warmupTime>2</warmupTime>
+      <targetParams>
+        <canTargetSelf>false</canTargetSelf>
+        <canTargetPawns>false</canTargetPawns>
+        <canTargetItems>true</canTargetItems>
+        <canTargetBuildings>true</canTargetBuildings>
+        <canTargetPlants>true</canTargetPlants>
+        <canTargetLocations>true</canTargetLocations>
+        <canTargetAnimals>false</canTargetAnimals>
+        <canTargetHumans>false</canTargetHumans>
+        <canTargetMechs>false</canTargetMechs>
+        <canTargetEntities>false</canTargetEntities>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityHumanFormConsume">
+        <minimumFoodFraction>0.08</minimumFoodFraction>
+        <foodFractionPerSqrtMass>0.02</foodFractionPerSqrtMass>
+        <maximumFoodFraction>0.50</maximumFoodFraction>
+        <minimumReserveGain>0.06</minimumReserveGain>
+        <reserveGainPerSqrtMass>0.015</reserveGainPerSqrtMass>
+        <maximumReserveGain>0.40</maximumReserveGain>
+        <substrateFoodFraction>0.15</substrateFoodFraction>
+        <substrateReserveGain>0.10</substrateReserveGain>
+      </li>
+    </comps>
+  </AbilityDef>
 </Defs>
