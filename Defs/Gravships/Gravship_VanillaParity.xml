@@ -62,6 +62,7 @@
     <statBases><MaxHitPoints>300</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.08</Flammability></statBases>
     <costList Inherit="False"><WNG_Biomass>20</WNG_Biomass><GravlitePanel>4</GravlitePanel></costList>
     <researchPrerequisites Inherit="False"><li>WNG_HiveGravshipArchitecture</li></researchPrerequisites>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight></building>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
@@ -145,6 +146,7 @@
     <statBases><MaxHitPoints>400</MaxHitPoints><WorkToBuild>1100</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><Plasteel>35</Plasteel><GravlitePanel>8</GravlitePanel><ComponentIndustrial>1</ComponentIndustrial></costList>
     <researchPrerequisites Inherit="False"><li>WNG_AsuranGravshipArchitecture</li></researchPrerequisites>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight></building>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
@@ -228,6 +230,7 @@
     <statBases><MaxHitPoints>460</MaxHitPoints><WorkToBuild>1300</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><ONAC_Naquadah>8</ONAC_Naquadah><Plasteel>25</Plasteel></costList>
     <researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
+    <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight></building>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
