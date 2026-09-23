@@ -38,13 +38,14 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
-            return ReplicatorAssimilationUtility.FindClosestAssimilationTarget(hunter) == null;
+            MapComponent_ReplicatorConsumption consumption =
+                hunter.Map.GetComponent<MapComponent_ReplicatorConsumption>();
+            return consumption?.BiologicalPredationUnlocked == true;
         }
 
         public static bool CanStarvationPredate(Pawn hunter)
         {
-            return IsEnvironmentallyStarved(hunter) &&
-                   AvailableOffspringSlots(hunter, 1) > 0;
+            return IsEnvironmentallyStarved(hunter);
         }
 
         public static bool IsConvertiblePrey(
@@ -157,21 +158,9 @@ namespace WraithNaniteGravtech
             requestedChildren =
                 Math.Max(1, Math.Min(2, requestedChildren));
 
-            if (Faction.OfPlayer != null &&
-                parent.Faction.HostileTo(Faction.OfPlayer))
-            {
-                int current =
-                    ReplicatorAssimilationUtility.CountHostileBlocks(
-                        parent.Map);
-                int cap =
-                    ReplicatorAssimilationUtility.HostilePopulationCap(
-                        ext);
-                return Math.Min(
-                    requestedChildren,
-                    Math.Max(0, cap - current));
-            }
-
-            return requestedChildren;
+            return ReplicatorAssimilationUtility.AvailablePopulationSlots(
+                parent,
+                requestedChildren);
         }
 
         public static bool TryCommitBiologicalAssimilation(
@@ -192,13 +181,11 @@ namespace WraithNaniteGravtech
                 AvailableOffspringSlots(
                     parent,
                     requestedChildren);
-            if (toSpawn <= 0)
-                return false;
 
             PawnKindDef droneKind =
                 DefDatabase<PawnKindDef>.GetNamedSilentFail(
                     DroneKindDefName);
-            if (droneKind == null ||
+            if ((toSpawn > 0 && droneKind == null) ||
                 parent.Map == null ||
                 parent.Faction == null)
             {
@@ -213,14 +200,8 @@ namespace WraithNaniteGravtech
             {
                 for (int i = 0; i < toSpawn; i++)
                 {
-                    int remaining = toSpawn - staged.Count;
-                    if (AvailableOffspringSlots(
-                            parent,
-                            remaining) < remaining)
-                    {
-                        Rollback(staged);
-                        return false;
-                    }
+                    if (AvailableOffspringSlots(parent, 1) < 1)
+                        break;
 
                     Pawn child =
                         PawnGenerator.GeneratePawn(
@@ -328,6 +309,13 @@ namespace WraithNaniteGravtech
                 {
                     Rollback(staged);
                     return false;
+                }
+
+                int deferredOffspring = Math.Max(0, requestedChildren - staged.Count);
+                if (deferredOffspring > 0)
+                {
+                    map.GetComponent<MapComponent_ReplicatorConsumption>()
+                        ?.AddStoredCellMatter(deferredOffspring * MapComponent_ReplicatorConsumption.CellMatterPerDrone);
                 }
 
                 // Once the exact prey is irreversibly dead/destroyed the offspring are committed.
