@@ -1,0 +1,106 @@
+name: D123 Defensive Turret Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  defensive-turrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Wraith and Asuran defensive turrets
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          failures = []
+          path = Path("Defs/ThingDefs/Things_DefensiveTurrets.xml")
+          root = ET.parse(path).getroot()
+          defs = {n.findtext("defName"): n for n in list(root) if n.findtext("defName")}
+
+          expectations = {
+              "WNG_WraithLivingTurret": {
+                  "gun": "WNG_Gun_WraithLivingTurret",
+                  "research": "WNG_AdvancedCarapace",
+                  "tex": "Things/Building/Defense/WNG/WNG_WraithLivingTurret",
+                  "top": "Things/Building/Defense/WNG/WNG_WraithLivingTurretTop",
+              },
+              "WNG_AsuranAutoturret": {
+                  "gun": "WNG_Gun_AsuranAutoturret",
+                  "research": "WNG_PrecursorFabrication",
+                  "tex": "Things/Building/Defense/WNG/WNG_AsuranAutoturret",
+                  "top": "Things/Building/Defense/WNG/WNG_AsuranAutoturretTop",
+              },
+          }
+
+          for name, expected in expectations.items():
+              node = defs.get(name)
+              if node is None:
+                  failures.append(f"missing turret: {name}")
+                  continue
+              if node.findtext("thingClass") != "Building_TurretGun":
+                  failures.append(f"{name} is not using native Building_TurretGun")
+              if node.findtext("designationCategory") != "Security":
+                  failures.append(f"{name} is not discoverable in vanilla Security")
+              if node.findtext("./building/turretGunDef") != expected["gun"]:
+                  failures.append(f"{name} gun link regressed")
+              if node.findtext("./researchPrerequisites/li") != expected["research"]:
+                  failures.append(f"{name} research gate regressed")
+              if node.findtext("./graphicData/texPath") != expected["tex"]:
+                  failures.append(f"{name} base art path regressed")
+
+              # Explicit requirement: internal/biological energy, never an external power-grid dependency.
+              serialized = ET.tostring(node, encoding="unicode")
+              if "CompProperties_Power" in serialized or "CompPowerTrader" in serialized or "CompPowerPlant" in serialized:
+                  failures.append(f"{name} gained an external power-grid dependency")
+
+              art = Path("Textures") / (expected["tex"] + ".png")
+              if not art.exists():
+                  failures.append(f"{name} base art missing: {art}")
+
+              gun = defs.get(expected["gun"])
+              if gun is None:
+                  failures.append(f"{name} turret gun missing: {expected['gun']}")
+              else:
+                  if gun.findtext("./graphicData/texPath") != expected["top"]:
+                      failures.append(f"{expected['gun']} top art path regressed")
+                  top_art = Path("Textures") / (expected["top"] + ".png")
+                  if not top_art.exists():
+                      failures.append(f"{expected['gun']} top art missing: {top_art}")
+
+          wraith_gun = defs.get("WNG_Gun_WraithLivingTurret")
+          if wraith_gun is not None and wraith_gun.findtext("./verbs/li/defaultProjectile") != "WNG_ProjectileHeavyBio":
+              failures.append("Wraith turret no longer uses the retained living heavy-bio projectile family")
+
+          asuran_gun = defs.get("WNG_Gun_AsuranAutoturret")
+          if asuran_gun is not None and asuran_gun.findtext("./verbs/li/defaultProjectile") != "WNG_ProjectilePrecursorPulse":
+              failures.append("Asuran turret no longer uses the retained precursor pulse projectile family")
+
+          # WNG must not add another Goa'uld settlement turret; ONAC remains the Goa'uld owner.
+          if any(name.startswith("WNG_Goauld") and "Turret" in name for name in defs):
+              failures.append("Step 6 incorrectly added a duplicate Goa'uld turret family")
+
+          ce = Path("Compatibility/CombatExtended/Patches/Turrets_WNG.xml").read_text(encoding="utf-8")
+          for token in (
+              "WNG_Gun_WraithLivingTurret",
+              "WNG_Gun_AsuranAutoturret",
+              "CombatExtended.Building_TurretGunCE",
+              "WNG_CE_Projectile_WraithHeavy",
+              "WNG_CE_Projectile_PrecursorPulse",
+          ):
+              if token not in ce:
+                  failures.append(f"CE defensive-turret coverage missing: {token}")
+          if "<AmmoUser>" in ce:
+              failures.append("fixed WNG turrets unexpectedly gained a CE ammunition economy")
+
+          if failures:
+              print("DEFENSIVE TURRET VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("Wraith and Asuran defensive turrets validated: Security discoverability, internal energy, native targeting, dedicated art and CE coverage.")
