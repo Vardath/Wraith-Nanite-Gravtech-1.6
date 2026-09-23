@@ -69,7 +69,7 @@
     <isFighter>true</isFighter>
     <weaponMoney>1005~1600</weaponMoney>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
-    <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
+    <apparelRequired><li>WNG_HumanFormCombatArmor</li></apparelRequired>
     <initialWillRange>0~0</initialWillRange>
     <initialResistanceRange>0~0</initialResistanceRange>
     <backstoryFiltersOverride>
