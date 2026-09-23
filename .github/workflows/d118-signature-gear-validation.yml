@@ -48,6 +48,22 @@ jobs:
               if not node.findtext("weaponMoney"):
                   failures.append(f"{name} lost spawn weapon budget")
 
+          expected_human_apparel = {
+              "WNG_PrecursorEngineer": "WNG_HumanFormUniform",
+              "WNG_HumanFormReplicator": "WNG_HumanFormCombatArmor",
+              "WNG_PlayerHumanFormReplicator": "WNG_HumanFormUniform",
+              "WNG_HumanFormCopy": "WNG_HumanFormUniform",
+              "WNG_ReplicatorQueenChild": "WNG_HumanFormUniform",
+          }
+          for name, apparel in expected_human_apparel.items():
+              node = human.get(name)
+              if node is None:
+                  failures.append(f"{name} missing for apparel contract")
+                  continue
+              required = [x.text for x in node.findall("./apparelRequired/li")]
+              if apparel not in required:
+                  failures.append(f"{name} lost required role apparel {apparel}")
+
           infiltrator = human.get("WNG_HumanFormInfiltrator")
           if infiltrator is None:
               failures.append("WNG_HumanFormInfiltrator missing")
