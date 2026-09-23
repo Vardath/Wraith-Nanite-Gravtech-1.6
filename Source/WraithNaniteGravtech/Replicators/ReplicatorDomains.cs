@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RimWorld;
 using Verse;
 
 namespace WraithNaniteGravtech
@@ -98,6 +99,21 @@ namespace WraithNaniteGravtech
         {
             base.PostSpawnSetup(respawningAfterLoad);
             EnsureAutonomousIdentity();
+
+            // Debug/directly spawned autonomous block forms can arrive factionless. A factionless
+            // Replicator cannot run its hostile ecology, so bind only genuinely autonomous block
+            // Replicators to the real permanent-enemy swarm faction on spawn.
+            Pawn pawn = parent as Pawn;
+            if (pawn != null &&
+                pawn.Faction == null &&
+                authority == ReplicatorControlAuthority.AutonomousSwarm &&
+                ReplicatorAssimilationUtility.IsBlockReplicator(pawn))
+            {
+                FactionDef swarmDef = DefDatabase<FactionDef>.GetNamedSilentFail("WNG_ReplicatorSwarm");
+                Faction swarm = swarmDef == null ? null : Find.FactionManager?.FirstFactionOfDef(swarmDef);
+                if (swarm != null)
+                    pawn.SetFaction(swarm);
+            }
         }
 
         public override void PostExposeData()
