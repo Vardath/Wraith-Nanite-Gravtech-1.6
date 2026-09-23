@@ -2,12 +2,12 @@
 <Defs>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithStrikeCraftIncoming</defName><label>Wraith strike craft (incoming)</label><thingClass>PassengerShuttleIncoming</thingClass>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft</texPath><shaderType>CutoutComplex</shaderType><drawSize>(4,6)</drawSize></graphicData><size>(4,6)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft</texPath><shaderType>CutoutComplex</shaderType><drawSize>(4.4,6.6)</drawSize></graphicData><size>(4,6)</size>
     <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>260</anticipationSoundTicks><ticksToImpactRange>210~270</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(4.5,6.5)</shadowSize></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithStrikeCraftLeaving</defName><label>Wraith strike craft (leaving)</label><thingClass>PassengerShuttleLeaving</thingClass><rotatable>true</rotatable>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft</texPath><shaderType>CutoutComplex</shaderType><drawSize>(4,6)</drawSize></graphicData><size>(4,6)</size>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft</texPath><shaderType>CutoutComplex</shaderType><drawSize>(4.4,6.6)</drawSize></graphicData><size>(4,6)</size>
     <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-45~-18</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(4.5,6.5)</shadowSize></skyfaller>
   </ThingDef>
   <WorldObjectDef ParentName="ShuttleWorldObjectBase"><defName>WNG_WraithStrikeCraftWorld</defName><label>Wraith strike craft</label><description>A Wraith strike craft in native Odyssey world flight.</description><expandingIconTexture>UI/WNG/Build/WNG_WraithStrikeCraft</expandingIconTexture><expandingIconDrawSize>1</expandingIconDrawSize></WorldObjectDef>
@@ -17,7 +17,7 @@
     <defName>WNG_WraithStrikeCraft</defName><label>Wraith strike craft</label>
     <description>A fast Wraith assault and troop-transport organism grown beyond Dart scale. Its living hull metabolises carried Biomass to repair damage while landed, while cultivated Wraith bio-fluid feeds its native Odyssey shuttle flight organs.</description>
     <thingClass>Building_PassengerShuttle</thingClass><preventDroppingThingsOn>true</preventDroppingThingsOn><altitudeLayer>Building</altitudeLayer><pathCost>60</pathCost><blockWind>true</blockWind><passability>PassThroughOnly</passability><fillPercent>0.55</fillPercent><size>(4,6)</size><drawHighlight>true</drawHighlight><highlightColor>(0.20,0.74,0.61)</highlightColor><uiIconScale>1</uiIconScale>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft</texPath><shaderType>CutoutComplex</shaderType><drawSize>(4,6)</drawSize><shadowData><volume>(2.5,1.2,5.0)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft</texPath><shaderType>CutoutComplex</shaderType><drawSize>(4.4,6.6)</drawSize><shadowData><volume>(2.5,1.2,5.0)</volume><offset>(-0.1,0,0)</offset></shadowData></graphicData>
     <statBases><MaxHitPoints>1120</MaxHitPoints><Flammability>0.10</Flammability><WorkToBuild>56000</WorkToBuild><Mass>145</Mass><Comfort>0.64</Comfort></statBases>
     <tickerType>Normal</tickerType><designationCategory>Misc</designationCategory><constructionSkillPrerequisite>8</constructionSkillPrerequisite>
     <costList><WNG_Biomass>380</WNG_Biomass><GravlitePanel>70</GravlitePanel><ComponentSpacer>4</ComponentSpacer><ShuttleEngine>1</ShuttleEngine></costList>
