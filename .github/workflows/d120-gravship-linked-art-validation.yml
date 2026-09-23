@@ -1,0 +1,140 @@
+name: D120 Gravship Linked-Art and Door Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  gravship-linked-art:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Validate family doors, barriers and linked-atlas ordering
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          from PIL import Image
+
+          failures = []
+
+          def defs_from(path):
+              root = ET.parse(path).getroot()
+              return {n.findtext("defName"): n for n in list(root) if n.findtext("defName")}
+
+          family = defs_from("Defs/Gravships/Gravship_FamilySystems.xml")
+          goauld = defs_from("Defs/Gravships/Gravship_Goauld.xml")
+          parity = defs_from("Defs/Gravships/Gravship_VanillaParity.xml")
+
+          door_sets = [
+              ("WNG_WraithGravshipDoor", family),
+              ("WNG_AsuranGravshipDoor", family),
+              ("WNG_GoauldGravshipDoor", goauld),
+              ("WNG_WraithVacuumMembrane", parity),
+              ("WNG_AsuranVacBarrier", parity),
+              ("WNG_GoauldVacBarrier", parity),
+          ]
+
+          for name, defs in door_sets:
+              node = defs.get(name)
+              if node is None:
+                  failures.append(f"{name} missing")
+                  continue
+              if node.find("stuffCategories") is None or node.find("stuffCategories").attrib.get("Inherit") != "False":
+                  failures.append(f"{name} is still stuffable and can inherit a Medium terrain requirement")
+              if node.findtext("costStuffCount") != "0":
+                  failures.append(f"{name} still inherits stuff cost")
+              if node.findtext("useStuffTerrainAffordance") != "false":
+                  failures.append(f"{name} still inherits stuff terrain affordance")
+              if node.findtext("terrainAffordanceNeeded") != "Substructure":
+                  failures.append(f"{name} no longer explicitly requires Odyssey Substructure")
+
+          atlases = [
+              "Textures/Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas.png",
+              "Textures/Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas.png",
+              "Textures/Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas.png",
+              "Textures/Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas.png",
+              "Textures/Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas.png",
+              "Textures/Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas.png",
+              "Textures/Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas.png",
+              "Textures/Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas.png",
+              "Textures/Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas.png",
+          ]
+
+          # MaterialAtlasPool indexes 0..15 from the image BOTTOM row upward:
+          # Up=1, Right=2, Down=4, Left=8.  Check the four one-direction
+          # variants and the all-directions variant against the actual alpha at the
+          # cropped submaterial boundaries used by RimWorld.
+          expected = {
+              0: set(),
+              1: {"up"},
+              2: {"right"},
+              4: {"down"},
+              8: {"left"},
+              15: {"up", "right", "down", "left"},
+          }
+
+          def edge_links(image, index):
+              w, h = image.size
+              if w % 4 or h % 4:
+                  raise ValueError(f"atlas dimensions are not divisible by 4: {image.size}")
+              cw, ch = w // 4, h // 4
+              col = index % 4
+              # Unity texture row 0 is bottom; PIL row 0 is top.
+              row_from_top = 3 - (index // 4)
+
+              # MaterialAtlasPool: each 1/4 cell has 1/32 full-texture padding,
+              # leaving 3/16 texture = 3/4 of one cell as the sampled submaterial.
+              px, py = cw // 8, ch // 8
+              x0 = col * cw + px
+              x1 = (col + 1) * cw - px
+              y0 = row_from_top * ch + py
+              y1 = (row_from_top + 1) * ch - py
+
+              alpha = image.getchannel("A")
+              band = max(2, min(cw, ch) // 48)
+
+              boxes = {
+                  "up":    (x0, y0, x1, min(y1, y0 + band)),
+                  "right": (max(x0, x1 - band), y0, x1, y1),
+                  "down":  (x0, max(y0, y1 - band), x1, y1),
+                  "left":  (x0, y0, min(x1, x0 + band), y1),
+              }
+              result = set()
+              for direction, box in boxes.items():
+                  crop = alpha.crop(box)
+                  active = sum(1 for a in crop.getdata() if a > 24)
+                  if active >= max(2, band):
+                      result.add(direction)
+              return result
+
+          for atlas_path in atlases:
+              path = Path(atlas_path)
+              if not path.exists():
+                  failures.append(f"linked atlas missing: {atlas_path}")
+                  continue
+              with Image.open(path) as im:
+                  image = im.convert("RGBA")
+                  for index, expected_links in expected.items():
+                      actual = edge_links(image, index)
+                      if actual != expected_links:
+                          failures.append(
+                              f"{path.name} atlas index {index} has links {sorted(actual)}, "
+                              f"expected {sorted(expected_links)}; linked row/direction alignment regressed"
+                          )
+
+          repair_script = Path(".github/artfix/reorder_linked_atlas_rows.py")
+          if not repair_script.exists():
+              failures.append("linked-atlas row-order repair script missing")
+
+          if failures:
+              print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("Gravship linked art and substructure-native doors/barriers validated.")
