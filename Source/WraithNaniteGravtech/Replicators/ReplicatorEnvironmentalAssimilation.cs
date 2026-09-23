@@ -110,7 +110,10 @@ namespace WraithNaniteGravtech
         {
             if (thing == null || thing.Destroyed || thing is Pawn || thing is Corpse)
                 return false;
-            ThingCategory category = thing.def?.category ?? ThingCategory.Undefined;
+            if (thing.def == null)
+                return false;
+
+            ThingCategory category = thing.def.category;
             return category == ThingCategory.Item ||
                    category == ThingCategory.Building ||
                    category == ThingCategory.Plant;
