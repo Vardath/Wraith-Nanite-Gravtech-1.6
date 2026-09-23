@@ -95,6 +95,7 @@ namespace WraithNaniteGravtech
     public sealed class ReplicatorThreatAlert : IExposable
     {
         public string domainId;
+        public ReplicatorControlAuthority authority = ReplicatorControlAuthority.AutonomousSwarm;
         public Pawn aggressor;
         public IntVec3 attackCell = IntVec3.Invalid;
         public int untilTick;
@@ -105,6 +106,7 @@ namespace WraithNaniteGravtech
         public void ExposeData()
         {
             Scribe_Values.Look(ref domainId, "domainId");
+            Scribe_Values.Look(ref authority, "authority", ReplicatorControlAuthority.AutonomousSwarm);
             Scribe_References.Look(ref aggressor, "aggressor");
             Scribe_Values.Look(ref attackCell, "attackCell", IntVec3.Invalid);
             Scribe_Values.Look(ref untilTick, "untilTick", 0);
@@ -115,8 +117,9 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Save-persistent bounded retaliation memory. Alerts are controller-domain scoped: different
-    /// domains do not coordinate merely because they currently share a faction.
+    /// Save-persistent bounded retaliation memory. Free autonomous Replicators share the swarm
+    /// warning channel even when they were spawned with separate local domain IDs. Queen/Asuran/
+    /// sovereign-controlled blocks remain isolated to their exact controller domain.
     /// </summary>
     public sealed class MapComponent_ReplicatorThreatResponse : MapComponent
     {
@@ -132,15 +135,24 @@ namespace WraithNaniteGravtech
             if (victim == null || attacker == null || victim.Map != map || attacker.Map != map || victim.Faction == null)
                 return;
 
-            string domainId = ReplicatorDomainUtility.DomainId(victim);
-            if (string.IsNullOrEmpty(domainId))
+            CompReplicatorDomain victimDomain = ReplicatorDomainUtility.Domain(victim);
+            string domainId = victimDomain?.DomainId;
+            if (victimDomain == null || string.IsNullOrEmpty(domainId))
                 return;
 
             ReplicatorThreatAlert alert = null;
             for (int i = 0; i < alerts.Count; i++)
             {
                 ReplicatorThreatAlert candidate = alerts[i];
-                if (candidate != null && candidate.domainId == domainId)
+                if (candidate == null)
+                    continue;
+
+                bool sameAlertDomain =
+                    victimDomain.Authority == ReplicatorControlAuthority.AutonomousSwarm
+                        ? candidate.authority == ReplicatorControlAuthority.AutonomousSwarm
+                        : candidate.authority == victimDomain.Authority &&
+                          candidate.domainId == domainId;
+                if (sameAlertDomain)
                 {
                     alert = candidate;
                     break;
@@ -154,6 +166,8 @@ namespace WraithNaniteGravtech
             }
 
             int now = Find.TickManager?.TicksGame ?? 0;
+            alert.domainId = domainId;
+            alert.authority = victimDomain.Authority;
             alert.aggressor = attacker;
             alert.attackCell = victim.Position;
             alert.untilTick = CompReplicatorThreatResponse.SafeFutureTick(now, durationTicks);
@@ -171,8 +185,9 @@ namespace WraithNaniteGravtech
                 return false;
 
             int now = Find.TickManager?.TicksGame ?? 0;
-            string responderDomainId = ReplicatorDomainUtility.DomainId(responder);
-            if (string.IsNullOrEmpty(responderDomainId))
+            CompReplicatorDomain responderDomain = ReplicatorDomainUtility.Domain(responder);
+            string responderDomainId = responderDomain?.DomainId;
+            if (responderDomain == null || string.IsNullOrEmpty(responderDomainId))
                 return false;
             for (int i = alerts.Count - 1; i >= 0; i--)
             {
@@ -182,7 +197,12 @@ namespace WraithNaniteGravtech
                     alerts.RemoveAt(i);
                     continue;
                 }
-                if (alert.domainId != responderDomainId || alert.aggressor.Faction == responder.Faction)
+                bool matchingControl =
+                    responderDomain.Authority == ReplicatorControlAuthority.AutonomousSwarm
+                        ? alert.authority == ReplicatorControlAuthority.AutonomousSwarm
+                        : alert.authority == responderDomain.Authority &&
+                          alert.domainId == responderDomainId;
+                if (!matchingControl || alert.aggressor.Faction == responder.Faction)
                     continue;
                 if (responder.Position.DistanceToSquared(alert.attackCell) > alert.responseRadiusSq)
                     continue;
