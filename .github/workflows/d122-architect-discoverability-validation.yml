@@ -59,7 +59,7 @@ jobs:
               "Odyssey",
               "FamilyCategoryFor",
               "IsWNGGravshipBuildable",
-              "def.designationCategory",
+              "designationCategory != null",
           )
           for token in required_source:
               if token not in source:
