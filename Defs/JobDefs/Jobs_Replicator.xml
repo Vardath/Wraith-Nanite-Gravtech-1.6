@@ -8,6 +8,13 @@
     <tryStartFlying>true</tryStartFlying>
   </JobDef>
   <JobDef>
+    <defName>WNG_ReplicatorAssimilateCell</defName>
+    <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorAssimilateCell</driverClass>
+    <reportString>stripping TargetA for replication.</reportString>
+    <overrideFlyChance>1</overrideFlyChance>
+    <tryStartFlying>true</tryStartFlying>
+  </JobDef>
+  <JobDef>
     <defName>WNG_ReplicatorAssimilateBiological</defName>
     <driverClass>WraithNaniteGravtech.JobDriver_ReplicatorAssimilateBiological</driverClass>
     <reportString>converting TargetA into replicator mass.</reportString>
