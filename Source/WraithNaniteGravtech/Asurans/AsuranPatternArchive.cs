@@ -338,6 +338,7 @@ namespace WraithNaniteGravtech
                 {
                     ApplySnapshot(snapshot, copy);
                     StripGeneratedGear(copy);
+                    AsuranDefaultApparelUtility.EnsureRoleApparel(copy);
                     if (!GenPlace.TryPlaceThing(copy, parent.Position, parent.Map, ThingPlaceMode.Near))
                     {
                         DestroyUncommitted(copy);
