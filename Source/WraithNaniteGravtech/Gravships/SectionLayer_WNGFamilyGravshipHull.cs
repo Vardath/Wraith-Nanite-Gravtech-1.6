@@ -131,9 +131,10 @@ namespace WraithNaniteGravtech
         private static readonly float CornerAltitude = AltitudeLayer.BuildingOnTop.AltitudeFor();
         private static readonly float SubstructureAltitude = AltitudeLayer.TerrainEdges.AltitudeFor();
 
-        // Family hulls already use RimWorld's native CornerFiller linked-wall renderer.
-        // Disable this second custom 2x2 overlay so wall joins match vanilla both on-map and in gravship capture.
-        public override bool Visible => false;
+        // Straight wall tiles use RimWorld's normal linked-wall atlas. This separate layer mirrors
+        // Odyssey's SectionLayer_GravshipHull specifically for the large angled outer-hull pieces.
+        // Family art changes the skin only; topology, scale, offsets and masking remain vanilla.
+        public override bool Visible => ModsConfig.OdysseyActive;
 
         public SectionLayer_WNGFamilyGravshipHull(Section section)
             : base(section)

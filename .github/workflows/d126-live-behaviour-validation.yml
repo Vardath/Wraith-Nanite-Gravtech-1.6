@@ -29,6 +29,20 @@ jobs:
           if "ReplicatorDomainUtility.EnsureAutonomousSwarmFaction(pawn)" not in assimilation:
               failures.append("autonomous assimilation does not repair faction before AI gating")
 
+          environment = Path("Source/WraithNaniteGravtech/Replicators/ReplicatorEnvironmentalAssimilation.cs").read_text(encoding="utf-8")
+          thinktree = Path("Defs/ThinkTreeDefs/ThinkTree_Replicator.xml").read_text(encoding="utf-8")
+          if "JobGiver_ReplicatorAssimilateStructuralCell" not in environment:
+              failures.append("Replicators lack dedicated roof/floor assimilation job giver")
+          if "HasStructuralLayer" not in environment or "terrainGrid.CanRemoveTopLayerAt" not in environment or "roofGrid.Roofed" not in environment:
+              failures.append("Replicator structural-layer recognition lost roof/floor coverage")
+          structural = "WraithNaniteGravtech.JobGiver_ReplicatorAssimilateStructuralCell"
+          physical = "WraithNaniteGravtech.JobGiver_ReplicatorAssimilate"
+          if thinktree.count(structural) != 4:
+              failures.append("not every autonomous Replicator think tree prioritizes structural layers")
+          for tree in thinktree.split("<ThinkTreeDef>")[1:]:
+              if structural in tree and physical in tree and tree.find(structural) > tree.find(physical):
+                  failures.append("roof/floor assimilation is ordered after physical Thing assimilation")
+
           root = ET.parse("Defs/AbilityDefs/Abilities_HumanForm.xml").getroot()
           consume = next((n for n in list(root) if n.findtext("defName") == "WNG_HumanFormConsume"), None)
           if consume is None:
@@ -40,8 +54,10 @@ jobs:
                   failures.append("Assimilate Matter is marked hostile")
 
           corner_src = Path("Source/WraithNaniteGravtech/Gravships/SectionLayer_WNGFamilyGravshipHull.cs").read_text(encoding="utf-8")
-          if "public override bool Visible => false;" not in corner_src:
-              failures.append("competing custom 2x2 gravship-corner renderer is still active")
+          if "public override bool Visible => ModsConfig.OdysseyActive;" not in corner_src:
+              failures.append("family angled gravship-corner renderer is not active")
+          if "HullCornerScale = 2f" not in corner_src or "GetOffset" not in corner_src:
+              failures.append("family angled gravship corners no longer mirror vanilla Odyssey geometry")
 
           if failures:
               print("LIVE-BEHAVIOUR REGRESSION FAILURES:")

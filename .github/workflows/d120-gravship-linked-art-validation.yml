@@ -179,8 +179,17 @@ jobs:
               failures.append("linked-atlas row-order repair script missing")
 
           corner_layer = Path("Source/WraithNaniteGravtech/Gravships/SectionLayer_WNGFamilyGravshipHull.cs").read_text(encoding="utf-8")
-          if "public override bool Visible => false;" not in corner_layer:
-              failures.append("legacy WNG 2x2 gravship-corner overlay is active; native CornerFiller must be authoritative")
+          if "public override bool Visible => ModsConfig.OdysseyActive;" not in corner_layer:
+              failures.append("family angled gravship-corner layer is not active with Odyssey")
+          for required in (
+              "HullCornerScale = 2f",
+              "GetOffset",
+              "IsCornerSubstructure",
+              "ShaderDatabase.GravshipMaskMasked",
+              "ShaderDatabase.IndoorMaskMasked",
+          ):
+              if required not in corner_layer:
+                  failures.append(f"family angled gravship-corner layer lost vanilla geometry/mask contract: {required}")
 
           if failures:
               print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")

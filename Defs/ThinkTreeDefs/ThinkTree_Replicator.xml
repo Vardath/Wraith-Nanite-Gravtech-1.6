@@ -30,6 +30,7 @@
         </li>
         <li Class="ThinkNode_QueuedJob" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateStructuralCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />
@@ -79,6 +80,7 @@
         </li>
         <li Class="ThinkNode_QueuedJob" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateStructuralCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />
@@ -129,6 +131,7 @@
         <li Class="ThinkNode_QueuedJob" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorRepair" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateStructuralCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />
@@ -162,6 +165,7 @@
         <li Class="ThinkNode_QueuedJob" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorDefense" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorBurrowerBreach" />
+        <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateStructuralCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilate" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateCell" />
         <li Class="WraithNaniteGravtech.JobGiver_ReplicatorAssimilateBiological" />

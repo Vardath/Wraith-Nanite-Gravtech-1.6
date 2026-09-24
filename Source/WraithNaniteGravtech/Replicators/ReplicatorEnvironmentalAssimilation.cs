@@ -179,7 +179,18 @@ namespace WraithNaniteGravtech
                    !isVoid;
         }
 
-        public static IntVec3 FindClosestConsumableCell(Pawn pawn)
+        public static bool HasStructuralLayer(Map map, IntVec3 cell)
+        {
+            if (map == null || !cell.InBounds(map))
+                return false;
+
+            // Roofs and removable top terrain layers are the visible built-environment layers
+            // the swarm should strip even while ordinary objects still remain elsewhere.
+            return map.roofGrid.Roofed(cell) ||
+                   map.terrainGrid.CanRemoveTopLayerAt(cell);
+        }
+
+        public static IntVec3 FindClosestConsumableCell(Pawn pawn, bool structuralLayersOnly = false)
         {
             if (!ReplicatorAssimilationUtility.CanAutonomouslyAssimilate(pawn) || pawn?.Map == null)
                 return IntVec3.Invalid;
@@ -193,6 +204,8 @@ namespace WraithNaniteGravtech
             foreach (IntVec3 cell in GenRadial.RadialCellsAround(pawn.Position, radius, useCenter: true))
             {
                 if (!IsConsumableCell(pawn, cell))
+                    continue;
+                if (structuralLayersOnly && !HasStructuralLayer(pawn.Map, cell))
                     continue;
                 if (!pawn.CanReach(cell, PathEndMode.Touch, Danger.Deadly))
                     continue;
@@ -313,6 +326,21 @@ namespace WraithNaniteGravtech
                 Log.Error("[WNG] Replicator cell-matter Drone creation failed: " + ex);
                 return false;
             }
+        }
+    }
+
+    public sealed class JobGiver_ReplicatorAssimilateStructuralCell : ThinkNode_JobGiver
+    {
+        protected override Job TryGiveJob(Pawn pawn)
+        {
+            IntVec3 cell = ReplicatorEnvironmentalAssimilationUtility.FindClosestConsumableCell(
+                pawn,
+                structuralLayersOnly: true);
+            if (!cell.IsValid)
+                return null;
+
+            JobDef def = DefDatabase<JobDef>.GetNamedSilentFail("WNG_ReplicatorAssimilateCell");
+            return def == null ? null : JobMaker.MakeJob(def, cell);
         }
     }
 
