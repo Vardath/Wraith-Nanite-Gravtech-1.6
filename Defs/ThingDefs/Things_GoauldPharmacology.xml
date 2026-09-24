@@ -30,6 +30,7 @@
       <chairSearchRadius>0</chairSearchRadius>
       <canAutoSelectAsFoodForCaravan>false</canAutoSelectAsFoodForCaravan>
       <tableDesired>false</tableDesired>
+      <outcomeDoers />
     </ingestible>
     <recipeMaker>
       <researchPrerequisite>WNG_GoauldBiochemicalControl</researchPrerequisite>
