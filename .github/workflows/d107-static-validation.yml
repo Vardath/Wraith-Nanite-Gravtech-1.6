@@ -2616,8 +2616,11 @@ jobs:
           live_sounds = Path('Defs/SoundDefs/Sounds_WNG_Fresh.xml').read_text(encoding='utf-8')
           dart_sound_start = live_sounds.find('<defName>WNG_WraithDartDrive</defName>')
           dart_sound_end = live_sounds.find('</SoundDef>', dart_sound_start)
-          if dart_sound_start < 0 or dart_sound_end < 0 or '<sustain>true</sustain>' not in live_sounds[dart_sound_start:dart_sound_end]:
+          dart_sound_block = live_sounds[dart_sound_start:dart_sound_end] if dart_sound_start >= 0 and dart_sound_end >= 0 else ''
+          if '<sustain>true</sustain>' not in dart_sound_block:
               failures.append('WNG_WraithDartDrive is no longer a sustainer even though AmbientSound spawns it as one')
+          if '<priorityMode>PrioritizeNearest</priorityMode>' not in dart_sound_block:
+              failures.append('WNG_WraithDartDrive sustainer must use PrioritizeNearest; PrioritizeNewest is invalid for sustainers')
 
           if failures:
               print('\nVALIDATION FAILURES:')
