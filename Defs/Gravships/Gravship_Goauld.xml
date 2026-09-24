@@ -90,7 +90,7 @@
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelTankFacility"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><providesFuel>true</providesFuel><componentTypeDef>FuelStorage</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
-      <li Class="CompProperties_Refuelable"><fuelCapacity>250</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>250</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>ONAC_LiquidNaquadria</li></thingDefs></fuelFilter><fuelLabel>Chemfuel</fuelLabel><fuelGizmoLabel>Chemfuel</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><canEjectFuel>true</canEjectFuel></li>
+      <li Class="CompProperties_Refuelable"><fuelCapacity>250</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>250</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>Chemfuel</li></thingDefs></fuelFilter><fuelLabel>Chemfuel</fuelLabel><fuelGizmoLabel>Chemfuel</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><canEjectFuel>true</canEjectFuel></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint"><family>Goauld</family><role>Tank</role></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>80</demandWatts></li>
     </comps>
@@ -106,7 +106,7 @@
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelTankFacility"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><providesFuel>true</providesFuel><componentTypeDef>FuelStorage</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
-      <li Class="CompProperties_Refuelable"><fuelCapacity>750</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>750</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>ONAC_LiquidNaquadria</li></thingDefs></fuelFilter><fuelLabel>Chemfuel</fuelLabel><fuelGizmoLabel>Chemfuel</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><canEjectFuel>true</canEjectFuel></li>
+      <li Class="CompProperties_Refuelable"><fuelCapacity>750</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>750</initialConfigurableTargetFuelLevel><fuelFilter><thingDefs><li>Chemfuel</li></thingDefs></fuelFilter><fuelLabel>Chemfuel</fuelLabel><fuelGizmoLabel>Chemfuel</fuelGizmoLabel><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><autoRefuelPercent>1</autoRefuelPercent><showFuelGizmo>true</showFuelGizmo><canEjectFuel>true</canEjectFuel></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint"><family>Goauld</family><role>Tank</role></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>120</demandWatts></li>
     </comps>
@@ -151,7 +151,7 @@
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
       <li Class="CompProperties_Flickable"/>
-      <li Class="CompProperties_Refuelable"><fuelCapacity>20</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>20</initialConfigurableTargetFuelLevel><fuelConsumptionRate>0.75</fuelConsumptionRate><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><fuelFilter><thingDefs><li>ONAC_Naquadah</li></thingDefs></fuelFilter><fuelLabel>Uranium</fuelLabel><fuelGizmoLabel>Uranium</fuelGizmoLabel><showFuelGizmo>true</showFuelGizmo></li>
+      <li Class="CompProperties_Refuelable"><fuelCapacity>20</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>20</initialConfigurableTargetFuelLevel><fuelConsumptionRate>0.75</fuelConsumptionRate><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><fuelFilter><thingDefs><li>Uranium</li></thingDefs></fuelFilter><fuelLabel>Uranium</fuelLabel><fuelGizmoLabel>Uranium</fuelGizmoLabel><showFuelGizmo>true</showFuelGizmo></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Generator</role><capacityWatts>12000</capacityWatts></li>
     </comps>
   </ThingDef>
