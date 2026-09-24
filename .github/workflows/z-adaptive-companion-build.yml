@@ -1,0 +1,118 @@
+name: Z Adaptive Companion Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'CompanionMods/Z-Adaptive-Error-Patch/**'
+      - '.github/workflows/z-adaptive-companion-build.yml'
+  pull_request:
+    paths:
+      - 'CompanionMods/Z-Adaptive-Error-Patch/**'
+      - '.github/workflows/z-adaptive-companion-build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Validate companion source contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='CompanionMods/Z-Adaptive-Error-Patch'
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          root=Path('CompanionMods/Z-Adaptive-Error-Patch')
+          ET.parse(root/'About/About.xml')
+          ET.parse(root/'Patches/AdaptiveKnownFixes.xml')
+          print('Z Adaptive XML parses cleanly.')
+          PY
+          grep -q 'PatchVehicleFrameworkGravTide' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'VehiclePathingReadyPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'RecalculatePerceivedPathCostAt' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'RenderAndSaveTexture' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'AutoNameBabiesFinalizer' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+
+      - name: Restore RimWorld 1.6 reference assemblies
+        run: dotnet restore CompanionMods/Z-Adaptive-Error-Patch/Source/ZAdaptiveRuntime/ZAdaptiveRuntime.csproj
+
+      - name: Compile Z Adaptive runtime assembly
+        run: dotnet build CompanionMods/Z-Adaptive-Error-Patch/Source/ZAdaptiveRuntime/ZAdaptiveRuntime.csproj -c Release --no-restore
+
+      - name: Verify managed output
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='CompanionMods/Z-Adaptive-Error-Patch'
+          test -f "$root/Assemblies/ZAdaptiveRuntime.dll"
+          test -f "$root/Assemblies/ZAdaptiveRuntime.pdb"
+          test $(stat -c%s "$root/Assemblies/ZAdaptiveRuntime.dll") -gt 1024
+          strings "$root/Assemblies/ZAdaptiveRuntime.dll" | grep -q VehiclePathingReadyPrefix
+          strings "$root/Assemblies/ZAdaptiveRuntime.dll" | grep -q AutoNameBabiesFinalizer
+          strings "$root/Assemblies/ZAdaptiveRuntime.dll" | grep -q VgeDoCaptureTranspiler
+
+      - name: Assemble playable mod folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          src='CompanionMods/Z-Adaptive-Error-Patch'
+          root='z-adaptive-stage/Z Adaptive Error Patch'
+          rm -rf z-adaptive-stage
+          mkdir -p "$root/Assemblies"
+          cp -R "$src/About" "$root/About"
+          cp -R "$src/Patches" "$root/Patches"
+          cp -R "$src/Textures" "$root/Textures"
+          cp "$src/README.md" "$root/README.md"
+          cp "$src/Assemblies/ZAdaptiveRuntime.dll" "$root/Assemblies/ZAdaptiveRuntime.dll"
+          cp "$src/Assemblies/ZAdaptiveRuntime.pdb" "$root/Assemblies/ZAdaptiveRuntime.pdb"
+
+      - name: Create and verify playable ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd z-adaptive-stage
+          zip -qr ../Z-Adaptive-Error-Patch-RimWorld-1.6.zip 'Z Adaptive Error Patch'
+          cd ..
+          python3 - <<'PY'
+          import zipfile
+          p='Z-Adaptive-Error-Patch-RimWorld-1.6.zip'
+          required={
+              'Z Adaptive Error Patch/About/About.xml',
+              'Z Adaptive Error Patch/Assemblies/ZAdaptiveRuntime.dll',
+              'Z Adaptive Error Patch/Assemblies/ZAdaptiveRuntime.pdb',
+              'Z Adaptive Error Patch/Patches/AdaptiveKnownFixes.xml',
+              'Z Adaptive Error Patch/README.md',
+              'Z Adaptive Error Patch/Textures/Preview.png',
+              'Z Adaptive Error Patch/Textures/ZAdaptive/Placeholder_north.png',
+              'Z Adaptive Error Patch/Textures/ZAdaptive/Placeholder_east.png',
+              'Z Adaptive Error Patch/Textures/ZAdaptive/Placeholder_south.png',
+              'Z Adaptive Error Patch/Textures/ZAdaptive/Placeholder_west.png',
+          }
+          with zipfile.ZipFile(p) as z:
+              names=set(z.namelist())
+              missing=required-names
+              if missing:
+                  raise SystemExit('ZIP missing required entries: '+', '.join(sorted(missing)))
+              roots={n.split('/',1)[0] for n in names if '/' in n}
+              if roots != {'Z Adaptive Error Patch'}:
+                  raise SystemExit(f'Unexpected ZIP roots: {sorted(roots)}')
+          print('Installable Z Adaptive companion ZIP layout verified.')
+          PY
+
+      - name: Upload playable mod ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Z-Adaptive-Error-Patch-RimWorld-1.6
+          path: Z-Adaptive-Error-Patch-RimWorld-1.6.zip
+          if-no-files-found: error
+          retention-days: 14
