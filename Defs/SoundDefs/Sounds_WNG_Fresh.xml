@@ -291,6 +291,7 @@
   <SoundDef>
     <defName>WNG_WraithDartDrive</defName>
     <sustain>true</sustain>
+    <priorityMode>PrioritizeNearest</priorityMode>
     <context>MapOnly</context>
     <maxVoices>4</maxVoices>
     <subSounds>
