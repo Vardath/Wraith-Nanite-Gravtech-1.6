@@ -123,6 +123,12 @@ jobs:
           if "<forceDebugSpawnable>true</forceDebugSpawnable>" not in alkesh_block:
               failures.append("player Al'kesh is not explicitly exposed to direct debug place/spawn paths")
 
+          death_start = goauld.find("<defName>WNG_GoauldDeathGlider</defName>")
+          death_end = goauld.find("</ThingDef>", death_start)
+          death_block = goauld[death_start:death_end]
+          if "<forceDebugSpawnable>true</forceDebugSpawnable>" not in death_block:
+              failures.append("player Death Glider is not explicitly exposed to direct debug place/spawn paths")
+
           # Physical Death Glider sortie must keep the exact craft rather than proxying it.
           death_source = Path("Source/WraithNaniteGravtech/Goauld/DeathGliderMission.cs").read_text(encoding="utf-8")
           for token in ("TryBeginPhysicalPass", "innerContainer.TryAdd(craft)", "LandExactCraft",
