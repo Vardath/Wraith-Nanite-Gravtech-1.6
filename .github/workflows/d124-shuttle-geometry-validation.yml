@@ -120,8 +120,8 @@ jobs:
           alkesh_block = goauld[alkesh_start:alkesh_end]
           if "<neverBuildable>true</neverBuildable>" in alkesh_block:
               failures.append("player Al'kesh regressed to neverBuildable")
-          if "<forceDebugSpawnable>false</forceDebugSpawnable>" in alkesh_block:
-              failures.append("player Al'kesh was hidden from normal build/spawn paths")
+          if "<forceDebugSpawnable>true</forceDebugSpawnable>" not in alkesh_block:
+              failures.append("player Al'kesh is not explicitly exposed to direct debug place/spawn paths")
 
           # Physical Death Glider sortie must keep the exact craft rather than proxying it.
           death_source = Path("Source/WraithNaniteGravtech/Goauld/DeathGliderMission.cs").read_text(encoding="utf-8")
