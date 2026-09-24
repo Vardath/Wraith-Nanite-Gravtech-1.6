@@ -176,6 +176,7 @@ namespace WraithNaniteGravtech
 
             return map.roofGrid.Roofed(cell) ||
                    map.terrainGrid.CanRemoveTopLayerAt(cell) ||
+                   map.terrainGrid.CanRemoveFoundationAt(cell) ||
                    !isVoid;
         }
 
@@ -187,7 +188,8 @@ namespace WraithNaniteGravtech
             // Roofs and removable top terrain layers are the visible built-environment layers
             // the swarm should strip even while ordinary objects still remain elsewhere.
             return map.roofGrid.Roofed(cell) ||
-                   map.terrainGrid.CanRemoveTopLayerAt(cell);
+                   map.terrainGrid.CanRemoveTopLayerAt(cell) ||
+                   map.terrainGrid.CanRemoveFoundationAt(cell);
         }
 
         public static IntVec3 FindClosestConsumableCell(Pawn pawn, bool structuralLayersOnly = false)
@@ -238,11 +240,23 @@ namespace WraithNaniteGravtech
                 if (map.roofGrid.Roofed(cell))
                     map.roofGrid.SetRoof(cell, null);
 
+                bool removedStructuralTerrain = false;
+
                 if (map.terrainGrid.CanRemoveTopLayerAt(cell))
                 {
                     map.terrainGrid.RemoveTopLayer(cell, doLeavings: false);
+                    removedStructuralTerrain = true;
                 }
-                else
+
+                // Odyssey gravship substructure (including WNG family substructures) lives in the
+                // foundation grid, not the ordinary top/under terrain grid. Consume that layer too.
+                if (map.terrainGrid.CanRemoveFoundationAt(cell))
+                {
+                    map.terrainGrid.RemoveFoundation(cell, doLeavings: false);
+                    removedStructuralTerrain = true;
+                }
+
+                if (!removedStructuralTerrain)
                 {
                     TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
                     bool isVoid = terrain == null ||
