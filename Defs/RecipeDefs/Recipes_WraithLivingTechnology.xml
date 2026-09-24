@@ -66,6 +66,7 @@
     <jobString>Growing a Wraith grav-engine seed.</jobString>
     <workAmount>7000</workAmount>
     <workSkill>Intellectual</workSkill>
+    <researchPrerequisite>WNG_HiveGravshipArchitecture</researchPrerequisite>
     <recipeUsers>
       <li>WNG_LivingForge</li>
     </recipeUsers>

@@ -1,0 +1,71 @@
+name: D125 Gameplay Accessibility Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate WNG gameplay accessibility
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          failures = []
+          def roots_under(folder):
+              for path in Path(folder).rglob("*.xml"):
+                  try: yield path, ET.parse(path).getroot()
+                  except Exception as exc: failures.append(f"XML parse failed for {path}: {exc}")
+          coords = {}
+          for path, root in roots_under("Defs/ResearchProjectDefs"):
+              for node in list(root):
+                  name = node.findtext("defName") or ""
+                  if not name.startswith("WNG_"): continue
+                  x, y = node.findtext("researchViewX"), node.findtext("researchViewY")
+                  if not x or not y:
+                      failures.append(f"{name} has no research-tree coordinates ({path})"); continue
+                  key = (x, y)
+                  if key in coords: failures.append(f"research coordinate collision {key}: {coords[key]} and {name}")
+                  coords[key] = name
+          for path in (Path("Defs/Gravships/Gravship_Goauld.xml"), Path("Defs/Gravships/Gravship_VanillaParity.xml")):
+              text = path.read_text(encoding="utf-8")
+              if 'MayRequire="idolord.ONAC"' in text or 'MayRequire="idolord.onac"' in text:
+                  failures.append(f"{path} still hides base WNG Goa'uld gravship content behind ONAC")
+              if any(token in text for token in ("ONAC_Architect","ONAC_Naquadah","ONAC_LiquidNaquadria")):
+                  failures.append(f"{path} still has hard ONAC Def dependencies in base content")
+          if "MayRequire" in Path("Defs/ResearchProjectDefs/Research_GoauldGravships.xml").read_text(encoding="utf-8"):
+              failures.append("WNG_GoauldGravships research is still optional-mod gated")
+          onac = Path("Patches/WNG_GoauldGravshipONACIntegration.xml").read_text(encoding="utf-8")
+          for token in ('MayRequire="idolord.onac"', "ONAC_Naquadah", "ONAC_LiquidNaquadria"):
+              if token not in onac: failures.append(f"conditional Goa'uld gravship ONAC integration lost {token}")
+          child_root = ET.parse("Defs/RecipeDefs/Recipes_ChildsToy.xml").getroot()
+          child = next((n for n in list(child_root) if n.findtext("defName") == "WNG_MakeChildsToy"), None)
+          if child is None or "MechGestator" not in [x.text for x in child.findall("./recipeUsers/li")]: failures.append("WNG_MakeChildsToy is not assigned to MechGestator")
+          pharm_root = ET.parse("Defs/ThingDefs/Things_WraithPharmacology.xml").getroot()
+          chem = next((n for n in list(pharm_root) if n.tag == "ChemicalDef" and n.findtext("defName") == "WNG_WraithEnzyme"), None)
+          if chem is None or chem.findtext("toleranceHediff") != "WNG_WraithEnzymeTolerance": failures.append("WNG_WraithEnzyme does not use WNG_WraithEnzymeTolerance")
+          living_root = ET.parse("Defs/RecipeDefs/Recipes_WraithLivingTechnology.xml").getroot()
+          seed = next((n for n in list(living_root) if n.findtext("defName") == "WNG_GrowWraithGravEngineSeed"), None)
+          if seed is None or seed.findtext("researchPrerequisite") != "WNG_HiveGravshipArchitecture": failures.append("Wraith grav-engine seed is not gated by WNG_HiveGravshipArchitecture")
+          for folder in ("Defs/ThingDefs","Defs/Gravships","Defs/TerrainDefs"):
+              for path, root in roots_under(folder):
+                  for node in list(root):
+                      name = node.findtext("defName") or ""
+                      if not name.startswith("WNG_") or node.tag not in ("ThingDef","TerrainDef"): continue
+                      category = node.findtext("designationCategory")
+                      if not category: continue
+                      if category.startswith("ONAC_"): failures.append(f"{name} uses external Architect category {category}")
+                      if not node.findall("./researchPrerequisites/li"): failures.append(f"{name} is buildable but has no research prerequisite")
+          access = Path("Source/WraithNaniteGravtech/UI/WNGGameplayAccessibility.cs").read_text(encoding="utf-8")
+          for token in ("ThingCategory.Item","ThingCategory.Building","def.forceDebugSpawnable = true"):
+              if token not in access: failures.append(f"direct-spawn accessibility source lost {token}")
+          if failures:
+              print("GAMEPLAY ACCESSIBILITY FAILURES:")
+              for failure in failures: print(" -", failure)
+              raise SystemExit(1)
+          print(f"WNG gameplay accessibility validated; {len(coords)} research projects occupy unique research-tree positions.")

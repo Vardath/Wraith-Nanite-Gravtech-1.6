@@ -177,17 +177,17 @@
   </ThingDef>
 
   <!-- ============================== GOA'ULD ============================== -->
-  <ThingDef ParentName="BuildingBase" MayRequire="idolord.ONAC">
+  <ThingDef ParentName="BuildingBase">
     <defName>WNG_GoauldOrbitalScanner</defName>
     <label>Ha'tak orbital scanner</label>
     <description>A Goa'uld long-range sensor array using Odyssey's native orbital-scanner logic to detect irregular objects in orbit.</description>
     <thingClass>Building</thingClass>
-    <designationCategory>ONAC_Architect</designationCategory><uiOrder>2390</uiOrder><tickerType>Normal</tickerType>
+    <designationCategory>Misc</designationCategory><uiOrder>2390</uiOrder><tickerType>Normal</tickerType>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPeltac</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.4</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><constructionSkillPrerequisite>9</constructionSkillPrerequisite><canBeUsedUnderRoof>false</canBeUsedUnderRoof>
     <statBases><MaxHitPoints>480</MaxHitPoints><Mass>45</Mass><WorkToBuild>11000</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
-    <costList><ONAC_Naquadah>30</ONAC_Naquadah><Plasteel>100</Plasteel><Gold>15</Gold><ComponentSpacer>3</ComponentSpacer></costList>
+    <costList><Uranium>30</Uranium><Plasteel>100</Plasteel><Gold>15</Gold><ComponentSpacer>3</ComponentSpacer></costList>
     <researchPrerequisites><li>WNG_GoauldGravships</li><li>OrbitalTech</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li><li>PlaceWorker_NotUnderRoof</li></placeWorkers>
     <comps>
@@ -199,16 +199,16 @@
     </comps>
   </ThingDef>
 
-  <ThingDef ParentName="BuildingBase" MayRequire="idolord.ONAC">
+  <ThingDef ParentName="BuildingBase">
     <defName>WNG_GoauldLifeSupport</defName>
     <label>Ha'tak life-support regulator</label>
     <description>A naquadah-powered atmospheric system using Odyssey's native oxygen-pump behavior to maintain pressure aboard a Ha'tak.</description>
     <thingClass>Building</thingClass>
-    <designationCategory>ONAC_Architect</designationCategory><uiOrder>2391</uiOrder><tickerType>Rare</tickerType>
+    <designationCategory>Misc</designationCategory><uiOrder>2391</uiOrder><tickerType>Rare</tickerType>
     <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldNaquadahPowerCore</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>380</MaxHitPoints><Mass>18</Mass><WorkToBuild>5500</WorkToBuild><Flammability>0</Flammability><Beauty>3</Beauty></statBases>
-    <costList><ONAC_Naquadah>12</ONAC_Naquadah><Plasteel>55</Plasteel><ComponentIndustrial>2</ComponentIndustrial></costList>
+    <costList><Uranium>12</Uranium><Plasteel>55</Plasteel><ComponentIndustrial>2</ComponentIndustrial></costList>
     <researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
@@ -220,15 +220,15 @@
     </comps>
   </ThingDef>
 
-  <ThingDef ParentName="Door" MayRequire="idolord.ONAC">
+  <ThingDef ParentName="Door">
     <defName>WNG_GoauldVacBarrier</defName>
     <label>Ha'tak vacuum barrier</label>
     <description>A Goa'uld pressure field using Odyssey's native vacuum-barrier behavior, allowing passage while a powered naquadah field retains atmosphere and heat.</description>
     <thingClass>Building_VacBarrier</thingClass>
-    <designationCategory>ONAC_Architect</designationCategory><uiOrder>1807</uiOrder><tickerType>Normal</tickerType>
+    <designationCategory>Structure</designationCategory><uiOrder>1807</uiOrder><tickerType>Normal</tickerType>
     <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>460</MaxHitPoints><WorkToBuild>1300</WorkToBuild><Flammability>0</Flammability></statBases>
-    <costList Inherit="False"><ONAC_Naquadah>8</ONAC_Naquadah><Plasteel>25</Plasteel></costList>
+    <costList Inherit="False"><Uranium>8</Uranium><Plasteel>25</Plasteel></costList>
     <researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight></building>
@@ -241,15 +241,15 @@
     </comps>
   </ThingDef>
 
-  <ThingDef ParentName="GravshipComponentBase" MayRequire="idolord.ONAC">
+  <ThingDef ParentName="GravshipComponentBase">
     <defName>WNG_GoauldNavigationCrystal</defName>
     <label>Ha'tak navigation crystal</label>
     <description>A dedicated Goa'uld flight-calculation crystal filling Odyssey's pilot-subpersona role. Up to two active navigation crystals improve native gravlaunch quality.</description>
-    <designationCategory>ONAC_Architect</designationCategory><uiOrder>2392</uiOrder><tickerType>Normal</tickerType>
+    <designationCategory>Misc</designationCategory><uiOrder>2392</uiOrder><tickerType>Normal</tickerType>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPeltac</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>320</MaxHitPoints><Mass>10</Mass><WorkToBuild>6500</WorkToBuild><Flammability>0</Flammability><Beauty>5</Beauty></statBases>
-    <costList><ONAC_Naquadah>18</ONAC_Naquadah><Plasteel>55</Plasteel><Gold>18</Gold><ComponentSpacer>2</ComponentSpacer></costList>
+    <costList><Uranium>18</Uranium><Plasteel>55</Plasteel><Gold>18</Gold><ComponentSpacer>2</ComponentSpacer></costList>
     <researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
@@ -258,15 +258,15 @@
     </comps>
   </ThingDef>
 
-  <ThingDef ParentName="GravshipComponentBase" MayRequire="idolord.ONAC">
+  <ThingDef ParentName="GravshipComponentBase">
     <defName>WNG_GoauldSignalJammer</defName>
     <label>Ha'tak signal masker</label>
     <description>A Goa'uld subspace interference array performing Odyssey's native signal-jammer role, allowing a properly equipped Ha'tak to reach defended orbital destinations.</description>
-    <designationCategory>ONAC_Architect</designationCategory><uiOrder>2393</uiOrder><tickerType>Normal</tickerType>
+    <designationCategory>Misc</designationCategory><uiOrder>2393</uiOrder><tickerType>Normal</tickerType>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldFuelOptimizer</texPath><drawSize>(2,2)</drawSize></graphicData>
     <size>(2,2)</size><fillPercent>0.5</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>460</MaxHitPoints><Mass>55</Mass><WorkToBuild>10500</WorkToBuild><Flammability>0</Flammability><Beauty>4</Beauty></statBases>
-    <costList><ONAC_Naquadah>35</ONAC_Naquadah><Plasteel>110</Plasteel><Gold>20</Gold><ComponentSpacer>4</ComponentSpacer></costList>
+    <costList><Uranium>35</Uranium><Plasteel>110</Plasteel><Gold>20</Gold><ComponentSpacer>4</ComponentSpacer></costList>
     <researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>

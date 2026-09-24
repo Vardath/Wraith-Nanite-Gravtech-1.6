@@ -61,6 +61,7 @@
     <defName>WNG_WraithEnzyme</defName>
     <label>Wraith enzyme</label>
     <addictionHediff>WNG_WraithEnzymeAddiction</addictionHediff>
+    <toleranceHediff>WNG_WraithEnzymeTolerance</toleranceHediff>
     <geneOverdoseChanceFactorResist>0.5</geneOverdoseChanceFactorResist>
     <geneOverdoseChanceFactorImmune>0</geneOverdoseChanceFactorImmune>
   </ChemicalDef>

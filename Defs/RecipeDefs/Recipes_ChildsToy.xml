@@ -9,6 +9,7 @@
     <gestationCycles>1</gestationCycles>
     <formingTicks>90000</formingTicks>
     <researchPrerequisite>WNG_ReplicatorGestation</researchPrerequisite>
+    <recipeUsers><li>MechGestator</li></recipeUsers>
     <ingredients Inherit="False">
       <li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>35</count></li>
       <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>10</count></li>
