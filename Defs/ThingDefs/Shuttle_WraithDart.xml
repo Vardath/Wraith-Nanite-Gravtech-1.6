@@ -8,7 +8,7 @@
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithDartLeaving</defName><label>Wraith Dart (leaving)</label><thingClass>WraithNaniteGravtech.Skyfaller_WNGWraithDartLeaving</thingClass><rotatable>true</rotatable>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Wraith/Shuttle/WNG_WraithDart</texPath><shaderType>CutoutComplex</shaderType><drawSize>(3.3,5.5)</drawSize></graphicData><size>(3,5)</size>
-    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(3.5,5.5)</shadowSize></skyfaller>
+    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(3.5,5.5)</shadowSize><moteSpawnTime>0.05</moteSpawnTime><motesPerCell>1</motesPerCell><rotationCurve><points><li>(0,0)</li><li>(0.15,10)</li><li>(0.5,-5)</li></points></rotationCurve><zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve><speedCurve><points><li>(0,0.2)</li><li>(0.6,1.0)</li></points></speedCurve></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_WraithDartFlyover</defName><label>Wraith Dart flyover</label><thingClass>WraithNaniteGravtech.Skyfaller_WNGWraithDartFlyover</thingClass><rotatable>true</rotatable>
