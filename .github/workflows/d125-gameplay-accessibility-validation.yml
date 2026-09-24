@@ -46,6 +46,22 @@ jobs:
           child_root = ET.parse("Defs/RecipeDefs/Recipes_ChildsToy.xml").getroot()
           child = next((n for n in list(child_root) if n.findtext("defName") == "WNG_MakeChildsToy"), None)
           if child is None or "MechGestator" not in [x.text for x in child.findall("./recipeUsers/li")]: failures.append("WNG_MakeChildsToy is not assigned to MechGestator")
+          # Generated pawn addictions iterate every drug and dereference ingestible.outcomeDoers.
+          # A missing list can abort pawn/map generation with a NullReferenceException.
+          for drug_path, drug_root in roots_under("Defs/ThingDefs"):
+              for drug_node in list(drug_root):
+                  if drug_node.tag != "ThingDef":
+                      continue
+                  drug_name = drug_node.findtext("defName") or ""
+                  if not drug_name.startswith("WNG_"):
+                      continue
+                  if not any(li.get("Class") == "CompProperties_Drug" for li in drug_node.findall("./comps/li")):
+                      continue
+                  ingestible = drug_node.find("ingestible")
+                  if ingestible is None:
+                      failures.append(f"{drug_name} has CompProperties_Drug but no ingestible block")
+                  elif ingestible.find("outcomeDoers") is None:
+                      failures.append(f"{drug_name} has CompProperties_Drug but no outcomeDoers list; generated addictions can null-ref")
           pharm_root = ET.parse("Defs/ThingDefs/Things_WraithPharmacology.xml").getroot()
           chem = next((n for n in list(pharm_root) if n.tag == "ChemicalDef" and n.findtext("defName") == "WNG_WraithEnzyme"), None)
           if chem is None or chem.findtext("toleranceHediff") != "WNG_WraithEnzymeTolerance": failures.append("WNG_WraithEnzyme does not use WNG_WraithEnzymeTolerance")
