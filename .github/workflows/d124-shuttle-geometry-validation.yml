@@ -151,7 +151,12 @@ jobs:
           ):
               root = ET.parse(shuttle_path).getroot()
               for node in list(root):
-                  if node.tag != "ThingDef" or node.findtext("thingClass") not in ("PassengerShuttleIncoming", "PassengerShuttleLeaving"):
+                  passenger_classes = (
+                      "PassengerShuttleIncoming",
+                      "PassengerShuttleLeaving",
+                      "WraithNaniteGravtech.Skyfaller_WNGWraithDartLeaving",
+                  )
+                  if node.tag != "ThingDef" or node.findtext("thingClass") not in passenger_classes:
                       continue
                   name = node.findtext("defName") or str(shuttle_path)
                   sky = node.find("skyfaller")
