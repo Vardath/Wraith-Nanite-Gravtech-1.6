@@ -6,5 +6,7 @@
     <description>Grow medium Wraith cruiser organisms able to carry major strike forces across long distances while metabolising cultured Biomass for sustained living-hull regeneration.</description>
     <baseCost>4800</baseCost><techLevel>Ultra</techLevel>
     <prerequisites><li>WNG_StrikeCraftBiology</li><li>AdvancedGravtech</li></prerequisites>
+  
+    <researchViewX>18.5</researchViewX><researchViewY>9</researchViewY>
   </ResearchProjectDef>
 </Defs>

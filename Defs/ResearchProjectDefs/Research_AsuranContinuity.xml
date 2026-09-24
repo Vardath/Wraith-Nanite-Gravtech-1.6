@@ -10,5 +10,7 @@
       <li>WNG_AsuranCollectiveSystems</li>
       <li>WNG_PrecursorFabrication</li>
     </prerequisites>
+  
+    <researchViewX>18</researchViewX><researchViewY>11.5</researchViewY>
   </ResearchProjectDef>
 </Defs>

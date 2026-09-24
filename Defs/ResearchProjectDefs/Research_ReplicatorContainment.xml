@@ -10,5 +10,7 @@
       <li>WNG_ReplicatorStudy</li>
       <li>MicroelectronicsBasics</li>
     </prerequisites>
+  
+    <researchViewX>13.5</researchViewX><researchViewY>12</researchViewY>
   </ResearchProjectDef>
 </Defs>

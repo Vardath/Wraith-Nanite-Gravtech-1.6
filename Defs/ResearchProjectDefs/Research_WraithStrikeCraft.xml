@@ -6,5 +6,7 @@
     <description>Scale Dart flight organs into a larger assault organism with deeper bio-fluid reserves, expanded transport tissue and deliberate living-hull regeneration.</description>
     <baseCost>3400</baseCost><techLevel>Spacer</techLevel>
     <prerequisites><li>WNG_OrganicFlight</li><li>WNG_FeedingEcology</li></prerequisites>
+  
+    <researchViewX>17</researchViewX><researchViewY>9</researchViewY>
   </ResearchProjectDef>
 </Defs>

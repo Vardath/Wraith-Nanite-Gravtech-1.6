@@ -7,6 +7,8 @@
     <baseCost>2400</baseCost>
     <techLevel>Spacer</techLevel>
     <prerequisites><li>WNG_AdvancedCarapace</li><li>WNG_FeedingEcology</li></prerequisites>
+  
+    <researchViewX>16.5</researchViewX><researchViewY>8</researchViewY>
   </ResearchProjectDef>
   <ResearchProjectDef>
     <defName>WNG_AsuranAugmentation</defName>
@@ -15,5 +17,7 @@
     <baseCost>3200</baseCost>
     <techLevel>Spacer</techLevel>
     <prerequisites><li>WNG_PrecursorFabrication</li><li>WNG_AsuranCollectiveSystems</li></prerequisites>
+  
+    <researchViewX>17</researchViewX><researchViewY>11.5</researchViewY>
   </ResearchProjectDef>
 </Defs>

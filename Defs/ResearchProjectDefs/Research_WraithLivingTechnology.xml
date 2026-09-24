@@ -9,6 +9,8 @@
     <prerequisites>
       <li>Electricity</li>
     </prerequisites>
+  
+    <researchViewX>12</researchViewX><researchViewY>7</researchViewY>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
@@ -21,6 +23,8 @@
       <li>WNG_BiologicalCultivation</li>
       <li>Machining</li>
     </prerequisites>
+  
+    <researchViewX>13.5</researchViewX><researchViewY>8</researchViewY>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
@@ -32,6 +36,8 @@
     <prerequisites>
       <li>WNG_LivingWeapons</li>
     </prerequisites>
+  
+    <researchViewX>15</researchViewX><researchViewY>8</researchViewY>
   </ResearchProjectDef>
   <ResearchProjectDef>
     <defName>WNG_FeedingEcology</defName>
@@ -39,6 +45,8 @@
     <description>Organise Wraith feeding reserves and long-cycle dormancy into a stable life-force ecology. Unlocks player construction of feeding niches and hibernation pods without merging local colony feeding with strategic Hive hunger.</description>
     <baseCost>1300</baseCost><techLevel>Industrial</techLevel>
     <prerequisites><li>WNG_BiologicalCultivation</li></prerequisites>
+  
+    <researchViewX>13.5</researchViewX><researchViewY>7</researchViewY>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
@@ -47,6 +55,8 @@
     <description>Grow organs that consume cultured biomass to generate electricity and living cells that store it for ordinary colony power networks.</description>
     <baseCost>1200</baseCost><techLevel>Industrial</techLevel>
     <prerequisites><li>WNG_BiologicalCultivation</li><li>Batteries</li></prerequisites>
+  
+    <researchViewX>13.5</researchViewX><researchViewY>9</researchViewY>
   </ResearchProjectDef>
 
 </Defs>

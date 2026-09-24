@@ -10,5 +10,7 @@
       <li>WNG_BiologicalCultivation</li>
       <li>DrugProduction</li>
     </prerequisites>
+  
+    <researchViewX>15</researchViewX><researchViewY>7</researchViewY>
   </ResearchProjectDef>
 </Defs>

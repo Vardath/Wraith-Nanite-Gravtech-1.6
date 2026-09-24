@@ -9,5 +9,7 @@
     <prerequisites>
       <li>WNG_PrecursorPersonalShields</li>
     </prerequisites>
+  
+    <researchViewX>20.5</researchViewX><researchViewY>8.8</researchViewY>
   </ResearchProjectDef>
 </Defs>
