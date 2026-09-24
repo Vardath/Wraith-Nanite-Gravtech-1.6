@@ -100,20 +100,10 @@ namespace WraithNaniteGravtech
             base.PostSpawnSetup(respawningAfterLoad);
             EnsureAutonomousIdentity();
 
-            // Debug/directly spawned autonomous block forms can arrive factionless. A factionless
-            // Replicator cannot run its hostile ecology, so bind only genuinely autonomous block
-            // Replicators to the real permanent-enemy swarm faction on spawn.
-            Pawn pawn = parent as Pawn;
-            if (pawn != null &&
-                pawn.Faction == null &&
-                authority == ReplicatorControlAuthority.AutonomousSwarm &&
-                ReplicatorAssimilationUtility.IsBlockReplicator(pawn))
-            {
-                FactionDef swarmDef = DefDatabase<FactionDef>.GetNamedSilentFail("WNG_ReplicatorSwarm");
-                Faction swarm = swarmDef == null ? null : Find.FactionManager?.FirstFactionOfDef(swarmDef);
-                if (swarm != null)
-                    pawn.SetFaction(swarm);
-            }
+            // Old saves and direct developer spawns can lack a live hidden-swarm faction instance.
+            // Repair that instance and bind only genuinely autonomous block forms to it.
+            // Queen/Lattice/temporary-Asuran authorities retain their explicit controller faction.
+            ReplicatorDomainUtility.EnsureAutonomousSwarmFaction(parent as Pawn);
         }
 
         public override void PostExposeData()
@@ -130,6 +120,62 @@ namespace WraithNaniteGravtech
 
     public static class ReplicatorDomainUtility
     {
+        private const string SwarmFactionDefName = "WNG_ReplicatorSwarm";
+        private static bool creatingSwarmFaction;
+
+        public static Faction EnsureSwarmFaction()
+        {
+            FactionManager manager = Find.FactionManager;
+            FactionDef swarmDef = DefDatabase<FactionDef>.GetNamedSilentFail(SwarmFactionDefName);
+            if (manager == null || swarmDef == null)
+                return null;
+
+            Faction swarm = manager.FirstFactionOfDef(swarmDef);
+            if (swarm != null)
+                return swarm;
+
+            if (creatingSwarmFaction)
+                return null;
+
+            try
+            {
+                creatingSwarmFaction = true;
+                FactionGenerator.CreateFactionAndAddToManager(swarmDef);
+                swarm = manager.FirstFactionOfDef(swarmDef);
+                if (swarm == null)
+                    Log.Error("[WNG] Replicator swarm FactionDef exists but no live faction instance could be created.");
+                else
+                    Log.Message("[WNG] Restored missing autonomous Replicator swarm faction for this save.");
+                return swarm;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("[WNG] Failed to restore the autonomous Replicator swarm faction: " + ex);
+                return null;
+            }
+            finally
+            {
+                creatingSwarmFaction = false;
+            }
+        }
+
+        public static Faction EnsureAutonomousSwarmFaction(Pawn pawn)
+        {
+            if (pawn == null || pawn.Destroyed || !ReplicatorAssimilationUtility.IsBlockReplicator(pawn))
+                return pawn?.Faction;
+
+            CompReplicatorDomain domain = pawn.TryGetComp<CompReplicatorDomain>();
+            domain?.EnsureAutonomousIdentity();
+            if (domain == null || domain.Authority != ReplicatorControlAuthority.AutonomousSwarm)
+                return pawn.Faction;
+
+            Faction swarm = EnsureSwarmFaction();
+            if (swarm != null && pawn.Faction != swarm)
+                pawn.SetFaction(swarm);
+
+            return pawn.Faction;
+        }
+
         public static CompReplicatorDomain Domain(Pawn pawn)
         {
             CompReplicatorDomain domain = pawn?.TryGetComp<CompReplicatorDomain>();

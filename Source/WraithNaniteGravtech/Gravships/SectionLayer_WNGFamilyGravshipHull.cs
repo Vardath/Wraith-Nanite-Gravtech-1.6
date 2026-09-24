@@ -131,7 +131,9 @@ namespace WraithNaniteGravtech
         private static readonly float CornerAltitude = AltitudeLayer.BuildingOnTop.AltitudeFor();
         private static readonly float SubstructureAltitude = AltitudeLayer.TerrainEdges.AltitudeFor();
 
-        public override bool Visible => ModsConfig.OdysseyActive;
+        // Family hulls already use RimWorld's native CornerFiller linked-wall renderer.
+        // Disable this second custom 2x2 overlay so wall joins match vanilla both on-map and in gravship capture.
+        public override bool Visible => false;
 
         public SectionLayer_WNGFamilyGravshipHull(Section section)
             : base(section)

@@ -1,0 +1,51 @@
+name: D126 Live Behaviour Regression Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  live-regressions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate live-play regression contracts
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          failures = []
+
+          domains = Path("Source/WraithNaniteGravtech/Replicators/ReplicatorDomains.cs").read_text(encoding="utf-8")
+          assimilation = Path("Source/WraithNaniteGravtech/Replicators/ReplicatorAssimilation.cs").read_text(encoding="utf-8")
+          faction = Path("Defs/FactionDefs/Factions_Replicator.xml").read_text(encoding="utf-8")
+          if "<permanentEnemy>true</permanentEnemy>" not in faction:
+              failures.append("Replicator swarm is not permanent enemy")
+          for needle in ("FactionGenerator.CreateFactionAndAddToManager(swarmDef)", "EnsureAutonomousSwarmFaction"):
+              if needle not in domains:
+                  failures.append("Replicator old-save faction repair missing: " + needle)
+          if "ReplicatorDomainUtility.EnsureAutonomousSwarmFaction(pawn)" not in assimilation:
+              failures.append("autonomous assimilation does not repair faction before AI gating")
+
+          root = ET.parse("Defs/AbilityDefs/Abilities_HumanForm.xml").getroot()
+          consume = next((n for n in list(root) if n.findtext("defName") == "WNG_HumanFormConsume"), None)
+          if consume is None:
+              failures.append("Assimilate Matter missing")
+          else:
+              if consume.findtext("casterMustBeCapableOfViolence") != "false":
+                  failures.append("Assimilate Matter requires violent-capable caster")
+              if consume.findtext("hostile") != "false":
+                  failures.append("Assimilate Matter is marked hostile")
+
+          corner_src = Path("Source/WraithNaniteGravtech/Gravships/SectionLayer_WNGFamilyGravshipHull.cs").read_text(encoding="utf-8")
+          if "public override bool Visible => false;" not in corner_src:
+              failures.append("competing custom 2x2 gravship-corner renderer is still active")
+
+          if failures:
+              print("LIVE-BEHAVIOUR REGRESSION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+          print("Live Replicator, Assimilate Matter and gravship-corner regression contracts validated.")

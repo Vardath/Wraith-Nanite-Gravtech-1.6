@@ -69,6 +69,12 @@ jobs:
               if ability is None:
                   failures.append("WNG_HumanFormConsume AbilityDef missing")
               else:
+                  if ability.findtext("casterMustBeCapableOfViolence") != "false":
+                      failures.append("WNG_HumanFormConsume still inherits AbilityDef's default violence requirement")
+                  if ability.findtext("hostile") != "false":
+                      failures.append("WNG_HumanFormConsume is still marked hostile instead of being a feeding action")
+                  if ability.findtext("displayGizmoWhileUndrafted") != "true" or ability.findtext("disableGizmoWhileUndrafted") != "false":
+                      failures.append("WNG_HumanFormConsume is not usable while undrafted")
                   for path, expected in (
                       ("./verbProperties/targetParams/canTargetItems", "true"),
                       ("./verbProperties/targetParams/canTargetBuildings", "true"),

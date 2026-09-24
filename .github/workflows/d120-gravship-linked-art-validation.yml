@@ -88,6 +88,12 @@ jobs:
                   failures.append(f"{name} no longer points at the approved linked atlas")
               if node.findtext("./graphicData/drawSize") != "(1,1)":
                   failures.append(f"{name} drawSize is no longer tile-aligned at (1,1)")
+              if name in {"WNG_GoauldGravshipHull", "WNG_PrecursorGravshipHull", "WNG_OrganicGravshipHull"}:
+                  if node.findtext("./graphicData/linkType") != "CornerFiller":
+                      failures.append(f"{name} no longer uses vanilla CornerFiller wall linking")
+                  flags = {x.text for x in node.findall("./graphicData/linkFlags/li")}
+                  if not {"Wall", "Rock"}.issubset(flags):
+                      failures.append(f"{name} lost vanilla Wall/Rock link flags")
               workers = [x.text for x in node.findall("./placeWorkers/li")]
               if worker not in workers:
                   failures.append(f"{name} lost its same-family gravship-substructure placement worker")
@@ -171,6 +177,10 @@ jobs:
           repair_script = Path(".github/artfix/reorder_linked_atlas_rows.py")
           if not repair_script.exists():
               failures.append("linked-atlas row-order repair script missing")
+
+          corner_layer = Path("Source/WraithNaniteGravtech/Gravships/SectionLayer_WNGFamilyGravshipHull.cs").read_text(encoding="utf-8")
+          if "public override bool Visible => false;" not in corner_layer:
+              failures.append("legacy WNG 2x2 gravship-corner overlay is active; native CornerFiller must be authoritative")
 
           if failures:
               print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")

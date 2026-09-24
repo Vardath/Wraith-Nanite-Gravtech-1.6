@@ -36,11 +36,15 @@ namespace WraithNaniteGravtech
 
         public static bool CanAutonomouslyAssimilate(Pawn pawn)
         {
-            if (pawn == null || pawn.Destroyed || pawn.Dead || pawn.Map == null || pawn.Faction == null)
+            if (pawn == null || pawn.Destroyed || pawn.Dead || pawn.Map == null)
                 return false;
 
-            // Player Replicators are a separate future control contract. They must never inherit
-            // autonomous colony-eating simply because they share a mechanical body definition.
+            // A genuinely autonomous block always belongs to the hidden permanent-enemy swarm.
+            // Repair direct spawns and old saves before deciding whether autonomous ecology may run.
+            ReplicatorDomainUtility.EnsureAutonomousSwarmFaction(pawn);
+            if (pawn.Faction == null)
+                return false;
+
             if (pawn.Faction == Faction.OfPlayer)
                 return false;
 

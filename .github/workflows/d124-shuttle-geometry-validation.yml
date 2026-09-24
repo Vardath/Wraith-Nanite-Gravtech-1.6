@@ -141,6 +141,27 @@ jobs:
           if "WNG_WraithStrikeCraft" in art_generators or "WNG_WraithCruiser" in art_generators:
               failures.append("Step 7 must not auto-derive authored Wraith strategic craft facings")
 
+          # PassengerShuttleIncoming/Leaving directly evaluate these curves in RimWorld 1.6.
+          for shuttle_path in (
+              Path("Defs/ThingDefs/Shuttle_Goauld.xml"),
+              Path("Defs/ThingDefs/Shuttle_WraithCruiser.xml"),
+              Path("Defs/ThingDefs/Shuttle_PuddleJumper.xml"),
+              Path("Defs/ThingDefs/Shuttle_WraithDart.xml"),
+              Path("Defs/ThingDefs/Shuttle_WraithStrikeCraft.xml"),
+          ):
+              root = ET.parse(shuttle_path).getroot()
+              for node in list(root):
+                  if node.tag != "ThingDef" or node.findtext("thingClass") not in ("PassengerShuttleIncoming", "PassengerShuttleLeaving"):
+                      continue
+                  name = node.findtext("defName") or str(shuttle_path)
+                  sky = node.find("skyfaller")
+                  if sky is None:
+                      failures.append(f"{name} has no skyfaller data")
+                      continue
+                  for curve in ("rotationCurve", "zPositionCurve", "speedCurve"):
+                      if len(sky.findall(f"./{curve}/points/li")) < 2:
+                          failures.append(f"{name} lacks a usable {curve}; PassengerShuttle drawing can NullRef/teleport")
+
           if failures:
               print("SHUTTLE VALIDATION FAILURES:")
               for failure in failures:

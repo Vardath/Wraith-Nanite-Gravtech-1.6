@@ -5,13 +5,13 @@
     <defName>WNG_AlkeshIncoming</defName><label>Al'kesh (incoming)</label><thingClass>PassengerShuttleIncoming</thingClass>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5.5,7.7)</drawSize></graphicData>
     <size>(5,7)</size>
-    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(5.5,7.7)</shadowSize></skyfaller>
+    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(5.5,7.7)</shadowSize><rotationCurve><points><li>(0,30)</li><li>(0.5,5)</li><li>(0.9,-5)</li><li>(0.95,0)</li></points></rotationCurve><zPositionCurve><points><li>(0.95,2.5)</li><li>(1,0)</li></points></zPositionCurve><speedCurve><points><li>(0.6,0.6)</li><li>(0.95,0.94)</li></points></speedCurve></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_AlkeshLeaving</defName><label>Al'kesh (leaving)</label><thingClass>PassengerShuttleLeaving</thingClass><rotatable>true</rotatable>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_AlkeshTransport</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5.5,7.7)</drawSize></graphicData>
     <size>(5,7)</size>
-    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(5.5,7.7)</shadowSize></skyfaller>
+    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(5.5,7.7)</shadowSize><moteSpawnTime>0.05</moteSpawnTime><motesPerCell>1</motesPerCell><rotationCurve><points><li>(0,0)</li><li>(0.15,10)</li><li>(0.5,-5)</li></points></rotationCurve><zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve><speedCurve><points><li>(0,0.2)</li><li>(0.6,1.0)</li></points></speedCurve></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_AlkeshBombingPass</defName><label>Al'kesh bombing pass</label><thingClass>WraithNaniteGravtech.Skyfaller_GoauldAlkeshBombingPass</thingClass><drawOffscreen>true</drawOffscreen>
@@ -51,12 +51,12 @@
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_GoauldDeathGliderIncoming</defName><label>Death Glider (incoming)</label><thingClass>PassengerShuttleIncoming</thingClass>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5.5,4.4)</drawSize></graphicData><size>(5,4)</size>
-    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(5,4)</shadowSize></skyfaller>
+    <skyfaller><anticipationSound>Shuttle_Landing</anticipationSound><anticipationSoundTicks>250</anticipationSoundTicks><ticksToImpactRange>200~250</ticksToImpactRange><minimalRoofDestruction>true</minimalRoofDestruction><shadowSize>(5,4)</shadowSize><rotationCurve><points><li>(0,30)</li><li>(0.5,5)</li><li>(0.9,-5)</li><li>(0.95,0)</li></points></rotationCurve><zPositionCurve><points><li>(0.95,2.5)</li><li>(1,0)</li></points></zPositionCurve><speedCurve><points><li>(0.6,0.6)</li><li>(0.95,0.94)</li></points></speedCurve></skyfaller>
   </ThingDef>
   <ThingDef ParentName="ShuttleSkyfallerBase">
     <defName>WNG_GoauldDeathGliderLeaving</defName><label>Death Glider (leaving)</label><thingClass>PassengerShuttleLeaving</thingClass><rotatable>true</rotatable>
     <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider</texPath><shaderType>CutoutComplex</shaderType><drawSize>(5.5,4.4)</drawSize></graphicData><size>(5,4)</size>
-    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(5,4)</shadowSize></skyfaller>
+    <skyfaller><reversed>true</reversed><anticipationSound>Shuttle_Leaving</anticipationSound><anticipationSoundTicks>-10</anticipationSoundTicks><ticksToImpactRange>-40~-15</ticksToImpactRange><shadow>Things/Skyfaller/SkyfallerShadowRectangle</shadow><shadowSize>(5,4)</shadowSize><moteSpawnTime>0.05</moteSpawnTime><motesPerCell>1</motesPerCell><rotationCurve><points><li>(0,0)</li><li>(0.15,10)</li><li>(0.5,-5)</li></points></rotationCurve><zPositionCurve><points><li>(0,0)</li><li>(0.08,2)</li></points></zPositionCurve><speedCurve><points><li>(0,0.2)</li><li>(0.6,1.0)</li></points></speedCurve></skyfaller>
   </ThingDef>
   <WorldObjectDef ParentName="ShuttleWorldObjectBase">
     <defName>WNG_GoauldDeathGliderWorld</defName><label>Death Glider</label><description>A Goa'uld Death Glider in short-range native Odyssey flight.</description><expandingIconTexture>Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider</expandingIconTexture><expandingIconDrawSize>1</expandingIconDrawSize>
