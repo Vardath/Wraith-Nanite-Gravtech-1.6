@@ -14,5 +14,7 @@
     <requiredAnalyzed>
       <li>WNG_AncientShieldHarmonicRelic</li>
     </requiredAnalyzed>
+  
+    <researchViewX>24</researchViewX><researchViewY>10.4</researchViewY>
   </ResearchProjectDef>
 </Defs>

@@ -10,5 +10,7 @@
       <li>BasicMechtech</li>
       <li>WNG_ReplicatorStudy</li>
     </prerequisites>
+  
+    <researchViewX>12</researchViewX><researchViewY>12</researchViewY>
   </ResearchProjectDef>
 </Defs>

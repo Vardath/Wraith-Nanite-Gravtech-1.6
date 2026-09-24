@@ -10,6 +10,8 @@
     <requiredAnalyzed>
       <li>WNG_ReplicatorMatter</li>
     </requiredAnalyzed>
+  
+    <researchViewX>12</researchViewX><researchViewY>10.5</researchViewY>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
@@ -22,6 +24,8 @@
     <requiredAnalyzed>
       <li>WNG_RecoveredPrecursorPulseRifle</li>
     </requiredAnalyzed>
+  
+    <researchViewX>13.5</researchViewX><researchViewY>10.5</researchViewY>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
@@ -31,6 +35,8 @@
     <baseCost>2200</baseCost>
     <techLevel>Spacer</techLevel>
     <prerequisites><li>WNG_NaniteAnalysis</li></prerequisites>
+  
+    <researchViewX>15</researchViewX><researchViewY>10.5</researchViewY>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
@@ -40,6 +46,8 @@
     <baseCost>1800</baseCost>
     <techLevel>Spacer</techLevel>
     <prerequisites><li>WNG_NaniteAnalysis</li><li>Fabrication</li></prerequisites>
+  
+    <researchViewX>15</researchViewX><researchViewY>11.5</researchViewY>
   </ResearchProjectDef>
 
   <ResearchProjectDef>
@@ -53,5 +61,7 @@
       <li>WNG_ReplicatorStudy</li>
       <li>WNG_PrecursorFabrication</li>
     </prerequisites>
+  
+    <researchViewX>16.5</researchViewX><researchViewY>10.5</researchViewY>
   </ResearchProjectDef>
 </Defs>

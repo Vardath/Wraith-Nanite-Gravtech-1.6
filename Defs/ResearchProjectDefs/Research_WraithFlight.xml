@@ -6,5 +6,7 @@
     <description>Adapt Wraith living technology to compact gravitic flight organs and cultivated bio-fluid propulsion. Unlocks Wraith Dart cultivation and bio-fluid propellant production.</description>
     <baseCost>1800</baseCost><techLevel>Spacer</techLevel>
     <prerequisites><li>WNG_BioelectricOrgans</li><li>BasicGravtech</li></prerequisites>
+  
+    <researchViewX>15</researchViewX><researchViewY>9</researchViewY>
   </ResearchProjectDef>
 </Defs>
