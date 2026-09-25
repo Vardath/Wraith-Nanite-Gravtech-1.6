@@ -87,6 +87,8 @@ No third-party Stargate mod is required for the base WNG content.
 
 [b]ONAC:[/b] optional integration replaces appropriate Goa'uld materials/fuels with ONAC Naquadah and Liquid Naquadria and enables additional connected content when ONAC is installed.
 
+[b]Stargates Mod:[/b] optional integration is detected automatically when [i]ccyt.stargatesmod[/i] is installed. WNG can use real Stargates for starting-map gate placement and Stargate-linked Wraith hunts/diplomatic arrivals, Replicator incursions/salvage, Quiet Lattice visits and hostile Asuran gate/Jumper missions. Stargates remains optional; WNG has no hard dependency on it.
+
 [b]RimGate Jaffa/Kree:[/b] optional Goa'uld/Jaffa interop is detected when installed.
 
 [h2]Art, development and other Vardath work[/h2]
