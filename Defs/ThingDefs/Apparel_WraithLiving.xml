@@ -2,6 +2,7 @@
 <Defs>
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithHunterCoat</defName><label>wraith hunter coat</label>
+    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
     <description>A long flexible coat grown from layered Wraith membrane, providing modest protection without the bulk of a full carapace.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases><MaxHitPoints>180</MaxHitPoints><WorkToMake>14000</WorkToMake><Mass>3.5</Mass><EquipDelay>2</EquipDelay><ArmorRating_Sharp>0.55</ArmorRating_Sharp><ArmorRating_Blunt>0.25</ArmorRating_Blunt><ArmorRating_Heat>0.4</ArmorRating_Heat></statBases>
