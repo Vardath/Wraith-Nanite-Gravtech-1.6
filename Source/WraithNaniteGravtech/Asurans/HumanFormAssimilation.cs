@@ -65,7 +65,7 @@ namespace WraithNaniteGravtech
             Need_Food food = caster.needs?.food;
             Gene_Resource_NaniteReserve reserve =
                 caster.genes?.GetFirstGeneOfType<Gene_Resource_NaniteReserve>();
-            if (food == null || reserve == null || !reserve.Active)
+            if (reserve == null || !reserve.Active)
                 return;
 
             float foodFraction;
@@ -119,7 +119,9 @@ namespace WraithNaniteGravtech
                 reserveGain = Math.Max(0f, Props.substrateReserveGain);
             }
 
-            float foodGain = Math.Max(0f, food.MaxLevel * foodFraction);
+            float foodGain = food == null
+                ? 0f
+                : Math.Max(0f, food.MaxLevel * foodFraction);
             reserve.AddAssimilatedFeedstock(foodGain, reserveGain);
 
             try
@@ -167,9 +169,9 @@ namespace WraithNaniteGravtech
             Gene_Resource_NaniteReserve reserve =
                 caster.genes?.GetFirstGeneOfType<Gene_Resource_NaniteReserve>();
             Need_Food food = caster.needs?.food;
-            if (reserve == null || !reserve.Active || food == null)
+            if (reserve == null || !reserve.Active)
             {
-                reason = "This synthetic body lacks a functioning Food/Nanite Reserve feedstock system.";
+                reason = "This synthetic body lacks a functioning Nanite Reserve feedstock system.";
                 return false;
             }
 
@@ -181,10 +183,14 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
-            if (reserve.Value >= reserve.Max - 0.0001f &&
-                food.CurLevel >= food.MaxLevel - 0.0001f)
+            bool reserveFull = reserve.Value >= reserve.Max - 0.0001f;
+            bool foodFullOrUnavailable = food == null ||
+                                         food.CurLevel >= food.MaxLevel - 0.0001f;
+            if (reserveFull && foodFullOrUnavailable)
             {
-                reason = "Food and Nanite Reserve are already full.";
+                reason = food == null
+                    ? "Nanite Reserve is already full."
+                    : "Food and Nanite Reserve are already full.";
                 return false;
             }
 
@@ -252,6 +258,11 @@ namespace WraithNaniteGravtech
             if (def.defName == ReplicatorMatterDefName || def.defName == ReplicatorCoreFragmentDefName)
                 return false;
 
+            // Collapsed-rock rubble is an obstruction, not useful Replicator feedstock.
+            if (def == ThingDefOf.CollapsedRocks ||
+                string.Equals(def.defName, "CollapsedRocks", StringComparison.Ordinal))
+                return false;
+
             if (ReplicatorContainmentUtility.BlocksAssimilation(caster, target))
                 return false;
 
@@ -287,6 +298,9 @@ namespace WraithNaniteGravtech
             if (map.terrainGrid.CanRemoveTopLayerAt(cell))
                 return true;
 
+            if (map.terrainGrid.CanRemoveFoundationAt(cell))
+                return true;
+
             TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
             bool isVoid = terrain == null ||
                           string.Equals(terrain.defName, "Space", StringComparison.OrdinalIgnoreCase);
@@ -316,6 +330,14 @@ namespace WraithNaniteGravtech
                 if (map.terrainGrid.CanRemoveTopLayerAt(cell))
                 {
                     map.terrainGrid.RemoveTopLayer(cell, doLeavings: false);
+                    FilthMaker.RemoveAllFilth(cell, map);
+                    return true;
+                }
+
+                // Odyssey gravship substructure lives in the terrain foundation grid.
+                if (map.terrainGrid.CanRemoveFoundationAt(cell))
+                {
+                    map.terrainGrid.RemoveFoundation(cell, doLeavings: false);
                     FilthMaker.RemoveAllFilth(cell, map);
                     return true;
                 }
