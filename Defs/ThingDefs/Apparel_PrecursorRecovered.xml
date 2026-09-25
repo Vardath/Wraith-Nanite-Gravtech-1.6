@@ -8,7 +8,7 @@
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_PrecursorFieldArmor</defName>
     <label>precursor field armor</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A high-grade Ancient-derived combat shell combining dense precursor composites with field-distribution layers. The current visual is provisional; its protection and acquisition path are functional independently of later art replacement.</description>
     <techLevel>Ultra</techLevel>
     <graphicData>
@@ -76,7 +76,7 @@
       <ComponentSpacer>2</ComponentSpacer>
       <WNG_ReplicatorMatter>8</WNG_ReplicatorMatter>
     </costList>
-    <thingCategories><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelUtility</li></thingCategories>
     <apparel>
       <careIfWornByCorpse>false</careIfWornByCorpse>
       <bodyPartGroups><li>Waist</li></bodyPartGroups>
