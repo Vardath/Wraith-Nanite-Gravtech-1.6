@@ -51,6 +51,8 @@ jobs:
               failures.append("physical Replicator assimilation does not snapshot pending roof collapses")
           if "ReplicatorEnvironmentalAssimilationUtility.AssimilateNewlyUnsupportedRoofs" not in assimilation:
               failures.append("physical Replicator assimilation does not convert new roof collapses into assimilation")
+          if "ThingDefOf.CollapsedRocks" in assimilation or '"CollapsedRocks"' in assimilation:
+              failures.append("autonomous Replicators still reject collapsed-rock feedstock")
           structural = "WraithNaniteGravtech.JobGiver_ReplicatorAssimilateStructuralCell"
           physical = "WraithNaniteGravtech.JobGiver_ReplicatorAssimilate"
           if thinktree.count(structural) != 4:
