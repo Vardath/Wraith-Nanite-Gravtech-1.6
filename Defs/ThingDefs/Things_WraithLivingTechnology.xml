@@ -3,6 +3,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_CorpseLivingForgeIncubation</defName>
     <label>incubating Wraith tissue</label>
+    <thingCategories Inherit="False"><li>ItemsMisc</li></thingCategories>
     <description>A biological corpse consumed into a developing mass of Wraith living technology. After one day it matures into a minified Living Forge.</description>
     <stackLimit>1</stackLimit>
     <tickerType>Rare</tickerType>
