@@ -46,6 +46,8 @@ jobs:
                   "collapsed-rock rejection": "ThingDefOf.CollapsedRocks",
                   "substructure targeting": "CanRemoveFoundationAt",
                   "substructure commit": "RemoveFoundation",
+                  "roof-collapse snapshot": "CapturePendingRoofCollapses",
+                  "roof-collapse conversion": "AssimilateNewlyUnsupportedRoofs",
               }
               for label, needle in required.items():
                   if needle not in text:
