@@ -8,7 +8,7 @@
     <drawerType>MapMeshAndRealTime</drawerType>
     <tickerType>Normal</tickerType>
     <graphicData>
-      <texPath>Things/Building/Precursor/Power/WNG_VacuumEnergyTap</texPath>
+      <texPath>Things/Building/Precursor/Power/WNG_PrecursorPowerCell</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
       <drawSize>(1.15,1.15)</drawSize>
     </graphicData>
