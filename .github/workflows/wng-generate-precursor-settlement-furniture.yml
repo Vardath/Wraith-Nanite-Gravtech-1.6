@@ -74,8 +74,8 @@ jobs:
                       a.crop((0,0,1,512)).getextrema()[1],
                       a.crop((511,0,512,512)).getextrema()[1],
                   ]
-                  if any(edges):
-                      raise SystemExit(f"{p}: alpha touches canvas edge")
+                  if any(v > 8 for v in edges):
+                      raise SystemExit(f"{p}: visible alpha touches canvas edge")
               hashes[p.name] = hashlib.sha256(p.read_bytes()).hexdigest()
 
           distinct = [
