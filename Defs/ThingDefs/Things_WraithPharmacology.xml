@@ -3,6 +3,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_RawWraithEnzyme</defName>
     <label>raw Wraith enzyme</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A concentrated extract of the biochemical enzyme Wraith bodies use to sustain extreme physical performance and keep feeding victims alive. In non-Wraith physiology it produces a violent surge of strength, speed, consciousness and tissue repair. The effect is extraordinarily habit-forming, and dependence can become medically dangerous.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_WraithEnzymeHigh</HediffDef>
