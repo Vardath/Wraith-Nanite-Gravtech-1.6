@@ -4,6 +4,10 @@ import hashlib
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'Textures' / 'Things' / 'Pawn' / 'Replicator'
+PROFESSIONAL_SOURCE = ROOT / '.github' / 'artsrc' / 'replicator_professional' / 'rep_professional_sources_256.zip'
+
+if not PROFESSIONAL_SOURCE.exists():
+    raise FileNotFoundError(f'Professional Replicator source bundle missing: {PROFESSIONAL_SOURCE}')
 ROLES = ['Artillery','Bulwark','Burrower','Controller','Drone','Hunter','Repairer','SiegeMass','Titan']
 DIRS = ['', '_north', '_east', '_south', '_west']
 
