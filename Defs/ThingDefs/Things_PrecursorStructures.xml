@@ -34,6 +34,7 @@
       <texPath>Things/Building/Precursor/Structure/WNG_PrecursorDoor</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
       <damageData><enabled>false</enabled></damageData>
+          <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <stuffCategories Inherit="False"/>
     <costStuffCount>0</costStuffCount>
