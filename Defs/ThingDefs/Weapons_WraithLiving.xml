@@ -76,6 +76,7 @@
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
     <defName>WNG_WraithWarGlaive</defName>
     <label>living war glaive</label>
+    <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A two-handed Wraith polearm grown around a flexible dark spine and broad mineralized crescent, built for heavy close combat.</description>
     <techLevel>Spacer</techLevel>
     <smeltable>false</smeltable>
@@ -149,6 +150,7 @@
   <ThingDef ParentName="BaseHumanMakeableGun">
     <defName>WNG_WraithStunStaff</defName>
     <label>wraith stun staff</label>
+    <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A long grown capture staff that projects a focused neuromuscular disruption pulse while retaining a reinforced shaft for close combat.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
@@ -231,6 +233,7 @@
   <ThingDef ParentName="BaseHumanMakeableGun">
     <defName>WNG_WraithStunner</defName>
     <label>living stunner</label>
+    <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A grown capture weapon that launches a bioelectric neuromuscular disruption pulse intended to disable prey rather than kill it.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
@@ -299,6 +302,7 @@
   <ThingDef ParentName="BaseHumanMakeableGun">
     <defName>WNG_WraithCarbine</defName>
     <label>living carbine</label>
+    <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A compact grown carbine that fires hardened bioelectric projectiles for Wraith hunters and line warriors.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
@@ -371,6 +375,7 @@
   <ThingDef ParentName="BaseHumanMakeableGun">
     <defName>WNG_WraithHeavyBioWeapon</defName>
     <label>heavy bio-weapon</label>
+    <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A heavy grown weapon that ejects bursts of dense hypervelocity bioelectric slugs for elite Wraith warriors.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
