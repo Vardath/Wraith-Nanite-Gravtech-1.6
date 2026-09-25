@@ -54,6 +54,7 @@
   <ThingDef ParentName="LightMechanoidGunRanged">
     <defName>WNG_ReplicatorShieldDisruptor</defName>
     <label>integrated Replicator phase disruptor</label>
+    <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A phase-tuned emitter grown after repeated real shield engagements. Its focused EMP harmonics collapse vulnerable barriers rather than granting universal shield immunity.</description>
     <techLevel>Ultra</techLevel>
     <graphicData>
@@ -104,6 +105,7 @@
   <ThingDef ParentName="LightMechanoidGunRanged">
     <defName>WNG_ReplicatorArtilleryCaster</defName>
     <label>integrated Replicator artillery caster</label>
+    <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A long-range twin pulse array grown into the dedicated Artillery body. Its larger paired emitter assembly is an integrated Replicator machine organ and is destroyed if separated from its body.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
