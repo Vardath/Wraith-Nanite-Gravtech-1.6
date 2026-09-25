@@ -3,6 +3,7 @@
   <ThingDef>
     <defName>WNG_Biomass</defName>
     <label>cultured Wraith biomass</label>
+    <thingCategories Inherit="False"><li>ItemsMisc</li></thingCategories>
     <description>Dense cultivated organic feedstock used by Wraith living technology. Mature Hives consume it for tissue repair and bounded population replacement.</description>
     <thingClass>ThingWithComps</thingClass>
     <category>Item</category>
@@ -11,6 +12,7 @@
     <selectable>true</selectable>
     <stackLimit>500</stackLimit>
     <drawGUIOverlay>true</drawGUIOverlay>
+    <alwaysHaulable>true</alwaysHaulable>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_Biomass</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -21,7 +23,8 @@
       <MarketValue>1.8</MarketValue>
       <Flammability>0.55</Flammability>
     </statBases>
-  </ThingDef>
+      <comps><li Class="CompProperties_Forbiddable"/></comps>
+</ThingDef>
 
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_HiveMetabolicHeart</defName>
