@@ -1,0 +1,78 @@
+name: WNG Generate Asuran Pilot Console
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/artgen/generate_asuran_pilot_console.py"
+      - ".github/workflows/wng-generate-asuran-pilot-console.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Generate professional Asuran pilot console
+        run: python .github/artgen/generate_asuran_pilot_console.py
+      - name: Validate console art family
+        shell: python
+        run: |
+          from pathlib import Path
+          from PIL import Image
+          import hashlib
+
+          base=Path("Textures/Things/Building/Precursor/Gravship")
+          files=[base/"WNG_PrecursorPilotConsole.png"]
+          files += [base/f"WNG_PrecursorPilotConsole_{d}.png" for d in ("north","east","south","west")]
+          hashes=[]
+          for p in files:
+              if not p.exists():
+                  raise SystemExit(f"missing console art: {p}")
+              with Image.open(p) as im:
+                  im.load()
+                  if im.mode!="RGBA" or im.size!=(512,512):
+                      raise SystemExit(f"{p}: expected 512x512 RGBA")
+                  a=im.getchannel("A")
+                  if a.getbbox() is None:
+                      raise SystemExit(f"{p}: fully transparent")
+              hashes.append(hashlib.sha256(p.read_bytes()).hexdigest())
+          if len(set(hashes[1:])) < 4:
+              raise SystemExit("Pilot console directional views are not distinct.")
+          print("Asuran pilot console art family validated.")
+      - name: Commit professional pilot console art
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add Textures/Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole*.png
+
+          if git diff --cached --quiet; then
+            echo "Professional Asuran pilot console art is already installed."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+Vardath@users.noreply.github.com"
+          git commit -m "Install professional Asuran pilot console art"
+
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main
+            if git push origin main; then
+              exit 0
+            fi
+            echo "Push raced another main update; retrying ($attempt/5)..."
+            sleep 2
+          done
+
+          echo "Unable to publish Asuran pilot console art after five retries."
+          exit 1
