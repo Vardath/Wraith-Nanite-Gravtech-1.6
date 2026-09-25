@@ -1,11 +1,13 @@
-name: WNG Generate Precursor Settlement Furniture
+name: WNG Generate Asuran Placeable Family
 
 on:
   push:
     branches: [ main ]
     paths:
       - ".github/artgen/generate_precursor_settlement_furniture.py"
+      - ".github/artgen/asuran_placeable_family_impl.zlib.b64"
       - ".github/workflows/wng-generate-precursor-settlement-furniture.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -16,20 +18,109 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
       - name: Install Pillow
         run: python -m pip install --disable-pip-version-check pillow
-      - name: Generate dedicated Precursor settlement furniture art
+      - name: Generate professional Asuran placeable family
         run: python .github/artgen/generate_precursor_settlement_furniture.py
-      - name: Commit generated art
+      - name: Validate generated Asuran placeable art
+        shell: python
         run: |
-          if [ -z "$(git status --porcelain -- Textures/Things/Building/Precursor/Furniture)" ]
-          then
-            echo "No generated furniture changes required."
+          from pathlib import Path
+          from PIL import Image
+          import hashlib
+
+          expected = [
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorRestPlatform.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorRestPlatformDouble.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorFormChair.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorSettee.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorTableSmall.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorTable.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorBedsideConsole.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorStoragePlinth.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorLumen.png",
+              "Textures/Things/Building/Precursor/Furniture/WNG_PrecursorWallLumen.png",
+              "Textures/Things/Building/Precursor/Power/WNG_PrecursorPowerCell.png",
+              "Textures/Things/Building/Precursor/Shield/WNG_PrecursorSettlementShield.png",
+              "Textures/Things/Building/Precursor/Control/WNG_AsuranDormantRelay.png",
+              "Textures/Things/Building/Precursor/Collective/WNG_AsuranDormantPatternCore.png",
+              "Textures/Things/Building/Precursor/Art/WNG_AsuranSleeperStatue.png",
+              "Textures/Things/Building/Precursor/Art/WNG_AsuranFeederStatue.png",
+              "Textures/Things/Building/Precursor/Art/WNG_AsuranReplicatorReliquary.png",
+              "Textures/Things/Building/Precursor/Gravship/WNG_AsuranFuelCell.png",
+              "Textures/Things/Building/Precursor/Gravship/WNG_AsuranLargeFuelCell.png",
+              "Textures/Things/Building/Precursor/Gravship/WNG_AsuranPowerCell.png",
+              "Textures/Things/Building/Precursor/Gravship/WNG_AsuranFlightSubmind.png",
+          ]
+          hashes = {}
+          for raw in expected:
+              p = Path(raw)
+              if not p.exists():
+                  raise SystemExit(f"missing generated art: {p}")
+              with Image.open(p) as im:
+                  im.load()
+                  if im.mode != "RGBA" or im.size != (512, 512):
+                      raise SystemExit(f"{p}: expected 512x512 RGBA, got {im.mode} {im.size}")
+                  a = im.getchannel("A")
+                  if a.getbbox() is None:
+                      raise SystemExit(f"{p}: fully transparent")
+                  edges = [
+                      a.crop((0,0,512,1)).getextrema()[1],
+                      a.crop((0,511,512,512)).getextrema()[1],
+                      a.crop((0,0,1,512)).getextrema()[1],
+                      a.crop((511,0,512,512)).getextrema()[1],
+                  ]
+                  if any(edges):
+                      raise SystemExit(f"{p}: alpha touches canvas edge")
+              hashes[p.name] = hashlib.sha256(p.read_bytes()).hexdigest()
+
+          distinct = [
+              "WNG_AsuranFuelCell.png",
+              "WNG_AsuranLargeFuelCell.png",
+              "WNG_AsuranPowerCell.png",
+              "WNG_AsuranFlightSubmind.png",
+          ]
+          if len({hashes[x] for x in distinct}) != len(distinct):
+              raise SystemExit("Asuran gravship placeables still reuse the same art.")
+          print("Professional Asuran placeable family validated.")
+      - name: Commit professional Asuran placeable family
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add Textures/Things/Building/Precursor/Furniture
+          git add Textures/Things/Building/Precursor/Power/WNG_PrecursorPowerCell.png
+          git add Textures/Things/Building/Precursor/Shield/WNG_PrecursorSettlementShield.png
+          git add Textures/Things/Building/Precursor/Control/WNG_AsuranDormantRelay*.png
+          git add Textures/Things/Building/Precursor/Collective/WNG_AsuranDormantPatternCore.png
+          git add Textures/Things/Building/Precursor/Art/WNG_AsuranSleeperStatue.png
+          git add Textures/Things/Building/Precursor/Art/WNG_AsuranFeederStatue.png
+          git add Textures/Things/Building/Precursor/Art/WNG_AsuranReplicatorReliquary.png
+          git add Textures/Things/Building/Precursor/Gravship/WNG_AsuranFuelCell*.png
+          git add Textures/Things/Building/Precursor/Gravship/WNG_AsuranLargeFuelCell*.png
+          git add Textures/Things/Building/Precursor/Gravship/WNG_AsuranPowerCell.png
+          git add Textures/Things/Building/Precursor/Gravship/WNG_AsuranFlightSubmind*.png
+
+          if git diff --cached --quiet; then
+            echo "Professional Asuran placeable art is already installed."
             exit 0
           fi
+
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Textures/Things/Building/Precursor/Furniture
-          git commit -m "Generate dedicated Precursor settlement furniture art"
-          git push origin HEAD:main
+          git config user.email "41898282+Vardath@users.noreply.github.com"
+          git commit -m "Install professional Asuran placeable art"
+
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main
+            if git push origin main; then
+              exit 0
+            fi
+            echo "Push raced another main update; retrying ($attempt/5)..."
+            sleep 2
+          done
+
+          echo "Unable to publish professional Asuran placeable art after five retries."
+          exit 1
