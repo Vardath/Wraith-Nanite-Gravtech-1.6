@@ -96,6 +96,14 @@
           <li>WNG_WraithFuelOptimizer</li>
           <li>WNG_WraithSignalVeil</li>
           <li>WNG_WraithNavigationCortex</li>
+        
+          <li>WNG_WraithFuelConduit</li>
+          <li>WNG_WraithNeuralConduit</li>
+          <li>WNG_WraithPowerCoupler</li>
+          <li>WNG_GravshipMetabolicHeart</li>
+          <li>WNG_WraithOrbitalSensorOrgan</li>
+          <li>WNG_WraithAtmosphereOrgan</li>
+          <li>WNG_WraithVacuumMembrane</li>
         </linkableFacilities>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGAmbientLoop">
