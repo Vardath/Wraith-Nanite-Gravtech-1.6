@@ -115,6 +115,7 @@ jobs:
               "WNG_PrecursorStoragePlinth": ("Things/Building/Precursor/Furniture/WNG_PrecursorStoragePlinth", "Graphic_Multi"),
               "WNG_PrecursorLumen": ("Things/Building/Precursor/Furniture/WNG_PrecursorLumen", "Graphic_Multi"),
               "WNG_PrecursorWallLumen": ("Things/Building/Precursor/Furniture/WNG_PrecursorWallLumen", "Graphic_Multi"),
+              "WNG_PrecursorPowerCell": ("Things/Building/Precursor/Power/WNG_PrecursorPowerCell", "Graphic_Single"),
           }
 
           for name, (tex, graphic) in dedicated_precursor_art.items():
