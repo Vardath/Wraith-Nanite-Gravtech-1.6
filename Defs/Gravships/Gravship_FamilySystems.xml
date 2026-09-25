@@ -167,7 +167,7 @@
         <requiresLOS>false</requiresLOS>
         <showMaxSimultaneous>false</showMaxSimultaneous>
         <maxSimultaneous>1</maxSimultaneous>
-        <maxDistance>200</maxDistance>
+        <maxDistance>500</maxDistance>
       </li>
       <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
@@ -938,7 +938,7 @@
         <requiresLOS>false</requiresLOS>
         <showMaxSimultaneous>false</showMaxSimultaneous>
         <maxSimultaneous>1</maxSimultaneous>
-        <maxDistance>200</maxDistance>
+        <maxDistance>500</maxDistance>
       </li>
       <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
