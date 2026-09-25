@@ -3,6 +3,7 @@
   <ThingDef ParentName="BodyPartProstheticBase">
     <defName>WNG_WhispersAcousticNode</defName>
     <label>Whispers acoustic sensory node</label>
+    <thingCategories Inherit="False"><li>BodyPartsBionic</li></thingCategories>
     <description>A cultured neural-auditory implant reconstructed from Whispers hybrid biopsy tissue. It reproduces part of the hybrid's extreme sound-localisation network without imposing blindness or other Michael-hybrid physiology.</description>
     <graphicData>
       <texPath>Things/Item/Whispers/WNG_WhispersAcousticNode</texPath>
