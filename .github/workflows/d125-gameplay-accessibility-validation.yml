@@ -80,6 +80,17 @@ jobs:
           access = Path("Source/WraithNaniteGravtech/UI/WNGGameplayAccessibility.cs").read_text(encoding="utf-8")
           for token in ("ThingCategory.Item","ThingCategory.Building","def.forceDebugSpawnable = true"):
               if token not in access: failures.append(f"direct-spawn accessibility source lost {token}")
+
+          routing = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs").read_text(encoding="utf-8")
+          for token in (
+              "Designator_Build_WNGDev",
+              "UpgradeNativeWNGDesignators",
+              "Prefs.DevMode",
+              "DebugSettings.godMode = true",
+              "base.DesignateSingleCell(c)",
+          ):
+              if token not in routing:
+                  failures.append(f"WNG Dev Mode no-cost Architect placement lost {token}")
           if failures:
               print("GAMEPLAY ACCESSIBILITY FAILURES:")
               for failure in failures: print(" -", failure)
