@@ -2,20 +2,19 @@
 <Defs>
   <!--
     Retained middle defensive tier: personal -> settlement -> gravship.
-    The current gravship-emitter visual is a temporary present-day WNG placeholder only.
-    Dedicated professional settlement-shield art remains an open presentation task.
+    Uses dedicated Asuran settlement-projector presentation distinct from gravship emitters.
   -->
   <ThingDef ParentName="BuildingBase">
     <defName>WNG_PrecursorSettlementShield</defName>
     <label>precursor settlement shield projector</label>
-    <description>A fixed Asuran defensive-field projector for ground settlements. While powered and switched on it maintains a 14.9-cell field that destroys hostile projectiles entering from outside while allowing defenders within the perimeter to fire outward. The field has finite charge, must recover after sustained fire, collapses under EMP and cannot function as a gravship shield component. Visual presentation is provisional pending the professional art pass.</description>
+    <description>A fixed Asuran defensive-field projector for ground settlements. While powered and switched on it maintains a 14.9-cell field that destroys hostile projectiles entering from outside while allowing defenders within the perimeter to fire outward. The field has finite charge, must recover after sustained fire, collapses under EMP and cannot function as a gravship shield component.</description>
     <thingClass>Building</thingClass>
     <drawerType>MapMeshAndRealTime</drawerType>
     <drawOffscreen>true</drawOffscreen>
     <tickerType>Normal</tickerType>
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
-      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorShieldEmitter</texPath>
+      <texPath>Things/Building/Precursor/Shield/WNG_PrecursorSettlementShield</texPath>
       <drawSize>(2.3,2.3)</drawSize>
     </graphicData>
     <size>(2,2)</size>
