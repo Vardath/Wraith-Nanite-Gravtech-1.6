@@ -34,5 +34,13 @@
     <li>cravemode.rimgatejaffakreebiotech</li>
     <li>CETeam.CombatExtended</li>
   </loadAfter>
-  <description>Unofficial, non-commercial fan-made RimWorld 1.6 mod inspired by Stargate Atlantis themes. This clean rebuild focuses on functional Wraith, Replicator, precursor and gravtech gameplay while using RimWorld and Odyssey native systems wherever they already provide the required behavior.</description>
+  <description>Unofficial, non-commercial fan-made RimWorld 1.6 expansion inspired by Stargate Atlantis and the wider Stargate universe.
+
+Play with or against Wraith, block Replicators, human-form Replicators/Asurans, and advanced Goa'uld/Precursor technology. Wraith gameplay includes Life Force feeding, regeneration, hibernation, Hunters/Warriors/Commanders/Keepers/Queens, four Hive lineages, strategic feeding pressure, living weapons, furniture, biotechnology and organic gravships.
+
+Block Replicators use a Drone -&gt; Hunter -&gt; Bulwark -&gt; Titan -&gt; Siege Mass hierarchy. Larger forms split into smaller operational forms when destroyed; smaller forms can recombine upward after a delay. Controller, Repairer, Burrower and Artillery specialists support the swarm, assimilation can unlock adaptive capabilities, and dangerous Replicator Matter can reform if it is not safely contained.
+
+Human-form nanite beings add Lattice factions, infiltration, Queen/controller systems, Neural Interface and Pattern Archive technology. Ancient/Asuran content includes Puddle Jumpers, pulse weapons, personal and settlement shields, furniture, pilot systems and a complete themed Odyssey gravship family. Wraith Darts, Strike Craft and Cruisers, Al'kesh and Death Gliders, Goa'uld gravship systems, transport rings and related pharmacology expand the wider setting.
+
+Includes four Wraith/human-form player starts on the surface or in orbit and uses RimWorld/Odyssey native systems wherever practical. Requires Royalty, Ideology, Biotech, Anomaly and Odyssey. Combat Extended compatibility definitions are included; ONAC and RimGate Jaffa/Kree receive optional integration when installed.</description>
 </ModMetaData>
