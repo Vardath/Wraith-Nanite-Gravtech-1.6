@@ -8,7 +8,7 @@
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithKeeperMantle</defName>
     <label>wraith keeper mantle</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A senior Keeper's living shell: command-grade carapace grown into a mantle suited to caretakers of dormant Hive populations and long-duration biological systems. The current Commander-carapace visual is temporary pending the professional Keeper art replacement.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
@@ -40,7 +40,7 @@
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_PrecursorCommandArmor</defName>
     <label>precursor command armor</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A command-grade presentation of precursor field armor used by Asuran coordinators. Protection and manufacture track the standard field suit; the current field-armor visual is temporary pending professional command-armour art.</description>
     <techLevel>Ultra</techLevel>
     <graphicData>
