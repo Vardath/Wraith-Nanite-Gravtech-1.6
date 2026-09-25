@@ -40,6 +40,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_WraithSuppressionDose</defName>
     <label>Wraith suppression injection</label>
+    <thingCategories Inherit="False"><li>Medicine</li></thingCategories>
     <description>A maintenance drug used after Wraith retroviral humanization. It suppresses re-emergence of the Wraith phenotype for a little more than one day. Doses do not stack into long-term immunity: treatment must remain regular.</description>
     <graphicData>
       <texPath>Things/Item/WraithMedical/WNG_WraithSuppressionDose</texPath>
