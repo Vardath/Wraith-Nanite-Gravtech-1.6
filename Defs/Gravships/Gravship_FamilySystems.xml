@@ -330,7 +330,7 @@
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
-    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconPath>UI/WNG/Conduits/WNG_WraithFuelConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
     <uiIconColor>(132,190,132)</uiIconColor>
     <statBases>
@@ -372,7 +372,7 @@
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
-    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconPath>UI/WNG/Conduits/WNG_WraithNeuralConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
     <uiIconColor>(64,205,190)</uiIconColor>
     <statBases>
@@ -560,7 +560,7 @@
         <directionInfluence>20</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,0.5)<requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>500</maxDistance></li>
+          <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
@@ -631,7 +631,7 @@
         <directionInfluence>30</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,1.0)<requiresLOS>false</requiresLOS><maxSimultaneous>6</maxSimultaneous><maxDistance>500</maxDistance></li>
+          <li>(0,0,1.0)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
@@ -1111,7 +1111,7 @@
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
-    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconPath>UI/WNG/Conduits/WNG_AsuranFuelConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
     <uiIconColor>(145,220,232)</uiIconColor>
     <statBases>
@@ -1154,7 +1154,7 @@
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
-    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconPath>UI/WNG/Conduits/WNG_AsuranPowerConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
     <uiIconColor>(82,218,250)</uiIconColor>
     <statBases>
@@ -1340,7 +1340,7 @@
         <directionInfluence>20</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,0.5)<requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>500</maxDistance></li>
+          <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
@@ -1413,7 +1413,7 @@
         <directionInfluence>30</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,1.0)<requiresLOS>false</requiresLOS><maxSimultaneous>6</maxSimultaneous><maxDistance>500</maxDistance></li>
+          <li>(0,0,1.0)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
