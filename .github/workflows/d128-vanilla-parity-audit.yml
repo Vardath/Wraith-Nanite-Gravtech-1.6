@@ -73,7 +73,7 @@ jobs:
           }
           apparel_parent_tokens=("ApparelBase",)
           weapon_parent_tokens=("BaseMeleeWeapon","BaseHumanMakeableGun","BaseGun","BaseEquipment")
-          hidden_portables={"WNG_AnimalDiversitySurvey","WNG_WhispersHybridStudyGate"}
+          hidden_portables={"WNG_AnimalDiversitySurvey","WNG_WhispersHybridStudyGate","WNG_Gun_WraithLivingTurret","WNG_Gun_AsuranAutoturret","WNG_Gun_GoauldHeavyPlasmaCannon"}
 
           for name,(path,node) in by_type.get("ThingDef",{}).items():
               if not name.startswith("WNG_"): continue
@@ -167,7 +167,12 @@ jobs:
                   tex=gd.findtext("texPath")
                   if tex and tex.startswith(("Things/","UI/")):
                       multi=(gd.findtext("graphicClass")=="Graphic_Multi")
-                      if not texture_exists(tex,multi):
+                      vanilla_tex={
+                          "Things/Item/Resource/Steel",
+                          "Things/Projectile/Charge_Small",
+                          "Things/Projectile/ChargeLanceShot",
+                      }
+                      if tex not in vanilla_tex and not texture_exists(tex,multi):
                           failures.append(f"{name} missing texture family {tex} ({path})")
               ui=node.findtext("uiIconPath")
               if ui and not texture_exists(ui):
