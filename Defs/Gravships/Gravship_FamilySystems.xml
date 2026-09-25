@@ -332,7 +332,6 @@
     </graphicData>
     <uiIconPath>UI/WNG/Conduits/WNG_WraithFuelConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
-    <uiIconColor>(132,190,132)</uiIconColor>
     <statBases>
       <MaxHitPoints>130</MaxHitPoints>
       <Mass>1</Mass>
@@ -374,7 +373,6 @@
     </graphicData>
     <uiIconPath>UI/WNG/Conduits/WNG_WraithNeuralConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
-    <uiIconColor>(64,205,190)</uiIconColor>
     <statBases>
       <MaxHitPoints>140</MaxHitPoints>
       <Mass>1</Mass>
@@ -1113,7 +1111,6 @@
     </graphicData>
     <uiIconPath>UI/WNG/Conduits/WNG_AsuranFuelConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
-    <uiIconColor>(145,220,232)</uiIconColor>
     <statBases>
       <MaxHitPoints>150</MaxHitPoints>
       <Mass>1</Mass>
@@ -1156,7 +1153,6 @@
     </graphicData>
     <uiIconPath>UI/WNG/Conduits/WNG_AsuranPowerConduit_MenuIcon</uiIconPath>
     <uiIconScale>0.7</uiIconScale>
-    <uiIconColor>(82,218,250)</uiIconColor>
     <statBases>
       <MaxHitPoints>165</MaxHitPoints>
       <Mass>1</Mass>
