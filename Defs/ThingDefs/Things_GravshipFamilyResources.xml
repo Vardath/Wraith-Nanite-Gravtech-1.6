@@ -13,6 +13,7 @@
   <ThingDef>
     <defName>WNG_MinifiedAsuranGravEngine</defName>
     <label>minified Asuran grav engine</label>
+    <thingCategories Inherit="False"><li>Buildings</li></thingCategories>
     <description>A complete Asuran grav engine packaged for installation.</description>
     <thingClass>WraithNaniteGravtech.MinifiedAsuranGravEngine</thingClass>
     <category>Item</category><useHitPoints>true</useHitPoints><selectable>true</selectable><altitudeLayer>Item</altitudeLayer>
