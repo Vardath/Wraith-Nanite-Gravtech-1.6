@@ -32,6 +32,8 @@ jobs:
           parity = defs_from("Defs/Gravships/Gravship_VanillaParity.xml")
           ancient = defs_from("Defs/Gravships/Gravship_AncientVacuumShield.xml")
           wraith_engine_defs = defs_from("Defs/ThingDefs/Things_WraithGravEngine.xml")
+          wraith_settlement = defs_from("Defs/ThingDefs/Things_WraithPlayerInfrastructure.xml")
+          precursor_settlement = defs_from("Defs/ThingDefs/Things_PrecursorStructures.xml")
 
           door_sets = [
               ("WNG_WraithGravshipDoor", family),
@@ -100,6 +102,36 @@ jobs:
               workers = [x.text for x in node.findall("./placeWorkers/li")]
               if worker not in workers:
                   failures.append(f"{name} lost its same-family gravship-substructure placement worker")
+
+          # Ordinary settlement walls must use the same correctly ordered family linked
+          # atlas topology as the straight gravship hull tiles so runs/corners join like vanilla walls.
+          settlement_walls = (
+              ("WNG_WraithLivingWall", wraith_settlement, "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas"),
+              ("WNG_PrecursorWall", precursor_settlement, "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas"),
+          )
+          for name, defs, tex_path in settlement_walls:
+              node = defs.get(name)
+              if node is None:
+                  failures.append(f"{name} settlement wall missing")
+                  continue
+              if node.findtext("./graphicData/texPath") != tex_path:
+                  failures.append(f"{name} does not use the approved linked family wall atlas")
+              if node.findtext("./graphicData/graphicClass") != "Graphic_Single":
+                  failures.append(f"{name} lost vanilla linked-wall inner graphic class")
+              if node.findtext("./graphicData/linkType") != "CornerFiller":
+                  failures.append(f"{name} no longer uses vanilla CornerFiller linking")
+              flags = {x.text for x in node.findall("./graphicData/linkFlags/li")}
+              if not {"Wall", "Rock"}.issubset(flags):
+                  failures.append(f"{name} lost vanilla Wall/Rock link flags")
+
+          family_source = Path("Source/WraithNaniteGravtech/Gravships/GravshipFamilySystems.cs").read_text(encoding="utf-8")
+          for token in (
+              "entityDefToBuild as ThingDef",
+              "GetCompProperties<CompProperties_WNGFamilyPowerNode>",
+              "GetCompProperties<CompProperties_WNGFuelEndpoint>",
+          ):
+              if token not in family_source:
+                  failures.append(f"family conduit blueprint/frame linking regressed: {token}")
 
           # Family gravship equipment must use Odyssey's native facility link path:
           # equipment has a gravship-facility comp, the matching engine lists that Def,
