@@ -45,6 +45,7 @@
   <ThingDef ParentName="DrugBase">
     <defName>WNG_Kassa</defName>
     <label>kassa</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>Dense kernels from the kassa plant. Kassa is nutritious enough to serve as a staple food, keeps well, and is valuable in trade. Its appeal comes with a severe cost: repeated consumption rapidly establishes a persistent chemical dependency.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_KassaSatiation</HediffDef>
