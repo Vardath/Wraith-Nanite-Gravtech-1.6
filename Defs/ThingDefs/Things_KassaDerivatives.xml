@@ -130,6 +130,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_KassaDistillate</defName>
     <label>kassa distillate</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A high-purity Kassa derivative produced by aggressive solvent extraction and pharmaceutical stabilization. The dose delivers a violent stimulant/euphoric peak with a correspondingly extreme dependency and overdose profile.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_KassaDistillateHigh</HediffDef>
