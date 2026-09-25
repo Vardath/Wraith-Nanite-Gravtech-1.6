@@ -3,6 +3,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_FeedingIndependenceVector</defName>
     <label>feeding-independence gene vector</label>
+    <thingCategories Inherit="False"><li>Medicine</li></thingCategories>
     <description>An unstable late-generation retroviral vector carrying Iratus-queen regenerative controls and Wraith enzyme stabilisers. In a Wraith it can permanently replace Life Force metabolism with ordinary digestion, but systemic rejection remains dangerously common.</description>
     <graphicData>
       <texPath>Things/Item/WraithMedical/WNG_FeedingIndependenceVector</texPath>
