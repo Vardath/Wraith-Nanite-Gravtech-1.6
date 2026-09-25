@@ -18,7 +18,7 @@
     <defName>WNG_WraithMembraneDoor</defName>
     <label>wraith membrane door</label>
     <description>A muscular living partition that contracts aside for authorised passage, seals itself afterwards, and slowly regenerates damage while alive.</description>
-    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData></graphicData>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><WNG_Biomass>18</WNG_Biomass></costList>
     <statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.25</Flammability></statBases>
