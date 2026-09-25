@@ -3,6 +3,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_KassaConcentrate</defName>
     <label>kassa concentrate</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A concentrated preparation of kassa psycho-stimulants stripped away from most of the crop's bulk nutrition. The result is faster, stronger and substantially more habit-forming than eating the grain itself. It shares the same underlying Kassa dependence.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_KassaConcentrateHigh</HediffDef>
