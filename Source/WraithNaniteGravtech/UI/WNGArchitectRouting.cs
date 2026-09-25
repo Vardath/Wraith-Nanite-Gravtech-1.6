@@ -61,6 +61,7 @@ namespace WraithNaniteGravtech
             buildables.AddRange(DefDatabase<TerrainDef>.AllDefsListForReading
                 .Where(d => d != null && d.defName != null && d.defName.StartsWith("WNG_", StringComparison.Ordinal) && d.designationCategory != null));
 
+            int nativeDevUpgrades = UpgradeNativeWNGDesignators(buildables);
             int familyCopies = 0;
             int odysseyCopies = 0;
 
@@ -74,7 +75,7 @@ namespace WraithNaniteGravtech
                     odysseyCopies++;
             }
 
-            Log.Message($"[WNG] Architect routing installed: {familyCopies} family entries and {odysseyCopies} Odyssey gravship entries; native functional categories preserved.");
+            Log.Message($"[WNG] Architect routing installed: {nativeDevUpgrades} native WNG designators upgraded for Dev Mode, {familyCopies} family entries and {odysseyCopies} Odyssey gravship entries; native functional categories preserved.");
         }
 
         private static DesignationCategoryDef FamilyCategoryFor(
@@ -120,6 +121,34 @@ namespace WraithNaniteGravtech
             return false;
         }
 
+        private static int UpgradeNativeWNGDesignators(List<BuildableDef> buildables)
+        {
+            HashSet<BuildableDef> wanted = new HashSet<BuildableDef>(buildables);
+            int upgraded = 0;
+
+            foreach (DesignationCategoryDef category in DefDatabase<DesignationCategoryDef>.AllDefsListForReading)
+            {
+                List<Designator> resolved = GetResolvedDesignators(category);
+                if (resolved == null)
+                    continue;
+
+                for (int i = 0; i < resolved.Count; i++)
+                {
+                    if (resolved[i] is Designator_Build build &&
+                        wanted.Contains(build.PlacingDef) &&
+                        !(resolved[i] is Designator_Build_WNGDev))
+                    {
+                        resolved[i] = new Designator_Build_WNGDev(build.PlacingDef);
+                        upgraded++;
+                    }
+                }
+
+                resolved.SortBy(d => d.Order);
+            }
+
+            return upgraded;
+        }
+
         private static bool AddBuildDesignator(DesignationCategoryDef category, BuildableDef def)
         {
             List<Designator> resolved = GetResolvedDesignators(category);
@@ -129,7 +158,7 @@ namespace WraithNaniteGravtech
             if (resolved.Any(d => d is Designator_Build build && build.PlacingDef == def))
                 return false;
 
-            resolved.Add(new Designator_Build(def));
+            resolved.Add(new Designator_Build_WNGDev(def));
             resolved.SortBy(d => d.Order);
             return true;
         }
@@ -167,6 +196,63 @@ namespace WraithNaniteGravtech
             }
 
             return false;
+        }
+    }
+
+    /// <summary>
+    /// WNG's Architect entries behave like a scoped God Mode while RimWorld Dev Mode is enabled.
+    /// This is intentionally limited to WNG buildables: ordinary gameplay remains untouched.
+    /// It lets mod testing place any WNG building/terrain immediately without research, resources,
+    /// construction work, gravship-substructure placement gates or a separate God Mode toggle.
+    /// </summary>
+    public sealed class Designator_Build_WNGDev : Designator_Build
+    {
+        public Designator_Build_WNGDev(BuildableDef entDef)
+            : base(entDef)
+        {
+        }
+
+        public override bool Visible => Prefs.DevMode || base.Visible;
+
+        public override void ProcessInput(UnityEngine.Event ev)
+        {
+            WithScopedGodMode(() => base.ProcessInput(ev));
+        }
+
+        public override AcceptanceReport CanDesignateCell(IntVec3 c)
+        {
+            if (!Prefs.DevMode)
+                return base.CanDesignateCell(c);
+
+            if (Map == null || !c.InBounds(Map))
+                return new AcceptanceReport("OutOfBounds".Translate());
+
+            return AcceptanceReport.WasAccepted;
+        }
+
+        public override void DesignateSingleCell(IntVec3 c)
+        {
+            WithScopedGodMode(() => base.DesignateSingleCell(c));
+        }
+
+        private static void WithScopedGodMode(Action action)
+        {
+            if (!Prefs.DevMode)
+            {
+                action();
+                return;
+            }
+
+            bool previous = DebugSettings.godMode;
+            try
+            {
+                DebugSettings.godMode = true;
+                action();
+            }
+            finally
+            {
+                DebugSettings.godMode = previous;
+            }
         }
     }
 }
