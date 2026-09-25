@@ -74,12 +74,6 @@ namespace WraithNaniteGravtech
             if (defName == ReplicatorMatterDefName || defName == ReplicatorCoreFragmentDefName)
                 return false;
 
-            // Collapsed-rock rubble is an obstruction, not useful Replicator feedstock.
-            // Keep the DefOf check plus the name fallback so this remains stable across save/mod load order.
-            if (def == ThingDefOf.CollapsedRocks ||
-                string.Equals(defName, "CollapsedRocks", StringComparison.Ordinal))
-                return false;
-
             // Never consume a structure belonging to the same Replicator faction.
             if (target.Faction != null && target.Faction == pawn.Faction)
                 return false;
@@ -91,8 +85,9 @@ namespace WraithNaniteGravtech
                 return false;
 
             // Autonomous block Replicators consume the physical map before turning on biology:
-            // loose items, buildings (including walls and natural rock, but not collapsed-rock rubble),
-            // and plants are valid mass.
+            // loose items, buildings (including walls, natural rock and collapsed-rock piles),
+            // and plants are valid mass. Roof-support destruction is intercepted after commit so
+            // consuming collapsed rock cannot recursively create another collapse pile.
             if (def.category == ThingCategory.Item)
                 return target.stackCount > 0;
 
