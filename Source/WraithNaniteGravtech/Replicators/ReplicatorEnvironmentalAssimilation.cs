@@ -162,7 +162,13 @@ namespace WraithNaniteGravtech
             if (ReplicatorContainmentUtility.IsContained(map, cell))
                 return false;
 
-            // Physical Things always outrank the substrate on the same cell.
+            // Roofing outranks physical Things on the same cell. If a Replicator ate a
+            // roof-holding wall/rock first, vanilla would schedule unsupported roofs to collapse
+            // and thick rock roof would spawn CollapsedRocks. The swarm consumes the roof first.
+            if (map.roofGrid.Roofed(cell))
+                return true;
+
+            // Once the roof is gone, physical Things outrank floor/foundation/ground substrate.
             List<Thing> things = cell.GetThingList(map);
             for (int i = 0; i < things.Count; i++)
             {
@@ -174,10 +180,55 @@ namespace WraithNaniteGravtech
             bool isVoid = terrain == null ||
                           string.Equals(terrain.defName, "Space", StringComparison.OrdinalIgnoreCase);
 
-            return map.roofGrid.Roofed(cell) ||
-                   map.terrainGrid.CanRemoveTopLayerAt(cell) ||
+            return map.terrainGrid.CanRemoveTopLayerAt(cell) ||
                    map.terrainGrid.CanRemoveFoundationAt(cell) ||
                    !isVoid;
+        }
+
+        /// <summary>
+        /// Snapshot vanilla's pending roof-collapse buffer before a Replicator destroys a support.
+        /// Any new cells vanilla marks as unsupported because of that destruction are converted
+        /// into direct roof assimilation before the collapse resolver can spawn rubble.
+        /// </summary>
+        public static HashSet<IntVec3> CapturePendingRoofCollapses(Map map)
+        {
+            if (map?.roofCollapseBuffer?.CellsMarkedToCollapse == null)
+                return new HashSet<IntVec3>();
+
+            return new HashSet<IntVec3>(map.roofCollapseBuffer.CellsMarkedToCollapse);
+        }
+
+        public static int AssimilateNewlyUnsupportedRoofs(
+            Map map,
+            HashSet<IntVec3> pendingBefore)
+        {
+            if (map?.roofCollapseBuffer?.CellsMarkedToCollapse == null)
+                return 0;
+
+            pendingBefore ??= new HashSet<IntVec3>();
+            List<IntVec3> pending = map.roofCollapseBuffer.CellsMarkedToCollapse;
+            int assimilated = 0;
+
+            for (int i = pending.Count - 1; i >= 0; i--)
+            {
+                IntVec3 cell = pending[i];
+                if (pendingBefore.Contains(cell))
+                    continue;
+
+                if (cell.InBounds(map) && map.roofGrid.Roofed(cell))
+                {
+                    // SetRoof(null) removes constructed, thin-rock and thick-rock roofs directly.
+                    // It deliberately bypasses RoofCollapserImmediate, so RoofRockThick cannot
+                    // create CollapsedRocks as a side effect of Replicator feeding.
+                    map.roofGrid.SetRoof(cell, null);
+                    FilthMaker.RemoveAllFilth(cell, map);
+                    assimilated++;
+                }
+
+                pending.RemoveAt(i);
+            }
+
+            return assimilated;
         }
 
         public static bool HasStructuralLayer(Map map, IntVec3 cell)
