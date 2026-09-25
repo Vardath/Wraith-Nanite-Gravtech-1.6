@@ -162,9 +162,19 @@ jobs:
               if precursor_wall.findtext("./graphicData/graphicClass") != "Graphic_Single":
                   failures.append("Precursor wall lost its safe non-stuff graphic class")
 
+          wraith_door = defs.get("WNG_WraithMembraneDoor", (None,))[0]
+
           if precursor_door is not None:
               if precursor_door.findtext("./graphicData/texPath") != "Things/Building/Precursor/Structure/WNG_PrecursorDoor":
                   failures.append("Precursor settlement door regressed to the gravship asset path")
+              flags = {x.text for x in precursor_door.findall("./graphicData/linkFlags/li")}
+              if not {"Wall", "Rock"}.issubset(flags):
+                  failures.append("Precursor settlement wall no longer visually joins its iris door")
+
+          if wraith_door is not None:
+              flags = {x.text for x in wraith_door.findall("./graphicData/linkFlags/li")}
+              if not {"Wall", "Rock"}.issubset(flags):
+                  failures.append("Wraith living wall no longer visually joins its membrane door")
 
           if failures:
               print("SETTLEMENT FAMILY VALIDATION FAILURES:")
