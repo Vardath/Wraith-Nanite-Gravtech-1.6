@@ -29,6 +29,7 @@
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_HumanFormUniform</defName>
     <label>human-form replicator uniform</label>
+    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
     <description>A fitted pale uniform assembled from self-aligning precursor fibers. It provides modest environmental and combat protection while serving as ordinary human-form Replicator attire rather than a battlefield shell.</description>
     <techLevel>Spacer</techLevel>
     <!-- Dedicated clean uniform art remains part of the later non-Replicator presentation pass.
