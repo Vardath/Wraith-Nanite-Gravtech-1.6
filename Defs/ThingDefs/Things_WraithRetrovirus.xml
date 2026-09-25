@@ -3,6 +3,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_WraithRetrovirusDose</defName>
     <label>Wraith retrovirus dose</label>
+    <thingCategories Inherit="False"><li>Medicine</li></thingCategories>
     <description>A cultured retroviral injection engineered to suppress the Iratus-derived portions of Wraith biology while leaving the treated individual's identity intact. One dose initiates humanization; it does not maintain the state without the separate suppression drug.</description>
     <graphicData>
       <texPath>Things/Item/WraithMedical/WNG_WraithRetrovirusDose</texPath>
