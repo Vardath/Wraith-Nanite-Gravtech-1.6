@@ -15,6 +15,13 @@
       <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>10</count></li>
       <li><filter><thingDefs><li>SubcoreBasic</li></thingDefs></filter><count>1</count></li>
     </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Steel</li>
+        <li>WNG_ReplicatorMatter</li>
+        <li>SubcoreBasic</li>
+      </thingDefs>
+    </fixedIngredientFilter>
     <products>
       <WNG_ChildsToy>1</WNG_ChildsToy>
     </products>
