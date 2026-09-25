@@ -52,7 +52,7 @@ jobs:
           source = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs").read_text(encoding="utf-8")
           required_source = (
               "resolvedDesignators",
-              "new Designator_Build(def)",
+              "new Designator_Build_WNGDev(def)",
               "WNG_WraithArchitect",
               "WNG_AsuranArchitect",
               "WNG_GoauldArchitect",
@@ -60,6 +60,10 @@ jobs:
               "FamilyCategoryFor",
               "IsWNGGravshipBuildable",
               "designationCategory != null",
+              "UpgradeNativeWNGDesignators",
+              "Designator_Build_WNGDev",
+              "Prefs.DevMode",
+              "DebugSettings.godMode = true",
           )
           for token in required_source:
               if token not in source:
