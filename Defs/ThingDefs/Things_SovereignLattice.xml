@@ -3,6 +3,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_ReplicatorCoreFragment</defName>
     <label>replicator core fragment</label>
+    <thingCategories Inherit="False"><li>Manufactured</li></thingCategories>
     <description>A fractured but reusable Replicator command-lattice fragment sometimes recovered when a stronger block-form Replicator is genuinely destroyed. The surviving control architecture is a required substrate for Sovereign Neural Lattice fabrication.</description>
     <graphicData>
       <texPath>Things/Item/Resource/Replicator/WNG_ReplicatorCoreFragment</texPath>
