@@ -106,6 +106,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_WraithEnzymeWeaningSerum</defName>
     <label>Wraith enzyme weaning serum</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A controlled tapering treatment made from measured Wraith enzyme, neutroamine and medical stabilizers. Each dose reduces established Wraith-enzyme dependence and temporarily relieves withdrawal pressure. Multiple doses over time are required; it does not erase addiction instantly.</description>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_WraithBiofluidFuel</texPath>
