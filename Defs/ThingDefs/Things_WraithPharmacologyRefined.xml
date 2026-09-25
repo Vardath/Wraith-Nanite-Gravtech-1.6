@@ -3,6 +3,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_RefinedWraithEnzyme</defName>
     <label>refined Wraith enzyme</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A diluted and stabilized Wraith-enzyme formulation. It sacrifices some of the raw extract's extreme peak performance in exchange for more predictable dosing and lower overdose risk. It remains strongly habit-forming and is not a safe everyday stimulant.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_RefinedWraithEnzymeHigh</HediffDef>
