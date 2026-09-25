@@ -8,6 +8,7 @@
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
     <defName>WNG_AsuranPhaseBlade</defName>
     <label>Asuran phase blade</label>
+    <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A compact Asuran precision weapon that holds a narrow cutting field along a nanite-forged edge. It is light, fast and optimized for accurate close combat.</description>
     <techLevel>Ultra</techLevel>
     <smeltable>false</smeltable>
