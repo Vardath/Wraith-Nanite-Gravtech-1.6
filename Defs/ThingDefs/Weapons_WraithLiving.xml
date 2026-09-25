@@ -3,6 +3,7 @@
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
     <defName>WNG_WraithBoneBlade</defName>
     <label>living boneblade</label>
+    <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A compact Wraith fighting blade grown around layered cartilage, a mineralized cutting ridge and a recurved puncture point.</description>
     <techLevel>Spacer</techLevel>
     <smeltable>false</smeltable>
