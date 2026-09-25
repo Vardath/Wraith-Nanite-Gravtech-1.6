@@ -51,7 +51,7 @@
     <defName>WNG_GoauldGravshipDoor</defName><label>Ha'tak pressure door</label>
     <description>A heavy Goa'uld pressure door sealing internal Ha'tak compartments.</description>
     <designationCategory>Structure</designationCategory><uiOrder>1806</uiOrder>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravshipDoor</texPath><drawSize>(1,1)</drawSize><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <statBases><MaxHitPoints>720</MaxHitPoints><WorkToBuild>700</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><Uranium>6</Uranium><Plasteel>12</Plasteel></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
@@ -124,7 +124,7 @@
     <defName>WNG_GoauldFuelConduit</defName><label>Ha'tak fuel conduit</label>
     <description>A sealed Goa'uld feed line carrying only Liquid Naquadria between same-family reservoirs and drives.</description>
     <thingClass>Building</thingClass><designationCategory>Misc</designationCategory><uiOrder>2158</uiOrder><tickerType>Never</tickerType>
-    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData><uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath><uiIconScale>0.7</uiIconScale><uiIconColor>(255,210,90)</uiIconColor>
     <statBases><MaxHitPoints>160</MaxHitPoints><Mass>1</Mass><Flammability>0</Flammability><Beauty>0</Beauty><WorkToBuild>100</WorkToBuild></statBases><costList><Uranium>1</Uranium></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><passability>Standable</passability><fillPercent>0.02</fillPercent>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
@@ -135,7 +135,7 @@
     <defName>WNG_GoauldPowerConduit</defName><label>Ha'tak power conduit</label>
     <description>A naquadah-lined ship power bus isolated from Wraith, Asuran and ordinary colony grids unless a deliberate Ha'tak coupler is installed.</description>
     <thingClass>Building</thingClass><designationCategory>Power</designationCategory><uiOrder>2005</uiOrder><tickerType>Never</tickerType>
-    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData>
+    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData><uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath><uiIconScale>0.7</uiIconScale><uiIconColor>(255,170,55)</uiIconColor>
     <statBases><MaxHitPoints>170</MaxHitPoints><Mass>1</Mass><Flammability>0</Flammability><Beauty>0</Beauty><WorkToBuild>100</WorkToBuild></statBases><costList><Uranium>1</Uranium></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><passability>Standable</passability><fillPercent>0.02</fillPercent>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
@@ -172,7 +172,7 @@
     <defName>WNG_GoauldSmallSublightDrive</defName><label>Ha'tak sublight drive</label>
     <description>A compact Goa'uld gravship drive requiring both the Ha'tak power grid and a physical Liquid-Naquadria feed.</description>
     <designationCategory>Misc</designationCategory><uiOrder>2320</uiOrder><tickerType>Rare</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldSmallSublightDrive</texPath><drawSize>(1.2,2.2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldSmallSublightDrive</texPath><drawSize>(1.2,2.2)</drawSize><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <statBases><MaxHitPoints>560</MaxHitPoints><Flammability>0</Flammability><Beauty>3</Beauty><WorkToBuild>12500</WorkToBuild><Mass>18</Mass></statBases><costList Inherit="False"><Uranium>28</Uranium><Plasteel>105</Plasteel><ComponentIndustrial>4</ComponentIndustrial></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>PlaceWorker_GravshipThruster</li><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
@@ -185,7 +185,7 @@
     <defName>WNG_GoauldLargeSublightDrive</defName><label>greater Ha'tak sublight drive</label>
     <description>A high-output Goa'uld drive for a full Ha'tak mothership.</description>
     <designationCategory>Misc</designationCategory><uiOrder>2321</uiOrder><tickerType>Rare</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldLargeSublightDrive</texPath><drawSize>(2.2,2.2)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldLargeSublightDrive</texPath><drawSize>(2.2,2.2)</drawSize><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <statBases><MaxHitPoints>760</MaxHitPoints><Flammability>0</Flammability><Beauty>4</Beauty><WorkToBuild>16500</WorkToBuild><Mass>32</Mass></statBases><costList Inherit="False"><Uranium>52</Uranium><Plasteel>170</Plasteel><ComponentSpacer>3</ComponentSpacer></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li><li>StandardGravtech</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>PlaceWorker_GravshipThruster</li><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
