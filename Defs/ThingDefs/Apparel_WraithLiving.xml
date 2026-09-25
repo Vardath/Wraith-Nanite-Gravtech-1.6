@@ -2,7 +2,7 @@
 <Defs>
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithHunterCoat</defName><label>wraith hunter coat</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>A long flexible coat grown from layered Wraith membrane, providing modest protection without the bulk of a full carapace.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases><MaxHitPoints>180</MaxHitPoints><WorkToMake>14000</WorkToMake><Mass>3.5</Mass><EquipDelay>2</EquipDelay><ArmorRating_Sharp>0.55</ArmorRating_Sharp><ArmorRating_Blunt>0.25</ArmorRating_Blunt><ArmorRating_Heat>0.4</ArmorRating_Heat></statBases>
@@ -17,7 +17,7 @@
 
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithWarriorCarapace</defName><label>wraith warrior carapace</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A grown shell of layered chitin and regenerative membrane that flexes with the wearer while dispersing bullets, blades and heat.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WarriorCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases><MaxHitPoints>260</MaxHitPoints><WorkToMake>24000</WorkToMake><Mass>8</Mass><EquipDelay>3.5</EquipDelay><ArmorRating_Sharp>1.25</ArmorRating_Sharp><ArmorRating_Blunt>0.55</ArmorRating_Blunt><ArmorRating_Heat>0.65</ArmorRating_Heat></statBases>
@@ -32,7 +32,7 @@
 
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithCommanderCarapace</defName><label>wraith commander carapace</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A denser command-grade living shell with reinforced plates around the torso, shoulders and spine.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases><MaxHitPoints>320</MaxHitPoints><WorkToMake>36000</WorkToMake><Mass>10</Mass><EquipDelay>4</EquipDelay><ArmorRating_Sharp>1.45</ArmorRating_Sharp><ArmorRating_Blunt>0.65</ArmorRating_Blunt><ArmorRating_Heat>0.78</ArmorRating_Heat><Beauty>3</Beauty></statBases>
@@ -47,7 +47,7 @@
 
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithQueenRaiment</defName><label>wraith queen raiment</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>Regal living robes grown for Wraith Queens and high-ranking brood leaders, reinforced with fine chitin ribs while remaining flowing and light.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases><MaxHitPoints>220</MaxHitPoints><WorkToMake>26000</WorkToMake><Mass>4</Mass><EquipDelay>2.5</EquipDelay><ArmorRating_Sharp>0.72</ArmorRating_Sharp><ArmorRating_Blunt>0.32</ArmorRating_Blunt><ArmorRating_Heat>0.52</ArmorRating_Heat><Beauty>5</Beauty></statBases>
