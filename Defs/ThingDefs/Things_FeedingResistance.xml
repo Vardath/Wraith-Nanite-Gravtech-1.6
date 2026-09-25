@@ -3,6 +3,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_VitalResistanceDose</defName>
     <label>vital resistance dose</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>An experimental five-day anti-feeding treatment. It does not grant immunity to Wraith feeding: most successful transfers are reduced to a fraction of normal strength, while some feeding attempts are violently rejected. The treatment itself causes short-term systemic strain, and a rejected feeding can trigger a temporary crisis in the patient and backlash in the Wraith.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_FeedingResistance</HediffDef>
