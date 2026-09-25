@@ -51,7 +51,7 @@ jobs:
               'Sounds',
               'Textures',
           ]
-          runtime_files = ['LoadFolders.xml']
+          runtime_files = ['LoadFolders.xml', 'PublishedFileId.txt']
 
           for name in runtime_dirs:
               src = root / name
@@ -68,6 +68,7 @@ jobs:
           cd ..
           unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll'
           unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/About/About.xml'
+          unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/PublishedFileId.txt'
 
       - name: Upload release package
         uses: actions/upload-artifact@v4
