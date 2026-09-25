@@ -151,14 +151,14 @@ jobs:
           precursor_door = defs.get("WNG_PrecursorDoor", (None,))[0]
 
           if wraith_wall is not None:
-              if wraith_wall.findtext("./graphicData/texPath") != "Things/Building/Wraith/Structure/WNG_LivingWall":
-                  failures.append("Wraith living wall lost its dedicated settlement texture")
+              if wraith_wall.findtext("./graphicData/texPath") != "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas":
+                  failures.append("Wraith living wall lost its vanilla-linked family wall atlas")
               if wraith_wall.findtext("./graphicData/graphicClass") != "Graphic_Single":
                   failures.append("Wraith living wall returned to a stuff-dependent or invalid graphic class")
 
           if precursor_wall is not None:
-              if precursor_wall.findtext("./graphicData/texPath") != "Things/Building/Precursor/Structure/WNG_PrecursorWall":
-                  failures.append("Precursor wall is no longer using dedicated settlement wall art")
+              if precursor_wall.findtext("./graphicData/texPath") != "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas":
+                  failures.append("Precursor wall lost its vanilla-linked family wall atlas")
               if precursor_wall.findtext("./graphicData/graphicClass") != "Graphic_Single":
                   failures.append("Precursor wall lost its safe non-stuff graphic class")
 
