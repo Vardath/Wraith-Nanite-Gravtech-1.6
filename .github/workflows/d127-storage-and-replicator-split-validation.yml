@@ -1,0 +1,170 @@
+name: D127 Storage and Replicator Split Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  storage-and-split:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate vanilla storage coverage and death splitting
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          failures=[]
+
+          # Every player-relevant portable WNG item is deliberately anchored to a vanilla
+          # stockpile/storage category rather than relying on an accidental parent category.
+          expected={
+              # Apparel
+              "WNG_WraithKeeperMantle":"Apparel",
+              "WNG_PrecursorCommandArmor":"Apparel",
+              "WNG_HumanFormCombatArmor":"Apparel",
+              "WNG_HumanFormUniform":"Apparel",
+              "WNG_PrecursorFieldArmor":"Apparel",
+              "WNG_PrecursorPersonalShield":"Apparel",
+              "WNG_WraithHunterCoat":"Apparel",
+              "WNG_WraithWarriorCarapace":"Apparel",
+              "WNG_WraithCommanderCarapace":"Apparel",
+              "WNG_WraithQueenRaiment":"Apparel",
+
+              # Weapons and grenades
+              "WNG_AsuranPhaseBlade":"WeaponsMelee",
+              "WNG_AsuranFieldLance":"WeaponsMelee",
+              "WNG_PrecursorPulseRifle":"WeaponsRanged",
+              "WNG_RecoveredPrecursorPulseRifle":"WeaponsRanged",
+              "WNG_WraithBoneBlade":"WeaponsMelee",
+              "WNG_WraithWarGlaive":"WeaponsMelee",
+              "WNG_WraithStunStaff":"WeaponsRanged",
+              "WNG_WraithStunner":"WeaponsRanged",
+              "WNG_WraithCarbine":"WeaponsRanged",
+              "WNG_WraithHeavyBioWeapon":"WeaponsRanged",
+              "WNG_ReplicatorPulseCaster":"WeaponsRanged",
+              "WNG_ReplicatorShieldDisruptor":"WeaponsRanged",
+              "WNG_ReplicatorArtilleryCaster":"WeaponsRanged",
+              "WNG_NishtaCanister":"Grenades",
+
+              # Drugs / treatment consumables
+              "WNG_VitalResistanceDose":"Drugs",
+              "WNG_Roshna":"Drugs",
+              "WNG_HoffanSerum":"Drugs",
+              "WNG_Kassa":"Drugs",
+              "WNG_KassaConcentrate":"Drugs",
+              "WNG_KassaDistillate":"Drugs",
+              "WNG_IratusParalytic":"Drugs",
+              "WNG_RawWraithEnzyme":"Drugs",
+              "WNG_RefinedWraithEnzyme":"Drugs",
+              "WNG_WraithEnzymeWeaningSerum":"Drugs",
+              "WNG_HybridStabiliserDose":"Medicine",
+              "WNG_FeedingIndependenceVector":"Medicine",
+              "WNG_WraithRetrovirusDose":"Medicine",
+              "WNG_WraithSuppressionDose":"Medicine",
+              "WNG_IratusQueenRestorative":"Medicine",
+
+              # Resources, salvage and fuel
+              "WNG_AncientDrone":"Manufactured",
+              "WNG_RecoveredAncientDrone":"Manufactured",
+              "WNG_RecoveredVacuumEnergyModule":"Manufactured",
+              "WNG_AncientShieldHarmonicRelic":"Manufactured",
+              "WNG_SealedMachineSalvage":"Manufactured",
+              "WNG_DormantChildsToy":"Manufactured",
+              "WNG_VacuumEnergyModule":"Manufactured",
+              "WNG_ReplicatorMatter":"Manufactured",
+              "WNG_ReplicatorCoreFragment":"Manufactured",
+              "WNG_AsuranNaniteSlurry":"Manufactured",
+              "WNG_WraithBiofluidFuel":"Manufactured",
+              "WNG_IratusGlandExtract":"ItemsMisc",
+              "WNG_IratusQueenExtract":"ItemsMisc",
+              "WNG_WhispersHybridTissue":"ItemsMisc",
+              "WNG_Biomass":"ItemsMisc",
+              "WNG_CorpseLivingForgeIncubation":"ItemsMisc",
+              "WNG_MinifiedAsuranGravEngine":"Buildings",
+
+              # Implants / body parts
+              "WNG_AncientNeuralInterface":"BodyPartsBionic",
+              "WNG_PredatorReflexOrgan":"BodyPartsBionic",
+              "WNG_MyomerReinforcementGland":"BodyPartsBionic",
+              "WNG_RegenerativeVesicle":"BodyPartsBionic",
+              "WNG_MetabolicReserveNode":"BodyPartsBionic",
+              "WNG_SensoryCrownOrgan":"BodyPartsBionic",
+              "WNG_VitalFeedbackOrgan":"BodyPartsBionic",
+              "WNG_NaniteMotorLattice":"BodyPartsBionic",
+              "WNG_AutonomicEfficiencyLattice":"BodyPartsBionic",
+              "WNG_AdaptiveSensorMesh":"BodyPartsBionic",
+              "WNG_ReconstructionMicroforge":"BodyPartsBionic",
+              "WNG_EMPShuntLattice":"BodyPartsBionic",
+              "WNG_SovereignNeuralLattice":"BodyPartsBionic",
+              "WNG_WhispersAcousticNode":"BodyPartsBionic",
+              "WNG_WhispersMistGland":"BodyPartsBionic",
+          }
+
+          found={}
+          for path in Path("Defs/ThingDefs").glob("*.xml"):
+              try:
+                  root=ET.parse(path).getroot()
+              except ET.ParseError as exc:
+                  failures.append(f"{path}: XML parse failure: {exc}")
+                  continue
+              for node in root.findall("ThingDef"):
+                  name=node.findtext("defName")
+                  if not name:
+                      continue
+                  cats=[x.text for x in node.findall("./thingCategories/li") if x.text]
+                  found[name]=(path,cats)
+
+          for name,category in expected.items():
+              if name not in found:
+                  failures.append(f"storage audit def missing: {name}")
+                  continue
+              path,cats=found[name]
+              if category not in cats:
+                  failures.append(f"{name} is not explicitly in vanilla storage category {category} ({path}); got {cats}")
+
+          # The two intentional non-haulable research-gate tokens must remain outside stockpile UI.
+          for path,name in [
+              ("Defs/ThingDefs/Things_ComparativeXenobiology.xml","WNG_AnimalDiversitySurvey"),
+              ("Defs/ThingDefs/Things_WhispersResearch.xml","WNG_WhispersHybridStudyGate"),
+          ]:
+              text=Path(path).read_text(encoding="utf-8")
+              block=re.search(rf"<ThingDef\b[\s\S]*?<defName>{name}</defName>[\s\S]*?</ThingDef>",text)
+              if block is None or "<alwaysHaulable>false</alwaysHaulable>" not in block.group(0):
+                  failures.append(f"intentional hidden research token changed haulability: {name}")
+
+          # Replicator blocks must be both stockpilable and usable by the smelter disposal bill.
+          salvage=Path("Defs/RecipeDefs/Recipes_ReplicatorSalvage.xml").read_text(encoding="utf-8")
+          if "<li>WNG_ReplicatorMatter</li>" not in salvage or "<li>ElectricSmelter</li>" not in salvage:
+              failures.append("Replicator-block smelter disposal recipe lost its exact block ingredient or smelter user")
+
+          # Genuine pawn death (including explosive/projectile kills) must own the 2:1 split.
+          hierarchy=Path("Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs").read_text(encoding="utf-8")
+          for token in (
+              "public override void Notify_Killed(Map prevMap, DamageInfo? dinfo = null)",
+              "TryEmitDeathSplit(prevMap);",
+              "mode == DestroyMode.KillFinalize && !splitEmitted",
+          ):
+              if token not in hierarchy:
+                  failures.append(f"Replicator genuine-death split hook missing: {token}")
+
+          races=Path("Defs/ThingDefs/Races_Replicator.xml").read_text(encoding="utf-8")
+          configured=re.findall(r"<li Class=\"WraithNaniteGravtech.CompProperties_ReplicatorHierarchy\">([\s\S]*?)</li>",races)
+          split_configs=[x for x in configured if "<splitChildPawnKind>" in x]
+          if not split_configs:
+              failures.append("no Replicator lower-tier split configs found")
+          for block in split_configs:
+              if "<splitCount>2</splitCount>" not in block:
+                  failures.append("a Replicator lower-tier split no longer produces exactly two children")
+
+          if failures:
+              print("D127 VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -",failure)
+              raise SystemExit(1)
+
+          print(f"D127 storage/split validation: PASS ({len(expected)} portable WNG defs checked).")
