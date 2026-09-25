@@ -15,7 +15,15 @@
     <comps>
       <li Class="CompProperties_SubstructureFootprint"><radius>18.9</radius></li>
       <li Class="CompProperties_Glower"><glowRadius>8</glowRadius><glowColor>(255,170,55,0)</glowColor></li>
-      <li Class="CompProperties_AffectedByFacilities"><linkableFacilities><li>WNG_GoauldGravFieldProjector</li><li>WNG_GoauldPeltac</li><li>WNG_GoauldNaquadriaTank</li><li>WNG_GoauldLargeNaquadriaTank</li><li>WNG_GoauldSmallSublightDrive</li><li>WNG_GoauldLargeSublightDrive</li><li>WNG_GoauldFuelOptimizer</li><li>WNG_GoauldSignalJammer</li><li>WNG_GoauldNavigationCrystal</li><li>WNG_GoauldGravshipShield</li><li>WNG_GoauldHeavyPlasmaBattery</li></linkableFacilities></li>
+      <li Class="CompProperties_AffectedByFacilities"><linkableFacilities><li>WNG_GoauldGravFieldProjector</li><li>WNG_GoauldPeltac</li><li>WNG_GoauldNaquadriaTank</li><li>WNG_GoauldLargeNaquadriaTank</li><li>WNG_GoauldSmallSublightDrive</li><li>WNG_GoauldLargeSublightDrive</li><li>WNG_GoauldFuelOptimizer</li><li>WNG_GoauldSignalJammer</li><li>WNG_GoauldNavigationCrystal</li><li>WNG_GoauldGravshipShield</li><li>WNG_GoauldHeavyPlasmaBattery</li>
+          <li>WNG_GoauldFuelConduit</li>
+          <li>WNG_GoauldPowerConduit</li>
+          <li>WNG_GoauldPowerCoupler</li>
+          <li>WNG_GoauldNaquadahPowerCore</li>
+          <li>WNG_GoauldOrbitalScanner</li>
+          <li>WNG_GoauldLifeSupport</li>
+          <li>WNG_GoauldVacBarrier</li>
+        </linkableFacilities></li>
     </comps>
   </ThingDef>
 
@@ -119,7 +127,8 @@
     <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>160</MaxHitPoints><Mass>1</Mass><Flammability>0</Flammability><Beauty>0</Beauty><WorkToBuild>100</WorkToBuild></statBases><costList><Uranium>1</Uranium></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><passability>Standable</passability><fillPercent>0.02</fillPercent>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
-    <comps><li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint"><family>Goauld</family><role>Conduit</role></li></comps>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li><li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint"><family>Goauld</family><role>Conduit</role></li></comps>
   </ThingDef>
 
   <ThingDef ParentName="BuildingBase">
@@ -129,7 +138,8 @@
     <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData>
     <statBases><MaxHitPoints>170</MaxHitPoints><Mass>1</Mass><Flammability>0</Flammability><Beauty>0</Beauty><WorkToBuild>100</WorkToBuild></statBases><costList><Uranium>1</Uranium></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><passability>Standable</passability><fillPercent>0.02</fillPercent>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
-    <comps><li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Conduit</role></li></comps>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li><li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Conduit</role></li></comps>
   </ThingDef>
 
   <ThingDef ParentName="BuildingBase">
@@ -139,7 +149,8 @@
     <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPowerCoupler</texPath><drawSize>(1.5,1.5)</drawSize></graphicData><size>(1,1)</size><passability>PassThroughOnly</passability><fillPercent>0.25</fillPercent>
     <statBases><MaxHitPoints>320</MaxHitPoints><WorkToBuild>2200</WorkToBuild><Mass>10</Mass><Flammability>0</Flammability><Beauty>2</Beauty></statBases><costList><Uranium>8</Uranium><Plasteel>25</Plasteel><ComponentIndustrial>2</ComponentIndustrial></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
-    <comps><li Class="CompProperties_Flickable"/><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>0</basePowerConsumption></li><li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Coupler</role><capacityWatts>8000</capacityWatts></li></comps>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li><li Class="CompProperties_Flickable"/><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>0</basePowerConsumption></li><li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Coupler</role><capacityWatts>8000</capacityWatts></li></comps>
   </ThingDef>
 
   <ThingDef ParentName="BuildingBase">
@@ -150,6 +161,7 @@
     <statBases><MaxHitPoints>780</MaxHitPoints><WorkToBuild>15000</WorkToBuild><Mass>80</Mass><Flammability>0</Flammability><Beauty>5</Beauty></statBases><costList><Uranium>100</Uranium><Plasteel>180</Plasteel><ComponentSpacer>6</ComponentSpacer><Gold>30</Gold></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Refuelable"><fuelCapacity>20</fuelCapacity><targetFuelLevelConfigurable>true</targetFuelLevelConfigurable><initialConfigurableTargetFuelLevel>20</initialConfigurableTargetFuelLevel><fuelConsumptionRate>0.75</fuelConsumptionRate><consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed><fuelFilter><thingDefs><li>Uranium</li></thingDefs></fuelFilter><fuelLabel>Uranium</fuelLabel><fuelGizmoLabel>Uranium</fuelGizmoLabel><showFuelGizmo>true</showFuelGizmo></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Generator</role><capacityWatts>12000</capacityWatts></li>
@@ -164,7 +176,7 @@
     <statBases><MaxHitPoints>560</MaxHitPoints><Flammability>0</Flammability><Beauty>3</Beauty><WorkToBuild>12500</WorkToBuild><Mass>18</Mass></statBases><costList Inherit="False"><Uranium>28</Uranium><Plasteel>105</Plasteel><ComponentIndustrial>4</ComponentIndustrial></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>PlaceWorker_GravshipThruster</li><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
-      <li Class="WraithNaniteGravtech.CompProperties_WNGThruster"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><statOffsets><GravshipRange>10</GravshipRange></statOffsets><componentTypeDef>Thruster</componentTypeDef><exclusionAreaSize>(1,0,5)</exclusionAreaSize><exclusionAreaOffset>(0,0,-5)</exclusionAreaOffset><directionInfluence>20</directionInfluence><flameSize>4</flameSize><flameOffsetsPerDirection><li>(0,0,0.5)</li><li>(0,0,0.5)</li><li>(0,0,0.5)</li><li>(0,0,0.5)</li></flameOffsetsPerDirection><flameShaderType>MoteGlow</flameShaderType><flameShaderParameters><_MainTex>/Things/Mote/SmallThruster_Burn</_MainTex></flameShaderParameters><requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>500</maxDistance></li>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGThruster"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><statOffsets><GravshipRange>10</GravshipRange></statOffsets><componentTypeDef>Thruster</componentTypeDef><exclusionAreaSize>(1,0,5)</exclusionAreaSize><exclusionAreaOffset>(0,0,-5)</exclusionAreaOffset><directionInfluence>20</directionInfluence><flameSize>4</flameSize><flameOffsetsPerDirection><li>(0,0,0.5)<requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>500</maxDistance></li><li>(0,0,0.5)</li><li>(0,0,0.5)</li><li>(0,0,0.5)</li></flameOffsetsPerDirection><flameShaderType>MoteGlow</flameShaderType><flameShaderParameters><_MainTex>/Things/Mote/SmallThruster_Burn</_MainTex></flameShaderParameters><requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Breakdownable"/><li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint"><family>Goauld</family><role>Thruster</role></li><li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>700</demandWatts></li>
     </comps>
   </ThingDef>
@@ -177,7 +189,7 @@
     <statBases><MaxHitPoints>760</MaxHitPoints><Flammability>0</Flammability><Beauty>4</Beauty><WorkToBuild>16500</WorkToBuild><Mass>32</Mass></statBases><costList Inherit="False"><Uranium>52</Uranium><Plasteel>170</Plasteel><ComponentSpacer>3</ComponentSpacer></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li><li>StandardGravtech</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>PlaceWorker_GravshipThruster</li><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
-      <li Class="WraithNaniteGravtech.CompProperties_WNGThruster"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><statOffsets><GravshipRange>16</GravshipRange></statOffsets><componentTypeDef>Thruster</componentTypeDef><exclusionAreaSize>(2,0,7)</exclusionAreaSize><exclusionAreaOffset>(0,0,-7)</exclusionAreaOffset><directionInfluence>30</directionInfluence><flameSize>4</flameSize><flameOffsetsPerDirection><li>(0,0,1.0)</li><li>(0,0,0.5)</li><li>(0,0,0.5)</li><li>(0,0,0.5)</li></flameOffsetsPerDirection><flameShaderType>MoteGlow</flameShaderType><flameShaderParameters><_MainTex>/Things/Mote/LargeThruster_Burn</_MainTex></flameShaderParameters><requiresLOS>false</requiresLOS><maxSimultaneous>6</maxSimultaneous><maxDistance>500</maxDistance></li>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGThruster"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><statOffsets><GravshipRange>16</GravshipRange></statOffsets><componentTypeDef>Thruster</componentTypeDef><exclusionAreaSize>(2,0,7)</exclusionAreaSize><exclusionAreaOffset>(0,0,-7)</exclusionAreaOffset><directionInfluence>30</directionInfluence><flameSize>4</flameSize><flameOffsetsPerDirection><li>(0,0,1.0)<requiresLOS>false</requiresLOS><maxSimultaneous>6</maxSimultaneous><maxDistance>500</maxDistance></li><li>(0,0,0.5)</li><li>(0,0,0.5)</li><li>(0,0,0.5)</li></flameOffsetsPerDirection><flameShaderType>MoteGlow</flameShaderType><flameShaderParameters><_MainTex>/Things/Mote/LargeThruster_Burn</_MainTex></flameShaderParameters><requiresLOS>false</requiresLOS><maxSimultaneous>6</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Breakdownable"/><li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint"><family>Goauld</family><role>Thruster</role></li><li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>1200</demandWatts></li>
     </comps>
   </ThingDef>
