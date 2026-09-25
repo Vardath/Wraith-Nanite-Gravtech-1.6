@@ -2564,12 +2564,16 @@ jobs:
               failures.append('WNG-owned Goauld transport rings regressed back into the ONAC Architect category')
           for token in (
               'resolvedDesignators',
-              'new Designator_Build(def)',
+              'new Designator_Build_WNGDev(def)',
               'WNG_WraithArchitect',
               'WNG_AsuranArchitect',
               'WNG_GoauldArchitect',
               'Odyssey',
               'designationCategory != null',
+              'UpgradeNativeWNGDesignators',
+              'Designator_Build_WNGDev',
+              'Prefs.DevMode',
+              'DebugSettings.godMode = true',
           ):
               if token not in architect_source:
                   failures.append(f'WNG multi-category Architect routing contract missing: {token}')
