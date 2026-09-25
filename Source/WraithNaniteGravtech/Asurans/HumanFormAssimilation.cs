@@ -91,6 +91,9 @@ namespace WraithNaniteGravtech
                 if (!HumanFormAssimilationUtility.IsConsumableThing(caster, thing))
                     return;
 
+                HashSet<IntVec3> pendingRoofCollapsesBefore =
+                    ReplicatorEnvironmentalAssimilationUtility.CapturePendingRoofCollapses(caster.Map);
+
                 try
                 {
                     thing.Destroy(DestroyMode.Vanish);
@@ -108,6 +111,13 @@ namespace WraithNaniteGravtech
 
                 if (!thing.Destroyed)
                     return;
+
+                // Human-form Replicators use the same clean roof-consumption rule as block swarms:
+                // if removing this wall/rock made vanilla schedule roof collapse, consume those
+                // newly unsupported roofs instead of allowing thick roof to create collapsed rock.
+                ReplicatorEnvironmentalAssimilationUtility.AssimilateNewlyUnsupportedRoofs(
+                    caster.Map,
+                    pendingRoofCollapsesBefore);
             }
             else
             {
