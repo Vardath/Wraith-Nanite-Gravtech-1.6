@@ -61,6 +61,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithGravshipDoor</texPath>
       <drawSize>(1,1)</drawSize>
+          <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>420</MaxHitPoints>
@@ -329,6 +330,9 @@
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithFuelConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
+    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconScale>0.7</uiIconScale>
+    <uiIconColor>(132,190,132)</uiIconColor>
     <statBases>
       <MaxHitPoints>130</MaxHitPoints>
       <Mass>1</Mass>
@@ -368,6 +372,9 @@
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithNeuralConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
+    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconScale>0.7</uiIconScale>
+    <uiIconColor>(64,205,190)</uiIconColor>
     <statBases>
       <MaxHitPoints>140</MaxHitPoints>
       <Mass>1</Mass>
@@ -518,6 +525,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_OrganicThruster</texPath>
       <drawSize>(1.2,2.2)</drawSize>
+          <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>430</MaxHitPoints>
@@ -588,6 +596,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithHeavyDriveOrgan</texPath>
       <drawSize>(2.2,2.2)</drawSize>
+          <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>620</MaxHitPoints>
@@ -829,6 +838,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor</texPath>
       <drawSize>(1,1)</drawSize>
+          <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>500</MaxHitPoints>
@@ -1101,6 +1111,9 @@
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranFuelConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
+    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconScale>0.7</uiIconScale>
+    <uiIconColor>(145,220,232)</uiIconColor>
     <statBases>
       <MaxHitPoints>150</MaxHitPoints>
       <Mass>1</Mass>
@@ -1141,6 +1154,9 @@
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranPowerConduit_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
     </graphicData>
+    <uiIconPath>Things/Building/Linked/PowerConduit_MenuIcon</uiIconPath>
+    <uiIconScale>0.7</uiIconScale>
+    <uiIconColor>(82,218,250)</uiIconColor>
     <statBases>
       <MaxHitPoints>165</MaxHitPoints>
       <Mass>1</Mass>
@@ -1289,6 +1305,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorVectorThruster</texPath>
       <drawSize>(1.2,2.2)</drawSize>
+          <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>500</MaxHitPoints>
@@ -1360,6 +1377,7 @@
       <graphicClass>Graphic_Multi</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranHeavyVectorDrive</texPath>
       <drawSize>(2.2,2.2)</drawSize>
+          <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>700</MaxHitPoints>
