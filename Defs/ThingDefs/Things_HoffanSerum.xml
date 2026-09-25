@@ -3,6 +3,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_HoffanSerum</defName>
     <label>prototype Hoffan serum</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>An experimental anti-Wraith inoculation reconstructed from Hoffan research principles and Wraith biochemical samples. A successful inoculation permanently blocks ordinary Wraith feeding and poisons a Wraith that attempts it, but this first-generation formulation has a 50% chance to trigger fatal systemic failure in the recipient. Survivors also suffer reduced immune response.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_HoffanProtection</HediffDef>
