@@ -8,6 +8,7 @@
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithKeeperMantle</defName>
     <label>wraith keeper mantle</label>
+    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
     <description>A senior Keeper's living shell: command-grade carapace grown into a mantle suited to caretakers of dormant Hive populations and long-duration biological systems. The current Commander-carapace visual is temporary pending the professional Keeper art replacement.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
