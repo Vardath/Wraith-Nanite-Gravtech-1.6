@@ -348,6 +348,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Wraith</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint">
         <family>Wraith</family>
         <role>Conduit</role>
@@ -386,6 +387,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Wraith</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
         <family>Wraith</family>
         <role>Conduit</role>
@@ -426,6 +428,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Wraith</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Flickable" />
       <li Class="CompProperties_Power">
         <compClass>CompPowerTrader</compClass>
@@ -473,6 +476,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Wraith</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Flickable" />
       <li Class="CompProperties_Refuelable">
         <fuelCapacity>40</fuelCapacity>
@@ -548,7 +552,7 @@
         <directionInfluence>20</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,0.5)</li>
+          <li>(0,0,0.5)<requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>500</maxDistance></li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
@@ -618,7 +622,7 @@
         <directionInfluence>30</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,1.0)</li>
+          <li>(0,0,1.0)<requiresLOS>false</requiresLOS><maxSimultaneous>6</maxSimultaneous><maxDistance>500</maxDistance></li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
@@ -747,6 +751,14 @@
           <li>WNG_AsuranFlightSubmind</li>
           <li>WNG_PrecursorShieldEmitter</li>
           <li>WNG_AncientVacuumShieldEmitter</li>
+        
+          <li>WNG_AsuranFuelConduit</li>
+          <li>WNG_AsuranPowerConduit</li>
+          <li>WNG_AsuranPowerCoupler</li>
+          <li>WNG_AsuranPowerCell</li>
+          <li>WNG_AsuranOrbitalScanner</li>
+          <li>WNG_AsuranAtmosphereRegulator</li>
+          <li>WNG_AsuranVacBarrier</li>
         </linkableFacilities>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGAmbientLoop">
@@ -1109,6 +1121,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint">
         <family>Asuran</family>
         <role>Conduit</role>
@@ -1148,6 +1161,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
         <family>Asuran</family>
         <role>Conduit</role>
@@ -1189,6 +1203,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Flickable" />
       <li Class="CompProperties_Power">
         <compClass>CompPowerTrader</compClass>
@@ -1238,6 +1253,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Flickable" />
       <li Class="CompProperties_Refuelable">
         <fuelCapacity>1</fuelCapacity>
@@ -1307,7 +1323,7 @@
         <directionInfluence>20</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,0.5)</li>
+          <li>(0,0,0.5)<requiresLOS>false</requiresLOS><maxSimultaneous>4</maxSimultaneous><maxDistance>500</maxDistance></li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
@@ -1379,7 +1395,7 @@
         <directionInfluence>30</directionInfluence>
         <flameSize>4</flameSize>
         <flameOffsetsPerDirection>
-          <li>(0,0,1.0)</li>
+          <li>(0,0,1.0)<requiresLOS>false</requiresLOS><maxSimultaneous>6</maxSimultaneous><maxDistance>500</maxDistance></li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
           <li>(0,0,0.5)</li>
