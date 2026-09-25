@@ -35,6 +35,22 @@ jobs:
               failures.append("Replicators lack dedicated roof/floor assimilation job giver")
           if "HasStructuralLayer" not in environment or "terrainGrid.CanRemoveTopLayerAt" not in environment or "roofGrid.Roofed" not in environment:
               failures.append("Replicator structural-layer recognition lost roof/floor coverage")
+          roof_priority = environment.find("if (map.roofGrid.Roofed(cell))")
+          physical_priority = environment.find("List<Thing> things = cell.GetThingList(map);")
+          if roof_priority < 0 or physical_priority < 0 or roof_priority > physical_priority:
+              failures.append("roof assimilation no longer outranks physical Thing assimilation on roofed cells")
+          for needle in (
+              "CapturePendingRoofCollapses",
+              "AssimilateNewlyUnsupportedRoofs",
+              "map.roofGrid.SetRoof(cell, null)",
+              "pending.RemoveAt(i)",
+          ):
+              if needle not in environment:
+                  failures.append("Replicator roof-collapse interception missing: " + needle)
+          if "ReplicatorEnvironmentalAssimilationUtility.CapturePendingRoofCollapses(map)" not in assimilation:
+              failures.append("physical Replicator assimilation does not snapshot pending roof collapses")
+          if "ReplicatorEnvironmentalAssimilationUtility.AssimilateNewlyUnsupportedRoofs" not in assimilation:
+              failures.append("physical Replicator assimilation does not convert new roof collapses into assimilation")
           structural = "WraithNaniteGravtech.JobGiver_ReplicatorAssimilateStructuralCell"
           physical = "WraithNaniteGravtech.JobGiver_ReplicatorAssimilate"
           if thinktree.count(structural) != 4:
