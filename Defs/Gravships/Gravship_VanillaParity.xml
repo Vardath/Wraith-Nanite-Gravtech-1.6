@@ -169,7 +169,7 @@
     <label>Asuran flight submind</label>
     <description>A narrow collective submind specialized in gravship trajectory control. It fills Odyssey's pilot-subpersona role; up to two active subminds improve native gravlaunch quality.</description>
     <designationCategory>Misc</designationCategory><uiOrder>2247</uiOrder><tickerType>Normal</tickerType>
-    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
+    <graphicData><graphicClass>Graphic_Multi</graphicClass><texPath>Things/Building/Precursor/Gravship/WNG_AsuranFlightSubmind</texPath><drawSize>(1.4,1.4)</drawSize></graphicData>
     <size>(1,1)</size><fillPercent>0.35</fillPercent><passability>PassThroughOnly</passability><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <statBases><MaxHitPoints>340</MaxHitPoints><Mass>10</Mass><WorkToBuild>6200</WorkToBuild><Flammability>0</Flammability><Beauty>8</Beauty></statBases>
     <costList><Plasteel>75</Plasteel><GravlitePanel>15</GravlitePanel><ComponentSpacer>2</ComponentSpacer></costList>
