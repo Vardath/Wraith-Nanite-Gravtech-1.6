@@ -43,7 +43,6 @@ jobs:
                   "terminal gravel rejection": "terrain != TerrainDefOf.Gravel",
                   "single-layer substrate commit": "One cast consumes exactly one physical substrate layer",
                   "Food-optional assimilation": "food == null",
-                  "collapsed-rock rejection": "ThingDefOf.CollapsedRocks",
                   "substructure targeting": "CanRemoveFoundationAt",
                   "substructure commit": "RemoveFoundation",
                   "roof-collapse snapshot": "CapturePendingRoofCollapses",
@@ -65,6 +64,8 @@ jobs:
                   failures.append("human-form assimilation incorrectly hard-requires a Food need")
               if 'float foodGain = food == null' not in text:
                   failures.append("human-form assimilation does not safely support no-Food synthetic bodies")
+              if "ThingDefOf.CollapsedRocks" in text or '"CollapsedRocks"' in text:
+                  failures.append("human-form assimilation still rejects collapsed-rock feedstock")
 
           if physiology.exists():
               text = physiology.read_text(encoding="utf-8")
