@@ -24,16 +24,16 @@ jobs:
           # stockpile/storage category rather than relying on an accidental parent category.
           expected={
               # Apparel
-              "WNG_WraithKeeperMantle":"Apparel",
-              "WNG_PrecursorCommandArmor":"Apparel",
-              "WNG_HumanFormCombatArmor":"Apparel",
-              "WNG_HumanFormUniform":"Apparel",
-              "WNG_PrecursorFieldArmor":"Apparel",
-              "WNG_PrecursorPersonalShield":"Apparel",
-              "WNG_WraithHunterCoat":"Apparel",
-              "WNG_WraithWarriorCarapace":"Apparel",
-              "WNG_WraithCommanderCarapace":"Apparel",
-              "WNG_WraithQueenRaiment":"Apparel",
+              "WNG_WraithKeeperMantle":"ApparelArmor",
+              "WNG_PrecursorCommandArmor":"ApparelArmor",
+              "WNG_HumanFormCombatArmor":"ApparelArmor",
+              "WNG_HumanFormUniform":"ApparelMisc",
+              "WNG_PrecursorFieldArmor":"ApparelArmor",
+              "WNG_PrecursorPersonalShield":"ApparelUtility",
+              "WNG_WraithHunterCoat":"ApparelMisc",
+              "WNG_WraithWarriorCarapace":"ApparelArmor",
+              "WNG_WraithCommanderCarapace":"ApparelArmor",
+              "WNG_WraithQueenRaiment":"ApparelMisc",
 
               # Weapons and grenades
               "WNG_AsuranPhaseBlade":"WeaponsMelee",
@@ -80,6 +80,8 @@ jobs:
               "WNG_ReplicatorCoreFragment":"Manufactured",
               "WNG_AsuranNaniteSlurry":"Manufactured",
               "WNG_WraithBiofluidFuel":"Manufactured",
+              "WNG_WraithGravEngineSeed":"Manufactured",
+              "WNG_CorpseGravEngineIncubation":"Manufactured",
               "WNG_IratusGlandExtract":"ItemsMisc",
               "WNG_IratusQueenExtract":"ItemsMisc",
               "WNG_WhispersHybridTissue":"ItemsMisc",
