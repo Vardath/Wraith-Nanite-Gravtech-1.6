@@ -268,11 +268,6 @@ namespace WraithNaniteGravtech
             if (def.defName == ReplicatorMatterDefName || def.defName == ReplicatorCoreFragmentDefName)
                 return false;
 
-            // Collapsed-rock rubble is an obstruction, not useful Replicator feedstock.
-            if (def == ThingDefOf.CollapsedRocks ||
-                string.Equals(def.defName, "CollapsedRocks", StringComparison.Ordinal))
-                return false;
-
             if (ReplicatorContainmentUtility.BlocksAssimilation(caster, target))
                 return false;
 
