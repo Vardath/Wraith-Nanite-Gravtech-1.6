@@ -68,7 +68,7 @@
     <costList Inherit="False"><Uranium>18</Uranium><Plasteel>90</Plasteel><Gold>25</Gold><ComponentIndustrial>5</ComponentIndustrial></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
-      <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>200</maxDistance></li>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="CompProperties_Breakdownable"/>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>500</demandWatts></li>
     </comps>
@@ -229,7 +229,7 @@
     <statBases><MaxHitPoints>560</MaxHitPoints><Flammability>0</Flammability><WorkToBuild>13000</WorkToBuild><Mass>115</Mass><Beauty>2</Beauty><ShootingAccuracyTurret>0.96</ShootingAccuracyTurret></statBases><costList><Uranium>55</Uranium><Plasteel>160</Plasteel><Gold>30</Gold><ComponentIndustrial>8</ComponentIndustrial><ComponentSpacer>3</ComponentSpacer></costList>
     <comps>
       <li Class="CompProperties_Forbiddable"/><li Class="WraithNaniteGravtech.CompProperties_WNGGoauldFamilyPowerProxy"/><li Class="CompProperties_Flickable"/><li Class="CompProperties_Breakdownable"/>
-      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>8</maxSimultaneous><maxDistance>18.9</maxDistance></li>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>false</requiresFamilyPower><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>8</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>1800</demandWatts></li>
       <li Class="WraithNaniteGravtech.CompProperties_GoauldHatakOrbitalBombardment"><maxWorldRangeTiles>12</maxWorldRangeTiles><cooldownTicks>60000</cooldownTicks><impactAreaRadius>12</impactAreaRadius><explosionRadiusRange>2.8~4.0</explosionRadiusRange><bombIntervalTicks>18</bombIntervalTicks><warmupTicks>120</warmupTicks><randomFireRadius>14</randomFireRadius></li>
     </comps>
