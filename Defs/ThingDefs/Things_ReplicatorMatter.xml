@@ -3,6 +3,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_ReplicatorMatter</defName>
     <label>replicator blocks</label>
+    <thingCategories Inherit="False"><li>Manufactured</li></thingCategories>
     <description>Loose self-organizing Replicator blocks. A recovered sample can be analyzed to unlock formal Replicator study. A stack containing at least ten Blocks can reconstruct a hostile Drone after sufficient uncontained exposure, and a powered nanite containment projector pauses that hazard.</description>
     <graphicData>
       <texPath>Things/Item/Resource/Replicator/WNG_ReplicatorMatter</texPath>
