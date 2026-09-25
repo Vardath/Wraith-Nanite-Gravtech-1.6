@@ -7,7 +7,18 @@
 
 This is the active art-production brief. Read this file before touching WNG art.
 
-The current priority is deliberately narrow. **Do not wander into other art families until the block-form Replicator pawn family below has been rebuilt and accepted one unit at a time.**
+## 2026-09-25 USER OVERRIDE — FULL COMPOUND-FORM REBUILD
+
+The live playtest shows the current Replicators still read as one repeated machine at different scales, and the basic Drone does not visually belong to the same compound-form family. Rebuild the full block-form family together when necessary to preserve a coherent art direction.
+
+- The **basic Replicator Drone is the canonical six-legged Stargate-style machine**.
+- Larger/specialist compound forms are **not required to keep six legs**. They may use six, eight, ten or another role-appropriate support layout when that makes the compound form clearly different.
+- All forms must still look like one technology: modular metallic Replicator blocks, insectoid/arthropod mechanical construction, restrained accents, and natural RimWorld-scale readability.
+- Larger forms must visibly look like reorganised concentrations of smaller Replicator mass rather than the same Drone sprite enlarged.
+- Hunter, Bulwark, Titan, Siege Mass, Controller, Repairer, Burrower and Artillery each need a distinct silhouette and role language.
+- The current full-family professional pass supersedes the older stop-after-each-unit rule for this rebuild.
+
+The current priority remains deliberately narrow: finish the block-form Replicator pawn family before wandering into unrelated art families.
 
 ---
 
@@ -31,7 +42,7 @@ That older state is a **design/silhouette reference**, not a final art source. D
 
 Every ordinary block-form Replicator in this family must still read immediately as a Stargate SG-1 style block Replicator:
 
-- **six legs**;
+- **the base Drone has six legs; compound/specialist forms may vary leg count to communicate their reorganised role**;
 - modular metallic block construction;
 - insectoid/arthropod mechanical posture;
 - hard segmented geometry assembled from Replicator blocks;
