@@ -136,22 +136,25 @@ jobs:
           # Architect conduit buttons use a single-piece vanilla-style conduit icon,
           # never the 4x4 linked world atlas.
           conduit_icon_defs = (
-              ("WNG_WraithNeuralConduit", family),
-              ("WNG_WraithFuelConduit", family),
-              ("WNG_AsuranPowerConduit", family),
-              ("WNG_AsuranFuelConduit", family),
-              ("WNG_GoauldPowerConduit", goauld),
-              ("WNG_GoauldFuelConduit", goauld),
+              ("WNG_WraithNeuralConduit", family, "UI/WNG/Conduits/WNG_WraithNeuralConduit_MenuIcon"),
+              ("WNG_WraithFuelConduit", family, "UI/WNG/Conduits/WNG_WraithFuelConduit_MenuIcon"),
+              ("WNG_AsuranPowerConduit", family, "UI/WNG/Conduits/WNG_AsuranPowerConduit_MenuIcon"),
+              ("WNG_AsuranFuelConduit", family, "UI/WNG/Conduits/WNG_AsuranFuelConduit_MenuIcon"),
+              ("WNG_GoauldPowerConduit", goauld, "UI/WNG/Conduits/WNG_GoauldPowerConduit_MenuIcon"),
+              ("WNG_GoauldFuelConduit", goauld, "UI/WNG/Conduits/WNG_GoauldFuelConduit_MenuIcon"),
           )
-          for name, defs in conduit_icon_defs:
+          for name, defs, icon_path in conduit_icon_defs:
               node = defs.get(name)
               if node is None:
                   failures.append(f"{name} missing for conduit icon validation")
                   continue
-              if node.findtext("uiIconPath") != "Things/Building/Linked/PowerConduit_MenuIcon":
-                  failures.append(f"{name} Architect icon regressed to the linked atlas instead of a single conduit piece")
+              if node.findtext("uiIconPath") != icon_path:
+                  failures.append(f"{name} Architect icon no longer uses its dedicated single-piece menu icon")
               if node.findtext("uiIconScale") != "0.7":
                   failures.append(f"{name} no longer matches vanilla conduit icon scale")
+              texture = Path("Textures") / (icon_path + ".png")
+              if not texture.exists():
+                  failures.append(f"{name} dedicated conduit menu icon missing: {texture}")
 
           # Family doors and thrusters must advertise Wall/Rock flags into RimWorld's LinkGrid
           # so CornerFiller hull walls visibly terminate into them instead of leaving a gap.
