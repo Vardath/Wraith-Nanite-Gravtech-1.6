@@ -3,6 +3,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_WraithGravEngineSeed</defName>
     <label>wraith grav-engine seed</label>
+    <thingCategories Inherit="False"><li>Manufactured</li></thingCategories>
     <description>A dense cultivated Wraith organ-seed carrying the developmental pattern of a full grav engine. Use it on a biological humanlike host or corpse; the host is consumed when the engine finishes growing.</description>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_Biomass</texPath>
@@ -20,6 +21,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_CorpseGravEngineIncubation</defName>
     <label>incubating Wraith grav-engine tissue</label>
+    <thingCategories Inherit="False"><li>Manufactured</li></thingCategories>
     <description>A biological corpse consumed into a developing Wraith grav-engine organ. Once mature, the tissue becomes one minified real grav engine.</description>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_Biomass</texPath>
