@@ -22,6 +22,7 @@
     <researchPrerequisites><li>WNG_HiveGravshipArchitecture</li><li>OrbitalTech</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li><li>PlaceWorker_NotUnderRoof</li></placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Wraith</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Wraith</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -44,6 +45,7 @@
     <researchPrerequisites><li>WNG_HiveGravshipArchitecture</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li></placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Wraith</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Wraith</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -66,6 +68,7 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight></building>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Wraith</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Wraith</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -105,6 +108,7 @@
     <researchPrerequisites><li>WNG_AsuranGravshipArchitecture</li><li>OrbitalTech</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li><li>PlaceWorker_NotUnderRoof</li></placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Asuran</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -127,6 +131,7 @@
     <researchPrerequisites><li>WNG_AsuranGravshipArchitecture</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li></placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Asuran</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -150,6 +155,7 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight></building>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Asuran</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Asuran</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -191,6 +197,7 @@
     <researchPrerequisites><li>WNG_GoauldGravships</li><li>OrbitalTech</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li><li>PlaceWorker_NotUnderRoof</li></placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Goauld</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -212,6 +219,7 @@
     <researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Goauld</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -234,6 +242,7 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight></building>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
+      <li Class="WraithNaniteGravtech.CompProperties_WNGGravshipFacility"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><requiresLOS>false</requiresLOS><maxSimultaneous>9999</maxSimultaneous><maxDistance>500</maxDistance></li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerProxy"><family>Goauld</family><basePowerConsumption>0</basePowerConsumption></li>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
