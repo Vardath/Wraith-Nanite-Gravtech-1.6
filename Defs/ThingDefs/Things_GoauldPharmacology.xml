@@ -3,6 +3,7 @@
   <ThingDef ParentName="DrugBase">
     <defName>WNG_Roshna</defName>
     <label>roshna</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A blue Goa'uld maintenance compound designed to make a population physiologically dependent on continued supply. Roshna offers no meaningful recreational benefit: its value is coercive. A first dose establishes a permanent chemical dependence, and regular redosing becomes necessary for survival.</description>
     <descriptionHyperlinks>
       <HediffDef>WNG_RoshnaDependence</HediffDef>
