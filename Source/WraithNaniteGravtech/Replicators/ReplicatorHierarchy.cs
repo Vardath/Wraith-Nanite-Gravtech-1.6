@@ -90,7 +90,8 @@ namespace WraithNaniteGravtech
     ///
     /// Upward recombination is intentionally a non-death transaction: the replacement form is
     /// generated and placed first, then the exact source pawns are consumed with Vanish. Genuine
-    /// KillFinalize destruction is the only path that emits configured lower-tier children.
+    /// pawn death emits configured lower-tier children through Notify_Killed; KillFinalize remains
+    /// a fallback for direct destruction paths that bypass Pawn.Kill.
     ///
     /// Learned adaptation and controller-domain identity transfer at the explicit target-preparation
     /// point. Different controller domains may never recombine merely because their faction matches.
@@ -299,10 +300,24 @@ namespace WraithNaniteGravtech
             }
         }
 
+        public override void Notify_Killed(Map prevMap, DamageInfo? dinfo = null)
+        {
+            // Pawns normally die without immediately destroying their Thing instance, so PostDestroy
+            // is too late/unreliable for the hierarchy split. This hook fires for ordinary weapons,
+            // projectiles and explosive/missile kills and therefore owns the genuine-death split.
+            CacheIdentity();
+            TryEmitDeathSplit(prevMap);
+            PlaySoundFailSoft("WNG_ReplicatorMatterFall", parent, prevMap, lastKnownPosition);
+            base.Notify_Killed(prevMap, dinfo);
+        }
+
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {
-            if (mode == DestroyMode.KillFinalize)
+            // Fallback only for direct KillFinalize destruction paths. splitEmitted prevents a
+            // duplicate if Notify_Killed already committed the lower-tier children.
+            if (mode == DestroyMode.KillFinalize && !splitEmitted)
             {
+                CacheIdentity();
                 TryEmitDeathSplit(previousMap);
                 PlaySoundFailSoft("WNG_ReplicatorMatterFall", parent, previousMap, lastKnownPosition);
             }
