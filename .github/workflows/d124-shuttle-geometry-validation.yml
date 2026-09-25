@@ -41,9 +41,9 @@ jobs:
                   "WNG_WraithCruiser": ("5,7", "5.5,7.7"),
               },
               "Defs/ThingDefs/Shuttle_PuddleJumper.xml": {
-                  "WNG_PuddleJumperIncoming": ("3,5", "3.3,5.5"),
-                  "WNG_PuddleJumperLeaving": ("3,5", "3.3,5.5"),
-                  "WNG_PuddleJumper": ("3,5", "3.3,5.5"),
+                  "WNG_PuddleJumperIncoming": ("3,5", "4.2,5.5"),
+                  "WNG_PuddleJumperLeaving": ("3,5", "4.2,5.5"),
+                  "WNG_PuddleJumper": ("3,5", "4.2,5.5"),
               },
               "Defs/ThingDefs/Shuttle_Goauld.xml": {
                   "WNG_AlkeshIncoming": ("5,7", "5.5,7.7"),
@@ -59,7 +59,7 @@ jobs:
                   "WNG_WraithCruiser_NPC": ("5,7", "5.5,7.7"),
               },
               "Defs/ThingDefs/Shuttle_PuddleJumper_NPC.xml": {
-                  "WNG_PuddleJumper_NPC": ("3,5", "3.3,5.5"),
+                  "WNG_PuddleJumper_NPC": ("3,5", "4.2,5.5"),
               },
               "Defs/ThingDefs/Shuttle_Goauld_NPC.xml": {
                   "WNG_GoauldDeathGlider_NPC": ("5,4", "5.5,4.4"),
@@ -173,4 +173,4 @@ jobs:
                   print(" -", failure)
               raise SystemExit(1)
 
-          print("WNG shuttle restoration/scale validated: real Al'kesh, exact-craft attack paths, preserved footprints and 110% presentation scale.")
+          print("WNG shuttle restoration/scale validated: real Al'kesh, exact-craft attack paths, preserved footprints, and the widened Puddle Jumper render contract.")
