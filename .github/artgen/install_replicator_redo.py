@@ -1,13 +1,17 @@
 from pathlib import Path
 from PIL import Image
+import hashlib
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'Textures' / 'Things' / 'Pawn' / 'Replicator'
 ROLES = ['Artillery','Bulwark','Burrower','Controller','Drone','Hunter','Repairer','SiegeMass','Titan']
 DIRS = ['', '_north', '_east', '_south', '_west']
 
-# The 45 authored sprites are committed directly to the live texture paths.
+# The 45 sprites are committed directly to the live texture paths.
 # This script is an integrity check only; it never regenerates or overwrites the artwork.
+# The base Drone is the canonical six-legged Stargate-style form. Compound/specialist
+# forms deliberately use different silhouettes and may use different support/leg counts.
+south_hashes = {}
 for role in ROLES:
     for suffix in DIRS:
         path = OUT / f'WNG_Replicator{role}{suffix}.png'
@@ -28,4 +32,20 @@ for role in ROLES:
             ]
             if any(edges):
                 raise RuntimeError(f'{path}: alpha touches canvas edge {edges}')
-print(f'Validated {len(ROLES)*len(DIRS)} professional six-legged Replicator pawn sprites.')
+            px = im.load()
+            for y in range(512):
+                for x in range(512):
+                    if px[x,y][3] == 0 and px[x,y][:3] != (0,0,0):
+                        raise RuntimeError(f'{path}: dirty transparent RGB at {(x,y)}')
+            if suffix in ('', '_south'):
+                digest = hashlib.sha256(im.tobytes()).hexdigest()
+                south_hashes.setdefault(role, digest)
+
+if len(set(south_hashes.values())) != len(ROLES):
+    duplicates = {}
+    for role, digest in south_hashes.items():
+        duplicates.setdefault(digest, []).append(role)
+    repeated = [roles for roles in duplicates.values() if len(roles) > 1]
+    raise RuntimeError(f'Replicator compound forms are not visually distinct: {repeated}')
+
+print(f'Validated {len(ROLES)*len(DIRS)} differentiated compound-form Replicator pawn sprites.')
