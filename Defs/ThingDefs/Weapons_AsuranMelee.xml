@@ -50,6 +50,7 @@
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
     <defName>WNG_AsuranFieldLance</defName>
     <label>Asuran field lance</label>
+    <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A long Asuran polearm built around a reinforced nanite shaft and concentrated penetration field. It sacrifices the phase blade's speed for reach, stopping power and exceptional armor penetration.</description>
     <techLevel>Ultra</techLevel>
     <smeltable>false</smeltable>
