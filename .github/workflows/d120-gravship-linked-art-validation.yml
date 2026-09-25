@@ -133,6 +133,48 @@ jobs:
               if token not in family_source:
                   failures.append(f"family conduit blueprint/frame linking regressed: {token}")
 
+          # Architect conduit buttons use a single-piece vanilla-style conduit icon,
+          # never the 4x4 linked world atlas.
+          conduit_icon_defs = (
+              ("WNG_WraithNeuralConduit", family),
+              ("WNG_WraithFuelConduit", family),
+              ("WNG_AsuranPowerConduit", family),
+              ("WNG_AsuranFuelConduit", family),
+              ("WNG_GoauldPowerConduit", goauld),
+              ("WNG_GoauldFuelConduit", goauld),
+          )
+          for name, defs in conduit_icon_defs:
+              node = defs.get(name)
+              if node is None:
+                  failures.append(f"{name} missing for conduit icon validation")
+                  continue
+              if node.findtext("uiIconPath") != "Things/Building/Linked/PowerConduit_MenuIcon":
+                  failures.append(f"{name} Architect icon regressed to the linked atlas instead of a single conduit piece")
+              if node.findtext("uiIconScale") != "0.7":
+                  failures.append(f"{name} no longer matches vanilla conduit icon scale")
+
+          # Family doors and thrusters must advertise Wall/Rock flags into RimWorld's LinkGrid
+          # so CornerFiller hull walls visibly terminate into them instead of leaving a gap.
+          gravship_wall_neighbors = (
+              ("WNG_WraithGravshipDoor", family),
+              ("WNG_AsuranGravshipDoor", family),
+              ("WNG_GoauldGravshipDoor", goauld),
+              ("WNG_OrganicThruster", family),
+              ("WNG_WraithHeavyDriveOrgan", family),
+              ("WNG_PrecursorVectorThruster", family),
+              ("WNG_AsuranHeavyVectorDrive", family),
+              ("WNG_GoauldSmallSublightDrive", goauld),
+              ("WNG_GoauldLargeSublightDrive", goauld),
+          )
+          for name, defs in gravship_wall_neighbors:
+              node = defs.get(name)
+              if node is None:
+                  failures.append(f"{name} missing for hull-wall adjacency validation")
+                  continue
+              flags = {x.text for x in node.findall("./graphicData/linkFlags/li")}
+              if not {"Wall", "Rock"}.issubset(flags):
+                  failures.append(f"{name} no longer advertises Wall/Rock LinkGrid flags to adjacent gravship hull")
+
           # Family gravship equipment must use Odyssey's native facility link path:
           # equipment has a gravship-facility comp, the matching engine lists that Def,
           # and ordinary ship systems use long-range/no-LOS linkage across connected substructure.
