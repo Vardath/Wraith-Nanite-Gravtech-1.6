@@ -124,7 +124,7 @@
     <defName>WNG_GoauldFuelConduit</defName><label>Ha'tak fuel conduit</label>
     <description>A sealed Goa'uld feed line carrying only Liquid Naquadria between same-family reservoirs and drives.</description>
     <thingClass>Building</thingClass><designationCategory>Misc</designationCategory><uiOrder>2158</uiOrder><tickerType>Never</tickerType>
-    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData><uiIconPath>UI/WNG/Conduits/WNG_GoauldFuelConduit_MenuIcon</uiIconPath><uiIconScale>0.7</uiIconScale><uiIconColor>(255,210,90)</uiIconColor>
+    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFuelConduit</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldFuelConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData><uiIconPath>UI/WNG/Conduits/WNG_GoauldFuelConduit_MenuIcon</uiIconPath><uiIconScale>0.7</uiIconScale>
     <statBases><MaxHitPoints>160</MaxHitPoints><Mass>1</Mass><Flammability>0</Flammability><Beauty>0</Beauty><WorkToBuild>100</WorkToBuild></statBases><costList><Uranium>1</Uranium></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><passability>Standable</passability><fillPercent>0.02</fillPercent>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
@@ -135,7 +135,7 @@
     <defName>WNG_GoauldPowerConduit</defName><label>Ha'tak power conduit</label>
     <description>A naquadah-lined ship power bus isolated from Wraith, Asuran and ordinary colony grids unless a deliberate Ha'tak coupler is installed.</description>
     <thingClass>Building</thingClass><designationCategory>Power</designationCategory><uiOrder>2005</uiOrder><tickerType>Never</tickerType>
-    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData><uiIconPath>UI/WNG/Conduits/WNG_GoauldPowerConduit_MenuIcon</uiIconPath><uiIconScale>0.7</uiIconScale><uiIconColor>(255,170,55)</uiIconColor>
+    <graphicData><graphicClass>WraithNaniteGravtech.Graphic_LinkedGoauldFamilyPower</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldPowerConduit_Atlas</texPath><drawSize>(1,1)</drawSize></graphicData><uiIconPath>UI/WNG/Conduits/WNG_GoauldPowerConduit_MenuIcon</uiIconPath><uiIconScale>0.7</uiIconScale>
     <statBases><MaxHitPoints>170</MaxHitPoints><Mass>1</Mass><Flammability>0</Flammability><Beauty>0</Beauty><WorkToBuild>100</WorkToBuild></statBases><costList><Uranium>1</Uranium></costList><researchPrerequisites><li>WNG_GoauldGravships</li></researchPrerequisites><terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><passability>Standable</passability><fillPercent>0.02</fillPercent>
     <placeWorkers><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps>
