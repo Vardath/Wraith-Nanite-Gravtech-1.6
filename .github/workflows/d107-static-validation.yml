@@ -2062,8 +2062,8 @@ jobs:
               stunnable = next((n for n in precursor_cell.findall('./comps/li') if n.get('Class') == 'CompProperties_Stunnable'), None)
               if stunnable is None or stunnable.findtext('./affectedDamageDefs/li') != 'EMP':
                   failures.append('Precursor Power Cell lost its retained EMP vulnerability')
-              if precursor_cell.findtext('./graphicData/texPath') != 'Things/Building/Precursor/Power/WNG_VacuumEnergyTap':
-                  failures.append('Precursor Power Cell temporary clean-art reuse changed before dedicated presentation replacement')
+              if precursor_cell.findtext('./graphicData/texPath') != 'Things/Building/Precursor/Power/WNG_PrecursorPowerCell':
+                  failures.append('Precursor Power Cell lost its dedicated functional presentation art')
               cell_xml = ET.tostring(precursor_cell, encoding='unicode')
               for forbidden in (
                   'WNG_VacuumEnergyModule',
