@@ -4,7 +4,7 @@
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_HumanFormCombatArmor</defName>
     <label>human-form replicator combat armor</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A close-fitted combat shell of plasteel, field mesh and self-repairing precursor composites.</description>
     <techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
@@ -29,7 +29,7 @@
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_HumanFormUniform</defName>
     <label>human-form replicator uniform</label>
-    <thingCategories Inherit="False"><li>Apparel</li></thingCategories>
+    <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>A fitted pale uniform assembled from self-aligning precursor fibers. It provides modest environmental and combat protection while serving as ordinary human-form Replicator attire rather than a battlefield shell.</description>
     <techLevel>Spacer</techLevel>
     <!-- Dedicated clean uniform art remains part of the later non-Replicator presentation pass.
