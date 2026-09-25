@@ -363,6 +363,8 @@ namespace WraithNaniteGravtech
             bool consumedHighTierAsuranTechnology = IsHighTierAsuranTechnology(target);
             string consumedTechnologyLabel = consumedHighTierAsuranTechnology ? target.LabelCap : null;
             List<Pawn> staged = new List<Pawn>(offspringToSpawn);
+            HashSet<IntVec3> pendingRoofCollapsesBefore =
+                ReplicatorEnvironmentalAssimilationUtility.CapturePendingRoofCollapses(map);
 
             try
             {
@@ -419,6 +421,14 @@ namespace WraithNaniteGravtech
                     Rollback(staged);
                     return false;
                 }
+
+                // Destroying walls/natural rock uses vanilla roof-holder logic, which schedules
+                // unsupported roofs to collapse. Convert only the newly scheduled roofs caused
+                // by this assimilation into direct roof consumption before thick roof can spawn
+                // CollapsedRocks. Pre-existing collapse events are left untouched.
+                ReplicatorEnvironmentalAssimilationUtility.AssimilateNewlyUnsupportedRoofs(
+                    map,
+                    pendingRoofCollapsesBefore);
 
                 int deferredOffspring = Math.Max(0, offspringCount - staged.Count);
                 if (deferredOffspring > 0)
