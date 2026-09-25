@@ -25,6 +25,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_IratusQueenRestorative</defName>
     <label>Iratus queen restorative</label>
+    <thingCategories Inherit="False"><li>Medicine</li></thingCategories>
     <description>A stabilized Wraith-only restorative derived from live Iratus queen tissue and refined Wraith enzyme. It attempts to trigger the same regenerative pathway once achieved by allowing a queen to feed on a sick Wraith. The reaction is excruciating and usually fatal; surviving Wraith can recover from otherwise catastrophic physical damage.</description>
     <graphicData>
       <texPath>Things/Item/WraithMedical/WNG_IratusQueenRestorative</texPath>
