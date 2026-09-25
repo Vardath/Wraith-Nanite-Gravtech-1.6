@@ -1,0 +1,225 @@
+name: D128 Vanilla Parity Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  vanilla-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG against RimWorld 1.6 vanilla conventions
+        shell: python
+        run: |
+          from pathlib import Path
+          import collections, re, sys
+          import xml.etree.ElementTree as ET
+
+          failures=[]
+          warnings=[]
+
+          roots=[]
+          for base in (Path("Defs"), Path("Compatibility")):
+              if not base.exists(): continue
+              for path in base.rglob("*.xml"):
+                  try:
+                      roots.append((path,ET.parse(path).getroot()))
+                  except ET.ParseError as exc:
+                      failures.append(f"XML parse failure: {path}: {exc}")
+
+          # Current RimWorld 1.6 Core/DLC stockpile category names used by WNG.
+          vanilla_categories={
+              "Root","Foods","FoodMeals","FoodRaw","MeatRaw","PlantFoodRaw","AnimalProductRaw",
+              "EggsUnfertilized","EggsFertilized","Manufactured","Textiles","Leathers","Wools",
+              "Medicine","Drugs","MortarShells","ResourcesRaw","PlantMatter","StoneBlocks",
+              "Items","ItemsMisc","Art","BodyParts","BodyPartsNatural","BodyPartsBionic","Neurotrainers",
+              "Weapons","WeaponsMelee","WeaponsRanged","Grenades",
+              "Apparel","Headgear","ApparelArmor","ArmorHeadgear","ApparelUtility","ApparelNoble",
+              "HeadgearNoble","ApparelMisc","Buildings","BuildingsArt","BuildingsProduction",
+              "BuildingsFurniture","BuildingsPower","BuildingsSecurity","BuildingsMisc","BuildingsJoy",
+              "BuildingsTemperature","BuildingsSpecial","Chunks","StoneChunks","Animals","Plants","Stumps",
+              "Corpses","CorpsesHumanlike","CorpsesAnimal","CorpsesInsect","CorpsesMechanoid",
+              "CorpsesEntity","BodyPartsGhoul"
+          }
+
+          # Index all mod defs by XML type.
+          by_type=collections.defaultdict(dict)
+          all_wng=set()
+          duplicates=[]
+          for path,root in roots:
+              for node in list(root):
+                  name=node.findtext("defName")
+                  if not name: continue
+                  typ=node.tag
+                  if name in by_type[typ]:
+                      duplicates.append((typ,name,by_type[typ][name][0],path))
+                  else:
+                      by_type[typ][name]=(path,node)
+                  if name.startswith("WNG_"):
+                      all_wng.add(name)
+          for typ,name,p1,p2 in duplicates:
+              failures.append(f"duplicate {typ} defName {name}: {p1} and {p2}")
+
+          mod_categories=set(by_type.get("ThingCategoryDef",{}))
+          allowed_categories=vanilla_categories|mod_categories
+
+          # Thing-category, portable-item, building-minification, and duplicate-category checks.
+          resource_parent_names={
+              "ResourceBase","DrugBase","MakeableDrugBase","BodyPartBase","BodyPartProstheticBase"
+          }
+          apparel_parent_tokens=("ApparelBase",)
+          weapon_parent_tokens=("BaseMeleeWeapon","BaseHumanMakeableGun","BaseGun","BaseEquipment")
+          hidden_portables={"WNG_AnimalDiversitySurvey","WNG_WhispersHybridStudyGate"}
+
+          for name,(path,node) in by_type.get("ThingDef",{}).items():
+              if not name.startswith("WNG_"): continue
+              cats=[x.text for x in node.findall("./thingCategories/li") if x.text]
+              if len(cats)!=len(set(cats)):
+                  failures.append(f"{name} has duplicate thingCategories in {path}: {cats}")
+              for cat in cats:
+                  if cat not in allowed_categories:
+                      failures.append(f"{name} references unknown/non-vanilla ThingCategoryDef {cat} ({path})")
+
+              parent=node.get("ParentName") or ""
+              category=node.findtext("category") or ""
+              haul=node.findtext("alwaysHaulable")
+              portable=(
+                  category=="Item" or parent in resource_parent_names or
+                  any(tok in parent for tok in apparel_parent_tokens+weapon_parent_tokens) or
+                  haul=="true" or node.find("stackLimit") is not None
+              )
+              if portable and name not in hidden_portables and not cats:
+                  warnings.append(f"portable WNG item has no explicit stockpile category: {name} ({path}, parent={parent})")
+
+              if node.findtext("minifiedDef")=="MinifiedThing" and not cats:
+                  # Vanilla building bases do not guarantee a semantically useful minified stockpile leaf.
+                  warnings.append(f"minifiable building has no explicit storage category: {name} ({path})")
+
+              # More precise vanilla apparel categorisation.
+              if cats==["Apparel"]:
+                  desc=(node.findtext("description") or "").lower()
+                  label=(node.findtext("label") or "").lower()
+                  if any(k in name.lower()+label+desc for k in ("armor","armour","carapace","shield","mantle")):
+                      warnings.append(f"{name} uses broad Apparel root; vanilla-style leaf category should be ApparelArmor or ApparelUtility")
+
+          # WNG reference integrity for common Def links.
+          def exists(name):
+              return name in all_wng
+
+          for path,root in roots:
+              for node in list(root):
+                  owner=node.findtext("defName") or f"{node.tag}@{path.name}"
+                  # Element text references where WNG targets must exist somewhere in the mod.
+                  for tag in (
+                      "researchPrerequisite","hediff","addsHediff","removesHediff","defaultProjectile",
+                      "race","factionDef","upgradePawnKind","splitChildPawnKind","integratedWeaponDef"
+                  ):
+                      for e in node.findall(f".//{tag}"):
+                          val=(e.text or "").strip()
+                          if val.startswith("WNG_") and not exists(val):
+                              failures.append(f"{owner} -> missing WNG ref {tag}={val} ({path})")
+
+                  for container in ("researchPrerequisites","recipeUsers","thingDefs","killedLeavings","products","costList"):
+                      for e in node.findall(f".//{container}/*"):
+                          val=(e.text or "").strip()
+                          ref = e.tag if container in ("products","costList","killedLeavings") else val
+                          if ref.startswith("WNG_") and not exists(ref):
+                              failures.append(f"{owner} -> missing WNG ref {container}:{ref} ({path})")
+
+          # Research graph cycles and missing WNG prerequisites.
+          research=by_type.get("ResearchProjectDef",{})
+          graph={}
+          for name,(path,node) in research.items():
+              if not name.startswith("WNG_"): continue
+              deps=[x.text for x in node.findall("./prerequisites/li") if x.text and x.text.startswith("WNG_")]
+              deps += [x.text for x in node.findall("./prerequisitesCompleted/li") if x.text and x.text.startswith("WNG_")]
+              for dep in deps:
+                  if dep not in research:
+                      failures.append(f"{name} has missing WNG research prerequisite {dep} ({path})")
+              graph[name]=deps
+          visiting=set(); visited=set()
+          def visit(n,stack):
+              if n in visiting:
+                  failures.append("research cycle: "+" -> ".join(stack+[n])); return
+              if n in visited: return
+              visiting.add(n)
+              for d in graph.get(n,[]): visit(d,stack+[n])
+              visiting.remove(n); visited.add(n)
+          for n in graph: visit(n,[])
+
+          # Texture integrity.
+          textures=Path("Textures")
+          def texture_exists(tex, multi=False):
+              base=textures/tex
+              if base.with_suffix(".png").exists(): return True
+              parent=base.parent; stem=base.name
+              if not parent.exists(): return False
+              matches=list(parent.glob(stem+"*.png"))
+              return bool(matches)
+
+          for name,(path,node) in by_type.get("ThingDef",{}).items():
+              if not name.startswith("WNG_"): continue
+              for gd in node.findall(".//graphicData"):
+                  tex=gd.findtext("texPath")
+                  if tex and tex.startswith(("Things/","UI/")):
+                      multi=(gd.findtext("graphicClass")=="Graphic_Multi")
+                      if not texture_exists(tex,multi):
+                          failures.append(f"{name} missing texture family {tex} ({path})")
+              ui=node.findtext("uiIconPath")
+              if ui and not texture_exists(ui):
+                  failures.append(f"{name} missing uiIconPath {ui} ({path})")
+              worn=node.findtext("./apparel/wornGraphicPath")
+              if worn and not texture_exists(worn):
+                  failures.append(f"{name} missing wornGraphicPath family {worn} ({path})")
+
+          # WNG C# class references in XML must resolve to source classes.
+          source="\n".join(p.read_text(encoding="utf-8",errors="ignore") for p in Path("Source").rglob("*.cs"))
+          class_names=set(re.findall(r"\bclass\s+([A-Za-z_][A-Za-z0-9_]*)",source))
+          for path,root in roots:
+              raw=path.read_text(encoding="utf-8",errors="ignore")
+              refs=set(re.findall(r'(?:Class|ClassName)="WraithNaniteGravtech\.([A-Za-z_][A-Za-z0-9_]*)"',raw))
+              refs |= set(re.findall(r"<(?:thingClass|workerClass|verbClass|compClass|placeWorker)>WraithNaniteGravtech\.([A-Za-z_][A-Za-z0-9_]*)</",raw))
+              for cls in refs:
+                  if cls not in class_names:
+                      failures.append(f"{path} references missing WNG C# class {cls}")
+
+          # Production recipe sanity and WNG recipe-user existence.
+          for name,(path,node) in by_type.get("RecipeDef",{}).items():
+              if not name.startswith("WNG_"): continue
+              users=[x.text for x in node.findall("./recipeUsers/li") if x.text]
+              for user in users:
+                  if user.startswith("WNG_") and user not in by_type.get("ThingDef",{}):
+                      failures.append(f"{name} uses missing WNG recipeUser {user} ({path})")
+              has_result=(node.find("products") is not None or node.find("addsHediff") is not None or
+                          node.find("removesHediff") is not None or node.find("workerClass") is not None)
+              if not has_result:
+                  warnings.append(f"{name} has no obvious product/hediff/worker result ({path})")
+              ingredients=node.findall("./ingredients/li")
+              if ingredients and node.find("fixedIngredientFilter") is None:
+                  warnings.append(f"{name} has ingredients but no fixedIngredientFilter ({path})")
+
+          # About/load structure.
+          about=Path("About/About.xml")
+          if not about.exists(): failures.append("About/About.xml missing")
+          else:
+              ar=ET.parse(about).getroot()
+              versions=[x.text for x in ar.findall("./supportedVersions/li") if x.text]
+              if "1.6" not in versions: failures.append("About.xml does not declare RimWorld 1.6")
+              if not ar.findtext("packageId"): failures.append("About.xml has no packageId")
+          lf=Path("LoadFolders.xml")
+          if not lf.exists(): warnings.append("LoadFolders.xml missing; conditional compatibility loading cannot be isolated")
+
+          print("=== D128 VANILLA PARITY AUDIT ===")
+          print(f"Parsed {len(roots)} XML files; indexed {len(all_wng)} WNG defNames.")
+          if warnings:
+              print("\nWARNINGS:")
+              for w in warnings: print(" -",w)
+          if failures:
+              print("\nFAILURES:")
+              for f in failures: print(" -",f)
+              raise SystemExit(1)
+          print(f"PASS with {len(warnings)} warning(s).")
