@@ -27,8 +27,11 @@ jobs:
               return {n.findtext("defName"): n for n in list(root) if n.findtext("defName")}
 
           family = defs_from("Defs/Gravships/Gravship_FamilySystems.xml")
+          support = defs_from("Defs/Gravships/Gravship_FamilySupport.xml")
           goauld = defs_from("Defs/Gravships/Gravship_Goauld.xml")
           parity = defs_from("Defs/Gravships/Gravship_VanillaParity.xml")
+          ancient = defs_from("Defs/Gravships/Gravship_AncientVacuumShield.xml")
+          wraith_engine_defs = defs_from("Defs/ThingDefs/Things_WraithGravEngine.xml")
 
           door_sets = [
               ("WNG_WraithGravshipDoor", family),
@@ -97,6 +100,97 @@ jobs:
               workers = [x.text for x in node.findall("./placeWorkers/li")]
               if worker not in workers:
                   failures.append(f"{name} lost its same-family gravship-substructure placement worker")
+
+          # Family gravship equipment must use Odyssey's native facility link path:
+          # equipment has a gravship-facility comp, the matching engine lists that Def,
+          # and ordinary ship systems use long-range/no-LOS linkage across connected substructure.
+          all_gravship_defs = {}
+          for defs in (family, support, goauld, parity, ancient):
+              all_gravship_defs.update(defs)
+
+          engine_defs = {
+              "Wraith": wraith_engine_defs["WNG_WraithGravEngine"],
+              "Asuran": family["WNG_AsuranGravEngine"],
+              "Goauld": goauld["WNG_GoauldGravEngine"],
+          }
+          facility_classes = {
+              "WraithNaniteGravtech.CompProperties_WNGPilotConsole",
+              "WraithNaniteGravtech.CompProperties_WNGGravshipFacility",
+              "WraithNaniteGravtech.CompProperties_WNGFuelTankFacility",
+              "WraithNaniteGravtech.CompProperties_WNGThruster",
+          }
+          network_classes = facility_classes | {
+              "WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode",
+              "WraithNaniteGravtech.CompProperties_WNGFuelEndpoint",
+          }
+
+          engine_links = {
+              family_name: {li.text for li in node.findall(".//linkableFacilities/li") if li.text}
+              for family_name, node in engine_defs.items()
+          }
+
+          for name, node in all_gravship_defs.items():
+              comps = node.findall("./comps/li")
+              classes = {comp.attrib.get("Class", "") for comp in comps}
+              if not (classes & network_classes):
+                  continue
+
+              family_name = None
+              for comp in comps:
+                  candidate = comp.findtext("family")
+                  if candidate in engine_defs:
+                      family_name = candidate
+                      break
+              if family_name is None:
+                  failures.append(f"{name} is gravship-network equipment but has no Wraith/Asuran/Goauld family")
+                  continue
+
+              facility = next((comp for comp in comps if comp.attrib.get("Class", "") in facility_classes), None)
+              if facility is None:
+                  failures.append(f"{name} is {family_name} gravship equipment but has no native gravship facility comp")
+                  continue
+
+              if name not in engine_links[family_name]:
+                  failures.append(f"{name} is not registered in the {family_name} grav engine linkableFacilities list")
+
+              if "GravField" not in name:
+                  if facility.findtext("requiresLOS", "true").lower() != "false":
+                      failures.append(f"{name} grav-engine link incorrectly requires line of sight")
+                  try:
+                      if float(facility.findtext("maxDistance", "8")) < 500:
+                          failures.append(f"{name} grav-engine link range is below the full-ship 500-tile facility range")
+                  except ValueError:
+                      failures.append(f"{name} has an invalid grav-engine maxDistance")
+
+          vanilla_thruster_limits = {
+              "WNG_OrganicThruster": 4,
+              "WNG_WraithHeavyDriveOrgan": 6,
+              "WNG_PrecursorVectorThruster": 4,
+              "WNG_AsuranHeavyVectorDrive": 6,
+              "WNG_GoauldSmallSublightDrive": 4,
+              "WNG_GoauldLargeSublightDrive": 6,
+          }
+          for name, expected_max in vanilla_thruster_limits.items():
+              node = all_gravship_defs.get(name)
+              if node is None:
+                  failures.append(f"{name} missing from gravship defs")
+                  continue
+              facility = next(
+                  (comp for comp in node.findall("./comps/li")
+                   if comp.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGThruster"),
+                  None,
+              )
+              if facility is None:
+                  failures.append(f"{name} lost its WNG gravship-thruster comp")
+                  continue
+              if facility.findtext("requiresLOS") != "false":
+                  failures.append(f"{name} must use vanilla-style no-LOS grav-engine linking")
+              if facility.findtext("maxDistance") != "500":
+                  failures.append(f"{name} must use vanilla-style 500-tile grav-engine facility range")
+              if facility.findtext("maxSimultaneous") != str(expected_max):
+                  failures.append(
+                      f"{name} maxSimultaneous is {facility.findtext('maxSimultaneous')}, expected {expected_max}"
+                  )
 
           atlases = [
               "Textures/Things/Building/Goauld/Gravship/WNG_GoauldHull_Atlas.png",
