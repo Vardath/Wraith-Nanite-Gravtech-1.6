@@ -3,6 +3,7 @@
   <ThingDef ParentName="PlantBase">
     <defName>Plant_WNG_Kassa</defName>
     <label>kassa plant</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A tall offworld grain crop cultivated for dense, sweet kernels. Kassa is highly nutritious and commercially attractive, but its natural psychoactive chemistry creates severe chemical dependence with repeated consumption.</description>
     <statBases>
       <MaxHitPoints>125</MaxHitPoints>
