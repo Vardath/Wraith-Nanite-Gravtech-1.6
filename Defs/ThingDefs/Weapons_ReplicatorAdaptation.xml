@@ -3,6 +3,7 @@
   <ThingDef ParentName="LightMechanoidGunRanged">
     <defName>WNG_ReplicatorPulseCaster</defName>
     <label>integrated Replicator pulse caster</label>
+    <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A compact ranged emitter reproduced from assimilated weapon technology. It is an integrated Replicator machine organ and is destroyed if separated from its body.</description>
     <techLevel>Spacer</techLevel>
     <graphicData>
