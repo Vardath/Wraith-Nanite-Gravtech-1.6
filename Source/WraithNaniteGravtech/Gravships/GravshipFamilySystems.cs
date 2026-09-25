@@ -191,13 +191,32 @@ namespace WraithNaniteGravtech
         {
             if (parent?.Map == null || !cell.InBounds(parent.Map))
                 return false;
+
             foreach (Thing thing in parent.Map.thingGrid.ThingsListAt(cell))
             {
                 CompWNGFamilyPowerNode node = thing?.TryGetComp<CompWNGFamilyPowerNode>();
                 if (node != null && node.Props.family == family)
                     return true;
+
+                // Vanilla linked walls/conduits join through blueprints and frames as well as
+                // completed buildings. Resolve the Thing being built and inspect its Def-owned
+                // family node so WNG conduit runs visibly join while they are being laid out.
+                ThingDef builtDef = BuiltThingDefForLinking(thing);
+                CompProperties_WNGFamilyPowerNode props =
+                    builtDef?.GetCompProperties<CompProperties_WNGFamilyPowerNode>();
+                if (props != null && props.family == family)
+                    return true;
             }
+
             return false;
+        }
+
+        private static ThingDef BuiltThingDefForLinking(Thing thing)
+        {
+            if (thing?.def == null)
+                return null;
+
+            return thing.def.entityDefToBuild as ThingDef ?? thing.def;
         }
     }
 
@@ -340,12 +359,20 @@ namespace WraithNaniteGravtech
         {
             if (parent?.Map == null || !cell.InBounds(parent.Map))
                 return false;
+
             foreach (Thing thing in parent.Map.thingGrid.ThingsListAt(cell))
             {
                 CompWNGFuelEndpoint node = thing?.TryGetComp<CompWNGFuelEndpoint>();
                 if (node != null && node.Props.family == family)
                     return true;
+
+                ThingDef builtDef = thing?.def?.entityDefToBuild as ThingDef ?? thing?.def;
+                CompProperties_WNGFuelEndpoint props =
+                    builtDef?.GetCompProperties<CompProperties_WNGFuelEndpoint>();
+                if (props != null && props.family == family)
+                    return true;
             }
+
             return false;
         }
     }
