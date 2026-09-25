@@ -25,6 +25,7 @@
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_IratusParalytic</defName>
     <label>Iratus paralytic</label>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A stabilized injectable derived from Iratus feeding secretions. It sharply suppresses voluntary movement while leaving respiration and basic awareness comparatively intact, making it useful for dangerous biological handling and controlled restraint. The formulation is a WNG xenopharmacological extrapolation from Iratus biology rather than a named Atlantis medicine.</description>
     <descriptionHyperlinks><HediffDef>WNG_IratusParalysis</HediffDef></descriptionHyperlinks>
     <graphicData>
