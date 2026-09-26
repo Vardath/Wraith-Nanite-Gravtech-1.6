@@ -49,8 +49,9 @@ namespace WraithNaniteGravtech
         }
 
         public bool BiologicalPredationUnlocked =>
+            WNGSettingsUtility.ReplicatorTerrainAssimilationEnabled &&
             InitialConsumableCellCount > 0 &&
-            StrippedFraction >= BiologicalPredationThreshold;
+            StrippedFraction >= WNGSettingsUtility.ReplicatorBiologicalPredationThreshold;
 
         public bool IsStripped(IntVec3 cell)
         {
@@ -165,7 +166,8 @@ namespace WraithNaniteGravtech
             // Roofing outranks physical Things on the same cell. If a Replicator ate a
             // roof-holding wall/rock first, vanilla would schedule unsupported roofs to collapse
             // and thick rock roof would spawn CollapsedRocks. The swarm consumes the roof first.
-            if (map.roofGrid.Roofed(cell))
+            if (WNGSettingsUtility.ReplicatorRoofAssimilationEnabled &&
+                map.roofGrid.Roofed(cell))
                 return true;
 
             // Once the roof is gone, physical Things outrank floor/foundation/ground substrate.
@@ -175,6 +177,9 @@ namespace WraithNaniteGravtech
                 if (ReplicatorAssimilationUtility.IsAssimilationTarget(things[i], pawn))
                     return false;
             }
+
+            if (!WNGSettingsUtility.ReplicatorTerrainAssimilationEnabled)
+                return false;
 
             TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
             bool isVoid = terrain == null ||
@@ -202,7 +207,8 @@ namespace WraithNaniteGravtech
             Map map,
             HashSet<IntVec3> pendingBefore)
         {
-            if (map?.roofCollapseBuffer?.CellsMarkedToCollapse == null)
+            if (!WNGSettingsUtility.ReplicatorRoofAssimilationEnabled ||
+                map?.roofCollapseBuffer?.CellsMarkedToCollapse == null)
                 return 0;
 
             pendingBefore ??= new HashSet<IntVec3>();
@@ -238,9 +244,11 @@ namespace WraithNaniteGravtech
 
             // Roofs and removable top terrain layers are the visible built-environment layers
             // the swarm should strip even while ordinary objects still remain elsewhere.
-            return map.roofGrid.Roofed(cell) ||
-                   map.terrainGrid.CanRemoveTopLayerAt(cell) ||
-                   map.terrainGrid.CanRemoveFoundationAt(cell);
+            return (WNGSettingsUtility.ReplicatorRoofAssimilationEnabled &&
+                    map.roofGrid.Roofed(cell)) ||
+                   (WNGSettingsUtility.ReplicatorTerrainAssimilationEnabled &&
+                    (map.terrainGrid.CanRemoveTopLayerAt(cell) ||
+                     map.terrainGrid.CanRemoveFoundationAt(cell)));
         }
 
         public static IntVec3 FindClosestConsumableCell(Pawn pawn, bool structuralLayersOnly = false)
@@ -288,33 +296,45 @@ namespace WraithNaniteGravtech
 
             try
             {
-                if (map.roofGrid.Roofed(cell))
+                bool removedRoof =
+                    WNGSettingsUtility.ReplicatorRoofAssimilationEnabled &&
+                    map.roofGrid.Roofed(cell);
+                if (removedRoof)
                     map.roofGrid.SetRoof(cell, null);
 
                 bool removedStructuralTerrain = false;
 
-                if (map.terrainGrid.CanRemoveTopLayerAt(cell))
+                if (WNGSettingsUtility.ReplicatorTerrainAssimilationEnabled)
                 {
-                    map.terrainGrid.RemoveTopLayer(cell, doLeavings: false);
-                    removedStructuralTerrain = true;
+                    if (map.terrainGrid.CanRemoveTopLayerAt(cell))
+                    {
+                        map.terrainGrid.RemoveTopLayer(cell, doLeavings: false);
+                        removedStructuralTerrain = true;
+                    }
+
+                    // Odyssey gravship substructure (including WNG family substructures) lives in the
+                    // foundation grid, not the ordinary top/under terrain grid. Consume that layer too.
+                    if (map.terrainGrid.CanRemoveFoundationAt(cell))
+                    {
+                        map.terrainGrid.RemoveFoundation(cell, doLeavings: false);
+                        removedStructuralTerrain = true;
+                    }
+
+                    if (!removedStructuralTerrain)
+                    {
+                        TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
+                        bool isVoid = terrain == null ||
+                                      string.Equals(terrain.defName, "Space", StringComparison.OrdinalIgnoreCase);
+                        if (!isVoid && terrain != TerrainDefOf.Gravel)
+                        {
+                            map.terrainGrid.SetTerrain(cell, TerrainDefOf.Gravel);
+                            removedStructuralTerrain = true;
+                        }
+                    }
                 }
 
-                // Odyssey gravship substructure (including WNG family substructures) lives in the
-                // foundation grid, not the ordinary top/under terrain grid. Consume that layer too.
-                if (map.terrainGrid.CanRemoveFoundationAt(cell))
-                {
-                    map.terrainGrid.RemoveFoundation(cell, doLeavings: false);
-                    removedStructuralTerrain = true;
-                }
-
-                if (!removedStructuralTerrain)
-                {
-                    TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
-                    bool isVoid = terrain == null ||
-                                  string.Equals(terrain.defName, "Space", StringComparison.OrdinalIgnoreCase);
-                    if (!isVoid && terrain != TerrainDefOf.Gravel)
-                        map.terrainGrid.SetTerrain(cell, TerrainDefOf.Gravel);
-                }
+                if (!removedRoof && !removedStructuralTerrain)
+                    return false;
 
                 FilthMaker.RemoveAllFilth(cell, map);
                 state.MarkStripped(cell);
