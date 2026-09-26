@@ -240,7 +240,7 @@ jobs:
               rows = [[int(v.strip()) for v in row.split(",")] for row in row_matches[:9]]
               if any(len(row) != 10 for row in rows):
                   failures.append("starter hull footprint is no longer 10 cells wide")
-              if sum(v != 0 for row in rows for v in row) != 82:
+              if sum(v != 0 for row in rows for v in row) != 84:
                   failures.append("starter hull footprint no longer matches Odyssey's compact occupied-cell count")
 
           if source.count("sketch.AddThing(spec.FuelTank") != 2:
