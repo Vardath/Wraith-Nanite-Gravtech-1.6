@@ -459,7 +459,30 @@ namespace WraithNaniteGravtech
             return null;
         }
 
-        internal static bool ExactEngineLinkIsValid(CompGravshipFacility facility, WNGGravshipFamily family, bool requiresPower)
+        internal static void EnsureExactEngineTarget(CompGravshipFacility facility, WNGGravshipFamily family)
+        {
+            if (!ModsConfig.OdysseyActive || facility?.props is not CompProperties_GravshipFacility props)
+                return;
+
+            string exactName = EngineDefName(family);
+            ThingDef exactEngine = exactName.NullOrEmpty()
+                ? null
+                : DefDatabase<ThingDef>.GetNamedSilentFail(exactName);
+            if (exactEngine == null)
+                return;
+
+            // Make every WNG gravship facility proactively link to its own family engine.
+            // This mirrors the native facility path but removes spawn-order dependence on the
+            // engine's reverse CompAffectedByFacilities scan.
+            if (props.linkableBuildings == null ||
+                props.linkableBuildings.Count != 1 ||
+                props.linkableBuildings[0] != exactEngine)
+            {
+                props.linkableBuildings = new List<ThingDef> { exactEngine };
+            }
+        }
+
+        internal static bool PhysicalEngineLinkIsValid(CompGravshipFacility facility, WNGGravshipFamily family)
         {
             if (!ModsConfig.OdysseyActive || facility?.parent?.Spawned != true || facility.parent.Map == null)
                 return false;
@@ -473,10 +496,14 @@ namespace WraithNaniteGravtech
             if (facility.parent.Faction != null && engine.Faction != null && facility.parent.Faction != engine.Faction)
                 return false;
 
-            bool linked = facility.Props.onlyRequiresLooseConnection
+            return facility.Props.onlyRequiresLooseConnection
                 ? engine.LooselyConnectedToGravEngine(facility.parent)
                 : engine.OnValidSubstructure(facility.parent);
-            if (!linked)
+        }
+
+        internal static bool ExactEngineLinkIsValid(CompGravshipFacility facility, WNGGravshipFamily family, bool requiresPower)
+        {
+            if (!PhysicalEngineLinkIsValid(facility, family))
                 return false;
 
             if (requiresPower)
@@ -526,8 +553,38 @@ namespace WraithNaniteGravtech
     {
         private CompProperties_WNGPilotConsole WNGProps => (CompProperties_WNGPilotConsole)props;
 
+        public override void PostSpawnSetup(bool respawningAfterReload)
+        {
+            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
+            base.PostSpawnSetup(respawningAfterReload);
+        }
+
         public override bool CanBeActive =>
             WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower);
+
+        public override string CompInspectStringExtra()
+        {
+            string result = base.CompInspectStringExtra();
+
+            // Native CompGravshipFacility labels every CanBeActive failure as "not connected".
+            // WNG consoles can be physically linked but inactive solely because their family power
+            // network is under-supplied. Keep the native gravship details while correcting that status.
+            if (WNGGravshipFamilyUtility.PhysicalEngineLinkIsValid(this, WNGProps.family) &&
+                WNGProps.requiresFamilyPower)
+            {
+                CompWNGFamilyPowerNode power = parent.TryGetComp<CompWNGFamilyPowerNode>();
+                if (power != null && !power.Powered)
+                {
+                    string disconnected = "NotConnectedToGravEngine".Translate().Colorize(ColorLibrary.RedReadable).ToString();
+                    result = result.Replace(disconnected, string.Empty).TrimStartNewlines().TrimEndNewlines();
+                    if (!result.NullOrEmpty())
+                        result += "\n";
+                    result += "Family gravship power insufficient.".Colorize(ColorLibrary.RedReadable);
+                }
+            }
+
+            return result;
+        }
     }
 
     public sealed class CompProperties_WNGGravshipFacility : CompProperties_GravshipFacility
@@ -544,6 +601,12 @@ namespace WraithNaniteGravtech
     public class CompGravshipFacility_WNGFamily : CompGravshipFacility
     {
         protected CompProperties_WNGGravshipFacility WNGProps => (CompProperties_WNGGravshipFacility)props;
+
+        public override void PostSpawnSetup(bool respawningAfterReload)
+        {
+            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
+            base.PostSpawnSetup(respawningAfterReload);
+        }
 
         public override bool CanBeActive =>
             WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower);
@@ -563,6 +626,12 @@ namespace WraithNaniteGravtech
     public sealed class CompGravshipFuelTank_WNGFamily : CompGravshipFacility
     {
         private CompProperties_WNGFuelTankFacility WNGProps => (CompProperties_WNGFuelTankFacility)props;
+
+        public override void PostSpawnSetup(bool respawningAfterReload)
+        {
+            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
+            base.PostSpawnSetup(respawningAfterReload);
+        }
 
         public override bool CanBeActive =>
             WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower) &&
@@ -594,6 +663,12 @@ namespace WraithNaniteGravtech
         private static int lastFamilyLaunchSoundTick = -1;
 
         private CompProperties_WNGThruster WNGProps => (CompProperties_WNGThruster)props;
+
+        public override void PostSpawnSetup(bool respawningAfterReload)
+        {
+            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
+            base.PostSpawnSetup(respawningAfterReload);
+        }
 
         public override bool CanBeActive
         {
