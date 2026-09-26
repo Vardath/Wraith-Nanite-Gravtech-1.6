@@ -3,7 +3,6 @@
   <name>Wraith &amp; Nanite Gravtech</name>
   <author>Vardath</author>
   <packageId>vardath.wraithnanitegravtech</packageId>
-  <url>https://vardath.github.io</url>
   <supportedVersions>
     <li>1.6</li>
   </supportedVersions>
@@ -43,9 +42,5 @@ Block Replicators use a Drone -&gt; Hunter -&gt; Bulwark -&gt; Titan -&gt; Siege
 
 Human-form nanite beings add Lattice factions, infiltration, Queen/controller systems, Neural Interface and Pattern Archive technology. Ancient/Asuran content includes Puddle Jumpers, pulse weapons, personal and settlement shields, furniture, pilot systems and a complete themed Odyssey gravship family. Wraith Darts, Strike Craft and Cruisers, Al'kesh and Death Gliders, Goa'uld gravship systems, transport rings and related pharmacology expand the wider setting.
 
-Includes four Wraith/human-form player starts on the surface or in orbit and uses RimWorld/Odyssey native systems wherever practical. Requires Royalty, Ideology, Biotech, Anomaly and Odyssey. Combat Extended compatibility definitions are included. Optional integration is detected automatically for the Stargates mod (ccyt.stargatesmod), ONAC and RimGate Jaffa/Kree; Stargates can provide real gate-linked starts, visits, hunts and incursions without becoming a hard dependency.
-
-More Vardath work: https://vardath.github.io
-Live WNG art gallery: https://vardath.github.io/wng-art.html
-Buy me a coffee if you like the mod: https://paypal.me/vardath</description>
+Includes four Wraith/human-form player starts on the surface or in orbit and uses RimWorld/Odyssey native systems wherever practical. Requires Royalty, Ideology, Biotech, Anomaly and Odyssey. Combat Extended compatibility definitions are included. Optional integration is detected automatically for the Stargates mod (ccyt.stargatesmod), ONAC and RimGate Jaffa/Kree; Stargates can provide real gate-linked starts, visits, hunts and incursions without becoming a hard dependency.</description>
 </ModMetaData>
