@@ -91,16 +91,8 @@ No third-party Stargate mod is required for the base WNG content.
 
 [b]RimGate Jaffa/Kree:[/b] optional Goa'uld/Jaffa interop is detected when installed.
 
-[h2]Art, development and other Vardath work[/h2]
+[h2]Art and development[/h2]
 WNG has its own growing library of faction-specific RimWorld-style art for Wraith, Replicator, Asuran/Precursor and Goa'uld content.
-
-[url=https://vardath.github.io/wng-art.html]Live WNG Art Gallery[/url]
-[url=https://vardath.github.io]Vardath — music, cosmology, research and other work[/url]
-[url=https://github.com/Vardath/Wraith-Nanite-Gravtech-1.6]WNG GitHub repository[/url]
 
 [h2]Important note[/h2]
 WNG is an unofficial, non-commercial fan-made project. It is not affiliated with or endorsed by the owners of Stargate or by Ludeon Studios.
-
-[h2]Support[/h2]
-If you like the mod and want to support continued development:
-[url=https://paypal.me/vardath]Buy me a coffee — paypal.me/vardath[/url]
