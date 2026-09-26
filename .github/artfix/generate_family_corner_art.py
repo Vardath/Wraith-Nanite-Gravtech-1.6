@@ -19,7 +19,7 @@ FAMILIES = {
     },
 }
 
-# The family wall atlases use RimWorld's 4x4 linked-wall layout.
+# Generated sprites are committed as normal mod assets and ship in the compiled release.\n# The family wall atlases use RimWorld's 4x4 linked-wall layout.
 # Index 10 is the left+right straight-wall cell.  We use that exact authored
 # family wall texture as the source material for the Odyssey 2x2 outside-corner
 # overlay, so the diagonal hull pieces are literally made from the same wall art.
