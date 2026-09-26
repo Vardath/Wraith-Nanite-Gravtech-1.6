@@ -576,7 +576,7 @@ namespace WraithNaniteGravtech
                 if (power != null && !power.Powered)
                 {
                     string disconnected = "NotConnectedToGravEngine".Translate().Colorize(ColorLibrary.RedReadable).ToString();
-                    result = result.Replace(disconnected, string.Empty).TrimStartNewlines().TrimEndNewlines();
+                    result = result.Replace(disconnected, string.Empty).Trim();
                     if (!result.NullOrEmpty())
                         result += "\n";
                     result += "Family gravship power insufficient.".Colorize(ColorLibrary.RedReadable);
