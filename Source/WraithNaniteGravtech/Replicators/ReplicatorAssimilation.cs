@@ -353,8 +353,12 @@ namespace WraithNaniteGravtech
             Map map = parent.Map;
             IntVec3 origin = target.Position;
             ReplicatorAdaptationEvidence adaptationEvidence = ReplicatorAdaptationUtility.EvidenceFrom(target);
+            CompReplicatorMaterialProfile parentMaterial =
+                parent.TryGetComp<CompReplicatorMaterialProfile>();
             ReplicatorMaterialGrade offspringMaterialGrade =
-                ReplicatorMaterialProfileUtility.GradeFromSource(target);
+                WNGSettingsUtility.ReplicatorMaterialAdaptationEnabled
+                    ? ReplicatorMaterialProfileUtility.GradeFromSource(target)
+                    : (parentMaterial?.Grade ?? ReplicatorMaterialGrade.Standard);
             bool consumedHighTierAsuranTechnology = IsHighTierAsuranTechnology(target);
             string consumedTechnologyLabel = consumedHighTierAsuranTechnology ? target.LabelCap : null;
             List<Pawn> staged = new List<Pawn>(offspringToSpawn);
