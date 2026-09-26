@@ -1,0 +1,260 @@
+name: D129 Orbital Starter Gravship Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "Defs/ScenarioDefs/Scenarios_WNG.xml"
+      - "Defs/Gravships/**"
+      - "Defs/ThingDefs/Things_WraithGravEngine.xml"
+      - "Source/WraithNaniteGravtech/Scenarios/WNGStartingGravship.cs"
+      - "Source/WraithNaniteGravtech/Gravships/**"
+      - ".github/workflows/d129-orbital-starter-gravship-validation.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Wraith and Asuran orbital starter gravships
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          failures = []
+
+          scenario_path = Path("Defs/ScenarioDefs/Scenarios_WNG.xml")
+          source_path = Path("Source/WraithNaniteGravtech/Scenarios/WNGStartingGravship.cs")
+          scenarios = ET.parse(scenario_path).getroot()
+          source = source_path.read_text(encoding="utf-8")
+
+          expected_scenarios = {
+              "WNG_WraithOrbit": "Wraith",
+              "WNG_HumanFormReplicatorOrbit": "Asuran",
+          }
+
+          for def_name, family in expected_scenarios.items():
+              node = next(
+                  (x for x in scenarios.findall("ScenarioDef")
+                   if x.findtext("defName") == def_name),
+                  None,
+              )
+              if node is None:
+                  failures.append(f"missing orbital scenario {def_name}")
+                  continue
+
+              parts = node.find("./scenario/parts")
+              if parts is None:
+                  failures.append(f"{def_name} has no scenario parts")
+                  continue
+
+              custom = [
+                  p for p in list(parts)
+                  if p.attrib.get("Class") == "WraithNaniteGravtech.ScenPart_WNGStartingGravship"
+              ]
+              if len(custom) != 1:
+                  failures.append(f"{def_name} expected exactly one WNG family gravship arrival part, found {len(custom)}")
+              elif custom[0].findtext("family") != family:
+                  failures.append(f"{def_name} starter family is {custom[0].findtext('family')}, expected {family}")
+
+              vanilla_gravship = [
+                  p for p in list(parts)
+                  if p.attrib.get("Class") == "ScenPart_PlayerPawnsArriveMethod"
+                  and p.findtext("method") == "Gravship"
+              ]
+              if vanilla_gravship:
+                  failures.append(f"{def_name} still contains Odyssey's hard-coded vanilla gravship arrival")
+
+              forced = [
+                  p for p in list(parts)
+                  if p.attrib.get("Class") == "ScenPart_ForcedMap"
+                  and p.findtext("mapGenerator") == "OrbitalRelay"
+                  and p.findtext("layerDef") == "Orbit"
+              ]
+              if len(forced) != 1:
+                  failures.append(f"{def_name} lost its forced Orbit/OrbitalRelay map")
+
+          # The custom arrival must own the complete Odyssey-style start lifecycle.
+          required_source_contracts = (
+              "SketchResolverDefOf.Gravship",              # safe vanilla fallback
+              "GenStep_ReserveGravshipArea.SetStartSpot",
+              "GravshipPlacementUtility.ClearAreaForGravship",
+              "buildRoofsInstantly: true",
+              "engine.silentlyActivate = true",
+              "refuelable.Refuel(refuelable.Props.fuelCapacity)",
+              "RelinkFamilyFacilities",
+              "ValidateLiveStarterShip",
+              "WNGFamilyFuelUtility.HasRoleConnection",
+              "WNGFamilyPowerUtility.NetworkSupply",
+              "WNGFamilyPowerUtility.NetworkDemand",
+              "MapGenerator.rootsToUnfog",
+              "map.areaManager.Home",
+          )
+          for contract in required_source_contracts:
+              if contract not in source:
+                  failures.append(f"orbital starter source lost required lifecycle contract: {contract}")
+
+          # Keep the starter compact and starter-grade.  These advanced systems belong to research.
+          forbidden_starter_systems = (
+              "WNG_WraithHeavyDriveOrgan",
+              "WNG_AsuranHeavyVectorDrive",
+              "WNG_WraithGravFieldExtender",
+              "WNG_AsuranGravFieldExtender",
+              "WNG_PrecursorShieldEmitter",
+              "WNG_AncientVacuumShieldEmitter",
+              "WNG_WraithOrbitalSensorOrgan",
+              "WNG_AsuranOrbitalScanner",
+              "WNG_WraithSignalVeil",
+              "WNG_AsuranSignalJammer",
+              "WNG_WraithFuelOptimizer",
+              "WNG_AsuranFuelOptimizer",
+          )
+          for name in forbidden_starter_systems:
+              if name in source:
+                  failures.append(f"advanced system leaked into starter gravship source: {name}")
+
+          # Each family must resolve exactly the intended starter systems.
+          families = {
+              "Wraith": {
+                  "engine": "WNG_WraithGravEngine",
+                  "tank": "WNG_WraithFuelBladder",
+                  "drive": "WNG_OrganicThruster",
+                  "pilot": "WNG_OrganicPilotNode",
+                  "generator": "WNG_GravshipMetabolicHeart",
+                  "power_conduit": "WNG_WraithNeuralConduit",
+                  "fuel_conduit": "WNG_WraithFuelConduit",
+                  "atmosphere": "WNG_WraithAtmosphereOrgan",
+                  "navigation": "WNG_WraithNavigationCortex",
+              },
+              "Asuran": {
+                  "engine": "WNG_AsuranGravEngine",
+                  "tank": "WNG_AsuranFuelCell",
+                  "drive": "WNG_PrecursorVectorThruster",
+                  "pilot": "WNG_PrecursorPilotConsole",
+                  "generator": "WNG_AsuranPowerCell",
+                  "power_conduit": "WNG_AsuranPowerConduit",
+                  "fuel_conduit": "WNG_AsuranFuelConduit",
+                  "atmosphere": "WNG_AsuranAtmosphereRegulator",
+                  "navigation": "WNG_AsuranFlightSubmind",
+              },
+          }
+
+          for family, defs in families.items():
+              for role, def_name in defs.items():
+                  if f'"{def_name}"' not in source:
+                      failures.append(f"{family} starter source missing {role} def {def_name}")
+
+          # Build a current Def map and validate the actual live component contracts.
+          def_nodes = {}
+          for xml_path in Path("Defs").rglob("*.xml"):
+              try:
+                  root = ET.parse(xml_path).getroot()
+              except ET.ParseError as exc:
+                  failures.append(f"XML parse failure in {xml_path}: {exc}")
+                  continue
+              for node in root.findall("ThingDef"):
+                  name = node.findtext("defName")
+                  if name:
+                      def_nodes[name] = node
+
+          def comp(node, class_name):
+              if node is None:
+                  return None
+              for c in node.findall("./comps/li"):
+                  if c.attrib.get("Class") == class_name:
+                      return c
+              return None
+
+          for family, defs in families.items():
+              missing = [name for name in defs.values() if name not in def_nodes]
+              if missing:
+                  failures.append(f"{family} starter references missing defs: {', '.join(missing)}")
+                  continue
+
+              engine = def_nodes[defs["engine"]]
+              affected = comp(engine, "CompProperties_AffectedByFacilities")
+              if affected is None:
+                  failures.append(f"{defs['engine']} lacks CompProperties_AffectedByFacilities")
+                  continue
+
+              links = {
+                  li.text
+                  for li in affected.findall("./linkableFacilities/li")
+                  if li.text
+              }
+              required_links = {
+                  defs["tank"], defs["drive"], defs["pilot"], defs["generator"],
+                  defs["power_conduit"], defs["fuel_conduit"], defs["atmosphere"],
+                  defs["navigation"],
+              }
+              absent = sorted(required_links - links)
+              if absent:
+                  failures.append(f"{defs['engine']} does not link starter facilities: {', '.join(absent)}")
+
+              fuel_expect = {
+                  defs["tank"]: "Tank",
+                  defs["drive"]: "Thruster",
+                  defs["fuel_conduit"]: "Conduit",
+              }
+              for name, role in fuel_expect.items():
+                  c = comp(def_nodes[name], "WraithNaniteGravtech.CompProperties_WNGFuelEndpoint")
+                  if c is None:
+                      failures.append(f"{name} missing WNG fuel endpoint")
+                      continue
+                  if c.findtext("family") != family or c.findtext("role") != role:
+                      failures.append(f"{name} fuel role/family mismatch: {c.findtext('family')}/{c.findtext('role')}")
+
+              generator = comp(
+                  def_nodes[defs["generator"]],
+                  "WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode",
+              )
+              conduit = comp(
+                  def_nodes[defs["power_conduit"]],
+                  "WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode",
+              )
+              if generator is None or generator.findtext("family") != family or generator.findtext("role") != "Generator":
+                  failures.append(f"{defs['generator']} is not a {family} Generator node")
+              if conduit is None or conduit.findtext("family") != family or conduit.findtext("role") != "Conduit":
+                  failures.append(f"{defs['power_conduit']} is not a {family} Conduit node")
+
+              for conduit_name in (defs["power_conduit"], defs["fuel_conduit"]):
+                  node = def_nodes[conduit_name]
+                  if node.findtext("altitudeLayer") != "Conduits":
+                      failures.append(f"{conduit_name} is not on the Conduits altitude layer")
+                  building = node.find("building")
+                  if building is None or building.findtext("isEdifice") != "false":
+                      failures.append(f"{conduit_name} is not a non-edifice under-wall conduit")
+                  if node.findtext("passability") != "Standable":
+                      failures.append(f"{conduit_name} is not standable like a native conduit")
+
+          # Geometry invariants: same compact 10x9 Odyssey starter hull, two tanks, two drives,
+          # one engine/pilot/generator/atmosphere/navigation unit and a physical fuel loop.
+          row_matches = re.findall(r"new\[\] \{ ([0-3, ]+) \}", source)
+          if len(row_matches) < 9:
+              failures.append("starter source no longer contains the complete 9-row hull footprint")
+          else:
+              rows = [[int(v.strip()) for v in row.split(",")] for row in row_matches[:9]]
+              if any(len(row) != 10 for row in rows):
+                  failures.append("starter hull footprint is no longer 10 cells wide")
+              if sum(v != 0 for row in rows for v in row) != 82:
+                  failures.append("starter hull footprint no longer matches Odyssey's compact occupied-cell count")
+
+          if source.count("sketch.AddThing(spec.FuelTank") != 2:
+              failures.append("starter ship must contain exactly two fuel tanks")
+          if source.count("sketch.AddThing(spec.Thruster") != 2:
+              failures.append("starter ship must contain exactly two small drives")
+          for singleton in ("Engine", "Pilot", "PowerGenerator", "Atmosphere", "NavigationAssist"):
+              if source.count(f"sketch.AddThing(spec.{singleton}") != 1:
+                  failures.append(f"starter ship must contain exactly one {singleton}")
+
+          if failures:
+              print("ORBITAL STARTER GRAVSHIP VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("Wraith and Asuran orbital starter gravships validated successfully.")
