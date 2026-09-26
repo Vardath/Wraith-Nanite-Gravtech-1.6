@@ -60,9 +60,9 @@
   <ScenarioDef ParentName="ScenarioBase">
     <defName>WNG_WraithOrbit</defName>
     <label>Wraith: In Orbit</label>
-    <description>A Wraith cell begins in orbit aboard an Odyssey gravship platform with living material and Wraith bio-fluid for a native organic refit.</description>
+    <description>A Wraith cell begins in orbit aboard a complete, compact Wraith living gravship. The craft is fueled, powered, pressurized and ready to fly, while advanced Hive gravship systems remain normal research progression.</description>
     <scenario>
-      <summary>Three player-aligned Wraith begin in orbit with a gravship.</summary>
+      <summary>Three player-aligned Wraith begin in orbit aboard a functional Wraith living gravship.</summary>
       <playerFaction><factionDef>PlayerColony</factionDef></playerFaction>
       <parts Inherit="False">
         <li Class="ScenPart_PlanetLayer">
@@ -81,7 +81,7 @@
           </xenotypeCounts>
         </li>
         <li Class="ScenPart_ForcedMap"><def>ForcedMap</def><mapGenerator>OrbitalRelay</mapGenerator><layerDef>Orbit</layerDef></li>
-        <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Gravship</method></li>
+        <li Class="WraithNaniteGravtech.ScenPart_WNGStartingGravship"><def>PlayerPawnsArriveMethod</def><family>Wraith</family></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_BiologicalCultivation</project></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_LivingWeapons</project></li>
@@ -93,7 +93,7 @@
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithBiofluidFuel</thingDef><count>160</count></li>
         <li Class="ScenPart_GameStartDialog">
           <def>GameStartDialog</def>
-          <text>You begin above the rimworld with a functioning gravship and intact knowledge of foundational Wraith living technology. Refit toward living gravtech, descend to feed and harvest, and cultivate a first Living Forge through a biological host or corpse when you establish a foothold.</text>
+          <text>You begin above the rimworld aboard a compact living Wraith gravship with its grav engine, pilot node, drive organs, bio-fluid feed, neural power grid and atmosphere organ already functioning. The ship can fly immediately, but mature Hive systems, shields, heavy drives and advanced gravship architecture still have to be recovered through progression. Descend to feed and harvest, then cultivate a first Living Forge through a biological host or corpse when you establish a foothold.</text>
           <closeSound>GameStartSting</closeSound>
         </li>
       </parts>
@@ -141,9 +141,9 @@
   <ScenarioDef ParentName="ScenarioBase">
     <defName>WNG_HumanFormReplicatorOrbit</defName>
     <label>Human-form Replicators: In Orbit</label>
-    <description>Three player-aligned human-form Replicators begin in orbit with an Odyssey gravship and precursor material for an Asuran-style refit.</description>
+    <description>Three player-aligned human-form Replicators begin in orbit aboard a complete, compact Asuran gravship. The craft is fueled, powered, pressurized and ready to fly, while advanced precursor systems remain normal research progression.</description>
     <scenario>
-      <summary>Three player human-form Replicators begin in orbit with a gravship.</summary>
+      <summary>Three player human-form Replicators begin in orbit aboard a functional Asuran gravship.</summary>
       <playerFaction><factionDef>PlayerColony</factionDef></playerFaction>
       <parts Inherit="False">
         <li Class="ScenPart_PlanetLayer">
@@ -162,7 +162,7 @@
           </xenotypeCounts>
         </li>
         <li Class="ScenPart_ForcedMap"><def>ForcedMap</def><mapGenerator>OrbitalRelay</mapGenerator><layerDef>Orbit</layerDef></li>
-        <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Gravship</method></li>
+        <li Class="WraithNaniteGravtech.ScenPart_WNGStartingGravship"><def>PlayerPawnsArriveMethod</def><family>Asuran</family></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_NaniteAnalysis</project></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_AsuranCollectiveSystems</project></li>
@@ -175,7 +175,7 @@
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_AsuranNaniteSlurry</thingDef><count>160</count></li>
         <li Class="ScenPart_GameStartDialog">
           <def>GameStartDialog</def>
-          <text>Your group begins in orbit with a functioning gravship, intact core nanite and Asuran fabrication knowledge, and enough advanced material to begin a refit. Land when useful, remain above the world when safer, and recover higher precursor and gravship systems through normal progression.</text>
+          <text>Your group begins in orbit aboard a compact Asuran gravship with its grav engine, pilot console, vector drives, nanite-slurry fuel network, isolated power lattice and atmosphere regulator already functioning. The ship can fly immediately, while shields, heavy drives, advanced sensors and higher precursor systems remain normal progression. Land when useful, remain above the world when safer, and rebuild deliberately.</text>
           <closeSound>GameStartSting</closeSound>
         </li>
       </parts>
