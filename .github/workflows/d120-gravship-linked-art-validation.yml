@@ -362,6 +362,41 @@ jobs:
               if required not in corner_layer:
                   failures.append(f"family angled gravship-corner layer lost vanilla geometry/mask contract: {required}")
 
+          # Directional hull sprites must alternate diagonals exactly like vanilla:
+          # NE/SW one slope, NW/SE the opposite slope.
+          corner_roots = (
+              Path("Textures/Things/Building/Precursor/Gravship/HullCorners"),
+              Path("Textures/Things/Building/Wraith/Gravship/HullCorners"),
+              Path("Textures/Things/Building/Goauld/Gravship/HullCorners"),
+          )
+
+          def diagonal_sign(path):
+              with Image.open(path) as im:
+                  alpha = im.convert("RGBA").getchannel("A")
+                  pts = [(x, y) for y in range(alpha.height) for x in range(alpha.width)
+                         if alpha.getpixel((x, y)) > 24]
+              if not pts:
+                  return 0
+              mx = sum(x for x, _ in pts) / len(pts)
+              my = sum(y for _, y in pts) / len(pts)
+              cov = sum((x - mx) * (y - my) for x, y in pts)
+              return 1 if cov > 0 else -1 if cov < 0 else 0
+
+          for root in corner_roots:
+              for prefix in ("AngledGravshipHull", "AngledGravshipHull_Partial"):
+                  signs = {
+                      d: diagonal_sign(root / f"{prefix}_{d}.png")
+                      for d in ("northeast", "northwest", "southeast", "southwest")
+                  }
+                  if signs["northeast"] == 0 or signs["northwest"] == 0:
+                      failures.append(f"{root.name}/{prefix} has an empty or non-diagonal sprite")
+                  if signs["northeast"] != signs["southwest"]:
+                      failures.append(f"{root.name}/{prefix} NE/SW no longer share a diagonal")
+                  if signs["northwest"] != signs["southeast"]:
+                      failures.append(f"{root.name}/{prefix} NW/SE no longer share a diagonal")
+                  if signs["northeast"] == signs["northwest"]:
+                      failures.append(f"{root.name}/{prefix} all corner directions collapsed onto one diagonal")
+
           if failures:
               print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")
               for failure in failures:
