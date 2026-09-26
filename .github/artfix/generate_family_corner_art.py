@@ -19,17 +19,22 @@ FAMILIES = {
     },
 }
 
-# Generated sprites are committed as normal mod assets and ship in the compiled release.\n# The family wall atlases use RimWorld's 4x4 linked-wall layout.
+# Generated sprites are committed as normal mod assets and ship in the compiled release.
+# The family wall atlases use RimWorld's 4x4 linked-wall layout.
 # Index 10 is the left+right straight-wall cell.  We use that exact authored
 # family wall texture as the source material for the Odyssey 2x2 outside-corner
 # overlay, so the diagonal hull pieces are literally made from the same wall art.
 HORIZONTAL_LINK_INDEX = 10
 
+# Odyssey's four named corner assets use two actual diagonal slopes:
+#   NE + SW share one diagonal, NW + SE share the opposite diagonal.
+# Opposite corners rotate the authored wall detail 180 degrees but do NOT
+# mirror the diagonal back onto the same slope.
 ORIENTATIONS = {
-    "northeast": (-45, False, False),
-    "northwest": (45, True, False),
-    "southeast": (45, False, True),
-    "southwest": (-45, True, True),
+    "northeast": (-45, False),
+    "southwest": (-45, True),
+    "northwest": (45, False),
+    "southeast": (45, True),
 }
 
 FULL_WIDTH = 292
@@ -46,8 +51,9 @@ def atlas_cell(image: Image.Image, index: int) -> Image.Image:
 
 
 def diagonal_piece(source: Image.Image, width: int, thickness: int, angle: int,
-                   flip_x: bool, flip_y: bool) -> Image.Image:
-    strip = source.resize((width, thickness), Image.Resampling.LANCZOS)
+                   reverse_detail: bool) -> Image.Image:
+    authored = source.transpose(Image.Transpose.ROTATE_180) if reverse_detail else source
+    strip = authored.resize((width, thickness), Image.Resampling.LANCZOS)
     rotated = strip.rotate(angle, resample=Image.Resampling.BICUBIC, expand=True)
 
     canvas = Image.new("RGBA", (CANVAS_SIZE, CANVAS_SIZE), (0, 0, 0, 0))
@@ -55,11 +61,6 @@ def diagonal_piece(source: Image.Image, width: int, thickness: int, angle: int,
         rotated,
         ((CANVAS_SIZE - rotated.width) // 2, (CANVAS_SIZE - rotated.height) // 2),
     )
-
-    if flip_x:
-        canvas = canvas.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-    if flip_y:
-        canvas = canvas.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
     return canvas
 
 
@@ -81,9 +82,9 @@ def main() -> None:
         out_dir = info["out"]
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        for direction, (angle, flip_x, flip_y) in ORIENTATIONS.items():
-            full = diagonal_piece(source, FULL_WIDTH, thickness, angle, flip_x, flip_y)
-            partial = diagonal_piece(source, PARTIAL_WIDTH, thickness, angle, flip_x, flip_y)
+        for direction, (angle, reverse_detail) in ORIENTATIONS.items():
+            full = diagonal_piece(source, FULL_WIDTH, thickness, angle, reverse_detail)
+            partial = diagonal_piece(source, PARTIAL_WIDTH, thickness, angle, reverse_detail)
 
             full.save(out_dir / f"AngledGravshipHull_{direction}.png", "PNG", optimize=True)
             partial.save(out_dir / f"AngledGravshipHull_Partial_{direction}.png", "PNG", optimize=True)
