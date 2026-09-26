@@ -46,8 +46,16 @@ namespace WraithNaniteGravtech
             }
 
             WNGStarterGravshipSpec spec = WNGStarterGravshipSpec.For(family);
+            if (spec == null)
+            {
+                Log.Error("[WNG] Family orbital starter validation failed: unsupported family " + family +
+                          ". Falling back to Odyssey's vanilla starter gravship.");
+                SpawnVanillaGravshipFallback(map, startingItems);
+                return;
+            }
+
             string problem;
-            if (spec == null || !spec.ResolveAndValidate(out problem))
+            if (!spec.ResolveAndValidate(out problem))
             {
                 Log.Error("[WNG] Family orbital starter validation failed: " + problem +
                           ". Falling back to Odyssey's vanilla starter gravship.");
