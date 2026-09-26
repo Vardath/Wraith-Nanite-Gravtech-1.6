@@ -70,6 +70,9 @@ namespace WraithNaniteGravtech
         {
             get
             {
+                if (!WNGSettingsUtility.ReplicatorMaterialAdaptationEnabled)
+                    return 1f;
+
                 return Adaptation?.Has(ReplicatorAdaptationFlags.Material) == true
                     ? ClampFactor(Props.materialAssimilationTimeFactor)
                     : 1f;
