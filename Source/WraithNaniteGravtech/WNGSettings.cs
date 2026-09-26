@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -26,6 +27,22 @@ namespace WraithNaniteGravtech
         public float replicatorQueenRecurringRecoveryDays = 4f;
         public int sovereignLatticeControlCap = 30;
 
+        // Restored settings only where a matching rebuilt mechanic still exists.
+        public float lifeDrainVictimYears = 50f;
+        public float lifeDrainRejuvenationYears = 5f;
+        public float minimumWraithAgeYears = 18f;
+        public float partialFeedVictimYears = 10f;
+        public float partialFeedRejuvenationYears = 1f;
+        public float partialFeedLifeForceGain = 0.34f;
+
+        public bool replicatorTerrainAssimilation = true;
+        public bool replicatorRoofAssimilation = true;
+        public bool replicatorMaterialAdaptation = true;
+        public float replicatorBiologicalPredationThreshold = 0.95f;
+
+        public bool humanFormCopying = true;
+        public float humanFormCopyCost = 0.60f;
+
         public override void ExposeData()
         {
             base.ExposeData();
@@ -46,6 +63,22 @@ namespace WraithNaniteGravtech
             Scribe_Values.Look(ref enableReplicatorStoryEvents, "enableReplicatorStoryEvents", true);
             Scribe_Values.Look(ref replicatorQueenRecurringRecoveryDays, "replicatorQueenRecurringRecoveryDays", 4f);
             Scribe_Values.Look(ref sovereignLatticeControlCap, "sovereignLatticeControlCap", 30);
+
+            // Preserve the original pre-rebuild save keys for settings that have returned.
+            Scribe_Values.Look(ref lifeDrainVictimYears, "lifeDrainVictimYears", 50f);
+            Scribe_Values.Look(ref lifeDrainRejuvenationYears, "lifeDrainRejuvenationYears", 5f);
+            Scribe_Values.Look(ref minimumWraithAgeYears, "minimumWraithAgeYears", 18f);
+            Scribe_Values.Look(ref partialFeedVictimYears, "partialFeedVictimYears", 10f);
+            Scribe_Values.Look(ref partialFeedRejuvenationYears, "partialFeedRejuvenationYears", 1f);
+            Scribe_Values.Look(ref partialFeedLifeForceGain, "partialFeedLifeForceGain", 0.34f);
+
+            Scribe_Values.Look(ref replicatorTerrainAssimilation, "replicatorTerrainAssimilation", true);
+            Scribe_Values.Look(ref replicatorRoofAssimilation, "replicatorRoofAssimilation", true);
+            Scribe_Values.Look(ref replicatorMaterialAdaptation, "replicatorMaterialAdaptation", true);
+            Scribe_Values.Look(ref replicatorBiologicalPredationThreshold, "replicatorBiologicalPredationThreshold", 0.95f);
+
+            Scribe_Values.Look(ref humanFormCopying, "humanFormCopying", true);
+            Scribe_Values.Look(ref humanFormCopyCost, "humanFormCopyCost", 0.60f);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
                 ClampValues();
@@ -68,6 +101,54 @@ namespace WraithNaniteGravtech
             childsToyFeralDelayDays = Mathf.Clamp(childsToyFeralDelayDays, 0.1f, 5f);
             replicatorQueenRecurringRecoveryDays = Mathf.Clamp(replicatorQueenRecurringRecoveryDays, 1f, 10f);
             sovereignLatticeControlCap = Mathf.Clamp(sovereignLatticeControlCap, 20, 50);
+
+            lifeDrainVictimYears = Mathf.Clamp(lifeDrainVictimYears, 1f, 100f);
+            lifeDrainRejuvenationYears = Mathf.Clamp(lifeDrainRejuvenationYears, 0f, 25f);
+            minimumWraithAgeYears = Mathf.Clamp(minimumWraithAgeYears, 0f, 50f);
+            partialFeedVictimYears = Mathf.Clamp(partialFeedVictimYears, 0f, 50f);
+            partialFeedRejuvenationYears = Mathf.Clamp(partialFeedRejuvenationYears, 0f, 10f);
+            partialFeedLifeForceGain = Mathf.Clamp01(partialFeedLifeForceGain);
+
+            replicatorBiologicalPredationThreshold = Mathf.Clamp(replicatorBiologicalPredationThreshold, 0.50f, 1f);
+            humanFormCopyCost = Mathf.Clamp(humanFormCopyCost, 0.10f, 1f);
+        }
+
+        internal void ResetDefaults()
+        {
+            enableUniversalCrafting = false;
+            livingForgeRawMeatCost = 20;
+            livingForgeBiomassYield = 16;
+            livingForgeBiomassWorkAmount = 900;
+            wraithGravEngineBiomassCost = 120;
+            wraithGravEngineSeedWorkAmount = 7000;
+            wraithGravEngineIncubationDays = 1f;
+            livingForgeIncubationDays = 1f;
+            wraithLivingEquipmentMaturationDays = 1f;
+            wraithBioelectricPowerOutput = 1400;
+            wraithBioelectricBiomassPerDay = 18f;
+            wraithLivingPowerCellCapacity = 750;
+
+            hostileReplicatorCap = 120;
+            childsToyFeralDelayDays = 1f;
+            enableReplicatorStoryEvents = true;
+            replicatorQueenRecurringRecoveryDays = 4f;
+            sovereignLatticeControlCap = 30;
+
+            lifeDrainVictimYears = 50f;
+            lifeDrainRejuvenationYears = 5f;
+            minimumWraithAgeYears = 18f;
+            partialFeedVictimYears = 10f;
+            partialFeedRejuvenationYears = 1f;
+            partialFeedLifeForceGain = 0.34f;
+
+            replicatorTerrainAssimilation = true;
+            replicatorRoofAssimilation = true;
+            replicatorMaterialAdaptation = true;
+            replicatorBiologicalPredationThreshold = 0.95f;
+
+            humanFormCopying = true;
+            humanFormCopyCost = 0.60f;
+            ClampValues();
         }
     }
 
@@ -79,6 +160,7 @@ namespace WraithNaniteGravtech
     public sealed class WNGMod : Mod
     {
         internal static WNGSettings Settings;
+        private Vector2 settingsScroll;
 
         public WNGMod(ModContentPack content) : base(content)
         {
@@ -89,23 +171,34 @@ namespace WraithNaniteGravtech
 
         public override string SettingsCategory() => "Wraith & Nanite Gravtech";
 
+        public override void WriteSettings()
+        {
+            Settings?.ClampValues();
+            WNGSettingsUtility.ApplyRuntimeDefSettings();
+            base.WriteSettings();
+        }
+
         public override void DoSettingsWindowContents(Rect inRect)
         {
             WNGSettings settings = Settings;
             if (settings == null)
                 return;
 
-            Listing_Standard listing = new Listing_Standard();
-            listing.Begin(inRect);
+            const float contentHeight = 2050f;
+            Rect view = new Rect(0f, 0f, Math.Max(100f, inRect.width - 18f), contentHeight);
+            Widgets.BeginScrollView(inRect, ref settingsScroll, view);
 
-            listing.Label("Acquisition overrides");
+            Listing_Standard listing = new Listing_Standard();
+            listing.Begin(view);
+
+            Heading(listing, "Acquisition overrides");
             listing.CheckboxLabeled(
                 "Enable universal WNG crafting",
                 ref settings.enableUniversalCrafting,
-                "Off by default. When enabled, WNG fallback recipes marked for universal crafting become available even when their normal faction, event, or external-mod acquisition route is unavailable. This does not change the normal default progression.");
+                "Off by default. When enabled, WNG fallback recipes become available even when their normal faction, event or special-station route is unavailable.");
             listing.GapLine();
 
-            listing.Label("Wraith living technology");
+            Heading(listing, "Wraith living technology");
             settings.livingForgeIncubationDays = DrawDaysSlider(listing, "Living Forge host incubation", settings.livingForgeIncubationDays);
             settings.livingForgeRawMeatCost = DrawIntSlider(listing, "Living Forge biomass raw-meat cost", settings.livingForgeRawMeatCost, 1, 100, 1);
             settings.livingForgeBiomassYield = DrawIntSlider(listing, "Living Forge biomass yield", settings.livingForgeBiomassYield, 1, 100, 1);
@@ -119,28 +212,82 @@ namespace WraithNaniteGravtech
             settings.wraithLivingPowerCellCapacity = DrawIntSlider(listing, "Wraith living-power-cell capacity", settings.wraithLivingPowerCellCapacity, 100, 5000, 50);
 
             listing.GapLine();
-            listing.Label("Block Replicators");
+            Heading(listing, "Wraith feeding");
+            settings.lifeDrainVictimYears = DrawFloatSlider(listing, "Deep feeding victim aging (years)", settings.lifeDrainVictimYears, 1f, 100f, 1f);
+            settings.lifeDrainRejuvenationYears = DrawFloatSlider(listing, "Deep feeding Wraith rejuvenation (years)", settings.lifeDrainRejuvenationYears, 0f, 25f, 1f);
+            settings.minimumWraithAgeYears = DrawFloatSlider(listing, "Minimum Wraith biological age (years)", settings.minimumWraithAgeYears, 0f, 50f, 1f);
+            settings.partialFeedVictimYears = DrawFloatSlider(listing, "Partial feeding victim aging (years)", settings.partialFeedVictimYears, 0f, 50f, 1f);
+            settings.partialFeedRejuvenationYears = DrawFloatSlider(listing, "Partial feeding Wraith rejuvenation (years)", settings.partialFeedRejuvenationYears, 0f, 10f, 0.5f);
+            settings.partialFeedLifeForceGain = DrawPercentSlider(listing, "Partial feeding Life Force restored", settings.partialFeedLifeForceGain, 0f, 1f, 0.01f);
+
+            listing.GapLine();
+            Heading(listing, "Block Replicators");
             listing.CheckboxLabeled(
                 "Enable Replicator storyteller events",
                 ref settings.enableReplicatorStoryEvents,
-                "Controls WNG storyteller-driven block-Replicator discoveries and outbreak-style events. Existing Replicators, dangerous loose Blocks, player-created Child's Toys and Queen/controller systems are not deleted or disabled by this switch.");
+                "Controls WNG storyteller-driven block-Replicator discoveries and outbreak-style events.");
             settings.hostileReplicatorCap = DrawIntSlider(listing, "Maximum hostile block Replicators per map", settings.hostileReplicatorCap, 20, 300, 5);
+            listing.CheckboxLabeled(
+                "Assimilate floors, foundations and ground",
+                ref settings.replicatorTerrainAssimilation,
+                "Restored from the older menu. When disabled, autonomous block Replicators still consume ordinary items, plants and buildings, but do not strip terrain; the terrain-stripping biological-predation phase is therefore disabled.");
+            listing.CheckboxLabeled(
+                "Assimilate roofs",
+                ref settings.replicatorRoofAssimilation,
+                "Restored from the older menu. When disabled, roofs are not directly consumed and ordinary RimWorld roof-collapse behavior is left intact.");
+            listing.CheckboxLabeled(
+                "Enable material adaptation",
+                ref settings.replicatorMaterialAdaptation,
+                "Restored from the older menu. When disabled, newly consumed material does not teach Material adaptation or alter newly produced Drone material grade.");
+            settings.replicatorBiologicalPredationThreshold = DrawPercentSlider(
+                listing,
+                "Map stripping required before biological predation",
+                settings.replicatorBiologicalPredationThreshold,
+                0.50f,
+                1f,
+                0.01f);
             settings.childsToyFeralDelayDays = DrawFloatSlider(listing, "Child's Toy uncontrolled feral delay (days)", settings.childsToyFeralDelayDays, 0.1f, 5f, 0.1f);
 
             listing.GapLine();
-            listing.Label("Replicator Queen story pacing");
+            Heading(listing, "Replicator Queen story pacing");
             settings.replicatorQueenRecurringRecoveryDays = DrawFloatSlider(listing, "Queen recovery retry cadence", settings.replicatorQueenRecurringRecoveryDays, 1f, 10f, 0.5f);
 
             listing.GapLine();
-            listing.Label("Sovereign Neural Lattice");
+            Heading(listing, "Human-form Replicators / Asurans");
+            listing.CheckboxLabeled(
+                "Allow Neural Interface human-form copying",
+                ref settings.humanFormCopying,
+                "Restored from the older menu. Other Neural Interface operations remain available when reconstruction is disabled.");
+            settings.humanFormCopyCost = DrawPercentSlider(
+                listing,
+                "Nanite Reserve cost to build a human-form copy",
+                settings.humanFormCopyCost,
+                0.10f,
+                1f,
+                0.01f);
+
+            listing.GapLine();
+            Heading(listing, "Sovereign Neural Lattice");
             settings.sovereignLatticeControlCap = DrawIntSlider(listing, "Maximum controlled block Replicators per implanted bearer", settings.sovereignLatticeControlCap, 20, 50, 1);
 
-            listing.Gap();
-            listing.Label("Defaults preserve the designed progression. Additional subsystem variables are routed into this settings surface as those systems are rebuilt.");
+            listing.GapLine();
+            Heading(listing, "Advanced");
+            if (listing.ButtonText("Reset all WNG settings to intended defaults"))
+                settings.ResetDefaults();
+            listing.Label("Defaults preserve the current WNG progression and ecology. Older settings are restored only where the rebuilt mod still has a real matching mechanic.");
+
             listing.End();
+            Widgets.EndScrollView();
 
             settings.ClampValues();
             WNGSettingsUtility.ApplyRuntimeDefSettings();
+        }
+
+        private static void Heading(Listing_Standard listing, string text)
+        {
+            Text.Font = GameFont.Medium;
+            listing.Label(text);
+            Text.Font = GameFont.Small;
         }
 
         private static float DrawDaysSlider(Listing_Standard listing, string label, float value)
@@ -160,8 +307,18 @@ namespace WraithNaniteGravtech
 
         private static float DrawFloatSlider(Listing_Standard listing, string label, float value, float min, float max, float step)
         {
-            listing.Label(label + ": " + value.ToString("0.0"));
+            string format = step < 1f ? "0.0" : "0";
+            listing.Label(label + ": " + value.ToString(format));
             float raw = listing.Slider(value, min, max);
+            float rounded = Mathf.Round(raw / step) * step;
+            return Mathf.Clamp(rounded, min, max);
+        }
+
+        private static float DrawPercentSlider(Listing_Standard listing, string label, float value, float min, float max, float step)
+        {
+            float clamped = Mathf.Clamp(value, min, max);
+            listing.Label(label + ": " + (clamped * 100f).ToString("0") + "%");
+            float raw = listing.Slider(clamped, min, max);
             float rounded = Mathf.Round(raw / step) * step;
             return Mathf.Clamp(rounded, min, max);
         }
@@ -188,6 +345,16 @@ namespace WraithNaniteGravtech
         public static bool ReplicatorStoryEventsEnabled => WNGMod.Settings?.enableReplicatorStoryEvents ?? true;
         public static int ReplicatorQueenRecurringRecoveryTicks => DaysToTicks(WNGMod.Settings?.replicatorQueenRecurringRecoveryDays ?? 4f);
         public static int SovereignLatticeControlCap => Mathf.Clamp(WNGMod.Settings?.sovereignLatticeControlCap ?? 30, 20, 50);
+
+        public static bool ReplicatorTerrainAssimilationEnabled => WNGMod.Settings?.replicatorTerrainAssimilation ?? true;
+        public static bool ReplicatorRoofAssimilationEnabled => WNGMod.Settings?.replicatorRoofAssimilation ?? true;
+        public static bool ReplicatorMaterialAdaptationEnabled => WNGMod.Settings?.replicatorMaterialAdaptation ?? true;
+        public static float ReplicatorBiologicalPredationThreshold =>
+            Mathf.Clamp(WNGMod.Settings?.replicatorBiologicalPredationThreshold ?? 0.95f, 0.50f, 1f);
+
+        public static bool HumanFormCopyingEnabled => WNGMod.Settings?.humanFormCopying ?? true;
+        public static float HumanFormCopyReserveCost =>
+            Mathf.Clamp(WNGMod.Settings?.humanFormCopyCost ?? 0.60f, 0.10f, 1f);
 
         public static int DaysToTicks(float days)
         {
@@ -242,11 +409,50 @@ namespace WraithNaniteGravtech
                             battery.storedEnergyMax = WraithLivingPowerCellCapacity;
                     }
                 }
+
+                ApplyLifeDrainSettings(
+                    "WNG_LifeDrain",
+                    WNGMod.Settings?.lifeDrainVictimYears ?? 50f,
+                    WNGMod.Settings?.lifeDrainRejuvenationYears ?? 5f,
+                    WNGMod.Settings?.minimumWraithAgeYears ?? 18f,
+                    null);
+                ApplyLifeDrainSettings(
+                    "WNG_PartialFeed",
+                    WNGMod.Settings?.partialFeedVictimYears ?? 10f,
+                    WNGMod.Settings?.partialFeedRejuvenationYears ?? 1f,
+                    WNGMod.Settings?.minimumWraithAgeYears ?? 18f,
+                    WNGMod.Settings?.partialFeedLifeForceGain ?? 0.34f);
+
+                AbilityDef neuralInterface = DefDatabase<AbilityDef>.GetNamedSilentFail("WNG_NeuralInterface");
+                CompProperties_AbilityNaniteInterface neuralProps =
+                    neuralInterface?.comps?.OfType<CompProperties_AbilityNaniteInterface>().FirstOrDefault();
+                if (neuralProps != null)
+                    neuralProps.copyReserveCost = HumanFormCopyReserveCost;
             }
             catch (Exception ex)
             {
                 Log.ErrorOnce("[WNG] Could not apply runtime Wraith living-technology recipe settings: " + ex.Message, 0x574E4701);
             }
+        }
+
+        private static void ApplyLifeDrainSettings(
+            string abilityDefName,
+            float victimYears,
+            float rejuvenationYears,
+            float minimumAgeYears,
+            float? lifeForceGain)
+        {
+            AbilityDef ability = DefDatabase<AbilityDef>.GetNamedSilentFail(abilityDefName);
+            CompProperties_AbilityLifeDrain props =
+                ability?.comps?.OfType<CompProperties_AbilityLifeDrain>().FirstOrDefault();
+            if (props == null)
+                return;
+
+            props.victimAgeYears = Math.Max(0L, (long)Math.Round(victimYears));
+            props.casterRejuvenationYears = Math.Max(0L, (long)Math.Round(rejuvenationYears));
+            props.minimumCasterAgeYears = Math.Max(0L, (long)Math.Round(minimumAgeYears));
+            if (lifeForceGain.HasValue)
+                props.lifeForceGain = Mathf.Clamp01(lifeForceGain.Value);
         }
     }
 
