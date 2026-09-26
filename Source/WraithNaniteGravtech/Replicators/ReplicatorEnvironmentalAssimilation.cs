@@ -166,9 +166,11 @@ namespace WraithNaniteGravtech
             // Roofing outranks physical Things on the same cell. If a Replicator ate a
             // roof-holding wall/rock first, vanilla would schedule unsupported roofs to collapse
             // and thick rock roof would spawn CollapsedRocks. The swarm consumes the roof first.
-            if (WNGSettingsUtility.ReplicatorRoofAssimilationEnabled &&
-                map.roofGrid.Roofed(cell))
-                return true;
+            if (WNGSettingsUtility.ReplicatorRoofAssimilationEnabled)
+            {
+                if (map.roofGrid.Roofed(cell))
+                    return true;
+            }
 
             // Once the roof is gone, physical Things outrank floor/foundation/ground substrate.
             List<Thing> things = cell.GetThingList(map);
