@@ -250,7 +250,10 @@ namespace WraithNaniteGravtech
                 return new ReplicatorAdaptationEvidence(ReplicatorAdaptationFlags.None);
 
             ThingDef def = target.def;
-            ReplicatorAdaptationFlags learned = ReplicatorAdaptationFlags.Material;
+            ReplicatorAdaptationFlags learned =
+                WNGSettingsUtility.ReplicatorMaterialAdaptationEnabled
+                    ? ReplicatorAdaptationFlags.Material
+                    : ReplicatorAdaptationFlags.None;
 
             // Armor is learned from actual protective equipment with concrete armor values, not
             // merely from the fact that an arbitrary object happens to be a building.
