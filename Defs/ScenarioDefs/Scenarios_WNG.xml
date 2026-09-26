@@ -6,12 +6,18 @@
 
     Wraith changes from archaeology:
     - use the current WNG_WraithHunter caste PawnKind rather than the obsolete generic player kind;
-    - unlock WNG_BiologicalCultivation so the current host/corpse-grown Living Forge bootstrap is usable;
+    - start with the foundational Wraith knowledge needed to use their own early living technology:
+      Biological Cultivation, Living Weapons, Feeding Ecology and Bioelectric Organs;
+    - keep advanced carapace, organic flight, strike craft, cruisers and mature Hive gravships as progression;
     - do not restore the obsolete loose Living Forge seed item.
 
     Human-form changes from archaeology:
     - use the current player-specific WNG_PlayerHumanFormReplicator PawnKind;
-    - retain the accepted human-form Replicator xenotype and precursor starting equipment.
+    - retain the accepted human-form Replicator xenotype and precursor starting equipment;
+    - start with foundational self/collective/fabrication knowledge: Nanite Analysis,
+      Asuran Collective Systems and Asuran Fabrication;
+    - keep Replicator controller study, Pattern Archive continuity, precursor energy systems,
+      shields, Ancient shuttle systems and full Asuran gravship architecture as progression.
   -->
 
   <ScenarioDef ParentName="ScenarioBase">
@@ -35,13 +41,16 @@
         </li>
         <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Standing</method></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_BiologicalCultivation</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_LivingWeapons</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_FeedingEcology</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_BioelectricOrgans</project></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithCarbine</thingDef><count>2</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithStunner</thingDef></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_Biomass</thingDef><count>100</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>MedicineIndustrial</thingDef><count>12</count></li>
         <li Class="ScenPart_GameStartDialog">
           <def>GameStartDialog</def>
-          <text>Your hunting cell has landed far from an established Hive. Feed carefully, cultivate biomass, and grow your first Living Forge through a biological humanlike host or corpse. From there, grow the living infrastructure you need from local material.</text>
+          <text>Your hunting cell has landed far from an established Hive, but its foundational living-technology knowledge is intact. Feed carefully, cultivate biomass, grow your first Living Forge through a biological humanlike host or corpse, and rebuild the Hive's basic ecology and bioelectric infrastructure from local material.</text>
           <closeSound>GameStartSting</closeSound>
         </li>
       </parts>
@@ -75,13 +84,16 @@
         <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Gravship</method></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_BiologicalCultivation</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_LivingWeapons</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_FeedingEcology</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_BioelectricOrgans</project></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithCarbine</thingDef><count>2</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithStunner</thingDef></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_Biomass</thingDef><count>140</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_WraithBiofluidFuel</thingDef><count>160</count></li>
         <li Class="ScenPart_GameStartDialog">
           <def>GameStartDialog</def>
-          <text>You begin above the rimworld with a functioning gravship. Refit it toward Wraith living gravtech, descend to feed and harvest, and cultivate a first Living Forge through a biological host or corpse when you establish a foothold.</text>
+          <text>You begin above the rimworld with a functioning gravship and intact knowledge of foundational Wraith living technology. Refit toward living gravtech, descend to feed and harvest, and cultivate a first Living Forge through a biological host or corpse when you establish a foothold.</text>
           <closeSound>GameStartSting</closeSound>
         </li>
       </parts>
@@ -108,6 +120,9 @@
           </xenotypeCounts>
         </li>
         <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Standing</method></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_NaniteAnalysis</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_AsuranCollectiveSystems</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_PrecursorFabrication</project></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_PrecursorPulseRifle</thingDef><count>2</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_RecoveredPrecursorPulseRifle</thingDef><count>1</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_HumanFormCombatArmor</thingDef><count>2</count></li>
@@ -116,7 +131,7 @@
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>ComponentIndustrial</thingDef><count>20</count></li>
         <li Class="ScenPart_GameStartDialog">
           <def>GameStartDialog</def>
-          <text>You have arrived intact but without an established city or Pattern Archive. Build deliberately, feed your Nanite Reserves, and decide how this world fits into your collective.</text>
+          <text>You have arrived intact but without an established city or Pattern Archive. Your core nanite, collective-control and Asuran fabrication knowledge remains intact. Build deliberately, feed your Nanite Reserves, and recover the more advanced technologies of your civilisation through normal progression.</text>
           <closeSound>GameStartSting</closeSound>
         </li>
       </parts>
@@ -149,6 +164,9 @@
         <li Class="ScenPart_ForcedMap"><def>ForcedMap</def><mapGenerator>OrbitalRelay</mapGenerator><layerDef>Orbit</layerDef></li>
         <li Class="ScenPart_PlayerPawnsArriveMethod"><def>PlayerPawnsArriveMethod</def><method>Gravship</method></li>
         <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>BasicGravtech</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_NaniteAnalysis</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_AsuranCollectiveSystems</project></li>
+        <li Class="ScenPart_StartingResearch"><def>StartingResearch</def><project>WNG_PrecursorFabrication</project></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_PrecursorPulseRifle</thingDef><count>2</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_RecoveredPrecursorPulseRifle</thingDef><count>1</count></li>
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_HumanFormCombatArmor</thingDef><count>2</count></li>
@@ -157,7 +175,7 @@
         <li Class="ScenPart_StartingThing_Defined"><def>StartingThing_Defined</def><thingDef>WNG_AsuranNaniteSlurry</thingDef><count>160</count></li>
         <li Class="ScenPart_GameStartDialog">
           <def>GameStartDialog</def>
-          <text>Your group begins in orbit with a functioning gravship and enough advanced material to refit it toward Asuran gravtech. Land when useful, remain above the world when safer, and expand deliberately.</text>
+          <text>Your group begins in orbit with a functioning gravship, intact core nanite and Asuran fabrication knowledge, and enough advanced material to begin a refit. Land when useful, remain above the world when safer, and recover higher precursor and gravship systems through normal progression.</text>
           <closeSound>GameStartSting</closeSound>
         </li>
       </parts>
