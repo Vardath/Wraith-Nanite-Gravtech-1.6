@@ -322,6 +322,7 @@
     <label>wraith organic fuel conduit</label>
     <description>A living vascular line that carries Wraith bio-fluid between same-family fuel bladders and drive organs. It is not an electrical conduit.</description>
     <thingClass>Building</thingClass>
+    <altitudeLayer>Conduits</altitudeLayer>
     <designationCategory>Misc</designationCategory>
     <uiOrder>2215</uiOrder>
     <tickerType>Never</tickerType>
@@ -347,6 +348,7 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <passability>Standable</passability>
     <fillPercent>0.02</fillPercent>
+    <building><isEdifice>false</isEdifice><canLandGravshipOn>true</canLandGravshipOn><canConstructInCorner>true</canConstructInCorner></building>
     <placeWorkers>
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
@@ -363,6 +365,7 @@
     <label>wraith neural power conduit</label>
     <description>A living nerve trunk carrying only Wraith-family gravship power. It cannot join vanilla or Asuran grids.</description>
     <thingClass>Building</thingClass>
+    <altitudeLayer>Conduits</altitudeLayer>
     <designationCategory>Power</designationCategory>
     <uiOrder>2020</uiOrder>
     <tickerType>Never</tickerType>
@@ -388,6 +391,7 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <passability>Standable</passability>
     <fillPercent>0.02</fillPercent>
+    <building><isEdifice>false</isEdifice><isPowerConduit>true</isPowerConduit><canLandGravshipOn>true</canLandGravshipOn><canConstructInCorner>true</canConstructInCorner></building>
     <placeWorkers>
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
@@ -1101,6 +1105,7 @@
     <label>Asuran nanite fuel conduit</label>
     <description>A shielded feed line carrying only Asuran nanite slurry between same-family cells and vector drives.</description>
     <thingClass>Building</thingClass>
+    <altitudeLayer>Conduits</altitudeLayer>
     <designationCategory>Misc</designationCategory>
     <uiOrder>2216</uiOrder>
     <tickerType>Never</tickerType>
@@ -1127,6 +1132,7 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <passability>Standable</passability>
     <fillPercent>0.02</fillPercent>
+    <building><isEdifice>false</isEdifice><canLandGravshipOn>true</canLandGravshipOn><canConstructInCorner>true</canConstructInCorner></building>
     <placeWorkers>
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
@@ -1143,6 +1149,7 @@
     <label>Asuran gravship power conduit</label>
     <description>An isolated nanite-composite power bus. It cannot join Wraith or ordinary colony grids without an explicit Asuran power coupler.</description>
     <thingClass>Building</thingClass>
+    <altitudeLayer>Conduits</altitudeLayer>
     <designationCategory>Power</designationCategory>
     <uiOrder>2023</uiOrder>
     <tickerType>Never</tickerType>
@@ -1169,6 +1176,7 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <passability>Standable</passability>
     <fillPercent>0.02</fillPercent>
+    <building><isEdifice>false</isEdifice><isPowerConduit>true</isPowerConduit><canLandGravshipOn>true</canLandGravshipOn><canConstructInCorner>true</canConstructInCorner></building>
     <placeWorkers>
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
