@@ -191,7 +191,7 @@ jobs:
               "Goauld": goauld["WNG_GoauldGravEngine"],
           }
           facility_classes = {
-              "WraithNaniteGravtech.CompProperties_WNGPilotConsole",
+              "CompProperties_GravshipFacility",
               "WraithNaniteGravtech.CompProperties_WNGGravshipFacility",
               "WraithNaniteGravtech.CompProperties_WNGFuelTankFacility",
               "WraithNaniteGravtech.CompProperties_WNGThruster",
@@ -397,8 +397,10 @@ jobs:
                   if signs["northeast"] == signs["northwest"]:
                       failures.append(f"{root.name}/{prefix} all corner directions collapsed onto one diagonal")
 
-          # Every WNG pilot console must have an explicit, bidirectional, exact-family
-          # grav-engine link.  Do not rely only on runtime mutation or spawn order.
+          # Every WNG pilot console must use Odyssey's native PilotConsole contract.
+          # CompProperties_Facility.ResolveReferences derives linkableBuildings from the
+          # matching engine's reverse linkableFacilities list, exactly like vanilla
+          # PilotConsole <-> GravEngine. No WNG runtime relink shim is allowed here.
           all_gravship_defs = {}
           for defs in (family, goauld, wraith_engine_defs):
               all_gravship_defs.update(defs)
@@ -412,12 +414,15 @@ jobs:
           discovered_pilots = set()
           for def_name, node in all_gravship_defs.items():
               for comp in node.findall("./comps/li"):
-                  if comp.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole":
+                  if (
+                      comp.attrib.get("Class") == "CompProperties_GravshipFacility"
+                      and comp.findtext("compClass") == "CompPilotConsole"
+                  ):
                       discovered_pilots.add(def_name)
 
           if discovered_pilots != set(pilot_contracts):
               failures.append(
-                  "WNG pilot-console set mismatch: found "
+                  "WNG native pilot-console set mismatch: found "
                   + ", ".join(sorted(discovered_pilots))
                   + "; expected "
                   + ", ".join(sorted(pilot_contracts))
@@ -435,34 +440,33 @@ jobs:
 
               pilot_comp = next(
                   (
-                      c for c in pilot.findall("./comps/li")
-                      if c.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole"
+                      comp for comp in pilot.findall("./comps/li")
+                      if comp.attrib.get("Class") == "CompProperties_GravshipFacility"
+                      and comp.findtext("compClass") == "CompPilotConsole"
                   ),
                   None,
               )
               if pilot_comp is None:
-                  failures.append(f"{pilot_name} lost WNG pilot-console comp")
+                  failures.append(f"{pilot_name} is not using native Odyssey CompPilotConsole")
                   continue
 
-              if pilot_comp.findtext("family") != family_name:
-                  failures.append(
-                      f"{pilot_name} family is {pilot_comp.findtext('family')}, expected {family_name}"
-                  )
               if pilot_comp.findtext("componentTypeDef") != "Controls":
                   failures.append(f"{pilot_name} is no longer an Odyssey Controls component")
-
-              pilot_links = [
-                  li.text for li in pilot_comp.findall("./linkableBuildings/li") if li.text
-              ]
-              if pilot_links != [engine_name]:
-                  failures.append(
-                      f"{pilot_name} must link only to {engine_name}; found {pilot_links}"
-                  )
+              if pilot_comp.findtext("requiresLOS") != "false":
+                  failures.append(f"{pilot_name} no longer matches vanilla no-LOS pilot linking")
+              if pilot_comp.findtext("showMaxSimultaneous") != "false":
+                  failures.append(f"{pilot_name} should hide max-simultaneous like vanilla PilotConsole")
+              if pilot_comp.findtext("maxSimultaneous") != "1":
+                  failures.append(f"{pilot_name} must remain the single Controls console")
+              if pilot_comp.findtext("maxDistance") != "200":
+                  failures.append(f"{pilot_name} must match vanilla PilotConsole 200-tile link range")
+              if pilot_comp.find("linkableBuildings") is not None:
+                  failures.append(f"{pilot_name} hardcodes linkableBuildings instead of using vanilla reverse resolution")
 
               affected = next(
                   (
-                      c for c in engine.findall("./comps/li")
-                      if c.attrib.get("Class") == "CompProperties_AffectedByFacilities"
+                      comp for comp in engine.findall("./comps/li")
+                      if comp.attrib.get("Class") == "CompProperties_AffectedByFacilities"
                   ),
                   None,
               )
@@ -471,33 +475,31 @@ jobs:
                   if affected is not None else []
               )
               if pilot_name not in engine_links:
-                  failures.append(f"{engine_name} does not link back to {pilot_name}")
+                  failures.append(f"{engine_name} does not reverse-register native pilot {pilot_name}")
+
+              if engine.findtext("thingClass") != "WraithNaniteGravtech.Building_WNGGravEngine":
+                  failures.append(f"{engine_name} is not using the WNG visual-preserving Odyssey engine subclass")
 
           family_systems_src = Path(
               "Source/WraithNaniteGravtech/Gravships/GravshipFamilySystems.cs"
           ).read_text(encoding="utf-8")
 
-          # Pilot consoles must use RimWorld's native facility relink path.  Map generation runs
-          # on a worker thread; directly asking a grav engine for ValidSubstructure/OnValidSubstructure
-          # can regenerate draw layers and allocate Unity Meshes off the main thread.
           for forbidden in (
-              "FindPhysicalFamilyEngine",
-              "RepairExactPilotEngineLink",
-              "engine.OnValidSubstructure(",
-              "candidate.OnValidSubstructure(",
+              "CompProperties_WNGPilotConsole",
+              "CompPilotConsole_WNGFamily",
           ):
               if forbidden in family_systems_src:
-                  failures.append(f"unsafe pilot/substructure map-generation path present: {forbidden}")
+                  failures.append(f"obsolete custom pilot relink layer still present: {forbidden}")
 
           for required in (
-              "EnsureExactEngineTarget(this, WNGProps.family)",
-              "base.PostSpawnSetup(respawningAfterReload)",
-              "base.PostMapInit()",
-              "Notify_ThingChanged()",
-              "facility.LinkedBuildings.Contains(engine)",
+              "public sealed class Building_WNGGravEngine : Building_GravEngine",
+              "public override Graphic Graphic => DefaultGraphic",
+              "SilhouetteUtility.DrawGraphicSilhouette(this, drawLoc)",
+              "Comps_DrawAt(drawLoc, flip)",
+              "Comps_PostDraw()",
           ):
               if required not in family_systems_src:
-                  failures.append(f"native pilot-console engine-link contract missing: {required}")
+                  failures.append(f"WNG grav-engine art-preservation contract missing: {required}")
 
           if failures:
               print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")
