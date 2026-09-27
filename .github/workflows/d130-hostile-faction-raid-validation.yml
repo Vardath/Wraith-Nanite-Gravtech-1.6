@@ -1,0 +1,159 @@
+name: D130 Hostile Faction Raid Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "Defs/FactionDefs/**"
+      - "Defs/ThingDefs/Races_Replicator.xml"
+      - ".github/workflows/d130-hostile-faction-raid-validation.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate occasional WNG storyteller raids
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          failures = []
+
+          faction_defs = {}
+          for path in Path("Defs/FactionDefs").glob("*.xml"):
+              root = ET.parse(path).getroot()
+              for node in root.findall("FactionDef"):
+                  name = node.findtext("defName")
+                  if name:
+                      faction_defs[name] = node
+
+          def curve_values(node):
+              return [
+                  float(li.text.strip()[1:-1].split(",")[1])
+                  for li in node.findall("./raidCommonalityFromPointsCurve/points/li")
+              ]
+
+          def combat_options(node):
+              result = {}
+              for maker in node.findall("./pawnGroupMakers/li"):
+                  if maker.findtext("kindDef") != "Combat":
+                      continue
+                  options = maker.find("options")
+                  if options is not None:
+                      for child in list(options):
+                          result[child.tag] = float(child.text)
+              return result
+
+          # Replicators must now be a real raid candidate while remaining settlement-less.
+          rep = faction_defs.get("WNG_ReplicatorSwarm")
+          if rep is None:
+              failures.append("WNG_ReplicatorSwarm missing")
+          else:
+              if rep.findtext("hidden", "false") == "true":
+                  failures.append("Replicator Swarm is still hidden and therefore excluded from ordinary RaidEnemy selection")
+              if rep.findtext("displayInFactionSelection", "true") != "true":
+                  failures.append("Replicator Swarm is not visible in world faction setup")
+              if rep.findtext("permanentEnemy") != "true":
+                  failures.append("Replicator Swarm is no longer a permanent enemy")
+              if rep.findtext("settlementGenerationWeight") != "0":
+                  failures.append("Replicator Swarm must remain settlement-less")
+              if rep.findtext("canMakeRandomly") != "false":
+                  failures.append("Replicator Swarm should exist as the one required faction, not multiply randomly")
+              if float(rep.findtext("earliestRaidDays", "0")) < 18:
+                  failures.append("Replicator ordinary raids can start too early")
+              vals = curve_values(rep)
+              if not vals or min(vals) <= 0 or max(vals) > 0.08:
+                  failures.append(f"Replicator raid weights are outside the intended rare band: {vals}")
+
+              options = combat_options(rep)
+              expected = {
+                  "WNG_ReplicatorDrone",
+                  "WNG_ReplicatorHunter",
+                  "WNG_ReplicatorBulwark",
+                  "WNG_ReplicatorTitan",
+              }
+              if set(options) != expected:
+                  failures.append(f"Replicator combat group mismatch: {sorted(options)}")
+              if not options or options.get("WNG_ReplicatorDrone", 0) <= options.get("WNG_ReplicatorTitan", 999):
+                  failures.append("Replicator ordinary raids should strongly favor small block forms")
+
+          # Permanent hostile world factions should participate, but at low weights.
+          permanent_world_hostiles = {
+              "WNG_WraithSableBrood": (8, 0.11),
+              "WNG_PrecursorCollective": (12, 0.10),
+          }
+          for name, (earliest, max_weight) in permanent_world_hostiles.items():
+              node = faction_defs.get(name)
+              if node is None:
+                  failures.append(f"{name} missing")
+                  continue
+              if node.findtext("permanentEnemy") != "true":
+                  failures.append(f"{name} is no longer permanent hostile")
+              if float(node.findtext("earliestRaidDays", "0")) < earliest:
+                  failures.append(f"{name} ordinary raids start earlier than intended")
+              if not combat_options(node):
+                  failures.append(f"{name} has no Combat pawn group")
+              vals = curve_values(node)
+              if not vals or max(vals) > max_weight:
+                  failures.append(f"{name} ordinary raid weight is too high: {vals}")
+
+          # Political/non-permanent factions may raid if relations become hostile, but rarely.
+          conditional = {
+              "WNG_WraithCinderCourt": 0.08,
+              "WNG_WraithVeiledHive": 0.04,
+              "WNG_WraithPaleCovenant": 0.035,
+              "WNG_HumanFormEnclave": 0.035,
+          }
+          for name, max_weight in conditional.items():
+              node = faction_defs.get(name)
+              if node is None:
+                  failures.append(f"{name} missing")
+                  continue
+              if node.findtext("permanentEnemy", "false") == "true":
+                  failures.append(f"{name} unexpectedly became a permanent enemy")
+              if not combat_options(node):
+                  failures.append(f"{name} lost its Combat group")
+              vals = curve_values(node)
+              if not vals or max(vals) > max_weight:
+                  failures.append(f"{name} conditional raid weight is too high: {vals}")
+
+          # Michael's abandoned experiments remain an ownership/encounter faction, not a polity.
+          michael = faction_defs.get("WNG_MichaelsExperiments")
+          if michael is None:
+              failures.append("WNG_MichaelsExperiments missing")
+          else:
+              if michael.findtext("hidden") != "true":
+                  failures.append("Michael's experiments should remain hidden")
+              if michael.findtext("raidsForbidden") != "true":
+                  failures.append("Michael's experiments should remain encounter-only rather than ordinary storyteller raiders")
+
+          # Every Replicator raid option must resolve to a real PawnKind using the swarm faction.
+          race_root = ET.parse("Defs/ThingDefs/Races_Replicator.xml").getroot()
+          pawn_kinds = {
+              node.findtext("defName"): node
+              for node in race_root.findall("PawnKindDef")
+              if node.findtext("defName")
+          }
+          for name in (
+              "WNG_ReplicatorDrone",
+              "WNG_ReplicatorHunter",
+              "WNG_ReplicatorBulwark",
+              "WNG_ReplicatorTitan",
+          ):
+              node = pawn_kinds.get(name)
+              if node is None:
+                  failures.append(f"Replicator raid PawnKind missing: {name}")
+              elif node.findtext("defaultFactionDef") != "WNG_ReplicatorSwarm":
+                  failures.append(f"{name} does not default to WNG_ReplicatorSwarm")
+
+          if failures:
+              print("HOSTILE FACTION RAID VALIDATION FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print("WNG hostile faction ordinary-raid participation is bounded and valid.")
