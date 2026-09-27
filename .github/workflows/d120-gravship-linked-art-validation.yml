@@ -476,17 +476,28 @@ jobs:
           family_systems_src = Path(
               "Source/WraithNaniteGravtech/Gravships/GravshipFamilySystems.cs"
           ).read_text(encoding="utf-8")
-          for required in (
-              "RepairExactPilotEngineLink",
+
+          # Pilot consoles must use RimWorld's native facility relink path.  Map generation runs
+          # on a worker thread; directly asking a grav engine for ValidSubstructure/OnValidSubstructure
+          # can regenerate draw layers and allocate Unity Meshes off the main thread.
+          for forbidden in (
               "FindPhysicalFamilyEngine",
-              "pilot.LinkedBuildings.Count == 1",
-              "affected.Notify_NewLink(pilot.parent)",
-              "pilot.Notify_NewLink(target)",
-              "PostMapInit()",
-              "PostDrawExtraSelectionOverlays()",
+              "RepairExactPilotEngineLink",
+              "engine.OnValidSubstructure(",
+              "candidate.OnValidSubstructure(",
+          ):
+              if forbidden in family_systems_src:
+                  failures.append(f"unsafe pilot/substructure map-generation path present: {forbidden}")
+
+          for required in (
+              "EnsureExactEngineTarget(this, WNGProps.family)",
+              "base.PostSpawnSetup(respawningAfterReload)",
+              "base.PostMapInit()",
+              "Notify_ThingChanged()",
+              "facility.LinkedBuildings.Contains(engine)",
           ):
               if required not in family_systems_src:
-                  failures.append(f"pilot-console self-healing link contract missing: {required}")
+                  failures.append(f"native pilot-console engine-link contract missing: {required}")
 
           if failures:
               print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")
