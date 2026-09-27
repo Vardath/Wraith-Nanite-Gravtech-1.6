@@ -6,6 +6,10 @@ on:
     paths:
       - ".github/artqa/final_art_integrity.py"
       - ".github/workflows/wng-final-art-integrity.yml"
+      - "Textures/**/*.png"
+      - "Defs/**/*.xml"
+      - "Compatibility/**/*.xml"
+      - "Patches/**/*.xml"
   workflow_dispatch:
 
 permissions:
