@@ -52,7 +52,7 @@ jobs:
           source = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs").read_text(encoding="utf-8")
           required_source = (
               "resolvedDesignators",
-              "new Designator_Build_WNGDev(def)",
+              "new Designator_Build(def)",
               "WNG_WraithArchitect",
               "WNG_AsuranArchitect",
               "WNG_GoauldArchitect",
@@ -60,10 +60,6 @@ jobs:
               "FamilyCategoryFor",
               "IsWNGGravshipBuildable",
               "designationCategory != null",
-              "UpgradeNativeWNGDesignators",
-              "Designator_Build_WNGDev",
-              "Prefs.DevMode",
-              "DebugSettings.godMode = true",
           )
           for token in required_source:
               if token not in source:
@@ -73,9 +69,13 @@ jobs:
               "def.designationCategory =",
               "IsResearchFinished",
               "researchPrerequisites",
+              "Designator_Build_WNGDev",
+              "UpgradeNativeWNGDesignators",
+              "Prefs.DevMode",
+              "DebugSettings.godMode",
           ):
               if forbidden in source:
-                  failures.append(f"Architect runtime routing must not destructively reroute or prefilter by research: {forbidden}")
+                  failures.append(f"Architect runtime routing must preserve vanilla construction/progression semantics: {forbidden}")
 
           # Native category examples must remain native now that blanket WNG rerouting is gone.
           native_expectations = {
