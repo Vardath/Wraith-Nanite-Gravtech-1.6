@@ -4,7 +4,7 @@
   <ThingDef ParentName="GravshipComponentBase">
     <defName>WNG_GoauldGravEngine</defName><label>Ha'tak grav engine</label>
     <description>The gravitic heart of a Ha'tak mothership. It is a real Odyssey grav engine and links only to the Goa'uld family systems physically mounted on its own substructure.</description>
-    <thingClass>Building_GravEngine</thingClass><drawerType>RealtimeOnly</drawerType><tickerType>Normal</tickerType><minifiedDef>MinifiedGravEngine</minifiedDef>
+    <thingClass>WraithNaniteGravtech.Building_WNGGravEngine</thingClass><drawerType>RealtimeOnly</drawerType><tickerType>Normal</tickerType><minifiedDef>MinifiedGravEngine</minifiedDef>
     <designationCategory>Misc</designationCategory><uiOrder>2055</uiOrder><constructionSkillPrerequisite>10</constructionSkillPrerequisite>
     <graphicData><graphicClass>Graphic_Single</graphicClass><texPath>Things/Building/Goauld/Gravship/WNG_GoauldGravEngine</texPath><drawSize>(3,3)</drawSize></graphicData>
     <size>(3,3)</size><castEdgeShadows>true</castEdgeShadows><fillPercent>0.6</fillPercent><passability>PassThroughOnly</passability><pathCost>20</pathCost><canOverlapZones>false</canOverlapZones>
@@ -67,8 +67,8 @@
     <statBases><MaxHitPoints>360</MaxHitPoints><Mass>48</Mass><Flammability>0</Flammability><Beauty>6</Beauty><WorkToBuild>4200</WorkToBuild></statBases>
     <costList Inherit="False"><Uranium>18</Uranium><Plasteel>90</Plasteel><Gold>25</Gold><ComponentIndustrial>5</ComponentIndustrial></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
-    <comps>
-      <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole"><family>Goauld</family><requiresFamilyPower>true</requiresFamilyPower><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>500</maxDistance><linkableBuildings><li>WNG_GoauldGravEngine</li></linkableBuildings></li>
+    <comps Inherit="False">
+      <li Class="CompProperties_GravshipFacility"><compClass>CompPilotConsole</compClass><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>200</maxDistance></li>
       <li Class="CompProperties_Breakdownable"/>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>500</demandWatts></li>
     </comps>
