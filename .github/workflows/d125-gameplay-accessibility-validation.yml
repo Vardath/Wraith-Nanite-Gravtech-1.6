@@ -83,14 +83,23 @@ jobs:
 
           routing = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs").read_text(encoding="utf-8")
           for token in (
+              "new Designator_Build(def)",
+              "resolvedDesignators",
+              "FamilyCategoryFor",
+              "IsWNGGravshipBuildable",
+          ):
+              if token not in routing:
+                  failures.append(f"WNG vanilla Architect routing lost {token}")
+          for forbidden in (
               "Designator_Build_WNGDev",
               "UpgradeNativeWNGDesignators",
               "Prefs.DevMode",
-              "DebugSettings.godMode = true",
-              "base.DesignateSingleCell(c)",
+              "DebugSettings.godMode",
+              "DesignateSingleCell(",
+              "CanDesignateCell(",
           ):
-              if token not in routing:
-                  failures.append(f"WNG Dev Mode no-cost Architect placement lost {token}")
+              if forbidden in routing:
+                  failures.append(f"WNG normal Architect routing still contains Dev/God-mode construction override: {forbidden}")
           if failures:
               print("GAMEPLAY ACCESSIBILITY FAILURES:")
               for failure in failures: print(" -", failure)
