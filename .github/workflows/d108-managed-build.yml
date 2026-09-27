@@ -1,5 +1,8 @@
 name: D108 Release Build
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main ]
@@ -77,3 +80,26 @@ jobs:
           path: Wraith-Nanite-Gravtech-1.6-release.zip
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish rolling GitHub release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag -f wng-latest-build "${GITHUB_SHA}"
+          git push -f origin wng-latest-build
+
+          if gh release view wng-latest-build >/dev/null 2>&1; then
+            gh release upload wng-latest-build Wraith-Nanite-Gravtech-1.6-release.zip --clobber
+            gh release edit wng-latest-build \
+              --title "WNG 1.6 Latest Compiled Build" \
+              --notes "Rolling compiled test build from main. Extract Wraith-Nanite-Gravtech directly into RimWorld/Mods." \
+              --prerelease
+          else
+            gh release create wng-latest-build \
+              Wraith-Nanite-Gravtech-1.6-release.zip \
+              --title "WNG 1.6 Latest Compiled Build" \
+              --notes "Rolling compiled test build from main. Extract Wraith-Nanite-Gravtech directly into RimWorld/Mods." \
+              --prerelease
+          fi
