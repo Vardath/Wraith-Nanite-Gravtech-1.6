@@ -7,7 +7,7 @@
     <label>diverse animal specimens</label>
     <description>A completed comparative survey of multiple distinct ordinary animal species.</description>
     <graphicData>
-      <texPath>Things/Item/Resource/Steel</texPath>
+      <texPath>Things/Item/Resource/WNG_Biomass</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <selectable>false</selectable>
