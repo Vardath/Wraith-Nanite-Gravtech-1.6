@@ -565,10 +565,94 @@ namespace WraithNaniteGravtech
         }
     }
 
-    // Pilot consoles intentionally use Odyssey's native CompProperties_GravshipFacility
-    // + CompPilotConsole contract in XML. Exact family isolation comes from each matching
-    // grav engine's CompProperties_AffectedByFacilities.linkableFacilities list, exactly
-    // as vanilla PilotConsole <-> GravEngine linkage is resolved.
+    /// <summary>
+    /// Safe exact-family pilot-console relink for the Asuran and Goa'uld gravships.
+    ///
+    /// Wraith's organic pilot node is already stable on Odyssey's native reverse facility link,
+    /// so it deliberately remains fully native. The Asuran and Goa'uld consoles can lose that
+    /// reverse-resolved link after construction, map load, or unusual spawn order. This wrapper
+    /// keeps Odyssey's CompPilotConsole behavior but pins the facility candidate list to the exact
+    /// family engine and asks the native facility API to rebuild the relationship on the main game
+    /// thread. It never calls GravEngine.OnValidSubstructure/ValidSubstructure and never allocates
+    /// gravship draw meshes during long-event map generation.
+    /// </summary>
+    public sealed class CompProperties_WNGPilotConsole : CompProperties_GravshipFacility
+    {
+        public WNGGravshipFamily family = WNGGravshipFamily.None;
+        public bool requiresFamilyPower = true;
+
+        public CompProperties_WNGPilotConsole()
+        {
+            compClass = typeof(CompPilotConsole_WNGFamily);
+        }
+    }
+
+    public sealed class CompPilotConsole_WNGFamily : CompPilotConsole
+    {
+        private CompProperties_WNGPilotConsole WNGProps => (CompProperties_WNGPilotConsole)props;
+
+        private void PrepareExactTarget()
+        {
+            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterReload)
+        {
+            PrepareExactTarget();
+            base.PostSpawnSetup(respawningAfterReload);
+        }
+
+        public override void PostMapInit()
+        {
+            PrepareExactTarget();
+            base.PostMapInit();
+        }
+
+        public override void CompTick()
+        {
+            base.CompTick();
+
+            if (parent?.Spawned == true &&
+                parent.IsHashIntervalTick(120) &&
+                (!WNGGravshipFamilyUtility.PhysicalEngineLinkIsValid(this, WNGProps.family) ||
+                 LinkedBuildings.Count != 1))
+            {
+                PrepareExactTarget();
+                // This uses RimWorld's normal CompFacility relink path on the main game thread.
+                Notify_ThingChanged();
+            }
+        }
+
+        public override bool CanBeActive =>
+            WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower);
+
+        public override string CompInspectStringExtra()
+        {
+            string result = base.CompInspectStringExtra();
+
+            // Native CompGravshipFacility reports every inactive facility as "not connected".
+            // Keep physical engine-link failures distinct from an under-powered family grid.
+            if (WNGGravshipFamilyUtility.PhysicalEngineLinkIsValid(this, WNGProps.family) &&
+                WNGProps.requiresFamilyPower)
+            {
+                CompWNGFamilyPowerNode power = parent.TryGetComp<CompWNGFamilyPowerNode>();
+                if (power != null && !power.Powered)
+                {
+                    string disconnected = "NotConnectedToGravEngine".Translate().Colorize(ColorLibrary.RedReadable).ToString();
+                    result = result.Replace(disconnected, string.Empty).Trim();
+                    if (!result.NullOrEmpty())
+                        result += "\n";
+                    result += "Family gravship power insufficient.".Colorize(ColorLibrary.RedReadable);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    // Wraith's organic pilot node intentionally remains on Odyssey's native
+    // CompProperties_GravshipFacility + CompPilotConsole contract. Asuran and Goa'uld use the
+    // safe exact-family wrapper above because their native reverse link proved unreliable in play.
 
     public sealed class CompProperties_WNGGravshipFacility : CompProperties_GravshipFacility
     {
