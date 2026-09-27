@@ -482,94 +482,6 @@ namespace WraithNaniteGravtech
             }
         }
 
-        internal static Building_GravEngine FindPhysicalFamilyEngine(
-            CompGravshipFacility facility,
-            WNGGravshipFamily family)
-        {
-            if (!ModsConfig.OdysseyActive || facility?.parent?.Spawned != true || facility.parent.Map == null)
-                return null;
-
-            string exactName = EngineDefName(family);
-            if (exactName.NullOrEmpty())
-                return null;
-
-            Building_GravEngine best = null;
-            float bestDistance = float.MaxValue;
-
-            foreach (Building_GravEngine candidate in
-                facility.parent.Map.listerBuildings.AllBuildingsColonistOfClass<Building_GravEngine>())
-            {
-                if (candidate == null || candidate.Destroyed || !candidate.Spawned ||
-                    candidate.def?.defName != exactName)
-                    continue;
-
-                if (facility.parent.Faction != null && candidate.Faction != null &&
-                    facility.parent.Faction != candidate.Faction)
-                    continue;
-
-                if (!facility.parent.Position.InHorDistOf(candidate.Position, facility.Props.maxDistance))
-                    continue;
-
-                bool physicallyConnected = facility.Props.onlyRequiresLooseConnection
-                    ? candidate.LooselyConnectedToGravEngine(facility.parent)
-                    : candidate.OnValidSubstructure(facility.parent);
-                if (!physicallyConnected)
-                    continue;
-
-                float distance = facility.parent.Position.DistanceToSquared(candidate.Position);
-                if (best == null || distance < bestDistance)
-                {
-                    best = candidate;
-                    bestDistance = distance;
-                }
-            }
-
-            return best;
-        }
-
-        internal static void RepairExactPilotEngineLink(
-            CompPilotConsole_WNGFamily pilot,
-            WNGGravshipFamily family)
-        {
-            if (!ModsConfig.OdysseyActive || pilot?.parent?.Spawned != true)
-                return;
-
-            EnsureExactEngineTarget(pilot, family);
-
-            Building_GravEngine target = FindPhysicalFamilyEngine(pilot, family);
-            if (target == null)
-                return;
-
-            bool alreadyExact =
-                pilot.engine == target &&
-                pilot.LinkedBuildings.Count == 1 &&
-                pilot.LinkedBuildings[0] == target &&
-                target.TryGetComp<CompAffectedByFacilities>()?.LinkedFacilitiesListForReading.Contains(pilot.parent) == true;
-
-            if (alreadyExact)
-                return;
-
-            // Keep both halves of RimWorld's facility relationship in sync.  The pilot console
-            // is deliberately restricted to one physically connected same-family engine, so it
-            // cannot latch onto another WNG gravship elsewhere on the same map.
-            foreach (Thing linked in pilot.LinkedBuildings.ToList())
-            {
-                linked.TryGetComp<CompAffectedByFacilities>()?.Notify_LinkRemoved(pilot.parent);
-                pilot.Notify_LinkRemoved(linked);
-            }
-
-            CompAffectedByFacilities affected = target.TryGetComp<CompAffectedByFacilities>();
-            if (affected == null)
-                return;
-
-            if (!affected.LinkedFacilitiesListForReading.Contains(pilot.parent))
-                affected.Notify_NewLink(pilot.parent);
-            if (!pilot.LinkedBuildings.Contains(target))
-                pilot.Notify_NewLink(target);
-
-            target.ForceSubstructureDirty();
-        }
-
         internal static bool PhysicalEngineLinkIsValid(CompGravshipFacility facility, WNGGravshipFamily family)
         {
             if (!ModsConfig.OdysseyActive || facility?.parent?.Spawned != true || facility.parent.Map == null)
@@ -584,9 +496,12 @@ namespace WraithNaniteGravtech
             if (facility.parent.Faction != null && engine.Faction != null && facility.parent.Faction != engine.Faction)
                 return false;
 
-            return facility.Props.onlyRequiresLooseConnection
-                ? engine.LooselyConnectedToGravEngine(facility.parent)
-                : engine.OnValidSubstructure(facility.parent);
+            // Do not call Building_GravEngine.OnValidSubstructure/ValidSubstructure here.
+            // Those lazy properties can regenerate gravship draw layers and allocate Unity Meshes.
+            // Scenario map generation runs on RimWorld's long-event worker thread, where touching
+            // Unity graphics objects can hard-crash the process. The native facility link itself is
+            // the authoritative relationship; final launch/substructure validation remains RimWorld's.
+            return true;
         }
 
         internal static bool ExactEngineLinkIsValid(CompGravshipFacility facility, WNGGravshipFamily family, bool requiresPower)
@@ -641,40 +556,35 @@ namespace WraithNaniteGravtech
     {
         private CompProperties_WNGPilotConsole WNGProps => (CompProperties_WNGPilotConsole)props;
 
-        private void RepairEngineLink()
-        {
-            WNGGravshipFamilyUtility.RepairExactPilotEngineLink(this, WNGProps.family);
-        }
-
         public override void PostSpawnSetup(bool respawningAfterReload)
         {
+            // Use RimWorld's native CompFacility/CompAffectedByFacilities linking path.
+            // Ensure the exact family engine is the only candidate before vanilla performs its scan.
             WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
             base.PostSpawnSetup(respawningAfterReload);
-            RepairEngineLink();
         }
 
         public override void PostMapInit()
         {
+            // Resolve the family target first, then let vanilla rebuild both sides of the link.
+            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
             base.PostMapInit();
-            RepairEngineLink();
         }
 
         public override void CompTick()
         {
             base.CompTick();
 
+            // Old saves or unusual spawn order can leave a stale/missing link. Relink through the
+            // native facility API on the normal game thread; never inspect gravship substructure
+            // or regenerate draw layers here.
             if (parent.Spawned && parent.IsHashIntervalTick(120) &&
                 (!WNGGravshipFamilyUtility.PhysicalEngineLinkIsValid(this, WNGProps.family) ||
                  LinkedBuildings.Count != 1))
             {
-                RepairEngineLink();
+                WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
+                Notify_ThingChanged();
             }
-        }
-
-        public override void PostDrawExtraSelectionOverlays()
-        {
-            RepairEngineLink();
-            base.PostDrawExtraSelectionOverlays();
         }
 
         public override bool CanBeActive =>
