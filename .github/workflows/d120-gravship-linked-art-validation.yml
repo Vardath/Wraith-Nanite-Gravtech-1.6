@@ -193,6 +193,7 @@ jobs:
           facility_classes = {
               "CompProperties_GravshipFacility",
               "WraithNaniteGravtech.CompProperties_WNGGravshipFacility",
+              "WraithNaniteGravtech.CompProperties_WNGPilotConsole",
               "WraithNaniteGravtech.CompProperties_WNGFuelTankFacility",
               "WraithNaniteGravtech.CompProperties_WNGThruster",
           }
