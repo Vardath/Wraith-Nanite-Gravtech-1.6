@@ -29,7 +29,7 @@
     <label>Whispers hybrid specimen analysis</label>
     <description>Completed biological analysis of Michael's blind fog-producing early hybrid.</description>
     <graphicData>
-      <texPath>Things/Item/Resource/Steel</texPath>
+      <texPath>Things/Item/Whispers/WNG_WhispersHybridTissue</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <selectable>false</selectable>
