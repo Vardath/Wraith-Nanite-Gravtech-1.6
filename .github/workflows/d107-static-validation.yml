@@ -2564,19 +2564,18 @@ jobs:
               failures.append('WNG-owned Goauld transport rings regressed back into the ONAC Architect category')
           for token in (
               'resolvedDesignators',
-              'new Designator_Build_WNGDev(def)',
+              'new Designator_Build(def)',
               'WNG_WraithArchitect',
               'WNG_AsuranArchitect',
               'WNG_GoauldArchitect',
               'Odyssey',
               'designationCategory != null',
-              'UpgradeNativeWNGDesignators',
-              'Designator_Build_WNGDev',
-              'Prefs.DevMode',
-              'DebugSettings.godMode = true',
           ):
               if token not in architect_source:
                   failures.append(f'WNG multi-category Architect routing contract missing: {token}')
+          for forbidden in ('Designator_Build_WNGDev', 'UpgradeNativeWNGDesignators', 'Prefs.DevMode', 'DebugSettings.godMode'):
+              if forbidden in architect_source:
+                  failures.append(f'WNG Architect routing still bypasses vanilla construction via {forbidden}')
 
           human_form_kinds = Path('Defs/PawnKindDefs/PawnKinds_HumanForm.xml').read_text(encoding='utf-8')
           for token in (
