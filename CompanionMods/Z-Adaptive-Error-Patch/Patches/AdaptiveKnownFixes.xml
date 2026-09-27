@@ -141,6 +141,13 @@
     <li Class="PatchOperationAdd"><xpath>Defs/SoundDef[defName="MM_RequestBell" and not(context)]</xpath><value><context>MapOnly</context></value></li>
   </operations></Operation>
 
+  <!-- RimWorld 1.6 no longer provides BulletImpact_Stone in this active stack.
+       Remove exact stale references only when the SoundDef is genuinely absent. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/SoundDef[defName="BulletImpact_Stone"]</xpath><success>Invert</success></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//*[normalize-space(text())="BulletImpact_Stone"]</xpath></li>
+  </operations></Operation>
+
   <!-- Missing optional sounds: remove stale references only when the SoundDef is absent. -->
   <Operation Class="PatchOperationSequence"><success>Always</success><operations>
     <li Class="PatchOperationTest"><xpath>Defs/SoundDef[defName="MNGravitySwitch"]</xpath><success>Invert</success></li>
