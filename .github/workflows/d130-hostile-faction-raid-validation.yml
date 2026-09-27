@@ -65,6 +65,17 @@ jobs:
                   failures.append("Replicator Swarm should exist as the one required faction, not multiply randomly")
               if rep.findtext("startingCountAtWorldCreation") != "1":
                   failures.append("Replicator Swarm is not selected by default in the Create World faction list")
+              if rep.findtext("canStageAttacks") != "true":
+                  failures.append("Replicator Swarm lost vanilla-mechanoid staged-attack behavior")
+              if rep.findtext("allowedArrivalTemperatureRange") != "-100~200":
+                  failures.append("Replicator Swarm no longer matches mechanoid extreme arrival temperatures")
+              if rep.findtext("dropPodActive") != "ActiveDropPodMechanoid":
+                  failures.append("Replicator Swarm no longer uses mechanoid active drop pods")
+              if rep.findtext("dropPodIncoming") != "DropPodIncomingMechanoidRapid":
+                  failures.append("Replicator Swarm no longer uses mechanoid rapid incoming drop pods")
+              layers = [li.text for li in rep.findall("./arrivalLayerWhitelist/li") if li.text]
+              if "Surface" not in layers:
+                  failures.append("Replicator Swarm lost Surface arrival support")
               if float(rep.findtext("earliestRaidDays", "0")) < 18:
                   failures.append("Replicator ordinary raids can start too early")
               vals = curve_values(rep)
