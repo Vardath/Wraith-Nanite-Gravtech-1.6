@@ -44,7 +44,7 @@
     <defName>WNG_WraithGravEngine</defName>
     <label>wraith grav engine</label>
     <description>A fully grown Wraith grav engine: a living gravitic heart grown through a biological host. It uses Odyssey's native gravship engine behavior.</description>
-    <thingClass>Building_GravEngine</thingClass>
+    <thingClass>WraithNaniteGravtech.Building_WNGGravEngine</thingClass>
     <drawerType>RealtimeOnly</drawerType>
     <tickerType>Normal</tickerType>
     <minifiedDef>MinifiedGravEngine</minifiedDef>
