@@ -565,79 +565,10 @@ namespace WraithNaniteGravtech
         }
     }
 
-    public sealed class CompProperties_WNGPilotConsole : CompProperties_GravshipFacility
-    {
-        public WNGGravshipFamily family = WNGGravshipFamily.None;
-        public bool requiresFamilyPower = true;
-
-        public CompProperties_WNGPilotConsole()
-        {
-            compClass = typeof(CompPilotConsole_WNGFamily);
-        }
-    }
-
-    public sealed class CompPilotConsole_WNGFamily : CompPilotConsole
-    {
-        private CompProperties_WNGPilotConsole WNGProps => (CompProperties_WNGPilotConsole)props;
-
-        public override void PostSpawnSetup(bool respawningAfterReload)
-        {
-            // Use RimWorld's native CompFacility/CompAffectedByFacilities linking path.
-            // Ensure the exact family engine is the only candidate before vanilla performs its scan.
-            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
-            base.PostSpawnSetup(respawningAfterReload);
-        }
-
-        public override void PostMapInit()
-        {
-            // Resolve the family target first, then let vanilla rebuild both sides of the link.
-            WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
-            base.PostMapInit();
-        }
-
-        public override void CompTick()
-        {
-            base.CompTick();
-
-            // Old saves or unusual spawn order can leave a stale/missing link. Relink through the
-            // native facility API on the normal game thread; never inspect gravship substructure
-            // or regenerate draw layers here.
-            if (parent.Spawned && parent.IsHashIntervalTick(120) &&
-                (!WNGGravshipFamilyUtility.PhysicalEngineLinkIsValid(this, WNGProps.family) ||
-                 LinkedBuildings.Count != 1))
-            {
-                WNGGravshipFamilyUtility.EnsureExactEngineTarget(this, WNGProps.family);
-                Notify_ThingChanged();
-            }
-        }
-
-        public override bool CanBeActive =>
-            WNGGravshipFamilyUtility.ExactEngineLinkIsValid(this, WNGProps.family, WNGProps.requiresFamilyPower);
-
-        public override string CompInspectStringExtra()
-        {
-            string result = base.CompInspectStringExtra();
-
-            // Native CompGravshipFacility labels every CanBeActive failure as "not connected".
-            // WNG consoles can be physically linked but inactive solely because their family power
-            // network is under-supplied. Keep the native gravship details while correcting that status.
-            if (WNGGravshipFamilyUtility.PhysicalEngineLinkIsValid(this, WNGProps.family) &&
-                WNGProps.requiresFamilyPower)
-            {
-                CompWNGFamilyPowerNode power = parent.TryGetComp<CompWNGFamilyPowerNode>();
-                if (power != null && !power.Powered)
-                {
-                    string disconnected = "NotConnectedToGravEngine".Translate().Colorize(ColorLibrary.RedReadable).ToString();
-                    result = result.Replace(disconnected, string.Empty).Trim();
-                    if (!result.NullOrEmpty())
-                        result += "\n";
-                    result += "Family gravship power insufficient.".Colorize(ColorLibrary.RedReadable);
-                }
-            }
-
-            return result;
-        }
-    }
+    // Pilot consoles intentionally use Odyssey's native CompProperties_GravshipFacility
+    // + CompPilotConsole contract in XML. Exact family isolation comes from each matching
+    // grav engine's CompProperties_AffectedByFacilities.linkableFacilities list, exactly
+    // as vanilla PilotConsole <-> GravEngine linkage is resolved.
 
     public sealed class CompProperties_WNGGravshipFacility : CompProperties_GravshipFacility
     {
