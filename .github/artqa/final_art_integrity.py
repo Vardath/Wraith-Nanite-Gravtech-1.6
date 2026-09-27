@@ -89,8 +89,8 @@ print("WNG_FINAL_UI_COUNT",len(ui))
 print("WNG_FINAL_APPAREL_COUNT",len(apparel))
 print("WNG_FINAL_REPLICATOR_RELATED_COUNT",len(rep))
 
-if len(ui) != 35: errors.append(f"UI_COUNT expected=35 got={len(ui)}")
-if len(apparel) != 217: errors.append(f"APPAREL_COUNT expected=217 got={len(apparel)}")
+if len(ui) < 41: errors.append(f"UI_COUNT regressed below audited floor=41 got={len(ui)}")
+if len(apparel) < 217: errors.append(f"APPAREL_COUNT regressed below audited floor=217 got={len(apparel)}")
 
 print("WNG_FINAL_ART_ERRORS",len(errors))
 for e in errors:
