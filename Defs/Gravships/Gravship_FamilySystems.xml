@@ -169,6 +169,7 @@
         <showMaxSimultaneous>false</showMaxSimultaneous>
         <maxSimultaneous>1</maxSimultaneous>
         <maxDistance>500</maxDistance>
+        <linkableBuildings><li>WNG_WraithGravEngine</li></linkableBuildings>
       </li>
       <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
@@ -951,6 +952,7 @@
         <showMaxSimultaneous>false</showMaxSimultaneous>
         <maxSimultaneous>1</maxSimultaneous>
         <maxDistance>500</maxDistance>
+        <linkableBuildings><li>WNG_AsuranGravEngine</li></linkableBuildings>
       </li>
       <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
