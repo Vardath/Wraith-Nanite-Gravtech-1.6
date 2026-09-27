@@ -63,6 +63,8 @@ jobs:
                   failures.append("Replicator Swarm must remain settlement-less")
               if rep.findtext("canMakeRandomly") != "false":
                   failures.append("Replicator Swarm should exist as the one required faction, not multiply randomly")
+              if rep.findtext("startingCountAtWorldCreation") != "1":
+                  failures.append("Replicator Swarm is not selected by default in the Create World faction list")
               if float(rep.findtext("earliestRaidDays", "0")) < 18:
                   failures.append("Replicator ordinary raids can start too early")
               vals = curve_values(rep)
