@@ -1,0 +1,192 @@
+name: D131 Construction Economy Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  construction-economy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate vanilla-style WNG construction and production economy
+        shell: python
+        run: |
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          failures = []
+          named = {}
+          defs = []
+
+          def parse_roots(folder):
+              for path in Path(folder).rglob("*.xml"):
+                  try:
+                      root = ET.parse(path).getroot()
+                  except Exception as exc:
+                      failures.append(f"XML parse failed for {path}: {exc}")
+                      continue
+                  yield path, root
+
+          for folder in ("Defs/ThingDefs", "Defs/Gravships", "Defs/TerrainDefs"):
+              for path, root in parse_roots(folder):
+                  for node in list(root):
+                      if node.tag not in ("ThingDef", "TerrainDef"):
+                          continue
+                      if node.get("Name"):
+                          named[node.get("Name")] = node
+                      defs.append((path, node))
+
+          def chain(node):
+              out = [node]
+              seen = set()
+              parent = node.get("ParentName")
+              while parent and parent in named and parent not in seen:
+                  seen.add(parent)
+                  node = named[parent]
+                  out.append(node)
+                  parent = node.get("ParentName")
+              return out
+
+          def inherited_elem(node, xpath):
+              for current in chain(node):
+                  value = current.find(xpath)
+                  if value is not None:
+                      return value
+              return None
+
+          def inherited_text(node, xpath):
+              value = inherited_elem(node, xpath)
+              return value.text.strip() if value is not None and value.text else None
+
+          # These four deliberately inherit vanilla LampBase WorkToBuild.
+          vanilla_work_inheritance = {
+              "WNG_PrecursorLumen": "LampBase",
+              "WNG_PrecursorWallLumen": "LampBase",
+              "WNG_WraithLumenOrgan": "LampBase",
+              "WNG_WraithWallLumen": "LampBase",
+          }
+
+          buildable_count = 0
+          for path, node in defs:
+              name = node.findtext("defName") or ""
+              if not name.startswith("WNG_"):
+                  continue
+
+              category = inherited_text(node, "designationCategory")
+              if not category:
+                  continue
+
+              buildable_count += 1
+
+              never = inherited_text(node, "building/neverBuildable")
+              if never and never.lower() == "true":
+                  failures.append(f"{name} is in Architect category {category} but is neverBuildable ({path})")
+
+              costs = inherited_elem(node, "costList")
+              if costs is None or not list(costs):
+                  failures.append(f"{name} has no effective construction cost list ({path})")
+              else:
+                  positive = False
+                  for entry in list(costs):
+                      try:
+                          if float((entry.text or "0").strip()) > 0:
+                              positive = True
+                      except ValueError:
+                          failures.append(f"{name} has non-numeric construction cost {entry.tag}={entry.text!r}")
+                  if not positive:
+                      failures.append(f"{name} effective construction cost is zero ({path})")
+
+              work = inherited_text(node, "statBases/WorkToBuild")
+              if work is None:
+                  expected_parent = vanilla_work_inheritance.get(name)
+                  if expected_parent is None or node.get("ParentName") != expected_parent:
+                      failures.append(f"{name} has no effective WNG WorkToBuild and is not an audited vanilla-parent inheritance ({path})")
+              else:
+                  try:
+                      if float(work) <= 0:
+                          failures.append(f"{name} has non-positive WorkToBuild={work} ({path})")
+                  except ValueError:
+                      failures.append(f"{name} has invalid WorkToBuild={work!r} ({path})")
+
+              research = inherited_elem(node, "researchPrerequisites")
+              if research is None or not [x for x in research.findall("li") if (x.text or "").strip()]:
+                  failures.append(f"{name} is player-buildable but has no effective research prerequisite ({path})")
+
+          # Product-making bills must consume ingredients and time and belong to a workstation.
+          product_recipe_count = 0
+          for path, root in parse_roots("Defs/RecipeDefs"):
+              for node in list(root):
+                  if node.tag != "RecipeDef":
+                      continue
+                  name = node.findtext("defName") or ""
+                  if not name.startswith("WNG_"):
+                      continue
+                  products = node.find("products")
+                  if products is None or not list(products):
+                      continue
+
+                  product_recipe_count += 1
+                  ingredients = node.find("ingredients")
+                  if ingredients is None or not list(ingredients):
+                      failures.append(f"{name} makes a physical product without ingredients ({path})")
+
+                  work = node.findtext("workAmount")
+                  if work is None:
+                      failures.append(f"{name} makes a physical product without explicit workAmount ({path})")
+                  else:
+                      try:
+                          if float(work) <= 0:
+                              failures.append(f"{name} has non-positive workAmount={work} ({path})")
+                      except ValueError:
+                          failures.append(f"{name} has invalid workAmount={work!r} ({path})")
+
+                  users = node.findall("./recipeUsers/li")
+                  if not [u for u in users if (u.text or "").strip()]:
+                      failures.append(f"{name} makes a physical product but has no recipeUsers workstation ({path})")
+
+          routing_path = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs")
+          routing = routing_path.read_text(encoding="utf-8")
+          required = (
+              "new Designator_Build(def)",
+              "FamilyCategoryFor",
+              "IsWNGGravshipBuildable",
+              "resolvedDesignators",
+          )
+          for token in required:
+              if token not in routing:
+                  failures.append(f"vanilla Architect routing contract missing: {token}")
+
+          forbidden = (
+              "Designator_Build_WNGDev",
+              "UpgradeNativeWNGDesignators",
+              "DebugSettings.godMode",
+              "Prefs.DevMode",
+              "DesignateSingleCell(",
+              "CanDesignateCell(",
+          )
+          for token in forbidden:
+              if token in routing:
+                  failures.append(f"normal Architect routing still bypasses vanilla construction: {token}")
+
+          access = Path("Source/WraithNaniteGravtech/UI/WNGGameplayAccessibility.cs").read_text(encoding="utf-8")
+          if "def.forceDebugSpawnable = true" not in access:
+              failures.append("developer direct-spawn access was lost; free instant testing must remain in RimWorld dev tools, not Architect")
+
+          if buildable_count < 100:
+              failures.append(f"unexpectedly low WNG player-buildable count: {buildable_count}")
+          if product_recipe_count < 50:
+              failures.append(f"unexpectedly low WNG physical-product recipe count: {product_recipe_count}")
+
+          if failures:
+              print("CONSTRUCTION / PRODUCTION ECONOMY FAILURES:")
+              for failure in failures:
+                  print(" -", failure)
+              raise SystemExit(1)
+
+          print(
+              f"WNG construction economy validated: {buildable_count} player buildables use finite costs/work and "
+              f"{product_recipe_count} product recipes use finite ingredients/work; normal Architect routing is vanilla."
+          )
