@@ -13,17 +13,26 @@
     <startingCountAtWorldCreation>1</startingCountAtWorldCreation>
     <configurationListOrderPriority>126</configurationListOrderPriority>
     <displayInFactionSelection>true</displayInFactionSelection>
+    <hidden>false</hidden>
     <canMakeRandomly>false</canMakeRandomly>
     <settlementGenerationWeight>0</settlementGenerationWeight>
     <settlementTexturePath>World/WorldObjects/DefaultSettlement</settlementTexturePath>
     <factionIconPath>World/WorldObjects/Expanding/Town</factionIconPath>
     <factionNameMaker>NamerFactionMechanoid</factionNameMaker>
+    <canStageAttacks>true</canStageAttacks>
+    <arrivalLayerWhitelist>
+      <li>Surface</li>
+      <li MayRequire="Ludeon.RimWorld.Odyssey">Orbit</li>
+    </arrivalLayerWhitelist>
     <humanlikeFaction>false</humanlikeFaction>
     <autoFlee>false</autoFlee>
     <canUseAvoidGrid>false</canUseAvoidGrid>
     <techLevel>Ultra</techLevel>
     <permanentEnemy>true</permanentEnemy>
     <hostileToFactionlessHumanlikes>true</hostileToFactionlessHumanlikes>
+    <allowedArrivalTemperatureRange>-100~200</allowedArrivalTemperatureRange>
+    <dropPodActive>ActiveDropPodMechanoid</dropPodActive>
+    <dropPodIncoming>DropPodIncomingMechanoidRapid</dropPodIncoming>
     <earliestRaidDays>18</earliestRaidDays>
     <raidCommonalityFromPointsCurve>
       <points>
