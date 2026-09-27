@@ -61,6 +61,7 @@ namespace WraithNaniteGravtech
             buildables.AddRange(DefDatabase<TerrainDef>.AllDefsListForReading
                 .Where(d => d != null && d.defName != null && d.defName.StartsWith("WNG_", StringComparison.Ordinal) && d.designationCategory != null));
 
+            int nativeGodModeUpgrades = UpgradeNativeWNGDesignators(buildables);
             int familyCopies = 0;
             int odysseyCopies = 0;
 
@@ -74,7 +75,7 @@ namespace WraithNaniteGravtech
                     odysseyCopies++;
             }
 
-            Log.Message($"[WNG] Architect routing installed: {familyCopies} family entries and {odysseyCopies} Odyssey gravship entries; all entries use vanilla construction semantics.");
+            Log.Message($"[WNG] Architect routing installed: {nativeGodModeUpgrades} native WNG designators upgraded for explicit God Mode, {familyCopies} family entries and {odysseyCopies} Odyssey gravship entries; normal construction costs and blueprints remain unchanged.");
         }
 
         private static DesignationCategoryDef FamilyCategoryFor(
@@ -120,6 +121,34 @@ namespace WraithNaniteGravtech
             return false;
         }
 
+        private static int UpgradeNativeWNGDesignators(List<BuildableDef> buildables)
+        {
+            HashSet<BuildableDef> wanted = new HashSet<BuildableDef>(buildables);
+            int upgraded = 0;
+
+            foreach (DesignationCategoryDef category in DefDatabase<DesignationCategoryDef>.AllDefsListForReading)
+            {
+                List<Designator> resolved = GetResolvedDesignators(category);
+                if (resolved == null)
+                    continue;
+
+                for (int i = 0; i < resolved.Count; i++)
+                {
+                    if (resolved[i] is Designator_Build build &&
+                        wanted.Contains(build.PlacingDef) &&
+                        !(resolved[i] is Designator_Build_WNGGodMode))
+                    {
+                        resolved[i] = new Designator_Build_WNGGodMode(build.PlacingDef);
+                        upgraded++;
+                    }
+                }
+
+                resolved.SortBy(d => d.Order);
+            }
+
+            return upgraded;
+        }
+
         private static bool AddBuildDesignator(DesignationCategoryDef category, BuildableDef def)
         {
             List<Designator> resolved = GetResolvedDesignators(category);
@@ -129,7 +158,7 @@ namespace WraithNaniteGravtech
             if (resolved.Any(d => d is Designator_Build build && build.PlacingDef == def))
                 return false;
 
-            resolved.Add(new Designator_Build(def));
+            resolved.Add(new Designator_Build_WNGGodMode(def));
             resolved.SortBy(d => d.Order);
             return true;
         }
@@ -167,6 +196,43 @@ namespace WraithNaniteGravtech
             }
 
             return false;
+        }
+    }
+
+    /// <summary>
+    /// WNG Architect entries retain ordinary RimWorld construction semantics unless the player
+    /// explicitly enables God Mode. In normal play this class delegates entirely to Designator_Build:
+    /// real costs, blueprints, construction work, research and placement rules remain intact.
+    ///
+    /// When God Mode itself is enabled, WNG entries become available for direct test placement and
+    /// use RimWorld's God Mode construction path. Merely enabling Dev Mode never activates this path.
+    /// </summary>
+    public sealed class Designator_Build_WNGGodMode : Designator_Build
+    {
+        public Designator_Build_WNGGodMode(BuildableDef entDef)
+            : base(entDef)
+        {
+        }
+
+        public override bool Visible => DebugSettings.godMode || base.Visible;
+
+        public override AcceptanceReport CanDesignateCell(IntVec3 c)
+        {
+            if (!DebugSettings.godMode)
+                return base.CanDesignateCell(c);
+
+            if (Map == null || !c.InBounds(Map))
+                return new AcceptanceReport("OutOfBounds".Translate());
+
+            return AcceptanceReport.WasAccepted;
+        }
+
+        public override void DesignateSingleCell(IntVec3 c)
+        {
+            // Designator_Build already performs finished, no-cost placement while God Mode is
+            // active. The override exists only so WNG-specific placement workers cannot prevent
+            // deliberate developer test placement. We never toggle God Mode ourselves.
+            base.DesignateSingleCell(c);
         }
     }
 
