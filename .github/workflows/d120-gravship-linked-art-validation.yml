@@ -233,8 +233,16 @@ jobs:
               if "GravField" not in name:
                   if facility.findtext("requiresLOS", "true").lower() != "false":
                       failures.append(f"{name} grav-engine link incorrectly requires line of sight")
+                  is_native_pilot = (
+                      facility.attrib.get("Class") == "CompProperties_GravshipFacility"
+                      and facility.findtext("compClass") == "CompPilotConsole"
+                  )
                   try:
-                      if float(facility.findtext("maxDistance", "8")) < 500:
+                      distance = float(facility.findtext("maxDistance", "8"))
+                      if is_native_pilot:
+                          if distance != 200:
+                              failures.append(f"{name} native PilotConsole range is {distance}, expected vanilla 200")
+                      elif distance < 500:
                           failures.append(f"{name} grav-engine link range is below the full-ship 500-tile facility range")
                   except ValueError:
                       failures.append(f"{name} has an invalid grav-engine maxDistance")
