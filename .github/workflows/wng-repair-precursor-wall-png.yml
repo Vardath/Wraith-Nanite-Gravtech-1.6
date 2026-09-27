@@ -15,16 +15,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
       - name: Repair PNG CRC/chunks
         shell: bash
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq pngcrush
-          src="Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png"
-          tmp="${src}.fixed.png"
-          pngcrush -q -fix "${src}" "${tmp}"
-          mv "${tmp}" "${src}"
-          pngcrush -n -q "${src}"
+          python -m pip install --disable-pip-version-check pillow
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageFile
+
+          src = Path("Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png")
+          tmp = src.with_suffix(".fixed.png")
+
+          ImageFile.LOAD_TRUNCATED_IMAGES = True
+          with Image.open(src) as im:
+              im.load()
+              rgba = im.convert("RGBA")
+              rgba.save(tmp, format="PNG")
+
+          with Image.open(tmp) as check:
+              check.verify()
+
+          tmp.replace(src)
+          print("Re-encoded and strictly verified", src)
+          PY
       - name: Commit repaired asset
         shell: bash
         run: |
