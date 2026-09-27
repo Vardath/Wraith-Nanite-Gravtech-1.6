@@ -1,6 +1,6 @@
 # Z Adaptive Error Patch
 
-Late-loading RimWorld 1.6 compatibility and error-cancellation layer for Vardath's personal modlist. Source is maintained as a companion mod inside the Wraith-Nanite-Gravtech-1.6 repository.
+Private late-loading RimWorld 1.6 compatibility and error-cancellation layer for Vardath's personal modlist.
 
 This mod is deliberately separate from Wraith & Nanite Gravtech and from upstream mods. It exists to absorb safe-to-repair incompatibilities in the active mod stack without editing each source mod directly.
 
@@ -51,7 +51,13 @@ The runtime layer currently addresses two verified RimWorld/VGE interactions:
    - On the current stack this can run before `VehiclePathingSystem` has been added to the map, producing a repeated `NullReferenceException` from Vehicle Framework/SmashTools during GravTide terrain painting.
    - Z Adaptive now lets the refresh run normally once the vehicle pathing component exists, but skips only the premature refreshes before that component is available. Vehicle Framework then builds its path grids from the completed terrain during its normal initialization.
 
-4. **Auto Name Babies new-game collection mutation**
+4. **Geological Landforms × GravTide Harmony arbitration**
+   - Both mods patch lightning strikes and plant-growth tile lookup. GravTide uses bool-returning prefixes that can skip the vanilla methods, while Geological Landforms relies on its own lightning prefix and a `BuildFor` transpiler.
+   - Z Adaptive moves Geological Landforms' impassable-tile lightning filter ahead of GravTide, so suppressed strikes stay suppressed while allowed strikes still pass through GravTide.
+   - For plant-growth calculation, Z Adaptive applies Geological Landforms' pocket-map source-tile substitution to both vanilla `MapPlantGrowthRateCalculator.BuildFor` and GravTide's override prefix, so GravTide cannot bypass the landform-safe tile lookup.
+   - The upstream Geological Landforms patches are removed only after their equivalent compatibility behavior has been installed by Z Adaptive.
+
+5. **Auto Name Babies new-game collection mutation**
    - `AutoNameBabies.BabyNamer.NameUnnamedPlayerBabies` can throw `InvalidOperationException: Collection was modified; enumeration operation may not execute` from its `Game.FinalizeInit` postfix.
    - Naming is optional, so Z Adaptive suppresses only that exact collection-modified exception and allows new-game initialization to continue. Other exceptions from the mod are not swallowed.
 
