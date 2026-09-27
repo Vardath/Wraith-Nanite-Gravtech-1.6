@@ -3,18 +3,55 @@
   <FactionDef ParentName="FactionBase">
     <defName>WNG_ReplicatorSwarm</defName>
     <label>replicator swarm</label>
-    <description>An autonomous network of self-organizing Replicator machines. The swarm remains hidden as a world polity; its physical infestations emerge through dedicated WNG encounters rather than ordinary humanlike faction settlements.</description>
+    <description>An autonomous network of self-organizing Replicator machines. It has no ordinary settlements, but established swarms can occasionally mount direct attacks in addition to WNG's dedicated infestation and salvage encounters.</description>
+    <basicMemberKind>WNG_ReplicatorDrone</basicMemberKind>
     <pawnSingular>replicator</pawnSingular>
     <pawnsPlural>replicators</pawnsPlural>
     <requiredCountAtGameStart>1</requiredCountAtGameStart>
+    <maxCountAtGameStart>1</maxCountAtGameStart>
+    <maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation>
+    <configurationListOrderPriority>126</configurationListOrderPriority>
+    <displayInFactionSelection>true</displayInFactionSelection>
+    <canMakeRandomly>false</canMakeRandomly>
+    <settlementGenerationWeight>0</settlementGenerationWeight>
     <factionNameMaker>NamerFactionMechanoid</factionNameMaker>
     <humanlikeFaction>false</humanlikeFaction>
-    <hidden>true</hidden>
     <autoFlee>false</autoFlee>
     <canUseAvoidGrid>false</canUseAvoidGrid>
     <techLevel>Ultra</techLevel>
     <permanentEnemy>true</permanentEnemy>
     <hostileToFactionlessHumanlikes>true</hostileToFactionlessHumanlikes>
+    <earliestRaidDays>18</earliestRaidDays>
+    <raidCommonalityFromPointsCurve>
+      <points>
+        <li>(0,0.02)</li>
+        <li>(500,0.035)</li>
+        <li>(1200,0.05)</li>
+        <li>(3000,0.07)</li>
+        <li>(100000,0.08)</li>
+      </points>
+    </raidCommonalityFromPointsCurve>
+    <maxPawnCostPerTotalPointsCurve>
+      <points>
+        <li>(0,45)</li>
+        <li>(400,110)</li>
+        <li>(900,240)</li>
+        <li>(1800,550)</li>
+        <li>(100000,10000)</li>
+      </points>
+    </maxPawnCostPerTotalPointsCurve>
+    <pawnGroupMakers>
+      <li>
+        <kindDef>Combat</kindDef>
+        <commonality>100</commonality>
+        <options>
+          <WNG_ReplicatorDrone>20</WNG_ReplicatorDrone>
+          <WNG_ReplicatorHunter>8</WNG_ReplicatorHunter>
+          <WNG_ReplicatorBulwark>2</WNG_ReplicatorBulwark>
+          <WNG_ReplicatorTitan>0.15</WNG_ReplicatorTitan>
+        </options>
+      </li>
+    </pawnGroupMakers>
     <colorSpectrum>
       <li>(0.38, 0.48, 0.52)</li>
     </colorSpectrum>
