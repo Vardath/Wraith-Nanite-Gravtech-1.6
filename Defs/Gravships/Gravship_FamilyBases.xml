@@ -24,7 +24,7 @@
     <resourcesFractionWhenDeconstructed>1</resourcesFractionWhenDeconstructed><constructionSkillPrerequisite>7</constructionSkillPrerequisite>
     <hasInteractionCell>true</hasInteractionCell><interactionCellOffset>(0,0,-1)</interactionCellOffset>
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
-    <comps><li Class="CompProperties_Breakdownable"/></comps>
+    <comps Inherit="False"/>
   </ThingDef>
 
   <ThingDef Name="WNG_SmallThrusterBase" ParentName="ThrusterBase" Abstract="True">
