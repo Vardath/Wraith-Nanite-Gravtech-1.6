@@ -1,10 +1,6 @@
 name: WNG Repair Precursor Wall PNG
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/wng-repair-precursor-wall-png.yml"
   workflow_dispatch:
 
 permissions:
