@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using Verse;
@@ -24,6 +26,7 @@ namespace ZAdaptiveRuntime
             PatchGraphicSingleAtlasInsertion(harmony);
             PatchVanillaGravshipExpanded(harmony);
             PatchVehicleFrameworkGravTide(harmony);
+            PatchGeologicalLandformsGravTide(harmony);
             PatchAutoNameBabies(harmony);
         }
 
@@ -88,6 +91,168 @@ namespace ZAdaptiveRuntime
                 harmony.Patch(target, prefix: new HarmonyMethod(prefix));
             else
                 Log.Warning("[Z Adaptive] Vehicle Framework + GravTide detected, but the early-map vehicle pathing guard could not be installed.");
+        }
+
+        private static void PatchGeologicalLandformsGravTide(Harmony harmony)
+        {
+            Type gravLightningPatchType = AccessTools.TypeByName("GravTide.WeatherEvent_LightningStrike_FireEvent_Patch");
+            Type gravGrowthPatchType = AccessTools.TypeByName("GravTide.BuildFor_Patch");
+            Type landformsLightningPatchType = AccessTools.TypeByName("GeologicalLandforms.Patches.Patch_RimWorld_WeatherEvent_LightningStrike");
+            Type landformsGrowthPatchType = AccessTools.TypeByName("GeologicalLandforms.Patches.Patch_Verse_MapPlantGrowthRateCalculator");
+
+            if ((gravLightningPatchType == null && gravGrowthPatchType == null) ||
+                (landformsLightningPatchType == null && landformsGrowthPatchType == null))
+                return;
+
+            PatchGeologicalLandformsGravTideLightning(
+                harmony,
+                gravLightningPatchType,
+                landformsLightningPatchType);
+
+            PatchGeologicalLandformsGravTidePlantGrowth(
+                harmony,
+                gravGrowthPatchType,
+                landformsGrowthPatchType);
+        }
+
+        private static void PatchGeologicalLandformsGravTideLightning(
+            Harmony harmony,
+            Type gravLightningPatchType,
+            Type landformsLightningPatchType)
+        {
+            if (gravLightningPatchType == null || landformsLightningPatchType == null)
+                return;
+
+            try
+            {
+                MethodInfo target = AccessTools.Method(typeof(WeatherEvent_LightningStrike), "FireEvent");
+                MethodInfo gravPrefix = AccessTools.Method(gravLightningPatchType, "Prefix");
+                MethodInfo landformsPrefix = AccessTools.Method(landformsLightningPatchType, "FireEvent");
+                MethodInfo compatPrefix = AccessTools.Method(
+                    typeof(ZAdaptiveRuntimeBootstrap),
+                    nameof(GeologicalLandformsLightningPrefix));
+
+                if (target == null || gravPrefix == null || landformsPrefix == null || compatPrefix == null)
+                {
+                    Log.Warning("[Z Adaptive] Geological Landforms + GravTide lightning compatibility targets were not all found.");
+                    return;
+                }
+
+                HarmonyMethod compat = new HarmonyMethod(compatPrefix)
+                {
+                    priority = Priority.First
+                };
+
+                Patches patchInfo = Harmony.GetPatchInfo(target);
+                if (patchInfo != null)
+                {
+                    foreach (Patch patch in patchInfo.Prefixes)
+                    {
+                        if (patch.PatchMethod == gravPrefix && !string.IsNullOrEmpty(patch.owner))
+                        {
+                            compat.before = new[] { patch.owner };
+                            break;
+                        }
+                    }
+                }
+
+                // Move Geological Landforms' filter into Z Adaptive so it is guaranteed to run
+                // before GravTide's bool-returning prefix.  If the landform filter suppresses the
+                // event, GravTide has nothing to process; otherwise GravTide retains full control.
+                harmony.Patch(target, prefix: compat);
+                harmony.Unpatch(target, landformsPrefix);
+
+                Log.Message("[Z Adaptive] Installed Geological Landforms + GravTide lightning arbitration.");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] Geological Landforms + GravTide lightning compatibility failed open: " +
+                    ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        private static void PatchGeologicalLandformsGravTidePlantGrowth(
+            Harmony harmony,
+            Type gravGrowthPatchType,
+            Type landformsGrowthPatchType)
+        {
+            if (gravGrowthPatchType == null || landformsGrowthPatchType == null)
+                return;
+
+            try
+            {
+                MethodInfo target = AccessTools.Method(
+                    typeof(MapPlantGrowthRateCalculator),
+                    "BuildFor",
+                    new[] { typeof(Map) });
+                MethodInfo gravPrefix = AccessTools.Method(gravGrowthPatchType, "Prefix");
+                MethodInfo landformsTranspiler = AccessTools.Method(landformsGrowthPatchType, "BuildFor_Transpiler");
+                MethodInfo compatTranspiler = AccessTools.Method(
+                    typeof(ZAdaptiveRuntimeBootstrap),
+                    nameof(GeologicalLandformsTileCompatTranspiler));
+
+                if (target == null || gravPrefix == null || landformsTranspiler == null || compatTranspiler == null)
+                {
+                    Log.Warning("[Z Adaptive] Geological Landforms + GravTide plant-growth compatibility targets were not all found.");
+                    return;
+                }
+
+                // Geological Landforms replaces Map.Tile with the source tile for pocket maps.
+                // GravTide can skip the original BuildFor method, so the original transpiler alone
+                // cannot protect GravTide's override path.  Apply the same tile substitution to
+                // both paths, then remove only the upstream transpiler that we have superseded.
+                HarmonyMethod compat = new HarmonyMethod(compatTranspiler);
+                harmony.Patch(target, transpiler: compat);
+                harmony.Patch(gravPrefix, transpiler: compat);
+                harmony.Unpatch(target, landformsTranspiler);
+
+                Log.Message("[Z Adaptive] Installed Geological Landforms + GravTide pocket-map plant-growth compatibility.");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] Geological Landforms + GravTide plant-growth compatibility failed open: " +
+                    ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        private static bool GeologicalLandformsLightningPrefix(Map ___map)
+        {
+            if (___map == null)
+                return true;
+
+            return ___map.TileInfo.hilliness != Hilliness.Impassable || Rand.Value < 0.3f;
+        }
+
+        private static IEnumerable<CodeInstruction> GeologicalLandformsTileCompatTranspiler(
+            IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo getTile = AccessTools.PropertyGetter(typeof(Map), nameof(Map.Tile));
+            MethodInfo safeTile = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(TileForMapCompat));
+
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (getTile != null && safeTile != null && instruction.Calls(getTile))
+                {
+                    // Mutate the existing instruction so Harmony labels/exception blocks remain
+                    // attached to the exact IL position.
+                    instruction.opcode = OpCodes.Call;
+                    instruction.operand = safeTile;
+                }
+
+                yield return instruction;
+            }
+        }
+
+        private static PlanetTile TileForMapCompat(Map map)
+        {
+            return map.Tile < 0 &&
+                   map.Parent is PocketMapParent parent &&
+                   parent.sourceMap != null &&
+                   parent.sourceMap.Tile >= 0
+                ? parent.sourceMap.Tile
+                : map.Tile;
         }
 
         private static void PatchAutoNameBabies(Harmony harmony)
