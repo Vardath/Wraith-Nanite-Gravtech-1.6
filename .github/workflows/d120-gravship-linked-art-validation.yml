@@ -397,6 +397,97 @@ jobs:
                   if signs["northeast"] == signs["northwest"]:
                       failures.append(f"{root.name}/{prefix} all corner directions collapsed onto one diagonal")
 
+          # Every WNG pilot console must have an explicit, bidirectional, exact-family
+          # grav-engine link.  Do not rely only on runtime mutation or spawn order.
+          all_gravship_defs = {}
+          for defs in (family, goauld, wraith_engine_defs):
+              all_gravship_defs.update(defs)
+
+          pilot_contracts = {
+              "WNG_OrganicPilotNode": ("Wraith", "WNG_WraithGravEngine"),
+              "WNG_PrecursorPilotConsole": ("Asuran", "WNG_AsuranGravEngine"),
+              "WNG_GoauldPeltac": ("Goauld", "WNG_GoauldGravEngine"),
+          }
+
+          discovered_pilots = set()
+          for def_name, node in all_gravship_defs.items():
+              for comp in node.findall("./comps/li"):
+                  if comp.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole":
+                      discovered_pilots.add(def_name)
+
+          if discovered_pilots != set(pilot_contracts):
+              failures.append(
+                  "WNG pilot-console set mismatch: found "
+                  + ", ".join(sorted(discovered_pilots))
+                  + "; expected "
+                  + ", ".join(sorted(pilot_contracts))
+              )
+
+          for pilot_name, (family_name, engine_name) in pilot_contracts.items():
+              pilot = all_gravship_defs.get(pilot_name)
+              engine = all_gravship_defs.get(engine_name)
+              if pilot is None:
+                  failures.append(f"{pilot_name} missing")
+                  continue
+              if engine is None:
+                  failures.append(f"{engine_name} missing")
+                  continue
+
+              pilot_comp = next(
+                  (
+                      c for c in pilot.findall("./comps/li")
+                      if c.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole"
+                  ),
+                  None,
+              )
+              if pilot_comp is None:
+                  failures.append(f"{pilot_name} lost WNG pilot-console comp")
+                  continue
+
+              if pilot_comp.findtext("family") != family_name:
+                  failures.append(
+                      f"{pilot_name} family is {pilot_comp.findtext('family')}, expected {family_name}"
+                  )
+              if pilot_comp.findtext("componentTypeDef") != "Controls":
+                  failures.append(f"{pilot_name} is no longer an Odyssey Controls component")
+
+              pilot_links = [
+                  li.text for li in pilot_comp.findall("./linkableBuildings/li") if li.text
+              ]
+              if pilot_links != [engine_name]:
+                  failures.append(
+                      f"{pilot_name} must link only to {engine_name}; found {pilot_links}"
+                  )
+
+              affected = next(
+                  (
+                      c for c in engine.findall("./comps/li")
+                      if c.attrib.get("Class") == "CompProperties_AffectedByFacilities"
+                  ),
+                  None,
+              )
+              engine_links = (
+                  [li.text for li in affected.findall("./linkableFacilities/li") if li.text]
+                  if affected is not None else []
+              )
+              if pilot_name not in engine_links:
+                  failures.append(f"{engine_name} does not link back to {pilot_name}")
+
+          family_systems_src = Path(
+              "Source/WraithNaniteGravtech/Gravships/GravshipFamilySystems.cs"
+          ).read_text(encoding="utf-8")
+          for required in (
+              "RepairExactPilotEngineLink",
+              "FindPhysicalFamilyEngine",
+              "pilot.LinkedBuildings.Count == 1",
+              "affected.Notify_NewLink(pilot.parent)",
+              "pilot.Notify_NewLink(target)",
+              "PostMapInit()",
+              "PostDrawExtraSelectionOverlays()",
+          ):
+              if required not in family_systems_src:
+                  failures.append(f"pilot-console self-healing link contract missing: {required}")
+
           if failures:
               print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")
               for failure in failures:
