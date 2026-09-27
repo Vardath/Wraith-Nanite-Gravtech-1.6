@@ -10,6 +10,7 @@
     <requiredCountAtGameStart>1</requiredCountAtGameStart>
     <maxCountAtGameStart>1</maxCountAtGameStart>
     <maxConfigurableAtWorldCreation>1</maxConfigurableAtWorldCreation>
+    <startingCountAtWorldCreation>1</startingCountAtWorldCreation>
     <configurationListOrderPriority>126</configurationListOrderPriority>
     <displayInFactionSelection>true</displayInFactionSelection>
     <canMakeRandomly>false</canMakeRandomly>
