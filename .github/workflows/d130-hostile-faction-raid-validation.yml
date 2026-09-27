@@ -6,6 +6,7 @@ on:
     paths:
       - "Defs/FactionDefs/**"
       - "Defs/ThingDefs/Races_Replicator.xml"
+      - "Source/WraithNaniteGravtech/Compatibility/ReplicatorFactionVanillaArrivalCompatibility.cs"
       - ".github/workflows/d130-hostile-faction-raid-validation.yml"
   workflow_dispatch:
 
@@ -162,6 +163,25 @@ jobs:
                   failures.append(f"Replicator raid PawnKind missing: {name}")
               elif node.findtext("defaultFactionDef") != "WNG_ReplicatorSwarm":
                   failures.append(f"{name} does not default to WNG_ReplicatorSwarm")
+
+          arrival_guard = Path("Source/WraithNaniteGravtech/Compatibility/ReplicatorFactionVanillaArrivalCompatibility.cs").read_text(encoding="utf-8")
+          for token in (
+              "WNG_ReplicatorSwarm",
+              "new FactionIdeosTracker(faction)",
+              "LoadedGame",
+              "StartedNewGame",
+              "FinalizeInit",
+              "faction.ideos == null",
+          ):
+              if token not in arrival_guard:
+                  failures.append(f"Replicator vanilla gravship-arrival safeguard missing: {token}")
+          for forbidden in (
+              "ChooseOrGenerateIdeo",
+              "primaryIdeo =",
+              "hidden = true",
+          ):
+              if forbidden in arrival_guard:
+                  failures.append(f"Replicator arrival safeguard must stay empty/non-ideological and preserve raid visibility: {forbidden}")
 
           if failures:
               print("HOSTILE FACTION RAID VALIDATION FAILURES:")
