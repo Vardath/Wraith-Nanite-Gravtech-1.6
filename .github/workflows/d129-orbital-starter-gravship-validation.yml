@@ -243,12 +243,15 @@ jobs:
               if sum(v != 0 for row in rows for v in row) != 84:
                   failures.append("starter hull footprint no longer matches Odyssey's compact occupied-cell count")
 
-          if source.count("sketch.AddThing(spec.FuelTank") != 2:
+          def addthing_count(member):
+              return len(re.findall(rf"sketch\.AddThing\s*\(\s*spec\.{member}\b", source))
+
+          if addthing_count("FuelTank") != 2:
               failures.append("starter ship must contain exactly two fuel tanks")
-          if source.count("sketch.AddThing(spec.Thruster") != 2:
+          if addthing_count("Thruster") != 2:
               failures.append("starter ship must contain exactly two small drives")
           for singleton in ("Engine", "Pilot", "PowerGenerator", "Atmosphere", "NavigationAssist"):
-              if source.count(f"sketch.AddThing(spec.{singleton}") != 1:
+              if addthing_count(singleton) != 1:
                   failures.append(f"starter ship must contain exactly one {singleton}")
 
           if failures:
