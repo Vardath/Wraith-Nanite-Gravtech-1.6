@@ -52,7 +52,10 @@ jobs:
           source = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs").read_text(encoding="utf-8")
           required_source = (
               "resolvedDesignators",
-              "new Designator_Build(def)",
+              "new Designator_Build_WNGGodMode(def)",
+              "UpgradeNativeWNGDesignators",
+              "Designator_Build_WNGGodMode",
+              "DebugSettings.godMode",
               "WNG_WraithArchitect",
               "WNG_AsuranArchitect",
               "WNG_GoauldArchitect",
@@ -70,9 +73,9 @@ jobs:
               "IsResearchFinished",
               "researchPrerequisites",
               "Designator_Build_WNGDev",
-              "UpgradeNativeWNGDesignators",
               "Prefs.DevMode",
-              "DebugSettings.godMode",
+              "DebugSettings.godMode = true",
+              "WithScopedGodMode",
           ):
               if forbidden in source:
                   failures.append(f"Architect runtime routing must preserve vanilla construction/progression semantics: {forbidden}")

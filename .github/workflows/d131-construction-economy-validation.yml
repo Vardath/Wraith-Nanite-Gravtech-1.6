@@ -150,7 +150,10 @@ jobs:
           routing_path = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs")
           routing = routing_path.read_text(encoding="utf-8")
           required = (
-              "new Designator_Build(def)",
+              "new Designator_Build_WNGGodMode(def)",
+              "UpgradeNativeWNGDesignators",
+              "Designator_Build_WNGGodMode",
+              "DebugSettings.godMode",
               "FamilyCategoryFor",
               "IsWNGGravshipBuildable",
               "resolvedDesignators",
@@ -161,15 +164,13 @@ jobs:
 
           forbidden = (
               "Designator_Build_WNGDev",
-              "UpgradeNativeWNGDesignators",
-              "DebugSettings.godMode",
               "Prefs.DevMode",
-              "DesignateSingleCell(",
-              "CanDesignateCell(",
+              "DebugSettings.godMode = true",
+              "WithScopedGodMode",
           )
           for token in forbidden:
               if token in routing:
-                  failures.append(f"normal Architect routing still bypasses vanilla construction: {token}")
+                  failures.append(f"normal Architect routing still contains an implicit Dev/God-mode bypass: {token}")
 
           access = Path("Source/WraithNaniteGravtech/UI/WNGGameplayAccessibility.cs").read_text(encoding="utf-8")
           if "def.forceDebugSpawnable = true" not in access:

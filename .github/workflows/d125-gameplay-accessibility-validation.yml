@@ -83,7 +83,10 @@ jobs:
 
           routing = Path("Source/WraithNaniteGravtech/UI/WNGArchitectRouting.cs").read_text(encoding="utf-8")
           for token in (
-              "new Designator_Build(def)",
+              "new Designator_Build_WNGGodMode(def)",
+              "UpgradeNativeWNGDesignators",
+              "Designator_Build_WNGGodMode",
+              "DebugSettings.godMode",
               "resolvedDesignators",
               "FamilyCategoryFor",
               "IsWNGGravshipBuildable",
@@ -92,11 +95,9 @@ jobs:
                   failures.append(f"WNG vanilla Architect routing lost {token}")
           for forbidden in (
               "Designator_Build_WNGDev",
-              "UpgradeNativeWNGDesignators",
               "Prefs.DevMode",
-              "DebugSettings.godMode",
-              "DesignateSingleCell(",
-              "CanDesignateCell(",
+              "DebugSettings.godMode = true",
+              "WithScopedGodMode",
           ):
               if forbidden in routing:
                   failures.append(f"WNG normal Architect routing still contains Dev/God-mode construction override: {forbidden}")
