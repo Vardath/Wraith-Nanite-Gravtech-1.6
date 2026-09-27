@@ -1,0 +1,39 @@
+name: WNG Repair Precursor Wall PNG
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/wng-repair-precursor-wall-png.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair PNG CRC/chunks
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq pngcrush
+          src="Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png"
+          tmp="${src}.fixed.png"
+          pngcrush -q -fix "${src}" "${tmp}"
+          mv "${tmp}" "${src}"
+          pngcrush -n -q "${src}"
+      - name: Commit repaired asset
+        shell: bash
+        run: |
+          if git diff --quiet -- Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png; then
+            echo "Precursor wall PNG already clean."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png
+          git commit -m "Repair Precursor wall PNG integrity"
+          git push
