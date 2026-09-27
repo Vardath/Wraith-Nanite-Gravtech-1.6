@@ -16,6 +16,30 @@ namespace WraithNaniteGravtech
         Goauld
     }
 
+    /// <summary>
+    /// Real Odyssey grav engine behavior with WNG-owned presentation.
+    /// Building_GravEngine hardcodes the vanilla floating orb and cooldown graphic,
+    /// which visually overwrites every custom grav-engine Def that uses the vanilla class.
+    /// This subclass keeps all native launch/substructure/facility logic while drawing the
+    /// Def's own graphic (and its comps) without the hardcoded vanilla art layers.
+    /// </summary>
+    public sealed class Building_WNGGravEngine : Building_GravEngine
+    {
+        public override Graphic Graphic => DefaultGraphic;
+
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
+        {
+            // Equivalent to ThingWithComps/Thing dynamic drawing, deliberately bypassing
+            // Building_GravEngine.DrawAt's static vanilla GravEngine_Orb overlay.
+            if (def.drawerType == DrawerType.RealtimeOnly || !Spawned)
+                Graphic.Draw(drawLoc, flip ? Rotation.Opposite : Rotation, this);
+
+            SilhouetteUtility.DrawGraphicSilhouette(this, drawLoc);
+            Comps_DrawAt(drawLoc, flip);
+            Comps_PostDraw();
+        }
+    }
+
     public enum WNGFamilyPowerRole
     {
         Conduit,
