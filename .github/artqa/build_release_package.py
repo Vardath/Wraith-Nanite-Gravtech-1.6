@@ -49,10 +49,14 @@ for name in RUNTIME_FILES:
 
 # Assemblies are intentionally selective: users receive the compiled DLL, not PDB/debug artifacts.
 dll = ROOT / "Assemblies" / "WraithNaniteGravtech.dll"
+buildinfo = ROOT / "Assemblies" / "WraithNaniteGravtech.buildinfo.json"
 if not dll.exists():
     raise SystemExit("Missing compiled Assemblies/WraithNaniteGravtech.dll")
+if not buildinfo.exists():
+    raise SystemExit("Missing Assemblies/WraithNaniteGravtech.buildinfo.json; refuse to package an unproven DLL")
 (mod_root / "Assemblies").mkdir(parents=True, exist_ok=True)
 shutil.copy2(dll, mod_root / "Assemblies" / dll.name)
+shutil.copy2(buildinfo, mod_root / "Assemblies" / buildinfo.name)
 
 with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
     for p in sorted(mod_root.rglob("*")):

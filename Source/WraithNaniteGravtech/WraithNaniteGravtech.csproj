@@ -10,7 +10,14 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>../../Assemblies/</OutputPath>
     <DebugType>portable</DebugType>
+    <WNGSourceCommit Condition="'$(WNGSourceCommit)' == ''">UNSPECIFIED</WNGSourceCommit>
+    <WNGSourceFingerprint Condition="'$(WNGSourceFingerprint)' == ''">UNSPECIFIED</WNGSourceFingerprint>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="WNGSourceCommit" Value="$(WNGSourceCommit)" />
+    <AssemblyMetadata Include="WNGSourceFingerprint" Value="$(WNGSourceFingerprint)" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4871" />

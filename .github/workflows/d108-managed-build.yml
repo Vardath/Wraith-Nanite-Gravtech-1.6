@@ -24,28 +24,41 @@ jobs:
       - name: Restore RimWorld 1.6 reference assemblies
         run: dotnet restore Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj
 
-      - name: Compile WNG managed assembly
-        run: dotnet build Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj -c Release --no-restore
+      - name: Compute source fingerprint
+        shell: bash
+        run: |
+          echo "WNG_SOURCE_FINGERPRINT=$(python .github/artqa/dll_source_parity.py fingerprint)" >> "$GITHUB_ENV"
 
-      - name: Verify managed output
+      - name: Compile WNG managed assembly
+        run: |
+          dotnet build Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj -c Release --no-restore \
+            -p:WNGSourceCommit="${GITHUB_SHA}" \
+            -p:WNGSourceFingerprint="${WNG_SOURCE_FINGERPRINT}"
+
+      - name: Write and verify DLL/source build manifest
         shell: bash
         run: |
           test -f Assemblies/WraithNaniteGravtech.dll
+          python .github/artqa/dll_source_parity.py write \
+            --source-commit "${GITHUB_SHA}"
+          python .github/artqa/dll_source_parity.py verify \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
           echo "Managed assembly:"
-          ls -lh Assemblies/WraithNaniteGravtech.dll
+          ls -lh Assemblies/WraithNaniteGravtech.dll Assemblies/WraithNaniteGravtech.buildinfo.json
 
       - name: Commit refreshed managed assembly
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
-          if git diff --quiet -- Assemblies/WraithNaniteGravtech.dll Assemblies/WraithNaniteGravtech.pdb; then
+          if git diff --quiet -- Assemblies/WraithNaniteGravtech.dll Assemblies/WraithNaniteGravtech.pdb Assemblies/WraithNaniteGravtech.buildinfo.json; then
             echo "Tracked managed assembly is already current."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Assemblies/WraithNaniteGravtech.dll
+          git add Assemblies/WraithNaniteGravtech.dll Assemblies/WraithNaniteGravtech.buildinfo.json
           if [ -f Assemblies/WraithNaniteGravtech.pdb ]; then
             git add Assemblies/WraithNaniteGravtech.pdb
           fi
@@ -75,6 +88,11 @@ jobs:
           test ! -e release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.pdb
 
           python .github/artqa/release_package_integrity.py release-unpacked/Wraith-Nanite-Gravtech
+          python .github/artqa/dll_source_parity.py verify \
+            --dll release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll \
+            --manifest release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.buildinfo.json \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
           cmp -s Assemblies/WraithNaniteGravtech.dll release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
           (
             cd release-unpacked/Wraith-Nanite-Gravtech

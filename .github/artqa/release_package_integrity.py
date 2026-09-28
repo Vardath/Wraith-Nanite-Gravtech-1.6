@@ -65,8 +65,11 @@ for p in wavs:
     except Exception as exc:
         errors.append(f"WAV_DECODE {p.relative_to(root)}: {exc}")
 
-# Compiled DLL must be a PE file.
+# Compiled DLL and source-parity manifest must be present.
 dll = root / "Assemblies" / "WraithNaniteGravtech.dll"
+buildinfo = root / "Assemblies" / "WraithNaniteGravtech.buildinfo.json"
+if not buildinfo.exists():
+    errors.append("missing Assemblies/WraithNaniteGravtech.buildinfo.json")
 if not dll.exists():
     errors.append("missing Assemblies/WraithNaniteGravtech.dll")
 else:

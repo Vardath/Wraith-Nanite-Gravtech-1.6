@@ -1,0 +1,48 @@
+name: D172 DLL Source Parity Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  dll-source-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore RimWorld references
+        run: dotnet restore Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj
+      - name: Compute source fingerprint
+        shell: bash
+        run: |
+          echo "WNG_SOURCE_FINGERPRINT=$(python .github/artqa/dll_source_parity.py fingerprint)" >> "$GITHUB_ENV"
+      - name: Rebuild current source with provenance
+        run: |
+          dotnet build Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj -c Release --no-restore \
+            -p:WNGSourceCommit="${GITHUB_SHA}" \
+            -p:WNGSourceFingerprint="${WNG_SOURCE_FINGERPRINT}"
+      - name: Write and verify provenance manifest
+        run: |
+          python .github/artqa/dll_source_parity.py write --source-commit "${GITHUB_SHA}"
+          python .github/artqa/dll_source_parity.py verify \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
+      - name: Build and verify exact release copy
+        run: |
+          python .github/artqa/build_release_package.py \
+            --zip parity-release.zip \
+            --stage parity-release-stage
+          rm -rf parity-unpacked
+          mkdir -p parity-unpacked
+          unzip -q parity-release.zip -d parity-unpacked
+          python .github/artqa/dll_source_parity.py verify \
+            --dll parity-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll \
+            --manifest parity-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.buildinfo.json \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
+          cmp -s Assemblies/WraithNaniteGravtech.dll parity-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
