@@ -286,7 +286,7 @@
       </li>
     </tools>
     <killedLeavings>
-      <WNG_ReplicatorMatter>9</WNG_ReplicatorMatter>
+      <WNG_ReplicatorMatter>6</WNG_ReplicatorMatter>
     </killedLeavings>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_ReplicatorController" />
