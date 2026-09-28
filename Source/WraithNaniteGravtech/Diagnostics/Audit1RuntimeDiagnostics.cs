@@ -52,6 +52,15 @@ namespace WraithNaniteGravtech.Diagnostics
             AuditResult result = new AuditResult();
             Map map = Find.CurrentMap;
 
+            Log.Message("[WNG AUDIT 1] START - live bill / recipe runtime probes");
+
+            SnapshotBenchOwnership(result, "FueledStove");
+            SnapshotBenchOwnership(result, "ElectricStove");
+            SnapshotBenchOwnership(result, "FabricationBench");
+            SnapshotBenchOwnership(result, "DrugLab");
+            SnapshotBenchOwnership(result, "TableMachining");
+            SnapshotBenchOwnership(result, "Nanofabricator");
+
             ProbeEveryWngWorker(result);
             ProbeEveryInstalledWorkbench(result, map);
             ProbeRepresentativeBenches(result, map);
@@ -141,8 +150,13 @@ namespace WraithNaniteGravtech.Diagnostics
                     if (userDef == null || userDef.category == ThingCategory.Pawn)
                         continue;
 
+                    // Do not instantiate arbitrary external benches here. The two WNG production
+                    // workers receive focused lifecycle probes below.
+                    if (!userDef.defName.StartsWith("WNG_", StringComparison.Ordinal))
+                        continue;
+
                     ThingDef localUser = userDef;
-                    result.Check(localRecipe.defName + " unspawned user " + localUser.defName, delegate
+                    result.Check(localRecipe.defName + " unspawned WNG user " + localUser.defName, delegate
                     {
                         Thing thing = ThingMaker.MakeThing(localUser);
                         bool ignored = localRecipe.AvailableOnNow(thing);
@@ -176,29 +190,9 @@ namespace WraithNaniteGravtech.Diagnostics
                 if (!benchDef.defName.StartsWith("WNG_", StringComparison.Ordinal))
                     externalBenchCount++;
 
-                Thing unspawned = null;
-                result.Check("instantiate unspawned bench " + benchDef.defName, delegate
-                {
-                    unspawned = ThingMaker.MakeThing(benchDef);
-                });
-
-                foreach (RecipeDef recipe in recipes)
-                {
-                    RecipeDef localRecipe = recipe;
-                    result.Check(benchDef.defName + " -> " + localRecipe.defName + " AvailableNow", delegate
-                    {
-                        bool ignored = localRecipe.AvailableNow;
-                    });
-
-                    if (unspawned != null)
-                    {
-                        result.Check(benchDef.defName + " -> " + localRecipe.defName + " unspawned availability", delegate
-                        {
-                            bool ignored = localRecipe.AvailableOnNow(unspawned);
-                        });
-                    }
-                }
-
+                // Do NOT instantiate every third-party workbench here. Some benches run side-effectful
+                // PostMake/comp initialization and made-from-stuff benches also spam MakeThing warnings
+                // when created without stuff. Audit 1 is an observer only.
                 if (map != null)
                 {
                     foreach (Building spawned in map.listerBuildings.AllBuildingsColonistOfDef(benchDef))
@@ -219,6 +213,51 @@ namespace WraithNaniteGravtech.Diagnostics
             result.Notes.Add(
                 "Installed workbench enumeration: " + benchCount + " bench defs, " +
                 recipeCount + " recipe links, " + externalBenchCount + " non-WNG/mod-or-vanilla benches.");
+        }
+
+        private static void SnapshotBenchOwnership(AuditResult result, string defName)
+        {
+            ThingDef bench = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+            if (bench == null)
+            {
+                result.Notes.Add("Snapshot bench not present: " + defName);
+                return;
+            }
+
+            List<RecipeDef> all = null;
+            result.Check("snapshot " + defName + " AllRecipes", delegate
+            {
+                all = bench.AllRecipes?.Where(r => r != null).ToList() ?? new List<RecipeDef>();
+            });
+
+            List<RecipeDef> reverse = DefDatabase<RecipeDef>.AllDefsListForReading
+                .Where(r => r?.recipeUsers != null && r.recipeUsers.Contains(bench))
+                .ToList();
+
+            int directCount = bench.recipes?.Count ?? 0;
+            result.Notes.Add(
+                "SNAPSHOT " + defName +
+                ": directRecipes=" + directCount +
+                ", reverseRecipeUsers=" + reverse.Count +
+                ", AllRecipes=" + (all?.Count ?? -1));
+
+            if (all != null)
+            {
+                string owners = string.Join(", ",
+                    all.GroupBy(r => r.modContentPack?.Name ?? "<unknown>")
+                       .OrderBy(g => g.Key)
+                       .Select(g => g.Key + "=" + g.Count()));
+                result.Notes.Add("SNAPSHOT " + defName + " owners: " + owners);
+
+                string names = string.Join(", ", all.Take(120).Select(r => r.defName));
+                result.Notes.Add("SNAPSHOT " + defName + " recipes: " + names);
+            }
+
+            if (reverse.Count > 0)
+            {
+                string reverseNames = string.Join(", ", reverse.Take(120).Select(r => r.defName));
+                result.Notes.Add("SNAPSHOT " + defName + " reverse-owned recipes: " + reverseNames);
+            }
         }
 
         private static void ProbeRepresentativeBenches(AuditResult result, Map map)
