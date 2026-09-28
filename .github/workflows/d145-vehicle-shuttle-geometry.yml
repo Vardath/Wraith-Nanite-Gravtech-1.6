@@ -1,0 +1,16 @@
+name: D145 Vehicle Shuttle Geometry Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  vehicle-shuttle-geometry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit shuttle geometry and transport links
+        run: python3 .github/artqa/vehicle_shuttle_geometry.py
