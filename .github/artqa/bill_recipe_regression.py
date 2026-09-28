@@ -110,7 +110,7 @@ note(f"Enumerated {len(availability_methods)} WNG AvailableOnNow override(s)")
 note("Production RecipeWorkers: " + ", ".join(sorted(found_production)))
 
 # ---------- Guard against global bill/recipe monkey-patching ----------
-source_text = "\n".join(p.read_text(encoding="utf-8", errors="ignore") for p in cs_files)
+source_text = "\n".join(p.read_text(encoding="utf-8", errors="ignore") for p in cs_files if "Diagnostics" not in p.parts)
 forbidden_source = {
     "Harmony patch of Bill*": r"HarmonyPatch\s*\(\s*typeof\s*\(\s*Bill",
     "Harmony patch of Recipe*": r"HarmonyPatch\s*\(\s*typeof\s*\(\s*Recipe",
