@@ -30,8 +30,12 @@ namespace WraithNaniteGravtech.Anomaly
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
-            return pawn != null && WhispersHybridResearchUtility.IsLivingHybrid(pawn) &&
-                   !WhispersHybridResearchUtility.RecentlySampled(pawn) && base.AvailableOnNow(thing, part);
+            if (pawn == null)
+                return false;
+
+            return WhispersHybridResearchUtility.IsLivingHybrid(pawn) &&
+                   !WhispersHybridResearchUtility.RecentlySampled(pawn) &&
+                   base.AvailableOnNow(thing, part);
         }
 
         public override AcceptanceReport AvailableReport(Thing thing, BodyPartRecord part = null)
