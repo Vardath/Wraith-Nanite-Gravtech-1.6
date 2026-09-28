@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using LudeonTK;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace WraithNaniteGravtech.Diagnostics
