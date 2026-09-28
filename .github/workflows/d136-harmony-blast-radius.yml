@@ -1,0 +1,16 @@
+name: D136 Harmony Blast Radius Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  harmony-blast-radius:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit production Harmony/runtime interception
+        run: python3 .github/artqa/harmony_blast_radius.py
