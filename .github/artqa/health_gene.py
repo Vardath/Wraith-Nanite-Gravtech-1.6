@@ -6,33 +6,24 @@ from collections import Counter, defaultdict
 R=Path(".")
 fail=[]
 
-gene_files=sorted((R/"Defs/GeneDefs").rglob("*.xml"))
-hediff_files=sorted((R/"Defs/HediffDefs").rglob("*.xml"))
-ability_files=sorted((R/"Defs/AbilityDefs").rglob("*.xml"))
+def_files=sorted((R/"Defs").rglob("*.xml"))
 source_files=sorted((R/"Source/WraithNaniteGravtech").rglob("*.cs"))
 
-# Parse definitions.
+# RimWorld does not require Def types to live in same-named folders. Some WNG pharmacology
+# HediffDefs intentionally live beside their ThingDef/ChemicalDef, so index all shipped Def XML.
 genes={}
 hediffs={}
 abilities=set()
-for path in gene_files:
+for path in def_files:
     root=ET.parse(path).getroot()
     for n in list(root):
-        if n.tag=="GeneDef":
-            name=(n.findtext("defName") or "").strip()
-            if name.startswith("WNG_"): genes[name]=(path,n)
-for path in hediff_files:
-    root=ET.parse(path).getroot()
-    for n in list(root):
-        if n.tag=="HediffDef":
-            name=(n.findtext("defName") or "").strip()
-            if name.startswith("WNG_"): hediffs[name]=(path,n)
-for path in ability_files:
-    root=ET.parse(path).getroot()
-    for n in list(root):
-        if n.tag=="AbilityDef":
-            name=(n.findtext("defName") or "").strip()
-            if name: abilities.add(name)
+        name=(n.findtext("defName") or "").strip()
+        if n.tag=="GeneDef" and name.startswith("WNG_"):
+            genes[name]=(path,n)
+        elif n.tag=="HediffDef" and name.startswith("WNG_"):
+            hediffs[name]=(path,n)
+        elif n.tag=="AbilityDef" and name:
+            abilities.add(name)
 
 # Index WNG classes in source.
 source="\n".join(p.read_text(encoding="utf-8",errors="ignore") for p in source_files)
