@@ -1,0 +1,16 @@
+name: D154 Surgery Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  surgery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG surgery safety
+        run: python3 .github/artqa/surgery.py
