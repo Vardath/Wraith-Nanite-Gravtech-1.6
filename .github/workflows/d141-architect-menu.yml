@@ -1,0 +1,16 @@
+name: D141 Architect Menu Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  architect-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit Architect menu routing and family tabs
+        run: python3 .github/artqa/architect_menu.py
