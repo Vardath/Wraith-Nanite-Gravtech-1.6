@@ -1,0 +1,16 @@
+name: D164 Log Diff Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  log-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare static WNG log signature
+        run: python3 .github/artqa/log_diff.py
