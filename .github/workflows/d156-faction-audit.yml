@@ -1,0 +1,16 @@
+name: D156 Faction Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  faction-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG faction identities and routing
+        run: python3 .github/artqa/faction_audit.py
