@@ -632,6 +632,7 @@ namespace WraithNaniteGravtech
 
         public override void ExposeData()
         {
+            base.ExposeData();
             Scribe_References.Look(ref captorFaction, "wngQueenRecoveryCaptorFaction");
         }
     }
@@ -661,6 +662,9 @@ namespace WraithNaniteGravtech
             }
         }
 
-        public override void ExposeData() { }
+        public override void ExposeData()
+        {
+            base.ExposeData();
+        }
     }
 }
