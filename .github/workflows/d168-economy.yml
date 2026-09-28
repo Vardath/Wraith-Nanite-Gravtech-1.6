@@ -1,0 +1,22 @@
+name: D168 Economy Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  economy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit craft/build economy
+        run: python3 .github/artqa/economy.py
+      - name: Recheck construction economy
+        run: python3 .github/artqa/construction_god_mode.py
+      - name: Recheck inheritance safety
+        run: python3 .github/artqa/def_inheritance.py
+      - name: Recheck bill and recipe economy routing
+        run: python3 .github/artqa/bill_recipe_regression.py
