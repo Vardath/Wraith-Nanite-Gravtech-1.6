@@ -64,6 +64,13 @@ def positive_list(elem):
             failures.append(f"non-numeric cost entry {child.tag}={txt!r}")
     return found
 
+vanilla_work_inheritance = {
+    "WNG_PrecursorLumen": "LampBase",
+    "WNG_PrecursorWallLumen": "LampBase",
+    "WNG_WraithLumenOrgan": "LampBase",
+    "WNG_WraithWallLumen": "LampBase",
+}
+
 buildables=[]
 for path,node in defs:
     name=(node.findtext("defName") or "").strip()
@@ -84,7 +91,11 @@ for path,node in defs:
 
     work=inherited_text(node,"statBases/WorkToBuild")
     if work is None:
-        failures.append(f"{name}: no effective WorkToBuild ({path})")
+        expected_parent = vanilla_work_inheritance.get(name)
+        if expected_parent is None or node.get("ParentName") != expected_parent:
+            failures.append(f"{name}: no effective WorkToBuild and no audited vanilla-parent inheritance ({path})")
+        else:
+            notes.append(f"{name}: WorkToBuild intentionally inherited from vanilla {expected_parent}")
     else:
         try:
             if float(work)<=0:
