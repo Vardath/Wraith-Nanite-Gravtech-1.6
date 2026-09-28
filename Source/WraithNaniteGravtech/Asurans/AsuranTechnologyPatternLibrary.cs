@@ -406,14 +406,19 @@ namespace WraithNaniteGravtech
     {
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
+            // Production-bill menus can probe workers before they have a concrete bill giver.
+            // Never pass a null Thing into the vanilla worker path: one bad WNG recipe must not
+            // abort enumeration of unrelated vanilla or third-party recipes.
+            if (thing == null)
+                return false;
+
             if (!base.AvailableOnNow(thing, part))
                 return false;
 
             if (!AsuranTechnologyPatternUtility.TryPatternForRecipe(recipe, out AsuranTechnologyPatternSpec spec))
                 return true;
 
-            return thing != null &&
-                   thing.Map != null &&
+            return thing.Map != null &&
                    thing.Faction != null &&
                    AsuranTechnologyPatternUtility.HasPoweredPatternArchive(thing.Map, thing.Faction, spec.PatternId);
         }
