@@ -16,7 +16,9 @@ jobs:
         run: python3 .github/artqa/resource_conservation.py
       - name: Recheck economy
         run: python3 .github/artqa/economy.py
-      - name: Recheck Replicator lifecycle
-        run: python3 .github/artqa/replicator_lifecycle.py
+      - name: Recheck Replicator state machine
+        run: python3 .github/artqa/replicator_state_machine.py
+      - name: Recheck Replicator death and split
+        run: python3 .github/artqa/replicator_death_split.py
       - name: Recheck save-load transaction safety
         run: python3 .github/artqa/save_load_migration.py
