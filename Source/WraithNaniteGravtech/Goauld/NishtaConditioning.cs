@@ -398,7 +398,10 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
-            return pawn != null && NishtaUtility.Conditioning(pawn) != null && base.AvailableOnNow(thing, part);
+            if (pawn == null)
+                return false;
+
+            return NishtaUtility.Conditioning(pawn) != null && base.AvailableOnNow(thing, part);
         }
 
         public override void ApplyOnPawn(Pawn pawn, BodyPartRecord part, Pawn billDoer, List<Thing> ingredients, Bill bill)
