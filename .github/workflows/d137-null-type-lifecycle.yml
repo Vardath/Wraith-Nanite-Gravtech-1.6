@@ -1,0 +1,16 @@
+name: D137 Null Type Lifecycle Safety Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  null-type-lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit null, type and lifecycle safety
+        run: python3 .github/artqa/null_type_lifecycle.py
