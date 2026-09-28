@@ -55,50 +55,29 @@ jobs:
       - name: Build installable release ZIP
         shell: bash
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import shutil
-
-          root = Path('.')
-          stage = Path('release-stage/Wraith-Nanite-Gravtech')
-          stage.mkdir(parents=True, exist_ok=True)
-
-          runtime_dirs = [
-              'About',
-              'Assemblies',
-              'Compatibility',
-              'Defs',
-              'Patches',
-              'Sounds',
-              'Textures',
-          ]
-          runtime_files = ['LoadFolders.xml', 'PublishedFileId.txt']
-
-          for name in runtime_dirs:
-              src = root / name
-              if src.exists():
-                  shutil.copytree(src, stage / name, dirs_exist_ok=True)
-
-          for name in runtime_files:
-              src = root / name
-              if src.exists():
-                  shutil.copy2(src, stage / name)
-          PY
-          cd release-stage
-          zip -qr ../Wraith-Nanite-Gravtech-1.6-release.zip Wraith-Nanite-Gravtech
-          cd ..
+          python .github/artqa/build_release_package.py \
+            --zip Wraith-Nanite-Gravtech-1.6-release.zip \
+            --stage release-stage
           unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll'
           unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/About/About.xml'
           unzip -l Wraith-Nanite-Gravtech-1.6-release.zip | grep 'Wraith-Nanite-Gravtech/PublishedFileId.txt'
 
-      - name: Validate packaged runtime
+      - name: Validate exact packaged artifact
         shell: bash
         run: |
           python -m pip install --disable-pip-version-check pillow
           unzip -t Wraith-Nanite-Gravtech-1.6-release.zip >/dev/null
-          python .github/artqa/release_package_integrity.py release-stage/Wraith-Nanite-Gravtech
+          rm -rf release-unpacked
+          mkdir -p release-unpacked
+          unzip -q Wraith-Nanite-Gravtech-1.6-release.zip -d release-unpacked
+
+          test "$(find release-unpacked -mindepth 1 -maxdepth 1 -type d -printf '%f\n')" = "Wraith-Nanite-Gravtech"
+          test ! -e release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.pdb
+
+          python .github/artqa/release_package_integrity.py release-unpacked/Wraith-Nanite-Gravtech
+          cmp -s Assemblies/WraithNaniteGravtech.dll release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
           (
-            cd release-stage/Wraith-Nanite-Gravtech
+            cd release-unpacked/Wraith-Nanite-Gravtech
             python ../../.github/artqa/final_art_integrity.py
           )
 

@@ -1,0 +1,52 @@
+name: D171 Release Package Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  release-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build exact installable artifact from tracked runtime
+        run: |
+          python .github/artqa/build_release_package.py \
+            --zip audit-release.zip \
+            --stage audit-release-stage
+      - name: Unzip and audit exact artifact
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          unzip -t audit-release.zip >/dev/null
+          rm -rf audit-release-unpacked
+          mkdir -p audit-release-unpacked
+          unzip -q audit-release.zip -d audit-release-unpacked
+
+          roots="$(find audit-release-unpacked -mindepth 1 -maxdepth 1 -type d -printf '%f\n')"
+          test "$roots" = "Wraith-Nanite-Gravtech"
+
+          test -f audit-release-unpacked/Wraith-Nanite-Gravtech/About/About.xml
+          test -f audit-release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
+          test -f audit-release-unpacked/Wraith-Nanite-Gravtech/LoadFolders.xml
+          test -d audit-release-unpacked/Wraith-Nanite-Gravtech/Defs
+          test -d audit-release-unpacked/Wraith-Nanite-Gravtech/Patches
+          test -d audit-release-unpacked/Wraith-Nanite-Gravtech/Compatibility
+          test -d audit-release-unpacked/Wraith-Nanite-Gravtech/Textures
+          test -d audit-release-unpacked/Wraith-Nanite-Gravtech/Sounds
+
+          python .github/artqa/release_package_integrity.py audit-release-unpacked/Wraith-Nanite-Gravtech
+          cmp -s Assemblies/WraithNaniteGravtech.dll audit-release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
+
+          test ! -e audit-release-unpacked/Wraith-Nanite-Gravtech/Source
+          test ! -e audit-release-unpacked/Wraith-Nanite-Gravtech/.github
+          test ! -e audit-release-unpacked/Wraith-Nanite-Gravtech/Docs
+          test ! -e audit-release-unpacked/Wraith-Nanite-Gravtech/CompanionMods
+          test ! -e audit-release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.pdb
+
+          (
+            cd audit-release-unpacked/Wraith-Nanite-Gravtech
+            python ../../.github/artqa/final_art_integrity.py
+          )

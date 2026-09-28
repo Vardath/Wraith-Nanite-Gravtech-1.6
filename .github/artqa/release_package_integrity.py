@@ -12,12 +12,26 @@ required_top = {
 }
 actual_top = {p.name for p in root.iterdir()}
 missing_top = sorted(required_top - actual_top)
+extra_top = sorted(actual_top - required_top)
 if missing_top:
     errors.append("missing runtime top-level entries: " + ", ".join(missing_top))
+if extra_top:
+    errors.append("unexpected top-level entries in installable runtime: " + ", ".join(extra_top))
 
 unexpected_archives = sorted(str(p.relative_to(root)) for p in root.rglob("*.zip"))
 if unexpected_archives:
     errors.append("nested ZIPs in installable runtime: " + ", ".join(unexpected_archives))
+
+# Source/debug/repository-only files must not leak into the user package.
+forbidden_dirs = {"Source", ".github", "Docs", "CompanionMods", ".git", "__pycache__", "obj", "bin"}
+for p in root.rglob("*"):
+    if p.is_dir() and p.name in forbidden_dirs:
+        errors.append("source/dev-only directory in installable runtime: " + str(p.relative_to(root)))
+
+forbidden_suffixes = {".cs", ".csproj", ".sln", ".pdb", ".py", ".pyc", ".yml", ".yaml"}
+for p in root.rglob("*"):
+    if p.is_file() and p.suffix.lower() in forbidden_suffixes:
+        errors.append("source/debug-only file in installable runtime: " + str(p.relative_to(root)))
 
 # XML must parse in the package users actually install.
 xmls = sorted(root.rglob("*.xml"))
@@ -107,6 +121,7 @@ print("WNG_RELEASE_XML_COUNT", len(xmls))
 print("WNG_RELEASE_PNG_COUNT", len(pngs))
 print("WNG_RELEASE_WAV_COUNT", len(wavs))
 print("WNG_RELEASE_TEXTURE_REF_ERRORS", len(missing_refs))
+print("WNG_RELEASE_TOP_LEVEL", ",".join(sorted(actual_top)))
 print("WNG_RELEASE_PACKAGE_ERRORS", len(errors))
 for err in errors:
     print("WNG_RELEASE_PACKAGE_ERROR", err)
