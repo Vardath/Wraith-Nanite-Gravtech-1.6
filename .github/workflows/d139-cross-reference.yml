@@ -1,0 +1,16 @@
+name: D139 Cross Reference Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  cross-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG class and Def cross-references
+        run: python3 .github/artqa/cross_reference.py
