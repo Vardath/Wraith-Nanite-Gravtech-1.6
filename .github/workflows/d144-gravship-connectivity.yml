@@ -1,0 +1,16 @@
+name: D144 Gravship Connectivity Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  gravship-connectivity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit gravship engine, pilot and family facility connectivity
+        run: python3 .github/artqa/gravship_connectivity.py
