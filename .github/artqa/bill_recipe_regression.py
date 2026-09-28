@@ -64,8 +64,10 @@ for path in cs_files:
 
         base_idx = body.find("base.AvailableOnNow")
         pawn_decl = body.find("Pawn pawn = thing as Pawn")
-        pawn_guard = body.find("if (pawn == null)")
-        thing_guard = body.find("if (thing == null)")
+        pawn_guard_match = re.search(r"if\s*\(\s*pawn\s*==\s*null\b", body)
+        thing_guard_match = re.search(r"if\s*\(\s*thing\s*==\s*null\b", body)
+        pawn_guard = pawn_guard_match.start() if pawn_guard_match else -1
+        thing_guard = thing_guard_match.start() if thing_guard_match else -1
 
         # Every WNG availability override that delegates to vanilla must reject an
         # invalid target before the vanilla call. This protects recipe enumeration.
@@ -164,7 +166,9 @@ for base in (ROOT / "Defs", ROOT / "Compatibility"):
         def_roots.append((path, root))
 
 allowed_external_users = {
-    "Human", "MechGestator", "TableSculpting", "FabricationBench", "DrugLab", "ElectricSmelter"
+    "Human", "MechGestator", "TableSculpting", "FabricationBench", "DrugLab", "ElectricSmelter",
+    # Combat Extended compatibility is conditionally loaded and legitimately targets CE's ammo bench.
+    "AmmoBench",
 }
 bench_additions = {b: [] for b in representative}
 custom_worker_refs = []
