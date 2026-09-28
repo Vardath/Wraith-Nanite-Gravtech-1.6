@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using LudeonTK;
 using RimWorld;
@@ -11,6 +12,9 @@ namespace WraithNaniteGravtech.Diagnostics
 {
     public static class Audit35UIDiagnostics
     {
+        private static readonly FieldInfo GizmoDisabledField =
+            typeof(Gizmo).GetField("disabled", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private static readonly string[] ArchitectCategories =
         {
             "WNG_WraithArchitect",
@@ -46,7 +50,10 @@ namespace WraithNaniteGravtech.Diagnostics
             foreach (Thing thing in things)
             {
                 sb.AppendLine();
-                sb.AppendLine("OBJECT: " + thing.LabelCap + " [" + (thing.def?.defName ?? thing.kindDef?.defName ?? "?") + "]");
+                string objectDefName = thing is Pawn pawn
+                    ? (pawn.kindDef?.defName ?? pawn.def?.defName ?? "?")
+                    : (thing.def?.defName ?? "?");
+                sb.AppendLine("OBJECT: " + thing.LabelCap + " [" + objectDefName + "]");
                 IEnumerable<Gizmo> gizmos;
                 try
                 {
@@ -71,12 +78,13 @@ namespace WraithNaniteGravtech.Diagnostics
 
                         if (label.NullOrEmpty()) missingLabels++;
                         if (desc.NullOrEmpty()) missingDescriptions++;
-                        if (command.disabled && disabledReason.NullOrEmpty()) disabledWithoutReason++;
+                        bool disabled = GizmoDisabledField?.GetValue(command) is bool flag && flag;
+                        if (disabled && disabledReason.NullOrEmpty()) disabledWithoutReason++;
                         if (command.icon == null) missingIcons++;
 
                         sb.AppendLine(
                             " - COMMAND: label='" + label + "'" +
-                            ", disabled=" + command.disabled +
+                            ", disabled=" + disabled +
                             ", disabledReason='" + disabledReason + "'" +
                             ", descChars=" + desc.Length +
                             ", icon=" + (command.icon != null));
