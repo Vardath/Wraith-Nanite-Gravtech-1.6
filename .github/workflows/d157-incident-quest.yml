@@ -1,0 +1,16 @@
+name: D157 Incident Quest Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  incident-quest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG IncidentDefs and SitePartDefs
+        run: python3 .github/artqa/incident_quest.py
