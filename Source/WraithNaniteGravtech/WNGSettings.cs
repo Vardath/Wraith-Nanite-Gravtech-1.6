@@ -463,7 +463,13 @@ namespace WraithNaniteGravtech
     {
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
-            return WNGSettingsUtility.UniversalCraftingEnabled && base.AvailableOnNow(thing, part);
+            // These are ordinary production-bill recipes, not pawn/surgery recipes.
+            // Some bill/workbench managers probe RecipeWorker availability with a null or
+            // non-pawn Thing while building their global recipe menus. Calling the vanilla
+            // RecipeWorker implementation from this WNG-only gate can therefore poison the
+            // entire Add Bill list in large mod stacks. The WNG setting is the sole intended
+            // availability gate for these fallback recipes, so keep this probe side-effect-free.
+            return WNGSettingsUtility.UniversalCraftingEnabled;
         }
     }
 }
