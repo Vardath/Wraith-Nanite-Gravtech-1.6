@@ -1,0 +1,71 @@
+name: D173 Steam Packaging Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  steam-packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore RimWorld references
+        run: dotnet restore Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj
+
+      - name: Compute source fingerprint
+        shell: bash
+        run: |
+          echo "WNG_SOURCE_FINGERPRINT=$(python .github/artqa/dll_source_parity.py fingerprint)" >> "$GITHUB_ENV"
+
+      - name: Rebuild and stamp current source
+        run: |
+          dotnet build Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj -c Release --no-restore \
+            -p:WNGSourceCommit="${GITHUB_SHA}" \
+            -p:WNGSourceFingerprint="${WNG_SOURCE_FINGERPRINT}"
+          python .github/artqa/dll_source_parity.py write --source-commit "${GITHUB_SHA}"
+          python .github/artqa/dll_source_parity.py verify \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
+
+      - name: Build tested GitHub runtime artifact
+        run: |
+          python .github/artqa/build_release_package.py \
+            --zip github-runtime.zip \
+            --stage github-stage
+          rm -rf github-unpacked
+          mkdir -p github-unpacked
+          unzip -q github-runtime.zip -d github-unpacked
+          python .github/artqa/release_package_integrity.py github-unpacked/Wraith-Nanite-Gravtech
+
+      - name: Build Steam upload folder
+        run: |
+          python .github/artqa/build_release_package.py \
+            --zip steam-runtime.zip \
+            --stage steam-stage
+
+      - name: Audit Steam/GitHub parity and Workshop metadata
+        run: |
+          python .github/artqa/steam_packaging.py \
+            --github-root github-unpacked/Wraith-Nanite-Gravtech \
+            --steam-root steam-stage/Wraith-Nanite-Gravtech \
+            --workshop-description STEAM-WORKSHOP-DESCRIPTION.txt
+          python .github/artqa/dll_source_parity.py verify \
+            --dll steam-stage/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll \
+            --manifest steam-stage/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.buildinfo.json \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
+
+      - name: Upload audited Steam folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wraith-Nanite-Gravtech-Steam-Upload
+          path: steam-stage/Wraith-Nanite-Gravtech
+          if-no-files-found: error
+          retention-days: 14
