@@ -242,7 +242,10 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
-            return pawn != null && !ReplicatorQueenUtility.IsExactQueen(pawn) &&
+            if (pawn == null)
+                return false;
+
+            return !ReplicatorQueenUtility.IsExactQueen(pawn) &&
                    !SovereignLatticeUtility.HasInstalledLattice(pawn) &&
                    base.AvailableOnNow(thing, part);
         }
@@ -253,8 +256,11 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
+            if (pawn == null)
+                return false;
+
             HediffDef def = SovereignLatticeUtility.LatticeDef;
-            return pawn != null && def != null &&
+            return def != null &&
                    pawn.health?.hediffSet?.GetFirstHediffOfDef(def) != null &&
                    base.AvailableOnNow(thing, part);
         }
