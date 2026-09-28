@@ -100,7 +100,7 @@ for path in (ROOT/"Defs/RecipeDefs").rglob("*.xml"):
         if node.tag!="RecipeDef":
             continue
         name=(node.findtext("defName") or "").strip()
-        if not name.startswith("WNG_"):
+        if not (name.startswith("WNG_") or name.startswith("Make_WNG_")):
             continue
         required=(node.findtext("requiredGiverWorkType") or "").strip()
         users=[(x.text or "").strip() for x in node.findall("./recipeUsers/li") if (x.text or "").strip()]
