@@ -1,0 +1,22 @@
+name: D169 Resource Conservation Exploit Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  resource-conservation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit resource conservation and exploit loops
+        run: python3 .github/artqa/resource_conservation.py
+      - name: Recheck economy
+        run: python3 .github/artqa/economy.py
+      - name: Recheck Replicator lifecycle
+        run: python3 .github/artqa/replicator_lifecycle.py
+      - name: Recheck save-load transaction safety
+        run: python3 .github/artqa/save_load_migration.py
