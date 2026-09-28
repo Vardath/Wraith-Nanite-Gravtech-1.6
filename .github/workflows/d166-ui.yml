@@ -1,0 +1,24 @@
+name: D166 UI Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit UI contracts
+        run: python3 .github/artqa/ui.py
+      - name: Recheck Architect menus
+        run: python3 .github/artqa/architect_menu.py
+      - name: Recheck UI and graphic assets
+        run: python3 .github/artqa/texture_graphic_family.py
+      - name: Recheck vanilla bill/recipe preservation
+        run: python3 .github/artqa/bill_recipe_regression.py
+      - name: Recheck third-party recipe preservation
+        run: python3 .github/artqa/third_party_recipe_preservation.py
