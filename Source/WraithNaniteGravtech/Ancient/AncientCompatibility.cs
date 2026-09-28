@@ -57,8 +57,10 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
-            return pawn != null &&
-                   !pawn.Dead &&
+            if (pawn == null)
+                return false;
+
+            return !pawn.Dead &&
                    !AncientCompatibilityUtility.IsCompatible(pawn) &&
                    base.AvailableOnNow(thing, part);
         }
