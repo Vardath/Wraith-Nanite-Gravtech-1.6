@@ -1,0 +1,16 @@
+name: D159 Save Load Migration Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  save-load-migration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit save/load and migration contracts
+        run: python3 .github/artqa/save_load_migration.py
