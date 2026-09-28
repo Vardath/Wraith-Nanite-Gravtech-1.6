@@ -1,0 +1,22 @@
+name: D163 Runtime Exception Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  runtime-exception:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit runtime exception risk
+        run: python3 .github/artqa/runtime_exception.py
+      - name: Recheck cross references
+        run: python3 .github/artqa/cross_reference.py
+      - name: Recheck null/type lifecycle safety
+        run: python3 .github/artqa/null_type_lifecycle.py
+      - name: Recheck Harmony blast radius
+        run: python3 .github/artqa/harmony_blast_radius.py
