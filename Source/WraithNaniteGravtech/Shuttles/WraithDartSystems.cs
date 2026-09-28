@@ -416,7 +416,8 @@ namespace WraithNaniteGravtech
         public override void MapComponentTick()
         {
             base.MapComponentTick();
-            if (map == null)\n                return;
+            if (map == null)
+                return;
             if (missions == null || missions.Count == 0 || Find.TickManager == null) return;
             int now = Find.TickManager.TicksGame;
             for (int i = missions.Count - 1; i >= 0; i--)
