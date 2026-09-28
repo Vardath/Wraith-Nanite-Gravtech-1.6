@@ -1,0 +1,16 @@
+name: D146 Pawn Generation Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  pawn-generation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG pawn generation contracts
+        run: python3 .github/artqa/pawn_generation.py
