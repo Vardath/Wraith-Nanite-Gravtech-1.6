@@ -1,0 +1,16 @@
+name: D155 Health Gene Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  health-gene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG health and gene contracts
+        run: python3 .github/artqa/health_gene.py
