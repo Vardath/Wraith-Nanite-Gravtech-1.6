@@ -422,7 +422,8 @@ namespace WraithNaniteGravtech
         public override void MapComponentTick()
         {
             base.MapComponentTick();
-            if (map == null)\n                return;
+            if (map == null)
+                return;
             if (!map.IsHashIntervalTick(ScanIntervalTicks))
                 return;
 
