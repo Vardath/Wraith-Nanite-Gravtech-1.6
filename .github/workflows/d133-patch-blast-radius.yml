@@ -1,0 +1,16 @@
+name: D133 Patch Blast Radius Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  patch-blast-radius:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit XML patch blast radius
+        run: python3 .github/artqa/patch_blast_radius.py
