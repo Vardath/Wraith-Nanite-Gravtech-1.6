@@ -44,7 +44,12 @@ def throttled(name,body):
         "lastScanTick",
         "RareTickInterval",
     )
-    return any(m in body for m in markers)
+    if any(m in body for m in markers):
+        return True
+    # Common local-tick cadence guard, e.g. "if (now % ScanIntervalTicks != 0) return;".
+    if re.search(r"\b(?:now|tick|ticks|currentTick)\s*%\s*[A-Za-z0-9_]+", body):
+        return True
+    return False
 
 tick_methods=[]
 heavy=[]
