@@ -1,0 +1,16 @@
+name: D140 Construction God Mode Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  construction-god-mode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit normal construction and explicit God Mode behavior
+        run: python3 .github/artqa/construction_god_mode.py
