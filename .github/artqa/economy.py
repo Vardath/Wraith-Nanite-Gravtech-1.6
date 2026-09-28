@@ -91,14 +91,26 @@ for path,node,name in thingdefs:
 
     craftable_items.append((path,node,name))
     work=(maker.findtext("workAmount") or "").strip()
-    if not work:
-        failures.append(f"{name}: recipeMaker has no explicit positive workAmount ({path})")
-    else:
+    if work:
         try:
             if float(work)<=0:
                 failures.append(f"{name}: recipeMaker workAmount={work} is non-positive ({path})")
         except ValueError:
             failures.append(f"{name}: recipeMaker workAmount={work!r} is invalid ({path})")
+    else:
+        # RimWorld generated recipes use the produced ThingDef's WorkToMake when
+        # recipeMaker/workAmount is omitted. Treat that as the effective crafting work.
+        work_to_make=inherited_text(node,"statBases/WorkToMake")
+        if not work_to_make:
+            failures.append(f"{name}: recipeMaker has neither workAmount nor effective WorkToMake ({path})")
+        else:
+            try:
+                if float(work_to_make)<=0:
+                    failures.append(f"{name}: effective WorkToMake={work_to_make} is non-positive ({path})")
+                else:
+                    notes.append(f"{name}: generated recipe work inherited from WorkToMake={work_to_make}")
+            except ValueError:
+                failures.append(f"{name}: effective WorkToMake={work_to_make!r} is invalid ({path})")
 
     costs=positive_mapping(inherited_elem(node,"costList"))
     if not costs or not any(v>0 for v in costs.values()):
