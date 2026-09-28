@@ -1,12 +1,12 @@
 {
   "schema": 1,
   "description": "Static WNG production Log.Warning/Log.Error/Log.ErrorOnce callsite signature.",
-  "production_cs_files": 142,
-  "signature_count": 347,
+  "production_cs_files": 143,
+  "signature_count": 348,
   "counts": {
     "Warning": 206,
-    "Error": 126,
+    "Error": 127,
     "ErrorOnce": 15
   },
-  "sha256": "f11eb15b2d5bb1d1f6e55ea0e380c7703f51b49c6dd7c1ef676403fc9fdfdb48"
+  "sha256": "4d79904872040100978e8eba0a1ddc206ac6a829e17257f2afdfef271e23a23a"
 }
