@@ -1,0 +1,16 @@
+name: D153 Wraith Feeding Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  wraith-feeding:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit Wraith feeding and treatment state contracts
+        run: python3 .github/artqa/wraith_feeding.py
