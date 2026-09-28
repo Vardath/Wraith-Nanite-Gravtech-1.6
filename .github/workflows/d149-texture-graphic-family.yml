@@ -1,0 +1,16 @@
+name: D149 Texture Graphic Family Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  texture-graphic-family:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit texture and graphic families
+        run: python3 .github/artqa/texture_graphic_family.py
