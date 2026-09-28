@@ -25,11 +25,11 @@ namespace WraithNaniteGravtech
 
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
-            if (!base.AvailableOnNow(thing, part))
+            Pawn pawn = thing as Pawn;
+            if (pawn == null || !WraithHiveEcologyUtility.IsWraith(pawn) || pawn.Dead)
                 return false;
 
-            Pawn pawn = thing as Pawn;
-            if (!WraithHiveEcologyUtility.IsWraith(pawn) || pawn.Dead)
+            if (!base.AvailableOnNow(thing, part))
                 return false;
 
             Gene_Resource_LifeForce lifeForce = pawn.genes?.GetFirstGeneOfType<Gene_Resource_LifeForce>();
