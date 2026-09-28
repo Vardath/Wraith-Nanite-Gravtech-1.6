@@ -1,0 +1,16 @@
+name: D135 Third-Party Recipe Preservation Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  third-party-recipe-preservation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit third-party recipe preservation
+        run: python3 .github/artqa/third_party_recipe_preservation.py
