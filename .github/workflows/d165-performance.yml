@@ -1,0 +1,16 @@
+name: D165 Performance Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit tick-path performance risks
+        run: python3 .github/artqa/performance.py
