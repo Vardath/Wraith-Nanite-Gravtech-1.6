@@ -17,6 +17,7 @@ namespace WraithNaniteGravtech
     public sealed class CompAbilityEffect_AsuranReplicatorMatter : CompAbilityEffect
     {
         private const string AsuranXenotypeDefName = "WNG_NanitePrecursor";
+        private const string HumanFormReplicatorXenotypeDefName = "WNG_HumanFormReplicator";
         private const string ReplicatorMatterDefName = "WNG_ReplicatorMatter";
 
         public new CompProperties_AbilityAsuranReplicatorMatter Props =>
@@ -110,9 +111,10 @@ namespace WraithNaniteGravtech
                 return false;
             }
 
-            if (caster.genes?.Xenotype?.defName != AsuranXenotypeDefName)
+            string xenotype = caster.genes?.Xenotype?.defName;
+            if (xenotype != AsuranXenotypeDefName && xenotype != HumanFormReplicatorXenotypeDefName)
             {
-                reason = "Only an Asuran nanite precursor can fabricate Replicator Blocks from its Nanite Reserve.";
+                reason = "Only a WNG Asuran or human-form Replicator can fabricate Replicator Blocks from its Nanite Reserve.";
                 return false;
             }
 
