@@ -1,0 +1,16 @@
+name: D148 Weapon Orientation Rendering Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  weapon-orientation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit weapon orientation and rendering contracts
+        run: python3 .github/artqa/weapon_orientation_rendering.py
