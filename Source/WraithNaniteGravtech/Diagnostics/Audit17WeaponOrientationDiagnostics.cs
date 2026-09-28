@@ -22,8 +22,9 @@ namespace WraithNaniteGravtech.Diagnostics
             List<ThingDef> weapons = DefDatabase<ThingDef>.AllDefsListForReading
                 .Where(d => d?.defName?.StartsWith("WNG_", StringComparison.Ordinal) == true &&
                             d.thingCategories != null &&
-                            (d.thingCategories.Contains(ThingCategoryDefOf.WeaponsRanged) ||
-                             d.thingCategories.Contains(ThingCategoryDefOf.WeaponsMelee)))
+                            d.thingCategories.Any(cat =>
+                                cat?.defName == "WeaponsRanged" ||
+                                cat?.defName == "WeaponsMelee"))
                 .OrderBy(d => d.defName)
                 .ToList();
 
