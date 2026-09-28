@@ -57,8 +57,9 @@ namespace WraithNaniteGravtech.Diagnostics
 
             HashSet<string> expected = new HashSet<string>
             {
-                "WNG_MakeAsuranSleeperStatue",
-                "WNG_MakeAsuranFeederStatue"
+                "Make_WNG_AsuranSleeperStatue",
+                "Make_WNG_AsuranFeederStatue",
+                "Make_WNG_AsuranReplicatorReliquary"
             };
 
             HashSet<string> actual = new HashSet<string>(gated.Select(r => r.defName));
