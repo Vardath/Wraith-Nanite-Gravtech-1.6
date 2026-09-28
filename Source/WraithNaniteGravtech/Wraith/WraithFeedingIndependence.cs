@@ -43,6 +43,10 @@ namespace WraithNaniteGravtech
             if (successDef == null || lifeForce == null)
                 return false;
 
+            GeneDef originalLifeForceDef = lifeForce.def;
+            if (originalLifeForceDef == null)
+                return false;
+
             bool wasXenogene = pawn.genes.IsXenogene(lifeForce);
             float oldLifeForce = lifeForce is Gene_Resource_LifeForce resource ? resource.Value : -1f;
 
@@ -56,7 +60,7 @@ namespace WraithNaniteGravtech
                 if (marker != null)
                     pawn.health.RemoveHediff(marker);
 
-                Gene restored = pawn.genes.AddGene(DefDatabase<GeneDef>.GetNamed(LifeForceGeneDefName), wasXenogene);
+                Gene restored = pawn.genes.AddGene(originalLifeForceDef, wasXenogene);
                 if (restored is Gene_Resource_LifeForce restoredResource && oldLifeForce >= 0f)
                     restoredResource.Value = System.Math.Min(restoredResource.Max, System.Math.Max(0f, oldLifeForce));
                 pawn.needs?.AddOrRemoveNeedsAsAppropriate();
