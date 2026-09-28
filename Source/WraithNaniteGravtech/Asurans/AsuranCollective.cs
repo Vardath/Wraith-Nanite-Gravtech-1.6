@@ -133,6 +133,7 @@ namespace WraithNaniteGravtech
     {
         private const string StateDefName = "WNG_AsuranCollectiveState";
         private const string AsuranXenotypeDefName = "WNG_NanitePrecursor";
+        private const string HumanFormReplicatorXenotypeDefName = "WNG_HumanFormReplicator";
         private const string AsuranMatterFabricationAbilityDefName = "WNG_AsuranFabricateReplicatorBlocks";
 
         public AsuranCollectiveSettingsExtension Settings =>
@@ -202,7 +203,8 @@ namespace WraithNaniteGravtech
             if (ability == null)
                 return;
 
-            bool shouldHave = Active && pawn.genes?.Xenotype?.defName == AsuranXenotypeDefName;
+            string xenotype = pawn.genes?.Xenotype?.defName;
+            bool shouldHave = Active && (xenotype == AsuranXenotypeDefName || xenotype == HumanFormReplicatorXenotypeDefName);
             bool has = pawn.abilities.GetAbility(ability) != null;
             if (shouldHave && !has)
                 pawn.abilities.GainAbility(ability);
