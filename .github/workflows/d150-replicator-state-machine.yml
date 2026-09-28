@@ -1,0 +1,16 @@
+name: D150 Replicator State Machine Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  replicator-state-machine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit Replicator hierarchy and ecology state machine
+        run: python3 .github/artqa/replicator_state_machine.py
