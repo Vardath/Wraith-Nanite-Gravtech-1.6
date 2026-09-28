@@ -104,6 +104,9 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
+            if (pawn == null)
+                return false;
+
             return WraithFeedingIndependenceUtility.Eligible(pawn) && base.AvailableOnNow(thing, part);
         }
 
