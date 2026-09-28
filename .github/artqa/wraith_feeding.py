@@ -105,7 +105,10 @@ for token in (
 
 # Local feeding is nonlethal and bounded, separate from strategic UI.
 for token in (
-    "WNG_WraithFeedingStock",
+    "private List<Pawn> feedingStock = new List<Pawn>()",
+    "private void RunLocalFeedingCycle()",
+    "localFeedVictimAgeYears = 2",
+    "localFeedLifeForceGain = 0.12f",
     "HungryWraiths(",
     "WNG_LifeDrained",
 ):
