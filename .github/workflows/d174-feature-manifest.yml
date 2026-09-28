@@ -1,0 +1,23 @@
+name: D174 Feature Manifest Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  feature-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit major feature manifest and test ownership
+        run: python3 .github/artqa/feature_manifest.py
+      - name: Recheck cross references
+        run: python3 .github/artqa/cross_reference.py
+      - name: Recheck runtime lifecycle safety
+        run: python3 .github/artqa/null_type_lifecycle.py
+      - name: Recheck exact release package
+        run: |
+          test -f Docs/WNG-FEATURE-MANIFEST.json
