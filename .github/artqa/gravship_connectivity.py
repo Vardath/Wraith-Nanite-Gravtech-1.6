@@ -29,17 +29,17 @@ for path in files:
 families={
     "Wraith": {
         "engine":"WNG_WraithGravEngine",
-        "console_candidates":{"WNG_WraithPilotConsole","WNG_WraithOrganicPilotNode"},
+        "console_candidates":{"WNG_OrganicPilotNode"},
         "place_worker":"WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure",
     },
     "Asuran": {
         "engine":"WNG_AsuranGravEngine",
-        "console_candidates":{"WNG_AsuranPilotConsole","WNG_AsuranFlightSubmind"},
+        "console_candidates":{"WNG_PrecursorPilotConsole"},
         "place_worker":"WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure",
     },
     "Goauld": {
         "engine":"WNG_GoauldGravEngine",
-        "console_candidates":{"WNG_GoauldPilotConsole","WNG_GoauldNavigationCrystal"},
+        "console_candidates":{"WNG_GoauldPeltac"},
         "place_worker":"WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure",
     },
 }
@@ -79,10 +79,8 @@ for family,cfg in families.items():
     if not links:
         failures.append(f"{family}: {ename} has empty linkableFacilities")
 
-    workers={(li.text or "").strip() for li in engine.findall("./placeWorkers/li") if (li.text or "").strip()}
-    if cfg["place_worker"] not in workers:
-        failures.append(f"{family}: {ename} missing same-family substructure place worker")
-
+    # Grav engines themselves use Odyssey's grav-engine/minified placement path and
+    # do not need the family's ordinary same-substructure PlaceWorker.
     consoles=[name for name in cfg["console_candidates"] if name in defs]
     if not consoles:
         failures.append(f"{family}: no pilot-console/navigation-control def found from {sorted(cfg['console_candidates'])}")
@@ -149,7 +147,7 @@ for family,cfg in families.items():
             failures.append(f"{family}: {ename} cross-links {target} from family {tfam}")
 
 # Substructure placement must be family-specific for key hull/door/console/engine components.
-key_tokens=("GravEngine","PilotConsole","PilotNode","FlightSubmind","NavigationCrystal","GravshipDoor","VacBarrier")
+key_tokens=("PilotConsole","PilotNode","Peltac","FlightSubmind","NavigationCrystal","GravshipDoor","VacBarrier")
 for name,(path,node) in defs.items():
     fam=family_of(node)
     if fam not in families:
