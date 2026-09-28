@@ -51,7 +51,9 @@ namespace WraithNaniteGravtech.Diagnostics
             }
 
             List<RecipeDef> gated = DefDatabase<RecipeDef>.AllDefsListForReading
-                .Where(r => r?.defName?.StartsWith("WNG_", StringComparison.Ordinal) == true &&
+                .Where(r => r?.defName != null &&
+                            (r.defName.StartsWith("WNG_", StringComparison.Ordinal) ||
+                             r.defName.StartsWith("Make_WNG_", StringComparison.Ordinal)) &&
                             r.requiredGiverWorkType == workType)
                 .ToList();
 
