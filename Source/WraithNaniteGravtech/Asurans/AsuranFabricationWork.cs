@@ -38,7 +38,8 @@ namespace WraithNaniteGravtech
         public override void MapComponentTick()
         {
             base.MapComponentTick();
-            if (map == null || Find.TickManager == null)\n                return;
+            if (map == null || Find.TickManager == null)
+                return;
             if (Find.TickManager.TicksGame % CheckIntervalTicks != 0)
                 return;
 
