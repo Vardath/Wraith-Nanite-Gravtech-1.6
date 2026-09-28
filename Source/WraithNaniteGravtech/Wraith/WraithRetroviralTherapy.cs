@@ -363,6 +363,9 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
+            if (pawn == null)
+                return false;
+
             return WraithRetroviralUtility.HumanizationFor(pawn) != null && base.AvailableOnNow(thing, part);
         }
 
@@ -406,8 +409,10 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
-            return pawn != null
-                && !pawn.Dead
+            if (pawn == null)
+                return false;
+
+            return !pawn.Dead
                 && WraithHiveEcologyUtility.IsWraith(pawn)
                 && !WraithRetroviralUtility.IsHumanized(pawn)
                 && base.AvailableOnNow(thing, part);
@@ -447,6 +452,9 @@ namespace WraithNaniteGravtech
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
             Pawn pawn = thing as Pawn;
+            if (pawn == null)
+                return false;
+
             return WraithRetroviralUtility.HumanizationFor(pawn) != null && base.AvailableOnNow(thing, part);
         }
 
