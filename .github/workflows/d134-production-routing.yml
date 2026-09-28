@@ -1,0 +1,16 @@
+name: D134 Production Routing Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  production-routing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit recipe/workstation routing
+        run: python3 .github/artqa/production_routing.py
