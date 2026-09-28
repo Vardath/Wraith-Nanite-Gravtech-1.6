@@ -1,0 +1,20 @@
+name: D175 Historical Bug Regression Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  historical-regressions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run every permanent named historical regression
+        run: python3 .github/artqa/historical_bug_regression.py
+      - name: Recheck feature ownership
+        run: python3 .github/artqa/feature_manifest.py
+      - name: Recheck static log baseline
+        run: python3 .github/artqa/log_diff.py
