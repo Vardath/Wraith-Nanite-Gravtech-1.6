@@ -30,12 +30,14 @@ namespace WraithNaniteGravtech.Anomaly
     {
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
+            Pawn pawn = thing as Pawn;
+            if (pawn == null || !IratusPharmacologyUtility.IsLivingIratus(pawn))
+                return false;
+
             if (!base.AvailableOnNow(thing, part))
                 return false;
 
-            Pawn pawn = thing as Pawn;
-            return IratusPharmacologyUtility.IsLivingIratus(pawn)
-                && pawn.Downed
+            return pawn.Downed
                 && !IratusPharmacologyUtility.RecentlySampled(pawn);
         }
 
