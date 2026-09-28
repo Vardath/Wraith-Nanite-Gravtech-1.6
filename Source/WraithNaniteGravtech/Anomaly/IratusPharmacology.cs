@@ -90,18 +90,15 @@ namespace WraithNaniteGravtech.Anomaly
     {
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
+            Pawn pawn = thing as Pawn;
+            if (pawn == null || pawn.Dead || pawn.RaceProps == null || !pawn.RaceProps.IsFlesh || pawn.RaceProps.IsMechanoid)
+                return false;
+
             if (!base.AvailableOnNow(thing, part))
                 return false;
 
-            Pawn pawn = thing as Pawn;
             HediffDef paralysis = IratusPharmacologyUtility.ParalysisDef;
-            return pawn != null
-                && !pawn.Dead
-                && pawn.RaceProps != null
-                && pawn.RaceProps.IsFlesh
-                && !pawn.RaceProps.IsMechanoid
-                && paralysis != null
-                && !pawn.health.hediffSet.HasHediff(paralysis);
+            return paralysis != null && !pawn.health.hediffSet.HasHediff(paralysis);
         }
 
         public override void ApplyOnPawn(Pawn pawn, BodyPartRecord part, Pawn billDoer, List<Thing> ingredients, Bill bill)
