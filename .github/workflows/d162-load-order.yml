@@ -1,0 +1,16 @@
+name: D162 Load Order Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  load-order:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit load-order contracts
+        run: python3 .github/artqa/load_order.py
