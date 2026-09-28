@@ -1,0 +1,16 @@
+name: D152 Human Form Asuran Copy Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  human-form-asuran-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit human-form and Asuran copy continuity
+        run: python3 .github/artqa/human_form_asuran_copy.py
