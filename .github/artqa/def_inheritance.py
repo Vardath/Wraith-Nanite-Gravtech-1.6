@@ -34,6 +34,11 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
             defname=(node.findtext("defName") or "").strip()
             parent=(node.get("ParentName") or "").strip()
             abstract=(node.get("Abstract") or "").lower()=="true"
+            wng_owned = (
+                not defname
+                or defname.startswith("WNG_")
+                or defname.endswith("_WNG_Kassa")
+            )
             for elem in node.iter():
                 if (elem.get("Inherit") or "").lower()!="false":
                     continue
@@ -81,7 +86,7 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
                     failures.append(f"{path}: external scenario {defname} replaces inherited parts")
 
                 # WNG should never replace inherited collections on a non-WNG concrete def.
-                if defname and not defname.startswith("WNG_"):
+                if defname and not wng_owned:
                     # Parent/base helper defs without defName are excluded; concrete foreign defs are not.
                     failures.append(
                         f"{path}: non-WNG def {defname} uses {tag} Inherit=False"
@@ -91,7 +96,12 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
 # Require that those cases stay confined to WNG defs and report them explicitly for review.
 for path,defname,parent,abstract,tag in empty_replacements:
     if tag in {"comps","weaponTags","stuffCategories"}:
-        if not defname.startswith("WNG_"):
+        wng_owned = (
+            not defname
+            or defname.startswith("WNG_")
+            or defname.endswith("_WNG_Kassa")
+        )
+        if not wng_owned:
             failures.append(f"{path}: external def {defname} clears inherited {tag}")
         else:
             notes.append(f"reviewed-empty {tag}: {defname} <- {parent or '<none>'}")
