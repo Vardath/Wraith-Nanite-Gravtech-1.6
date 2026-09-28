@@ -1,0 +1,16 @@
+name: D161 Optional Mod Matrix Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  optional-mod-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit optional-mod combination matrix
+        run: python3 .github/artqa/optional_mod_matrix.py
