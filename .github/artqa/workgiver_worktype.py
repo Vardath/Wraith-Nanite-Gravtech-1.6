@@ -112,14 +112,14 @@ for path in (ROOT/"Defs/RecipeDefs").rglob("*.xml"):
             ungated_table_sculpting.append(name)
 
 # Only the two hostile-trap statue recipes should use the Asuran-only work type.
-expected_gated={"WNG_MakeAsuranSleeperStatue","WNG_MakeAsuranFeederStatue"}
+expected_gated={"Make_WNG_AsuranSleeperStatue","Make_WNG_AsuranFeederStatue","Make_WNG_AsuranReplicatorReliquary"}
 actual_gated={name for name,_,_ in required_worktype_recipes}
 if actual_gated!=expected_gated:
     failures.append(f"Asuran-only recipe gate changed: expected {sorted(expected_gated)}, found {sorted(actual_gated)}")
 
 # Universal crafting duplicates may legitimately use TableSculpting without the restricted work type.
 for name in ungated_table_sculpting:
-    if name not in {"WNG_Universal_AsuranSleeperStatue","WNG_Universal_AsuranFeederStatue"}:
+    if name not in {"WNG_UniversalMake_AsuranSleeperStatue","WNG_UniversalMake_AsuranFeederStatue","WNG_UniversalMake_AsuranReplicatorReliquary"}:
         failures.append(f"{name}: unexpected WNG TableSculpting recipe without WNG_AsuranFabrication gate")
 
 # ---------- JobDef / JobDriver integrity ----------
