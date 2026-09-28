@@ -15,15 +15,7 @@ class_names=set(re.findall(r"\bclass\s+([A-Za-z_][A-Za-z0-9_]*)",source))
 pairings={}
 for p in src_files:
     text=p.read_text(encoding="utf-8",errors="ignore")
-    # Capture ordinary constructor assignment patterns.
-    for prop,comp in re.findall(
-        r"class\s+(CompProperties_[A-Za-z0-9_]+)[^{]*\{[\s\S]*?"
-        r"(?:public\s+\1\s*\([^)]*\)\s*\{[\s\S]*?compClass\s*=\s*typeof\((Comp[A-Za-z0-9_]+)\)"
-        r"|=>\s*compClass\s*=\s*typeof\((Comp[A-Za-z0-9_]+)\))",
-        text
-    ):
-        chosen=comp[0] if isinstance(comp,tuple) else comp
-    # Simpler per-class scan, robust to expression-bodied constructors.
+    # Per-class scan, robust to block and expression-bodied constructors.
     for m in re.finditer(r"class\s+(CompProperties_[A-Za-z0-9_]+)\b",text):
         prop=m.group(1)
         start=m.start()
