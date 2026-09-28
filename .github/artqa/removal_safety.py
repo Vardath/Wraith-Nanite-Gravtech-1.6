@@ -106,8 +106,15 @@ for name in stargate_files:
         continue
     raw=p.read_text(encoding="utf-8",errors="ignore")
     stargate_count+=1
-    if "Stargate" in raw and "GetNamedSilentFail" not in raw and "thingClass?.FullName" not in raw and name!="WNGGateControlObjective.cs":
+    if "Stargate" in raw and "GetNamedSilentFail" not in raw and "thingClass?.FullName" not in raw and name not in ("WNGGateControlObjective.cs","WraithGatePursuit.cs"):
         fail.append(f"{p}: Stargate integration lacks silent Def/class resolution")
+    if name=="WraithGatePursuit.cs":
+        # This component intentionally receives an already-resolved exact gate from the hunt layer.
+        # It never looks up CatCraft defs itself; removal safety is its saved-reference cleanup and
+        # conventional edge-return fallback when the exact gate disappears after loading.
+        for token in ("WraithStargateHuntUtility.IsExactGateUsable","sourceGate == null || sourceGate.Destroyed","CompleteReturn(throughGate: false)"):
+            if token not in raw:
+                fail.append(f"{p}: pursuit removal fallback missing {token}")
     if "Scribe_References.Look(ref sourceGate" in raw:
         if "LoadSaveMode.PostLoadInit" not in raw:
             fail.append(f"{p}: persisted optional sourceGate has no PostLoadInit cleanup")
