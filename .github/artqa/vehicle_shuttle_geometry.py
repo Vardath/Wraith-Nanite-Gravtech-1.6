@@ -152,18 +152,28 @@ for name in ("WNG_AlkeshTransport","WNG_GoauldDeathGlider"):
         failures.append(f"{name}: not direct-debug spawnable")
 
 # Exact-craft mission code must keep the physical craft through attack passes.
-source_files=[
-    ROOT/"Source/WraithNaniteGravtech/Goauld/DeathGliderMission.cs",
-    ROOT/"Source/WraithNaniteGravtech/Goauld/AlkeshBombingRun.cs",
-]
-for path in source_files:
-    if not path.exists():
-        failures.append(f"missing shuttle mission source {path}")
-        continue
-    text=path.read_text(encoding="utf-8",errors="ignore")
-    for token in ("CompTransporter","CompLaunchable"):
-        if token not in text:
-            failures.append(f"{path}: exact-craft mission missing {token}")
+death_path=ROOT/"Source/WraithNaniteGravtech/Goauld/DeathGliderMission.cs"
+alkesh_path=ROOT/"Source/WraithNaniteGravtech/Goauld/AlkeshBombingRun.cs"
+
+if not death_path.exists():
+    failures.append(f"missing shuttle mission source {death_path}")
+else:
+    death=death_path.read_text(encoding="utf-8",errors="ignore")
+    for token in ("CompTransporter","CompLaunchable","TryBeginPhysicalPass","LandExactCraft"):
+        if token not in death:
+            failures.append(f"{death_path}: exact-craft sortie missing {token}")
+
+if not alkesh_path.exists():
+    failures.append(f"missing shuttle mission source {alkesh_path}")
+else:
+    alkesh=alkesh_path.read_text(encoding="utf-8",errors="ignore")
+    # The Al'kesh same-map bombing pass deliberately does not call CompLaunchable:
+    # it nests the exact landed shuttle into a transient Skyfaller and returns the
+    # same Thing to the map. Requiring CompLaunchable here would reject the intended
+    # physical-pass implementation.
+    for token in ("CompTransporter","TryBeginPhysicalPass","innerContainer.TryAdd(craft)","LandExactCraft"):
+        if token not in alkesh:
+            failures.append(f"{alkesh_path}: exact-craft bombing pass missing {token}")
 
 # Authored art should remain directional and present.
 texture_root=ROOT/"Textures"
