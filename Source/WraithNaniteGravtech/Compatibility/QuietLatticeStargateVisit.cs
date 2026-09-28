@@ -638,6 +638,9 @@ namespace WraithNaniteGravtech
             }
         }
 
-        public override void ExposeData() { }
+        public override void ExposeData()
+        {
+            base.ExposeData();
+        }
     }
 }
