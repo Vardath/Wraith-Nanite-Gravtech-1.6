@@ -1,0 +1,16 @@
+name: D160 Removal Safety Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  removal-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit optional mod removal safety
+        run: python3 .github/artqa/removal_safety.py
