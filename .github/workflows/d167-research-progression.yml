@@ -1,0 +1,22 @@
+name: D167 Research Progression Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  research-progression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit WNG research graph and unlock consumers
+        run: python3 .github/artqa/research_progression.py
+      - name: Recheck cross references
+        run: python3 .github/artqa/cross_reference.py
+      - name: Recheck construction research gates
+        run: python3 .github/artqa/construction_god_mode.py
+      - name: Recheck bill and recipe research gates
+        run: python3 .github/artqa/bill_recipe_regression.py
