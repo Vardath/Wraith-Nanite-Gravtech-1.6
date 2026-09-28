@@ -9,7 +9,8 @@ failures = []
 notes = []
 
 # ---------- Build authoritative WNG Def inventory ----------
-def_names = {}
+def_names = defaultdict(set)
+def_locations = {}
 defs_by_xml_type = defaultdict(set)
 xml_files = []
 
@@ -31,11 +32,13 @@ for base in (ROOT / "Defs", ROOT / "Compatibility"):
             name = (node.findtext("defName") or "").strip()
             if not name:
                 continue
-            if name in def_names:
+            key = (node.tag, name)
+            if key in def_locations:
                 failures.append(
-                    f"duplicate defName {name}: {def_names[name][0]} and {path}"
+                    f"duplicate {node.tag} defName {name}: {def_locations[key]} and {path}"
                 )
-            def_names[name] = (path, node.tag)
+            def_locations[key] = path
+            def_names[name].add(node.tag)
             defs_by_xml_type[node.tag].add(name)
 
 # ---------- Build production C# class inventory ----------
@@ -104,9 +107,54 @@ ref_tags = {
 # Generic list parents whose <li> entries are Def names.
 list_ref_parents = {
     "thingDefs", "recipeUsers", "researchPrerequisites", "thingCategories",
-    "weaponTags", "buildingTags", "apparelTags", "affectedDamageDefs",
-    "requiredResearch", "researchProjects", "hediffs", "genes", "abilities",
-    "siteParts", "pawnKinds", "factionDefs", "terrains", "sounds",
+    "affectedDamageDefs", "requiredResearch", "researchProjects", "hediffs",
+    "genes", "abilities", "siteParts", "pawnKinds", "factionDefs",
+    "terrains", "sounds",
+}
+
+expected_type_by_tag = {
+    "thingDef": "ThingDef", "thingDefName": "ThingDef",
+    "pawnKind": "PawnKindDef", "pawnKindDef": "PawnKindDef",
+    "factionDef": "FactionDef",
+    "researchPrerequisite": "ResearchProjectDef", "researchProject": "ResearchProjectDef",
+    "hediff": "HediffDef", "hediffDef": "HediffDef",
+    "gene": "GeneDef", "geneDef": "GeneDef",
+    "xenotype": "XenotypeDef", "xenotypeDef": "XenotypeDef",
+    "ability": "AbilityDef", "abilityDef": "AbilityDef",
+    "jobDef": "JobDef", "workType": "WorkTypeDef", "workTypeDef": "WorkTypeDef",
+    "workGiver": "WorkGiverDef", "workGiverDef": "WorkGiverDef",
+    "terrain": "TerrainDef", "terrainDef": "TerrainDef",
+    "sound": "SoundDef", "soundDef": "SoundDef",
+    "fleck": "FleckDef", "fleckDef": "FleckDef",
+    "thought": "ThoughtDef", "thoughtDef": "ThoughtDef",
+    "incident": "IncidentDef", "incidentDef": "IncidentDef",
+    "sitePart": "SitePartDef", "sitePartDef": "SitePartDef",
+    "traderKind": "TraderKindDef", "traderKindDef": "TraderKindDef",
+    "recipe": "RecipeDef", "recipeDef": "RecipeDef",
+    "defaultProjectile": "ThingDef", "projectileWhenLoaded": "ThingDef",
+    "leavingDef": "ThingDef", "incomingDef": "ThingDef", "skyfaller": "ThingDef",
+    "minifiedDef": "ThingDef", "entityDef": "ThingDef", "race": "ThingDef",
+    "weaponDef": "ThingDef", "apparelDef": "ThingDef",
+    "damageDef": "DamageDef", "statDef": "StatDef", "chemical": "ChemicalDef",
+    "designationCategory": "DesignationCategoryDef",
+}
+
+expected_type_by_list_parent = {
+    "thingDefs": "ThingDef",
+    "recipeUsers": "ThingDef",
+    "researchPrerequisites": "ResearchProjectDef",
+    "requiredResearch": "ResearchProjectDef",
+    "researchProjects": "ResearchProjectDef",
+    "thingCategories": "ThingCategoryDef",
+    "affectedDamageDefs": "DamageDef",
+    "hediffs": "HediffDef",
+    "genes": "GeneDef",
+    "abilities": "AbilityDef",
+    "siteParts": "SitePartDef",
+    "pawnKinds": "PawnKindDef",
+    "factionDefs": "FactionDef",
+    "terrains": "TerrainDef",
+    "sounds": "SoundDef",
 }
 
 xml_wng_refs = []
@@ -125,9 +173,18 @@ for path, root in xml_files:
             continue
 
         xml_wng_refs.append((path, elem.tag, parent_tag, value))
+        expected_type = expected_type_by_tag.get(elem.tag)
+        if elem.tag == "li":
+            expected_type = expected_type_by_list_parent.get(parent_tag)
+
         if value not in def_names:
             failures.append(
                 f"{path}: unresolved WNG Def reference {value} in <{elem.tag}>"
+            )
+        elif expected_type and value not in defs_by_xml_type.get(expected_type, set()):
+            failures.append(
+                f"{path}: {value} referenced as {expected_type} in <{elem.tag}> "
+                f"but defined as {sorted(def_names[value])}"
             )
 
 # ---------- Typed DefDatabase lookups in production C# ----------
@@ -147,22 +204,20 @@ for path in cs_files:
             )
             continue
 
-        # Where XML uses the same concrete type name, enforce type parity as well.
-        xml_type = def_names[name][1]
         simple_type = def_type.split(".")[-1]
-        if simple_type.endswith("Def") and xml_type.endswith("Def") and simple_type != xml_type:
-            # Custom subclasses serialized under their own tag are legal; only flag the
-            # standard core Def types where XML tag/type identity should match.
-            strict = {
-                "ThingDef","RecipeDef","HediffDef","GeneDef","XenotypeDef",
-                "PawnKindDef","FactionDef","ResearchProjectDef","AbilityDef",
-                "JobDef","WorkGiverDef","WorkTypeDef","TerrainDef","FleckDef",
-                "SoundDef","ThoughtDef","IncidentDef","SitePartDef","TraderKindDef",
-            }
-            if simple_type in strict:
-                failures.append(
-                    f"{path}: {name} looked up as {simple_type} but XML defines {xml_type}"
-                )
+        strict = {
+            "ThingDef","RecipeDef","HediffDef","GeneDef","XenotypeDef",
+            "PawnKindDef","FactionDef","ResearchProjectDef","AbilityDef",
+            "JobDef","WorkGiverDef","WorkTypeDef","TerrainDef","FleckDef",
+            "SoundDef","ThoughtDef","IncidentDef","SitePartDef","TraderKindDef",
+            "DamageDef","StatDef","ChemicalDef","ThingCategoryDef",
+            "DesignationCategoryDef",
+        }
+        if simple_type in strict and name not in defs_by_xml_type.get(simple_type, set()):
+            failures.append(
+                f"{path}: {name} looked up as {simple_type} but is defined as "
+                f"{sorted(def_names[name])}"
+            )
 
 # ---------- [DefOf] field names ----------
 def_of_fields = []
@@ -182,6 +237,13 @@ for path in cs_files:
                 failures.append(
                     f"{path}: [DefOf] field {field} ({type_name}) has no matching XML def"
                 )
+            else:
+                simple_type = type_name.split(".")[-1]
+                if simple_type in defs_by_xml_type and field not in defs_by_xml_type[simple_type]:
+                    failures.append(
+                        f"{path}: [DefOf] field {field} declared as {simple_type} "
+                        f"but defined as {sorted(def_names[field])}"
+                    )
 
 # ---------- Literal WNG def-name strings in common *DefName fields ----------
 # These are runtime references stored as strings rather than DefDatabase lookups.
@@ -202,7 +264,8 @@ for path in cs_files:
 
 print("=== D139 CROSS-REFERENCE AUDIT ===")
 print(f" - Parsed XML files: {len(xml_files)}")
-print(f" - Unique defs inventoried: {len(def_names)}")
+print(f" - Unique def names inventoried: {len(def_names)}")
+print(f" - Typed defs inventoried: {len(def_locations)}")
 print(f" - Production C# files scanned: {len(cs_files)}")
 print(f" - WNG classes declared: {len(declared_classes)}")
 print(f" - XML WNG class references checked: {len(class_refs)}")
