@@ -1,0 +1,16 @@
+name: D147 Apparel Equipment Retention Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  apparel-equipment-retention:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit signature apparel and equipment retention
+        run: python3 .github/artqa/apparel_equipment_retention.py
