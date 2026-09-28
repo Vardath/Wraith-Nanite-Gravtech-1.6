@@ -205,7 +205,7 @@ namespace WraithNaniteGravtech
                     "When enabled, a player Keeper or Queen may supervise a bounded nonlethal local feeding cycle on the exact prisoner occupying this niche, but only when player Wraith actually need Life Force. This is separate from strategic faction hunger and never uses the lethal repeat-feed shortcut.",
                 icon =
                     ContentFinder<Texture2D>.Get(
-                        "UI/WNG/LifeForce",
+                        "UI/WNG/Genes/WraithLifeForce",
                         false) ??
                     BaseContent.BadTex,
                 isActive = () => autoFeed,
