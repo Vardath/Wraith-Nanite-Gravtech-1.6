@@ -132,6 +132,8 @@ namespace WraithNaniteGravtech
     public sealed class Gene_AsuranCollectiveLink : Gene
     {
         private const string StateDefName = "WNG_AsuranCollectiveState";
+        private const string AsuranXenotypeDefName = "WNG_NanitePrecursor";
+        private const string AsuranMatterFabricationAbilityDefName = "WNG_AsuranFabricateReplicatorBlocks";
 
         public AsuranCollectiveSettingsExtension Settings =>
             def.GetModExtension<AsuranCollectiveSettingsExtension>() ?? new AsuranCollectiveSettingsExtension();
@@ -144,6 +146,7 @@ namespace WraithNaniteGravtech
 
         public override void PostRemove()
         {
+            RemoveAsuranMatterFabricationAbility();
             RemoveState();
             base.PostRemove();
         }
@@ -163,6 +166,8 @@ namespace WraithNaniteGravtech
         {
             if (pawn?.health?.hediffSet == null)
                 return;
+
+            RefreshAsuranMatterFabricationAbility();
 
             HediffDef stateDef = DefDatabase<HediffDef>.GetNamedSilentFail(StateDefName);
             if (stateDef == null)
@@ -186,6 +191,32 @@ namespace WraithNaniteGravtech
             int cap = Math.Max(1, Settings.peerBenefitCap);
             int physicalPeers = Math.Min(cap, AsuranCollectiveUtility.CountLocalNetworkPeers(pawn));
             state.Severity = AsuranIdeologyUtility.CollectiveStateSeverity(pawn, physicalPeers);
+        }
+
+        private void RefreshAsuranMatterFabricationAbility()
+        {
+            if (pawn?.abilities == null)
+                return;
+
+            AbilityDef ability = DefDatabase<AbilityDef>.GetNamedSilentFail(AsuranMatterFabricationAbilityDefName);
+            if (ability == null)
+                return;
+
+            bool shouldHave = Active && pawn.genes?.Xenotype?.defName == AsuranXenotypeDefName;
+            bool has = pawn.abilities.GetAbility(ability) != null;
+            if (shouldHave && !has)
+                pawn.abilities.GainAbility(ability);
+            else if (!shouldHave && has)
+                pawn.abilities.RemoveAbility(ability);
+        }
+
+        private void RemoveAsuranMatterFabricationAbility()
+        {
+            if (pawn?.abilities == null)
+                return;
+            AbilityDef ability = DefDatabase<AbilityDef>.GetNamedSilentFail(AsuranMatterFabricationAbilityDefName);
+            if (ability != null && pawn.abilities.GetAbility(ability) != null)
+                pawn.abilities.RemoveAbility(ability);
         }
 
         private void RemoveState()

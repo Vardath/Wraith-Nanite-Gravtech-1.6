@@ -42,6 +42,7 @@ namespace WraithNaniteGravtech
 
         public bool humanFormCopying = true;
         public float humanFormCopyCost = 0.60f;
+        public float asuranBlockFabricationCost = 0.50f;
 
         public override void ExposeData()
         {
@@ -79,6 +80,7 @@ namespace WraithNaniteGravtech
 
             Scribe_Values.Look(ref humanFormCopying, "humanFormCopying", true);
             Scribe_Values.Look(ref humanFormCopyCost, "humanFormCopyCost", 0.60f);
+            Scribe_Values.Look(ref asuranBlockFabricationCost, "asuranBlockFabricationCost", 0.50f);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
                 ClampValues();
@@ -111,6 +113,7 @@ namespace WraithNaniteGravtech
 
             replicatorBiologicalPredationThreshold = Mathf.Clamp(replicatorBiologicalPredationThreshold, 0.50f, 1f);
             humanFormCopyCost = Mathf.Clamp(humanFormCopyCost, 0.10f, 1f);
+            asuranBlockFabricationCost = Mathf.Clamp01(asuranBlockFabricationCost);
         }
 
         internal void ResetDefaults()
@@ -148,6 +151,7 @@ namespace WraithNaniteGravtech
 
             humanFormCopying = true;
             humanFormCopyCost = 0.60f;
+            asuranBlockFabricationCost = 0.50f;
             ClampValues();
         }
     }
@@ -184,7 +188,7 @@ namespace WraithNaniteGravtech
             if (settings == null)
                 return;
 
-            const float contentHeight = 2050f;
+            const float contentHeight = 2110f;
             Rect view = new Rect(0f, 0f, Math.Max(100f, inRect.width - 18f), contentHeight);
             Widgets.BeginScrollView(inRect, ref settingsScroll, view);
 
@@ -263,6 +267,13 @@ namespace WraithNaniteGravtech
                 "Nanite Reserve cost to build a human-form copy",
                 settings.humanFormCopyCost,
                 0.10f,
+                1f,
+                0.01f);
+            settings.asuranBlockFabricationCost = DrawPercentSlider(
+                listing,
+                "Nanite Reserve cost to create 25 Replicator Blocks",
+                settings.asuranBlockFabricationCost,
+                0f,
                 1f,
                 0.01f);
 
@@ -355,6 +366,8 @@ namespace WraithNaniteGravtech
         public static bool HumanFormCopyingEnabled => WNGMod.Settings?.humanFormCopying ?? true;
         public static float HumanFormCopyReserveCost =>
             Mathf.Clamp(WNGMod.Settings?.humanFormCopyCost ?? 0.60f, 0.10f, 1f);
+        public static float AsuranBlockFabricationReserveCost =>
+            Mathf.Clamp01(WNGMod.Settings?.asuranBlockFabricationCost ?? 0.50f);
 
         public static int DaysToTicks(float days)
         {

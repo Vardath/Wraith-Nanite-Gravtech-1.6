@@ -68,4 +68,29 @@
       </li>
     </comps>
   </AbilityDef>
+  <AbilityDef>
+    <defName>WNG_AsuranFabricateReplicatorBlocks</defName>
+    <label>fabricate Replicator blocks</label>
+    <description>Condense stored Asuran nanites and feedstock into 25 physical Replicator Blocks for fabrication. The blocks are ordinary WNG Replicator Matter after creation and retain their normal containment and self-assembly hazards. The Nanite Reserve cost is configurable in WNG mod settings.</description>
+    <iconPath>UI/WNG/Abilities/AsuranReplicatorBlocks</iconPath>
+    <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
+    <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
+    <targetRequired>false</targetRequired>
+    <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+    <hostile>false</hostile>
+    <verbProperties>
+      <verbClass>Verb_CastAbility</verbClass>
+      <warmupTime>0.5</warmupTime>
+      <range>-1</range>
+      <drawAimPie>false</drawAimPie>
+      <requireLineOfSight>false</requireLineOfSight>
+      <targetParams><canTargetSelf>true</canTargetSelf></targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_AbilityAsuranReplicatorMatter">
+        <blockCount>25</blockCount>
+      </li>
+    </comps>
+  </AbilityDef>
+
 </Defs>
