@@ -15,7 +15,7 @@ namespace WraithNaniteGravtech.Diagnostics
 
         private static int IndexOf(string packageId)
         {
-            List<ModMetaData> mods = ModsConfig.ActiveModsInLoadOrder;
+            List<ModMetaData> mods = ModsConfig.ActiveModsInLoadOrder.ToList();
             for (int i = 0; i < mods.Count; i++)
             {
                 ModMetaData mod = mods[i];
@@ -28,9 +28,10 @@ namespace WraithNaniteGravtech.Diagnostics
 
         private static string At(int index)
         {
-            if (index < 0 || index >= ModsConfig.ActiveModsInLoadOrder.Count)
+            List<ModMetaData> mods = ModsConfig.ActiveModsInLoadOrder.ToList();
+            if (index < 0 || index >= mods.Count)
                 return "<none>";
-            ModMetaData mod = ModsConfig.ActiveModsInLoadOrder[index];
+            ModMetaData mod = mods[index];
             return (mod?.Name ?? "<unnamed>") + " [" + (mod?.PackageIdPlayerFacing ?? mod?.PackageId ?? "?") + "]";
         }
 
@@ -51,7 +52,8 @@ namespace WraithNaniteGravtech.Diagnostics
                 failures.Add("WNG package could not be located in the active load order.");
             else
             {
-                sb.AppendLine("WNG index: " + wng + " / " + (ModsConfig.ActiveModsInLoadOrder.Count - 1));
+                int activeCount = ModsConfig.ActiveModsInLoadOrder.Count();
+                sb.AppendLine("WNG index: " + wng + " / " + (activeCount - 1));
                 sb.AppendLine("Immediately before WNG: " + At(wng - 1));
                 sb.AppendLine("Immediately after WNG: " + At(wng + 1));
             }
