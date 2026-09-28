@@ -1,0 +1,16 @@
+name: D143 Building Comp Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  building-comps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit building comp stacks and custom pairings
+        run: python3 .github/artqa/building_comp.py
