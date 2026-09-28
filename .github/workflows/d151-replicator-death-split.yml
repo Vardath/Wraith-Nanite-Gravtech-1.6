@@ -1,0 +1,16 @@
+name: D151 Replicator Lifecycle Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  replicator-lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Replicator lifecycle contracts
+        run: python3 .github/artqa/replicator_death_split.py
