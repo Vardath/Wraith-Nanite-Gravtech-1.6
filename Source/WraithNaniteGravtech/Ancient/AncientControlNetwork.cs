@@ -112,7 +112,7 @@ namespace WraithNaniteGravtech
             {
                 defaultLabel = "Engage network shields",
                 defaultDesc = "Switch on allied WNG Asuran/Ancient gravship shield emitters inside this 72-cell neural control network. Native shield power, charging, EMP and overload behavior remains authoritative.",
-                icon = ContentFinder<Texture2D>.Get("UI/WNG/EMP", true),
+                icon = ContentFinder<Texture2D>.Get("UI/WNG/Build/WNG_AncientControlChair", true),
                 action = () => SetNetworkShields(true)
             };
             if (!NetworkActive)
@@ -123,7 +123,7 @@ namespace WraithNaniteGravtech
             {
                 defaultLabel = "Stand down network shields",
                 defaultDesc = "Switch off allied WNG Asuran/Ancient gravship shield emitters inside this 72-cell neural control network.",
-                icon = ContentFinder<Texture2D>.Get("UI/WNG/EMP", true),
+                icon = ContentFinder<Texture2D>.Get("UI/WNG/Build/WNG_AncientControlChair", true),
                 action = () => SetNetworkShields(false)
             };
             if (!NetworkActive)
