@@ -226,6 +226,92 @@ for recipe, cls, path in custom_worker_refs:
     if cls.startswith("RecipeWorker_") and cls not in avail_classes:
         fail(f"Workbench custom worker {cls} for {recipe} is not covered by availability audit")
 
+# ---------- Complete RecipeDef / recipeMaker enumeration ----------
+recipe_def_count = 0
+recipe_maker_count = 0
+recipe_maker_inherited_routes = []
+custom_recipe_worker_refs = []
+external_inherit_false = []
+
+for path, root in def_roots:
+    for node in list(root):
+        defname = node.findtext("defName") or ""
+
+        if node.tag == "RecipeDef":
+            recipe_def_count += 1
+
+            wc = (node.findtext("workerClass") or "").strip()
+            if wc.startswith("WraithNaniteGravtech."):
+                custom_recipe_worker_refs.append((defname, wc, path))
+
+            users_node = node.find("./recipeUsers")
+            users = [x.text.strip() for x in node.findall("./recipeUsers/li") if x.text and x.text.strip()]
+            if users_node is not None and (users_node.get("Inherit") or "").lower() == "false":
+                external = [u for u in users if not u.startswith("WNG_") and u != "Human"]
+                if external:
+                    external_inherit_false.append((defname, path, external))
+
+            physical_product = node.find("./products") is not None
+            surgery_like = (
+                (node.get("ParentName") or "").startswith("Surgery")
+                or node.find("./addsHediff") is not None
+                or node.find("./removesHediff") is not None
+                or node.find("./appliedOnFixedBodyParts") is not None
+            )
+            if physical_product and not users and not surgery_like:
+                fail(f"{defname} in {path} makes a physical product but has no recipeUsers")
+
+        elif node.tag == "ThingDef":
+            maker = node.find("./recipeMaker")
+            if maker is None:
+                continue
+
+            recipe_maker_count += 1
+            users_node = maker.find("./recipeUsers")
+            users = [x.text.strip() for x in maker.findall("./recipeUsers/li") if x.text and x.text.strip()]
+
+            if users_node is not None and (users_node.get("Inherit") or "").lower() == "false":
+                external = [u for u in users if not u.startswith("WNG_")]
+                if external:
+                    external_inherit_false.append((defname + " [recipeMaker]", path, external))
+
+            if not users:
+                parent = (node.get("ParentName") or "").strip()
+                if parent:
+                    recipe_maker_inherited_routes.append((defname, parent, path))
+                else:
+                    fail(f"{defname} in {path} has recipeMaker but no recipeUsers and no parent to inherit routing from")
+
+# A WNG recipe must never erase an external bench's inherited user list.
+for owner, path, external in external_inherit_false:
+    fail(f"{owner} in {path} uses recipeUsers Inherit=False on external user(s): {external}")
+
+# All custom recipe worker classes referenced by RecipeDefs must exist in source.
+for recipe, fqcn, path in custom_recipe_worker_refs:
+    cls = fqcn.split(".")[-1]
+    if cls not in class_names:
+        fail(f"{recipe} in {path} references missing custom recipe worker {fqcn}")
+
+note(f"Enumerated {recipe_def_count} RecipeDef(s) and {recipe_maker_count} ThingDef recipeMaker block(s)")
+if recipe_maker_inherited_routes:
+    note(
+        "recipeMaker blocks intentionally inheriting workstation routing: "
+        + ", ".join(f"{name} <- {parent}" for name, parent, _ in recipe_maker_inherited_routes)
+    )
+
+# Lifecycle/type-safety classification for every availability override.
+for path, cls, base, body in availability_methods:
+    if "RecipeWorker" in base and "Recipe_Surgery" not in base:
+        # Production workers may receive null, unspawned, destroyed, or non-building probes.
+        # Null must be harmless; Map/Faction access must remain null-safe.
+        if "thing.Map." in body or "thing.Faction." in body:
+            fail(f"{cls} in {path} directly dereferences Map/Faction in production availability")
+    else:
+        # Surgery-style workers must reject non-pawn probes before touching pawn state/base logic.
+        pawn_decl = body.find("Pawn pawn = thing as Pawn")
+        if pawn_decl < 0:
+            fail(f"{cls} in {path} does not type-check Thing as Pawn")
+
 # ---------- Report ----------
 print("=== WNG BILL / RECIPE REGRESSION AUDIT ===")
 print("Checks:")
