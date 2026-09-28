@@ -1,0 +1,24 @@
+name: D170 Dev Mode Parity Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  dev-mode-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit Dev/God/normal construction separation
+        run: python3 .github/artqa/dev_mode_parity.py
+      - name: Recheck construction and God Mode
+        run: python3 .github/artqa/construction_god_mode.py
+      - name: Recheck Architect routing
+        run: python3 .github/artqa/architect_menu.py
+      - name: Recheck economy
+        run: python3 .github/artqa/economy.py
+      - name: Recheck resource conservation
+        run: python3 .github/artqa/resource_conservation.py
