@@ -206,8 +206,11 @@ for fname,contract in expected.items():
 # Key source routes must bind to the intended faction and not substitute a neighboring WNG faction.
 source_contracts={
     "Source/WraithNaniteGravtech/Wraith/WraithLineagePolitics.cs":[
-        "WNG_WraithSableBrood","WNG_WraithCinderCourt","WNG_WraithVeiledHive","WNG_WraithPaleCovenant",
-        "faction.def?.permanentEnemy == true"
+        "WNG_WraithSableBrood","WNG_WraithCinderCourt","WNG_WraithVeiledHive","WNG_WraithPaleCovenant"
+    ],
+    "Source/WraithNaniteGravtech/Wraith/WraithPragmaticDiplomacy.cs":[
+        "faction.def?.permanentEnemy == true",
+        "WraithLineageUtility.SableBroodDefName"
     ],
     "Source/WraithNaniteGravtech/Asurans/HumanFormInfiltration.cs":[
         "WNG_PrecursorCollective"
