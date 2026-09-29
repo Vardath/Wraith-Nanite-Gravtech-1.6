@@ -7,21 +7,29 @@
       "title": "All crafting bills unavailable",
       "tests": [
         ".github/artqa/bill_recipe_regression.py",
+        ".github/artqa/production_routing.py",
+        ".github/artqa/third_party_recipe_preservation.py",
         ".github/artqa/null_type_lifecycle.py"
       ],
       "guards": [
         {
-          "path": "Source/WraithNaniteGravtech/WNGSettings.cs",
+          "path": ".github/artqa/production_routing.py",
           "contains": [
-            "class RecipeWorker_UniversalCraftOnly",
-            "public override bool AvailableOnNow"
+            "live recipeMaker is forbidden; use an explicit WNG RecipeDef"
           ]
         },
         {
-          "path": "Source/WraithNaniteGravtech/Asurans/AsuranTechnologyPatternLibrary.cs",
+          "path": "Defs/RecipeDefs/Recipes_WNGItemCrafting.xml",
           "contains": [
-            "class RecipeWorker_AsuranPatternLocked",
-            "public override bool AvailableOnNow"
+            "Explicit WNG-only item crafting recipes",
+            "<recipeUsers>"
+          ]
+        },
+        {
+          "path": "Source/WraithNaniteGravtech/WNGDefSanitizer.cs",
+          "contains": [
+            "protect market-value and bill enumeration",
+            "entry.thingDef == null"
           ]
         }
       ]
