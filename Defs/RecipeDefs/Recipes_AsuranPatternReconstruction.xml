@@ -10,7 +10,6 @@
     <label>reconstruct charge rifle from pattern</label>
     <description>Reconstruct a learned charge-rifle pattern from stabilized Asuran nanite slurry and spacer-grade structural material. Requires a powered same-faction Pattern Archive carrying the scanned charge-rifle pattern.</description>
     <jobString>Reconstructing charge rifle from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>24000</workAmount>
     <workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
@@ -30,7 +29,6 @@
     <label>reconstruct charge lance from pattern</label>
     <description>Reconstruct a learned charge-lance pattern from stabilized Asuran nanite slurry and spacer-grade structural material. Requires a powered same-faction Pattern Archive carrying the scanned charge-lance pattern.</description>
     <jobString>Reconstructing charge lance from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>30000</workAmount>
     <workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
@@ -50,7 +48,6 @@
     <label>reconstruct shield belt from pattern</label>
     <description>Reconstruct a learned shield-belt pattern from stabilized Asuran nanite slurry and spacer-grade components. Requires a powered same-faction Pattern Archive carrying the scanned shield-belt pattern.</description>
     <jobString>Reconstructing shield belt from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>16000</workAmount>
     <workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
@@ -70,7 +67,6 @@
     <label>reconstruct minigun from pattern</label>
     <description>Reconstruct a learned minigun pattern while preserving the weapon's conventional structural mass. Requires a powered same-faction Pattern Archive carrying the scanned minigun pattern.</description>
     <jobString>Reconstructing minigun from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>60000</workAmount>
     <workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
@@ -90,7 +86,6 @@
     <label>reconstruct marine armor from pattern</label>
     <description>Reconstruct a learned marine-armor pattern from stabilized Asuran nanite slurry and full spacer-grade structural inputs. Requires a powered same-faction Pattern Archive carrying the scanned marine-armor pattern.</description>
     <jobString>Reconstructing marine armor from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>60000</workAmount>
     <workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
@@ -111,7 +106,6 @@
     <label>reconstruct marine helmet from pattern</label>
     <description>Reconstruct a learned marine-helmet pattern from stabilized Asuran nanite slurry and spacer-grade structural inputs. Requires a powered same-faction Pattern Archive carrying the scanned marine-helmet pattern.</description>
     <jobString>Reconstructing marine helmet from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>21000</workAmount>
     <workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
@@ -130,7 +124,6 @@
     <label>reconstruct assault rifle from pattern</label>
     <description>Reconstruct a learned assault-rifle pattern from conventional weapon materials and stabilized Asuran nanite slurry. Requires a powered same-faction Pattern Archive carrying the scanned assault-rifle pattern.</description>
     <jobString>Reconstructing assault rifle from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>26000</workAmount><workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
     <skillRequirements><Crafting>7</Crafting></skillRequirements>
@@ -149,7 +142,6 @@
     <label>reconstruct sniper rifle from pattern</label>
     <description>Reconstruct a learned sniper-rifle pattern while retaining its conventional long-range barrel and precision structure. Requires a powered same-faction Pattern Archive carrying the scanned sniper-rifle pattern.</description>
     <jobString>Reconstructing sniper rifle from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>32000</workAmount><workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
     <skillRequirements><Crafting>8</Crafting></skillRequirements>
@@ -168,7 +160,6 @@
     <label>reconstruct LMG from pattern</label>
     <description>Reconstruct a learned light-machine-gun pattern from conventional weapon structure plus stabilized Asuran nanite slurry. Requires a powered same-faction Pattern Archive carrying the scanned LMG pattern.</description>
     <jobString>Reconstructing LMG from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>30000</workAmount><workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
     <skillRequirements><Crafting>7</Crafting></skillRequirements>
@@ -187,7 +178,6 @@
     <label>reconstruct chain shotgun from pattern</label>
     <description>Reconstruct a learned chain-shotgun pattern from conventional weapon structure plus stabilized Asuran nanite slurry. Requires a powered same-faction Pattern Archive carrying the scanned chain-shotgun pattern.</description>
     <jobString>Reconstructing chain shotgun from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>24000</workAmount><workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
     <skillRequirements><Crafting>7</Crafting></skillRequirements>
@@ -206,7 +196,6 @@
     <label>reconstruct recon armor from pattern</label>
     <description>Reconstruct a learned recon-armor pattern from spacer materials and stabilized Asuran nanite slurry. Requires a powered same-faction Pattern Archive carrying the scanned recon-armor pattern.</description>
     <jobString>Reconstructing recon armor from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>42000</workAmount><workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
     <skillRequirements><Crafting>8</Crafting></skillRequirements>
@@ -225,7 +214,6 @@
     <label>reconstruct cataphract armor from pattern</label>
     <description>Reconstruct a learned cataphract-armor pattern from heavy spacer materials and stabilized Asuran nanite slurry. Requires a powered same-faction Pattern Archive carrying the scanned cataphract-armor pattern.</description>
     <jobString>Reconstructing cataphract armor from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>78000</workAmount><workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
     <skillRequirements><Crafting>10</Crafting></skillRequirements>
@@ -245,7 +233,6 @@
     <label>reconstruct cataphract helmet from pattern</label>
     <description>Reconstruct a learned cataphract-helmet pattern from heavy spacer materials and stabilized Asuran nanite slurry. Requires a powered same-faction Pattern Archive carrying the scanned cataphract-helmet pattern.</description>
     <jobString>Reconstructing cataphract helmet from pattern.</jobString>
-    <workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>
     <workAmount>34000</workAmount><workSkill>Crafting</workSkill>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
     <skillRequirements><Crafting>9</Crafting></skillRequirements>
