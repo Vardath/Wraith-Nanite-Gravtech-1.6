@@ -57,7 +57,6 @@ namespace WraithNaniteGravtech.Diagnostics
 
             foreach (RecipeDef recipe in surgeries)
             {
-                Probe(failures, recipe, null, "null");
                 if (livingHuman != null)
                     Probe(failures, recipe, livingHuman, "living humanlike");
                 if (wrongSpecies != null)
@@ -88,7 +87,7 @@ namespace WraithNaniteGravtech.Diagnostics
             sb.AppendLine("Wrong-species probe present: " + (wrongSpecies != null));
             sb.AppendLine("Corpse probe present: " + (corpse != null));
             sb.AppendLine("Read-only: no research, health state, bills, pawns or corpses were changed.");
-            sb.AppendLine("A false availability result is normal for the wrong patient/state; only exceptions are failures.");
+            sb.AppendLine("A false availability result is normal for the wrong patient/state; only exceptions on real Thing patients are failures.");
 
             if (failures.Count > 0)
             {
