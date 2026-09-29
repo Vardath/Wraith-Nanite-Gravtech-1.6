@@ -27,7 +27,7 @@ thingdefs=by_type["ThingDef"]
 recipes=by_type["RecipeDef"]
 
 allowed_external_users={
-    "Human","MechGestator","TableSculpting","FabricationBench","DrugLab","ElectricSmelter","AmmoBench"
+    "Human"
 }
 
 external_usage=collections.defaultdict(list)
@@ -105,15 +105,10 @@ for bench in ("ElectricStove","FueledStove","HandTailoringBench","ElectricTailor
     if external_usage.get(bench):
         failures.append(f"{bench}: WNG unexpectedly injects {len(external_usage[bench])} recipe(s)")
 
-# Expected intentional external integration points.
-expected={
-    "FabricationBench": lambda n,p: False,
-    "ElectricSmelter": lambda n,p: p.name=="Recipes_ReplicatorSalvage.xml",
-}
-for bench,pred in expected.items():
-    for name,path in external_usage.get(bench,[]):
-        if not pred(name,path):
-            failures.append(f"{bench}: unexpected WNG route {name} from {path}")
+# WNG must not inject production recipes into vanilla/third-party workbenches.
+for user, refs in external_usage.items():
+    if user != "Human":
+        failures.append(f"{user}: WNG external workstation routing is forbidden: {refs}")
 
 notes.append(f"Parsed {len(recipes)} RecipeDefs and {len(thingdefs)} ThingDefs")
 notes.append(f"WNG workstations referenced: {len(wng_usage)}")
