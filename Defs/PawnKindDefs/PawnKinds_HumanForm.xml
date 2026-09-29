@@ -62,7 +62,7 @@
   <PawnKindDef ParentName="WNG_NaniteHumanoidBase">
     <defName>WNG_HumanFormReplicator</defName>
     <label>human-form replicator</label>
-    <xenotypeSet>
+    <xenotypeSet Inherit="False">
       <xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances>
     </xenotypeSet>
     <combatPower>180</combatPower>
@@ -81,7 +81,7 @@
   <PawnKindDef ParentName="WNG_NaniteHumanoidBase">
     <defName>WNG_HumanFormInfiltrator</defName>
     <label>human-form traveller</label>
-    <xenotypeSet>
+    <xenotypeSet Inherit="False">
       <xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances>
     </xenotypeSet>
     <combatPower>160</combatPower>
@@ -100,7 +100,7 @@
     <defName>WNG_PlayerHumanFormReplicator</defName>
     <label>player human-form replicator</label>
     <defaultFactionDef>PlayerColony</defaultFactionDef>
-    <xenotypeSet>
+    <xenotypeSet Inherit="False">
       <xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances>
     </xenotypeSet>
     <combatPower>180</combatPower>
@@ -119,7 +119,7 @@
     <defName>WNG_HumanFormCopy</defName>
     <label>reconstructed human-form copy</label>
     <defaultFactionDef>PlayerColony</defaultFactionDef>
-    <xenotypeSet>
+    <xenotypeSet Inherit="False">
       <xenotypeChances><WNG_NanitePrecursor>1</WNG_NanitePrecursor></xenotypeChances>
     </xenotypeSet>
     <combatPower>120</combatPower>
@@ -132,7 +132,7 @@
   <PawnKindDef ParentName="WNG_NaniteHumanoidBase">
     <defName>WNG_ReplicatorQueenChild</defName>
     <label>replicator child</label>
-    <xenotypeSet><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet>
+    <xenotypeSet Inherit="False"><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet>
     <fixedGender>Female</fixedGender>
     <minGenerationAge>13</minGenerationAge>
     <maxGenerationAge>13</maxGenerationAge>
