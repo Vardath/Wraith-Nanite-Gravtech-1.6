@@ -384,8 +384,8 @@
           "path": "Defs/PawnKindDefs/PawnKinds_HumanForm.xml",
           "contains": [
             "WNG_ReplicatorQueenChild",
-            "<minGenerationAge>13</minGenerationAge>",
-            "<maxGenerationAge>13</maxGenerationAge>"
+            "<minGenerationAge>13.01</minGenerationAge>",
+            "<maxGenerationAge>13.99</maxGenerationAge>"
           ]
         }
       ]

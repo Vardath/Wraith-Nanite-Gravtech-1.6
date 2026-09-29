@@ -193,8 +193,15 @@ for name,contract in expected.items():
     if contract.get("age"):
         lo=inherited_node_value(node,"minGenerationAge")
         hi=inherited_node_value(node,"maxGenerationAge")
-        if lo!=contract["age"] or hi!=contract["age"]:
-            failures.append(f"{name}: expected exact generation age {contract['age']}, found {lo}..{hi}")
+        try:
+            expected_year=int(contract["age"])
+            lo_f=float(lo); hi_f=float(hi)
+            if int(lo_f)!=expected_year or int(hi_f)!=expected_year or lo_f<0 or hi_f<lo_f:
+                failures.append(
+                    f"{name}: expected generation entirely within biological age {expected_year}, found {lo}..{hi}"
+                )
+        except (TypeError,ValueError):
+            failures.append(f"{name}: invalid generation age contract {lo}..{hi}")
 
 # Human-form combat kinds need weapon route; infiltrator intentionally does not.
 for name in ("WNG_PrecursorEngineer","WNG_PrecursorSoldier","WNG_PrecursorCommander","WNG_HumanFormReplicator","WNG_PlayerHumanFormReplicator"):
