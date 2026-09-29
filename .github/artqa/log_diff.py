@@ -7,7 +7,6 @@ import sys
 ROOT = Path(".")
 SRC = ROOT / "Source" / "WraithNaniteGravtech"
 BASELINE = ROOT / ".github" / "artqa" / "baselines" / "wng_log_callsite_baseline.json"
-DIAG = SRC / "Diagnostics" / "Audit33LogDiffDiagnostics.cs"
 failures = []
 
 files = [
@@ -77,18 +76,7 @@ for key in ("schema", "production_cs_files", "signature_count", "counts", "sha25
     if baseline.get(key) != current.get(key):
         failures.append(f"static log signature field changed: {key}: baseline={baseline.get(key)!r} current={current.get(key)!r}")
 
-diag_text = DIAG.read_text(encoding="utf-8", errors="ignore") if DIAG.exists() else ""
-for token in (
-    'Audit 33 - log diff candidate',
-    'MonitorTicks = 6000',
-    'RuntimeBaselineStatus = "PROVISIONAL',
-    'Application.logMessageReceived += HandleLogMessage',
-    'Application.logMessageReceived -= HandleLogMessage',
-    'NormalizeFingerprint',
-    'NEW / UNCLASSIFIED FINGERPRINTS',
-):
-    if token not in diag_text:
-        failures.append(f"Audit 33 live log-diff contract missing: {token}")
+# In-game Audit 33 monitor retired after audit completion; static baseline remains enforced.
 
 if failures:
     print("\nFAILURES:")
@@ -99,4 +87,4 @@ if failures:
     raise SystemExit(1)
 
 print("PASS: static WNG warning/error callsite signature matches the checked baseline.")
-print("NOTE: runtime/startup Player.log baseline remains provisional until a clean real-stack log is classified.")
+print("NOTE: runtime/startup log monitoring is no longer shipped in the mod; static baseline remains enforced in CI.")
