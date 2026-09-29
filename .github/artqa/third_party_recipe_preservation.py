@@ -58,7 +58,7 @@ for base in (ROOT/"Patches", ROOT/"Compatibility"):
 
 # 3) WNG RecipeDefs may only add themselves to a bounded allow-list of external benches.
 allowed_external={
-    "Human","MechGestator","TableSculpting","FabricationBench","DrugLab","ElectricSmelter","AmmoBench"
+    "Human"
 }
 external_routes={}
 for base in (ROOT/"Defs", ROOT/"Compatibility"):
