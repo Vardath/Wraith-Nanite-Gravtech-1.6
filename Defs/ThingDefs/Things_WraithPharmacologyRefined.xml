@@ -46,7 +46,7 @@
     </ingestible>
     <recipeMaker>
       <researchPrerequisite>WNG_WraithEnzymeRefinement</researchPrerequisite>
-      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
       <workSkill>Intellectual</workSkill>
       <skillRequirements><Intellectual>7</Intellectual></skillRequirements>
       <productCount>2</productCount>
@@ -140,7 +140,7 @@
     </ingestible>
     <recipeMaker>
       <researchPrerequisite>WNG_WraithEnzymeRefinement</researchPrerequisite>
-      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
       <workSkill>Intellectual</workSkill>
       <skillRequirements><Intellectual>8</Intellectual></skillRequirements>
       <productCount>2</productCount>
