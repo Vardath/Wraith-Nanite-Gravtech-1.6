@@ -92,7 +92,6 @@ for cls, (path, base) in sorted(classes.items()):
         production_workers.append((cls, path, base))
 
 expected_production_workers = {
-    "RecipeWorker_UniversalCraftOnly",
     "RecipeWorker_AsuranPatternLocked",
 }
 found_production = {x[0] for x in production_workers}
@@ -203,9 +202,8 @@ for bench in ("ElectricStove", "FueledStove", "HandTailoringBench", "ElectricTai
         fail(f"WNG unexpectedly injects recipes into {bench}: {bench_additions[bench]}")
 
 # Fabrication additions must be universal-crafting fallbacks only.
-for defname, path in bench_additions["FabricationBench"]:
-    if path.name != "Recipes_UniversalCrafting.xml":
-        fail(f"Unexpected WNG FabricationBench recipe {defname} in {path}")
+if bench_additions["FabricationBench"]:
+    fail(f"WNG unexpectedly injects recipes into FabricationBench: {bench_additions['FabricationBench']}")
 
 # Smelter additions must be the bounded Replicator salvage recipes only.
 for defname, path in bench_additions["ElectricSmelter"]:
