@@ -9,7 +9,6 @@ namespace WraithNaniteGravtech
 {
     public class WNGSettings : ModSettings
     {
-        public bool enableUniversalCrafting = false;
         public int livingForgeRawMeatCost = 20;
         public int livingForgeBiomassYield = 16;
         public int livingForgeBiomassWorkAmount = 900;
@@ -47,7 +46,6 @@ namespace WraithNaniteGravtech
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref enableUniversalCrafting, "enableUniversalCrafting", false);
             Scribe_Values.Look(ref livingForgeRawMeatCost, "livingForgeRawMeatCost", 20);
             Scribe_Values.Look(ref livingForgeBiomassYield, "livingForgeBiomassYield", 16);
             Scribe_Values.Look(ref livingForgeBiomassWorkAmount, "livingForgeBiomassWorkAmount", 900);
@@ -118,7 +116,6 @@ namespace WraithNaniteGravtech
 
         internal void ResetDefaults()
         {
-            enableUniversalCrafting = false;
             livingForgeRawMeatCost = 20;
             livingForgeBiomassYield = 16;
             livingForgeBiomassWorkAmount = 900;
@@ -194,13 +191,6 @@ namespace WraithNaniteGravtech
 
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(view);
-
-            Heading(listing, "Acquisition overrides");
-            listing.CheckboxLabeled(
-                "Enable universal WNG crafting",
-                ref settings.enableUniversalCrafting,
-                "Off by default. When enabled, WNG fallback recipes become available even when their normal faction, event or special-station route is unavailable.");
-            listing.GapLine();
 
             Heading(listing, "Wraith living technology");
             settings.livingForgeIncubationDays = DrawDaysSlider(listing, "Living Forge host incubation", settings.livingForgeIncubationDays);
@@ -339,7 +329,6 @@ namespace WraithNaniteGravtech
     {
         public const int TicksPerDay = 60000;
 
-        public static bool UniversalCraftingEnabled => WNGMod.Settings?.enableUniversalCrafting ?? false;
         public static int LivingForgeRawMeatCost => WNGMod.Settings?.livingForgeRawMeatCost ?? 20;
         public static int LivingForgeBiomassYield => WNGMod.Settings?.livingForgeBiomassYield ?? 16;
         public static int LivingForgeBiomassWorkAmount => WNGMod.Settings?.livingForgeBiomassWorkAmount ?? 900;
