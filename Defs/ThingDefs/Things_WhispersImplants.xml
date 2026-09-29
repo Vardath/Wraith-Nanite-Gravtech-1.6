@@ -22,7 +22,7 @@
     <recipeMaker>
       <researchPrerequisite>WNG_WhispersDerivedImplants</researchPrerequisite>
       <recipeUsers>
-        <li>DrugLab</li>
+        <li>WNG_PrecursorFabricator</li>
       </recipeUsers>
       <workAmount>3200</workAmount>
       <workSkill>Intellectual</workSkill>
@@ -56,7 +56,7 @@
     <recipeMaker>
       <researchPrerequisite>WNG_WhispersDerivedImplants</researchPrerequisite>
       <recipeUsers>
-        <li>DrugLab</li>
+        <li>WNG_PrecursorFabricator</li>
       </recipeUsers>
       <workAmount>3600</workAmount>
       <workSkill>Intellectual</workSkill>
