@@ -91,9 +91,7 @@ for cls, (path, base) in sorted(classes.items()):
     if re.search(r"(^|\.)RecipeWorker\b", base) and "Recipe_Surgery" not in base:
         production_workers.append((cls, path, base))
 
-expected_production_workers = {
-    "RecipeWorker_AsuranPatternLocked",
-}
+expected_production_workers = set()
 found_production = {x[0] for x in production_workers}
 missing = expected_production_workers - found_production
 if missing:
