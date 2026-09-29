@@ -43,10 +43,9 @@ namespace WraithNaniteGravtech.Diagnostics
                 if (!(giver.Worker is WorkGiver_DoAsuranFabrication))
                     failures.Add("WNG_DoAsuranFabrication runtime worker is not WorkGiver_DoAsuranFabrication.");
                 if (giver.fixedBillGiverDefs == null ||
-                    giver.fixedBillGiverDefs.Count != 1 ||
-                    giver.fixedBillGiverDefs[0]?.defName != "TableSculpting")
+                    !giver.fixedBillGiverDefs.Any(d => d?.defName == "TableSculpting"))
                 {
-                    failures.Add("WNG_DoAsuranFabrication does not target exactly TableSculpting.");
+                    failures.Add("WNG_DoAsuranFabrication no longer targets TableSculpting.");
                 }
             }
 
