@@ -514,13 +514,16 @@
       "detectors": [
         "Defs/RecipeDefs/*.xml"
       ],
-      "source_globs": [],
+      "source_globs": [
+        "Source/WraithNaniteGravtech/WNGDefSanitizer.cs"
+      ],
       "required_defs": [
         "Defs/RecipeDefs/*.xml",
         "Defs/ThingDefs/*.xml"
       ],
-      "required_class_files": [],
-      "classes_not_applicable": "Cross-cutting construction/crafting behavior is expressed through Defs and the class-bearing feature systems already claimed above.",
+      "required_class_files": [
+        "Source/WraithNaniteGravtech/WNGDefSanitizer.cs"
+      ],
       "required_assets": [],
       "assets_not_applicable": "Economy validation concerns resource/work contracts rather than a dedicated asset family.",
       "tests": [
