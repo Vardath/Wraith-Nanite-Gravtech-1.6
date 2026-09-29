@@ -1,0 +1,83 @@
+name: D176 Release Gate Master Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  master-release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore RimWorld references
+        run: dotnet restore Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj
+
+      - name: Compute source fingerprint
+        shell: bash
+        run: |
+          echo "WNG_SOURCE_FINGERPRINT=$(python .github/artqa/dll_source_parity.py fingerprint)" >> "$GITHUB_ENV"
+
+      - name: Rebuild current source with provenance
+        run: |
+          dotnet build Source/WraithNaniteGravtech/WraithNaniteGravtech.csproj -c Release --no-restore \
+            -p:WNGSourceCommit="${GITHUB_SHA}" \
+            -p:WNGSourceFingerprint="${WNG_SOURCE_FINGERPRINT}"
+          python .github/artqa/dll_source_parity.py write --source-commit "${GITHUB_SHA}"
+          python .github/artqa/dll_source_parity.py verify \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
+
+      - name: Install audit dependencies
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Run all critical static audits
+        run: python .github/artqa/master_release_gate.py
+
+      - name: Build exact release candidate
+        run: |
+          python .github/artqa/build_release_package.py \
+            --zip Wraith-Nanite-Gravtech-1.6-release.zip \
+            --stage master-release-stage
+          rm -rf master-release-unpacked
+          mkdir -p master-release-unpacked
+          unzip -q Wraith-Nanite-Gravtech-1.6-release.zip -d master-release-unpacked
+
+      - name: Verify exact ZIP and provenance
+        run: |
+          python .github/artqa/release_package_integrity.py master-release-unpacked/Wraith-Nanite-Gravtech
+          python .github/artqa/dll_source_parity.py verify \
+            --dll master-release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll \
+            --manifest master-release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.buildinfo.json \
+            --expected-source-commit "${GITHUB_SHA}" \
+            --require-embedded
+          cmp -s Assemblies/WraithNaniteGravtech.dll master-release-unpacked/Wraith-Nanite-Gravtech/Assemblies/WraithNaniteGravtech.dll
+          (
+            cd master-release-unpacked/Wraith-Nanite-Gravtech
+            python ../../.github/artqa/final_art_integrity.py
+          )
+
+      - name: Verify Steam/GitHub package parity
+        run: |
+          python .github/artqa/build_release_package.py \
+            --zip master-steam-runtime.zip \
+            --stage master-steam-stage
+          python .github/artqa/steam_packaging.py \
+            --github-root master-release-unpacked/Wraith-Nanite-Gravtech \
+            --steam-root master-steam-stage/Wraith-Nanite-Gravtech \
+            --workshop-description STEAM-WORKSHOP-DESCRIPTION.txt
+
+      - name: Upload master-gated candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: WNG-D176-Master-Gated-Release-Candidate
+          path: Wraith-Nanite-Gravtech-1.6-release.zip
+          if-no-files-found: error
+          retention-days: 14
