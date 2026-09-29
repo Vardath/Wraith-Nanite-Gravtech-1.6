@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Patch>
-  <Operation Class="PatchOperationSequence" MayRequire="idolord.onac">
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>ONAC</li>
+    </mods>
+    <match Class="PatchOperationSequence">
     <operations>
       <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_GoauldGravEngine"]/costList/Uranium</xpath><value><ONAC_Naquadah>120</ONAC_Naquadah></value></li>
       <li Class="PatchOperationReplace"><xpath>Defs/TerrainDef[defName="WNG_GoauldGravshipSubstructure"]/costList/Uranium</xpath><value><ONAC_Naquadah>2</ONAC_Naquadah></value></li>
@@ -34,5 +38,6 @@
       <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_GoauldNaquadahPowerCore"]/comps/li[@Class="CompProperties_Refuelable"]/fuelLabel</xpath><value><fuelLabel>Naquadah</fuelLabel></value></li>
       <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WNG_GoauldNaquadahPowerCore"]/comps/li[@Class="CompProperties_Refuelable"]/fuelGizmoLabel</xpath><value><fuelGizmoLabel>Naquadah</fuelGizmoLabel></value></li>
     </operations>
+    </match>
   </Operation>
 </Patch>
