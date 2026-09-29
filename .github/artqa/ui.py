@@ -103,39 +103,7 @@ for category in ("WNG_WraithArchitect","WNG_AsuranArchitect","WNG_GoauldArchitec
         failures.append(f"missing WNG Architect category {category}")
 
 # Live UI diagnostic must exist.
-diag=SRC/"Diagnostics"/"Audit35UIDiagnostics.cs"
-dtext=diag.read_text(encoding="utf-8",errors="ignore") if diag.exists() else ""
-for token in (
-    'Audit 35 - selected UI surface',
-    'SelectedObjectsListForReading',
-    'GetGizmos()',
-    'defaultLabel',
-    'defaultDesc',
-    'disabledReason',
-    'WNG_WraithArchitect',
-    'WNG_AsuranArchitect',
-    'WNG_GoauldArchitect',
-):
-    if token not in dtext:
-        failures.append(f"Audit 35 live UI contract missing: {token}")
-
-print("=== D166 UI AUDIT ===")
-print(f" - production C# files scanned: {len(files)}")
-print(f" - GetGizmos/CompGetGizmosExtra methods inventoried: {getgizmos}")
-print(f" - Command_Action/Toggle/Target initializers checked: {len(commands)}")
-print(f" - explicit disabled-state assignments checked: {len(disabled_assignments)}")
-print(f" - custom DoWindowContents surfaces inventoried: {windows}")
-print(f" - FloatMenuOption constructions inventoried: {floatmenus}")
-print(f" - inspect-string providers inventoried: {inspect_strings}")
-print(f" - custom Window/Dialog source files inventoried: {len(dialog_files)}")
-print(f" - fallback-icon notes: {len(notes)}")
-
-if notes:
-    print("\nNOTES:")
-    for n in notes[:80]:
-        print(" -",n)
-    if len(notes)>80:
-        print(f" - ... {len(notes)-80} more")
+# In-game audit diagnostic retired after audit completion; static CI checks remain.
 
 if failures:
     print("\nFAILURES:")
