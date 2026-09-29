@@ -70,7 +70,7 @@ for name,(path,node) in thingdefs.items():
     if not name.startswith("WNG_"):
         continue
     maker=node.find("./recipeMaker")
-    if maker is None:
+    if maker is None or (maker.get("IsNull") or "").lower()=="true":
         continue
     users=[(x.text or "").strip() for x in maker.findall("./recipeUsers/li") if (x.text or "").strip()]
     if not users:
