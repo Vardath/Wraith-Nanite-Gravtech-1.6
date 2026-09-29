@@ -22,9 +22,9 @@ for label,pat in {
 
 # Normal construction state must never be rewritten for developer convenience.
 for label,pat in {
-    "costList assignment/clear": r"\.costList\s*=|\.costList\s*\.\s*Clear\s*\(",
+    "costList assignment/clear": r"\.costList\s*=(?!=)|\.costList\s*\.\s*Clear\s*\(",
     "WorkToBuild assignment": r"WorkToBuild[^\n]{0,100}=\s*",
-    "research prerequisite assignment/clear": r"researchPrerequisites\s*=|researchPrerequisites\s*\.\s*Clear\s*\(",
+    "research prerequisite assignment/clear": r"researchPrerequisites\s*=(?!=)|researchPrerequisites\s*\.\s*Clear\s*\(",
     "designation category assignment": r"\.designationCategory\s*=\s*",
     "blueprint def assignment": r"\.blueprintDef\s*=\s*",
     "frame def assignment": r"\.frameDef\s*=\s*",
