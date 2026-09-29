@@ -20,7 +20,7 @@ for name in required:
     if name not in kinds: fail.append("missing PawnKind "+name)
 child=kinds.get("WNG_ReplicatorQueenChild")
 if child is not None:
-    for tag,val in {"fixedGender":"Female","minGenerationAge":"13","maxGenerationAge":"13","weaponMoney":"0","apparelMoney":"0"}.items():
+    for tag,val in {"fixedGender":"Female","minGenerationAge":"13.01","maxGenerationAge":"13.99","weaponMoney":"0","apparelMoney":"5000~5000"}.items():
         if (child.findtext(tag) or "").strip()!=val: fail.append("Queen child "+tag+" mismatch")
     xs=child.findall("./xenotypeSet/xenotypeChances/*")
     if len(xs)!=1 or xs[0].tag!="WNG_HumanFormReplicator": fail.append("Queen child xenotype mismatch")
