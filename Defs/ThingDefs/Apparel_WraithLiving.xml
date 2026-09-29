@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <ThingDef ParentName="ApparelBase">
-    <defName>WNG_WraithHunterCoat</defName><label>wraith hunter coat</label>
+    <defName>WNG_WraithHunterCoat</defName>
+    <recipeMaker IsNull="True" /><label>wraith hunter coat</label>
     <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>A long flexible coat grown from layered Wraith membrane, providing modest protection without the bulk of a full carapace.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
@@ -15,7 +16,8 @@
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
-    <defName>WNG_WraithWarriorCarapace</defName><label>wraith warrior carapace</label>
+    <defName>WNG_WraithWarriorCarapace</defName>
+    <recipeMaker IsNull="True" /><label>wraith warrior carapace</label>
     <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A grown shell of layered chitin and regenerative membrane that flexes with the wearer while dispersing bullets, blades and heat.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WarriorCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
@@ -29,7 +31,8 @@
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
-    <defName>WNG_WraithCommanderCarapace</defName><label>wraith commander carapace</label>
+    <defName>WNG_WraithCommanderCarapace</defName>
+    <recipeMaker IsNull="True" /><label>wraith commander carapace</label>
     <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A denser command-grade living shell with reinforced plates around the torso, shoulders and spine.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
@@ -43,7 +46,8 @@
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
-    <defName>WNG_WraithQueenRaiment</defName><label>wraith queen raiment</label>
+    <defName>WNG_WraithQueenRaiment</defName>
+    <recipeMaker IsNull="True" /><label>wraith queen raiment</label>
     <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>Regal living robes grown for Wraith Queens and high-ranking brood leaders, reinforced with fine chitin ribs while remaining flowing and light.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>

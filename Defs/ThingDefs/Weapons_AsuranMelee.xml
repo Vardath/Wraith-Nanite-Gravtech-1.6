@@ -7,6 +7,7 @@
   -->
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
     <defName>WNG_AsuranPhaseBlade</defName>
+    <recipeMaker IsNull="True" />
     <label>Asuran phase blade</label>
     <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A compact Asuran precision weapon that holds a narrow cutting field along a nanite-forged edge. It is light, fast and optimized for accurate close combat.</description>
@@ -43,6 +44,7 @@
 
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
     <defName>WNG_AsuranFieldLance</defName>
+    <recipeMaker IsNull="True" />
     <label>Asuran field lance</label>
     <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A long Asuran polearm built around a reinforced nanite shaft and concentrated penetration field. It sacrifices the phase blade's speed for reach, stopping power and exceptional armor penetration.</description>

@@ -3,6 +3,7 @@
   <!-- Accepted human-form combat shell recovered for the player human-form starts. -->
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_HumanFormCombatArmor</defName>
+    <recipeMaker IsNull="True" />
     <label>human-form replicator combat armor</label>
     <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A close-fitted combat shell of plasteel, field mesh and self-repairing precursor composites.</description>
@@ -23,6 +24,7 @@
   </ThingDef>
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_HumanFormUniform</defName>
+    <recipeMaker IsNull="True" />
     <label>human-form replicator uniform</label>
     <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>A fitted pale uniform assembled from self-aligning precursor fibers. It provides modest environmental and combat protection while serving as ordinary human-form Replicator attire rather than a battlefield shell.</description>

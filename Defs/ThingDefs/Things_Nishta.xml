@@ -2,6 +2,7 @@
 <Defs>
   <ThingDef ParentName="BaseMakeableGrenade">
     <defName>WNG_NishtaCanister</defName>
+    <recipeMaker IsNull="True" />
     <label>Nish'ta dispersal canister</label>
     <description>A single-use canister containing a cultured Goa'uld Nish'ta conditioning organism. On impact it disperses a visible aerosol; susceptible humanlike pawns inside the cloud can be conditioned to the thrower's faction until electrically deprogrammed. Survivors of proper electrical clearance become resistant to reinfection.</description>
     <graphicData>

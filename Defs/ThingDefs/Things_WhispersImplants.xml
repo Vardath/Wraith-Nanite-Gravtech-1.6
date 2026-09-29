@@ -2,6 +2,7 @@
 <Defs>
   <ThingDef ParentName="BodyPartProstheticBase">
     <defName>WNG_WhispersAcousticNode</defName>
+    <recipeMaker IsNull="True" />
     <label>Whispers acoustic sensory node</label>
     <thingCategories Inherit="False"><li>BodyPartsBionic</li></thingCategories>
     <description>A cultured neural-auditory implant reconstructed from Whispers hybrid biopsy tissue. It reproduces part of the hybrid's extreme sound-localisation network without imposing blindness or other Michael-hybrid physiology.</description>
@@ -22,6 +23,7 @@
   </ThingDef>
   <ThingDef ParentName="BodyPartProstheticBase">
     <defName>WNG_WhispersMistGland</defName>
+    <recipeMaker IsNull="True" />
     <label>Whispers mist gland</label>
     <thingCategories Inherit="False"><li>BodyPartsBionic</li></thingCategories>
     <description>A controllable cultured neck-gill organ derived from Whispers hybrid tissue. Once implanted it can deliberately saturate the surrounding area with dense obscuring biological mist, reproducing the creature's predatory cover without changing the bearer's species.</description>

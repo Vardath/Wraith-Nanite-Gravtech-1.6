@@ -3,6 +3,7 @@
   <!-- Accepted precursor field weapon recovered for the player human-form starts. -->
   <ThingDef ParentName="BaseHumanMakeableGun">
     <defName>WNG_PrecursorPulseRifle</defName>
+    <recipeMaker IsNull="True" />
     <label>precursor pulse rifle</label>
     <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A precise high-energy rifle built around compact field accelerators and self-aligning emitter geometry. Its internals are maintained by precursor nanite systems.</description>

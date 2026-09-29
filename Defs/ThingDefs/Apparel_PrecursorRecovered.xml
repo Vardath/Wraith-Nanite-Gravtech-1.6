@@ -7,6 +7,7 @@
   -->
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_PrecursorFieldArmor</defName>
+    <recipeMaker IsNull="True" />
     <label>precursor field armor</label>
     <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A high-grade Ancient-derived combat shell combining dense precursor composites with field-distribution layers. The current visual is provisional; its protection and acquisition path are functional independently of later art replacement.</description>
@@ -46,6 +47,7 @@
   -->
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_PrecursorPersonalShield</defName>
+    <recipeMaker IsNull="True" />
     <label>precursor personal shield</label>
     <description>A compact Ancient-derived personal field generator. It absorbs ranged and explosive impacts, collapses under EMP, recharges after depletion, and allows the wearer to fire outward. Visual presentation remains provisional pending the professional art pass.</description>
     <techLevel>Ultra</techLevel>

@@ -2,6 +2,7 @@
 <Defs>
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_KassaConcentrate</defName>
+    <recipeMaker IsNull="True" />
     <label>kassa concentrate</label>
     <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A concentrated preparation of kassa psycho-stimulants stripped away from most of the crop's bulk nutrition. The result is faster, stronger and substantially more habit-forming than eating the grain itself. It shares the same underlying Kassa dependence.</description>
@@ -120,6 +121,7 @@
 
   <ThingDef ParentName="MakeableDrugBase">
     <defName>WNG_KassaDistillate</defName>
+    <recipeMaker IsNull="True" />
     <label>kassa distillate</label>
     <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
     <description>A high-purity Kassa derivative produced by aggressive solvent extraction and pharmaceutical stabilization. The dose delivers a violent stimulant/euphoric peak with a correspondingly extreme dependency and overdose profile.</description>
