@@ -36,7 +36,7 @@
     <recipeMaker>
       <researchPrerequisite>WNG_GoauldBiochemicalControl</researchPrerequisite>
       <recipeUsers>
-        <li>DrugLab</li>
+        <li>WNG_PrecursorFabricator</li>
       </recipeUsers>
       <workAmount>850</workAmount>
       <workSkill>Intellectual</workSkill>
