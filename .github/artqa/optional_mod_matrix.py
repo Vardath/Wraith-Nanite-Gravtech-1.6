@@ -100,8 +100,9 @@ for base in (ROOT / "Defs", ROOT / "Patches", ROOT / "Compatibility"):
         raw = p.read_text(encoding="utf-8", errors="ignore")
         if "ONAC_" in raw:
             onac_files.append(p)
-            if 'mayrequire="idolord.onac"' not in raw.lower():
-                failures.append(f"WNG OWNED: unguarded ONAC reference in {p}")
+            low = raw.lower()
+            if not ("patchoperationfindmod" in low and "<li>onac</li>" in low):
+                failures.append(f"WNG OWNED: ONAC reference lacks PatchOperationFindMod(ONAC) in {p}")
             if p.is_relative_to(patch_root):
                 for xpath in re.findall(r"<xpath>(.*?)</xpath>", raw):
                     if "WNG_" not in xpath:
@@ -205,7 +206,7 @@ print(f" - direct WNG combinations evaluated: {len(direct_rows)}")
 print(f" - GravTide/Landforms/Vehicle combinations evaluated: {len(cross_rows)}")
 print(" - direct optional packages remain loadAfter-only, not hard dependencies")
 print(" - CE load-folder gate: checked")
-print(" - ONAC MayRequire + WNG-only patch targeting: checked")
+print(" - ONAC FindMod + WNG-only patch targeting: checked")
 print(" - Stargate silent-resolution contract: checked")
 print(" - ONAC + RimGate/Jaffa two-package ecosystem gate: checked")
 print(" - Z Adaptive pairwise type guards/fail-open behavior: checked")
