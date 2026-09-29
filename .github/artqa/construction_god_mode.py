@@ -123,7 +123,7 @@ source="\n".join(p.read_text(encoding="utf-8",errors="ignore") for p in source_f
 for label,pat in {
     "forces God Mode on": r"DebugSettings\.godMode\s*=\s*true",
     "forces Dev Mode path": r"Prefs\.DevMode\s*=\s*true",
-    "rewrites construction costs": r"\.costList\s*=|costList\s*\.\s*Clear\s*\(",
+    "rewrites construction costs": r"\.costList\s*=(?!=)|costList\s*\.\s*Clear\s*\(",
     "rewrites WorkToBuild": r"WorkToBuild\s*=|statBases[^\n]*WorkToBuild\s*=",
     "clears research prerequisites": r"researchPrerequisites\s*\.\s*Clear\s*\(",
     "forces zero work": r"WorkToBuild[^\n]{0,80}=\s*0(?:f)?\b",
