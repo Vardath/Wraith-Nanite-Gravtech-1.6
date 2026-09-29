@@ -19,7 +19,7 @@
     <techLevel>Spacer</techLevel>
     <recipeMaker>
       <researchPrerequisite>WNG_WraithFeedingIndependence</researchPrerequisite>
-      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
       <workAmount>4200</workAmount>
       <workSkill>Intellectual</workSkill>
       <effectWorking>Cook</effectWorking>
