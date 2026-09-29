@@ -398,37 +398,5 @@ namespace WraithNaniteGravtech
         }
     }
 
-    /// <summary>
-    /// Reconstruction recipes remain invisible/unavailable unless a powered same-faction Pattern
-    /// Archive on the map holds the exact scanned pattern.
-    /// </summary>
-    public sealed class RecipeWorker_AsuranPatternLocked : RecipeWorker
-    {
-        public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
-        {
-            // Some bill-tab mods probe every RecipeDef against the currently selected bench.
-            // Never delegate a WNG custom worker into vanilla availability for a foreign bench:
-            // one exception here can abort the entire Add Bill enumeration and make every
-            // vanilla recipe appear to be missing.
-            if (thing?.def?.defName != "WNG_PrecursorFabricator" || recipe == null)
-                return false;
 
-            try
-            {
-                if (!AsuranTechnologyPatternUtility.TryPatternForRecipe(recipe, out AsuranTechnologyPatternSpec spec))
-                    return true;
-
-                Map map = thing.Map;
-                Faction faction = thing.Faction;
-                return map != null &&
-                       faction != null &&
-                       AsuranTechnologyPatternUtility.HasPoweredPatternArchive(map, faction, spec.PatternId);
-            }
-            catch (Exception ex)
-            {
-                Log.ErrorOnce("[WNG] Pattern-reconstruction availability probe failed safely: " + ex.Message, 0x574E4752);
-                return false;
-            }
-        }
-    }
 }
