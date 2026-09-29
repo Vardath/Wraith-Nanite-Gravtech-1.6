@@ -45,7 +45,7 @@ for path, text in texts.items():
         failures.append(f"{path}: Enumerable.Single() is forbidden in production runtime paths; use a non-throwing selection")
 
 # Empty/general catches are inventoried as legacy risk rather than auto-rewritten here.
-# Audit 32's live monitor is the authority for whether those fallbacks actually hide a WNG-origin
+# Live runtime monitoring was retired after the completed audit program; static production checks remain authoritative here.
 # runtime failure during a real map soak.
 empty_catch_re = re.compile(r"catch\s*(?:\([^)]*\))?\s*\{\s*\}", re.S)
 empty_catches = []
@@ -72,20 +72,7 @@ for base in (ROOT / "Defs", ROOT / "Patches", ROOT / "Compatibility"):
         except ET.ParseError as exc:
             failures.append(f"{path}: XML parse/config error: {exc}")
 
-# Debug-only Audit 32 monitor must exist and must not be mixed into production scans.
-diag = ROOT / "Source" / "WraithNaniteGravtech" / "Diagnostics" / "Audit32RuntimeExceptionDiagnostics.cs"
-diag_text = diag.read_text(encoding="utf-8", errors="ignore") if diag.exists() else ""
-for token in (
-    'Audit 32 - runtime exception monitor',
-    'Application.logMessageReceived += HandleLogMessage',
-    'Application.logMessageReceived -= HandleLogMessage',
-    'MonitorTicks = 6000',
-    'MapComponentTick()',
-    'WNG-origin suspicious log entries',
-    'external/stack suspicious log entries',
-):
-    if token not in diag_text:
-        failures.append(f"Audit 32 live monitor contract missing: {token}")
+# In-game Audit 32 monitor retired after live audit completion; CI now validates production safety only.
 
 print("=== D163 RUNTIME EXCEPTION AUDIT ===")
 print(f" - production C# files scanned: {len(files)}")
