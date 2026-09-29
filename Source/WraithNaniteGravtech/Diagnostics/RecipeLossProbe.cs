@@ -8,6 +8,15 @@ using Verse;
 
 namespace WraithNaniteGravtech.Diagnostics
 {
+    [StaticConstructorOnStartup]
+    public static class RecipeLossStartupSnapshot
+    {
+        static RecipeLossStartupSnapshot()
+        {
+            LongEventHandler.ExecuteWhenFinished(RecipeLossProbe.RunStartupSnapshot);
+        }
+    }
+
     /// <summary>
     /// Narrow live diagnostic for the external/vanilla recipe-loss regression.
     /// It is deliberately read-only: no recipe, bench, filter, category or Def is modified.
@@ -26,6 +35,19 @@ namespace WraithNaniteGravtech.Diagnostics
             sb.AppendLine("This probe is read-only.");
 
             Map map = Find.CurrentMap;
+
+            Thing selected = Find.Selector?.SingleSelectedThing;
+            if (selected != null)
+            {
+                sb.AppendLine("SELECTED THING " + selected.def?.defName +
+                              " [" + (selected.LabelCap ?? "<no label>") + "] owner=" + Owner(selected.def));
+                if (selected.def != null)
+                    ProbeBench(sb, selected.def, map);
+            }
+            else
+            {
+                sb.AppendLine("SELECTED THING <none>");
+            }
 
             ProbeNamedRecipe(sb, "CookMealSimple", map);
             ProbeNamedRecipe(sb, "CookMealFine", map);
@@ -68,6 +90,33 @@ namespace WraithNaniteGravtech.Diagnostics
                 "WNG recipe loss probe complete. Send the new Player.log; search for [WNG RECIPE LOSS PROBE].",
                 MessageTypeDefOf.NeutralEvent,
                 historical: false);
+        }
+
+        public static void RunStartupSnapshot()
+        {
+            StringBuilder sb = new StringBuilder(8192);
+            sb.AppendLine("[WNG RECIPE STARTUP SNAPSHOT] START");
+            sb.AppendLine("RecipeDefCount=" + DefDatabase<RecipeDef>.AllDefsListForReading.Count);
+
+            ProbeNamedRecipe(sb, "CookMealSimple", null);
+            ProbeNamedRecipe(sb, "CookMealFine", null);
+            ProbeNamedRecipe(sb, "CookMealLavish", null);
+            ProbeNamedRecipe(sb, "Make_Pemmican", null);
+
+            foreach (string benchName in new[] { "FueledStove", "ElectricStove", "Nanofabricator" })
+            {
+                ThingDef bench = DefDatabase<ThingDef>.GetNamedSilentFail(benchName);
+                if (bench != null)
+                    ProbeBench(sb, bench, null);
+                else
+                    sb.AppendLine("STARTUP BENCH " + benchName + ": ABSENT");
+            }
+
+            int ntoCount = DefDatabase<RecipeDef>.AllDefsListForReading.Count(
+                r => r != null && IsOwner(r, "hye.nto", "Nanotech Overpower"));
+            sb.AppendLine("NanotechOverpowerRecipeDefCount=" + ntoCount);
+            sb.AppendLine("[WNG RECIPE STARTUP SNAPSHOT] END");
+            Log.Message(sb.ToString());
         }
 
         private static void AddBench(HashSet<ThingDef> benches, string defName)
@@ -181,12 +230,24 @@ namespace WraithNaniteGravtech.Diagnostics
             Map map,
             string indent)
         {
+            bool inDatabase = false;
+            try
+            {
+                inDatabase = DefDatabase<RecipeDef>.GetNamedSilentFail(recipe.defName) == recipe;
+            }
+            catch
+            {
+                inDatabase = false;
+            }
+
             sb.AppendLine(indent + "worker=" + (recipe.workerClass?.FullName ?? "<null>") +
                           " AvailableNow=" + SafeAvailableNow(recipe) +
-                          " research=" + ResearchState(recipe));
+                          " research=" + ResearchState(recipe) +
+                          " inDefDatabase=" + inDatabase);
 
             List<ThingDef> users = SafeUsers(recipe);
             sb.AppendLine(indent + "users=[" + string.Join(",", users.Where(u => u != null).Select(u => u.defName)) + "]");
+            sb.AppendLine(indent + "products=[" + ProductNames(recipe) + "]");
 
             if (bench != null)
             {
@@ -217,6 +278,15 @@ namespace WraithNaniteGravtech.Diagnostics
             {
                 return new List<ThingDef>();
             }
+        }
+
+        private static string ProductNames(RecipeDef recipe)
+        {
+            if (recipe?.products == null || recipe.products.Count == 0)
+                return string.Empty;
+            return string.Join(",", recipe.products
+                .Where(p => p?.thingDef != null)
+                .Select(p => p.thingDef.defName + "x" + p.count));
         }
 
         private static string SafeAvailableNow(RecipeDef recipe)
