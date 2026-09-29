@@ -125,7 +125,7 @@ for label, pat in forbidden_source.items():
 # ---------- XML/patch non-interference ----------
 representative = {
     "ElectricStove", "FueledStove", "HandTailoringBench", "ElectricTailoringBench",
-    "FabricationBench", "DrugLab", "ElectricSmelter"
+    "FabricationBench", "DrugLab", "ElectricSmelter", "TableSculpting", "MechGestator", "AmmoBench"
 }
 
 patch_files = []
@@ -163,9 +163,7 @@ for base in (ROOT / "Defs", ROOT / "Compatibility"):
         def_roots.append((path, root))
 
 allowed_external_users = {
-    "Human", "MechGestator", "TableSculpting", "FabricationBench", "DrugLab", "ElectricSmelter",
-    # Combat Extended compatibility is conditionally loaded and legitimately targets CE's ammo bench.
-    "AmmoBench",
+    "Human",
 }
 bench_additions = {b: [] for b in representative}
 custom_worker_refs = []
@@ -194,19 +192,10 @@ for path, root in def_roots:
                     if user and not user.startswith("WNG_") and user not in allowed_external_users:
                         fail(f"WNG ThingDef {defname} recipeMaker targets unexpected external recipe user {user} ({path})")
 
-# Stoves and tailoring benches must remain completely untouched by WNG recipe injection.
-for bench in ("ElectricStove", "FueledStove", "HandTailoringBench", "ElectricTailoringBench"):
+# All external production benches must remain completely untouched by WNG.
+for bench in sorted(representative):
     if bench_additions[bench]:
-        fail(f"WNG unexpectedly injects recipes into {bench}: {bench_additions[bench]}")
-
-# Fabrication additions must be universal-crafting fallbacks only.
-if bench_additions["FabricationBench"]:
-    fail(f"WNG unexpectedly injects recipes into FabricationBench: {bench_additions['FabricationBench']}")
-
-# Smelter additions must be the bounded Replicator salvage recipes only.
-for defname, path in bench_additions["ElectricSmelter"]:
-    if path.name != "Recipes_ReplicatorSalvage.xml":
-        fail(f"Unexpected WNG ElectricSmelter recipe {defname} in {path}")
+        fail(f"WNG unexpectedly injects recipes into external bench {bench}: {bench_additions[bench]}")
 
 for bench in sorted(representative):
     note(f"{bench}: {len(bench_additions[bench])} additive WNG recipe(s)")
