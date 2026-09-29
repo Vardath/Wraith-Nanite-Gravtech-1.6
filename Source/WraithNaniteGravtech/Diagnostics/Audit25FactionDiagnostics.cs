@@ -36,6 +36,7 @@ namespace WraithNaniteGravtech.Diagnostics
             Faction player = Faction.OfPlayer;
             int liveCount = 0;
             int generatedSamples = 0;
+            int absentLiveInstances = 0;
 
             foreach (string name in FactionNames)
             {
@@ -46,10 +47,18 @@ namespace WraithNaniteGravtech.Diagnostics
                     continue;
                 }
 
+                PawnKindDef basic = def.basicMemberKind;
+                if (basic == null)
+                {
+                    failures.Add(name + " has no loaded basicMemberKind.");
+                    continue;
+                }
+
                 Faction faction = Find.FactionManager?.FirstFactionOfDef(def);
                 if (faction == null)
                 {
-                    failures.Add("No live faction instance for " + name + " in this save.");
+                    absentLiveInstances++;
+                    sb.AppendLine(" - " + name + ": no live instance in this save (allowed for scenarios/saves that do not instantiate every WNG faction).");
                     continue;
                 }
 
@@ -74,13 +83,6 @@ namespace WraithNaniteGravtech.Diagnostics
 
                 if (def.permanentEnemy && player != null && !faction.HostileTo(player))
                     failures.Add(name + " is permanentEnemy but is not hostile to the player faction.");
-
-                PawnKindDef basic = def.basicMemberKind;
-                if (basic == null)
-                {
-                    failures.Add(name + " has no loaded basicMemberKind.");
-                    continue;
-                }
 
                 Pawn pawn = null;
                 try
@@ -134,6 +136,7 @@ namespace WraithNaniteGravtech.Diagnostics
 
             sb.AppendLine("Live WNG faction instances: " + liveCount + "/" + FactionNames.Length);
             sb.AppendLine("Generated unspawned basic-member samples: " + generatedSamples);
+            sb.AppendLine("Faction defs without a live instance in this save: " + absentLiveInstances);
             sb.AppendLine("This probe does not create settlements, raids, visitors, caravans or quests.");
             sb.AppendLine("Those world/map interactions remain the recorded user-side live test.");
 
@@ -147,7 +150,7 @@ namespace WraithNaniteGravtech.Diagnostics
             }
             else
             {
-                sb.AppendLine("PASS: loaded faction instances and generated basic-member ownership/gear are coherent.");
+                sb.AppendLine("PASS: loaded faction defs and any live faction instances/basic-member samples are coherent.");
                 Log.Message(sb.ToString());
                 Messages.Message("WNG Audit 25 automated checks PASS; world interaction checks pending.", MessageTypeDefOf.NeutralEvent, false);
             }
