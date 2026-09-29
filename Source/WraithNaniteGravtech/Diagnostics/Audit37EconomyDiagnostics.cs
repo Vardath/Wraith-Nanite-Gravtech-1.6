@@ -49,14 +49,20 @@ namespace WraithNaniteGravtech.Diagnostics
 
                 bool wngRecipe =
                     recipe.defName?.StartsWith("WNG_", StringComparison.Ordinal) == true ||
-                    recipe.products.Any(p =>
-                        p?.thingDef?.defName?.StartsWith("WNG_", StringComparison.Ordinal) == true);
+                    recipe.defName?.StartsWith("Make_WNG_", StringComparison.Ordinal) == true;
                 if (!wngRecipe)
                     continue;
 
                 recipes++;
-                if (recipe.workAmount <= 0f)
-                    failures.Add(recipe.defName + " has non-positive runtime workAmount=" + recipe.workAmount);
+                float effectiveWork = recipe.workAmount;
+                if (effectiveWork <= 0f && recipe.defName?.StartsWith("Make_WNG_", StringComparison.Ordinal) == true)
+                {
+                    ThingDef productDef = recipe.products.FirstOrDefault()?.thingDef;
+                    if (productDef?.recipeMaker != null)
+                        effectiveWork = productDef.GetStatValueAbstract(StatDefOf.WorkToMake);
+                }
+                if (effectiveWork <= 0f)
+                    failures.Add(recipe.defName + " has non-positive effective runtime work=" + effectiveWork);
 
                 if (recipe.ingredients != null && recipe.ingredients.Count > 0)
                     recipesWithIngredients++;
