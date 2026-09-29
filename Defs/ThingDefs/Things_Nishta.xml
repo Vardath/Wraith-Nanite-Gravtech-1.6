@@ -26,6 +26,7 @@
     </costList>
     <recipeMaker>
       <researchPrerequisite>WNG_NishtaBiocontrol</researchPrerequisite>
+      <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
       <skillRequirements><Crafting>6</Crafting></skillRequirements>
     </recipeMaker>
     <weaponTags Inherit="False">
