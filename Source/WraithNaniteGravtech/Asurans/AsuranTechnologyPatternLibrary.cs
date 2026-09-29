@@ -406,21 +406,29 @@ namespace WraithNaniteGravtech
     {
         public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
         {
-            // Production-bill menus can probe workers before they have a concrete bill giver.
-            // Never pass a null Thing into the vanilla worker path: one bad WNG recipe must not
-            // abort enumeration of unrelated vanilla or third-party recipes.
-            if (thing == null)
+            // Some bill-tab mods probe every RecipeDef against the currently selected bench.
+            // Never delegate a WNG custom worker into vanilla availability for a foreign bench:
+            // one exception here can abort the entire Add Bill enumeration and make every
+            // vanilla recipe appear to be missing.
+            if (thing?.def?.defName != "WNG_PrecursorFabricator" || recipe == null)
                 return false;
 
-            if (!base.AvailableOnNow(thing, part))
+            try
+            {
+                if (!AsuranTechnologyPatternUtility.TryPatternForRecipe(recipe, out AsuranTechnologyPatternSpec spec))
+                    return true;
+
+                Map map = thing.Map;
+                Faction faction = thing.Faction;
+                return map != null &&
+                       faction != null &&
+                       AsuranTechnologyPatternUtility.HasPoweredPatternArchive(map, faction, spec.PatternId);
+            }
+            catch (Exception ex)
+            {
+                Log.ErrorOnce("[WNG] Pattern-reconstruction availability probe failed safely: " + ex.Message, 0x574E4752);
                 return false;
-
-            if (!AsuranTechnologyPatternUtility.TryPatternForRecipe(recipe, out AsuranTechnologyPatternSpec spec))
-                return true;
-
-            return thing.Map != null &&
-                   thing.Faction != null &&
-                   AsuranTechnologyPatternUtility.HasPoweredPatternArchive(thing.Map, thing.Faction, spec.PatternId);
+            }
         }
     }
 }
