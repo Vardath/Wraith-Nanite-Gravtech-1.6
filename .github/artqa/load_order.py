@@ -92,8 +92,10 @@ for base in patch_roots:
             if cls == "PatchOperationFindMod":
                 mods = [((li.text or "").strip()) for li in op.findall("./mods/li")]
                 findmods.append((p, tuple(mods)))
-                if not ce_path:
-                    failures.append(f"WNG OWNED: PatchOperationFindMod outside CE-gated compatibility folder: {p}")
+                # FindMod is valid for optional integrations such as ONAC. CE remains
+                # isolated by its conditional load folder rather than a runtime FindMod.
+                if not ce_path and "ONAC" not in mods:
+                    failures.append(f"WNG OWNED: unreviewed PatchOperationFindMod outside CE-gated compatibility folder: {p} mods={mods}")
             xpath = (op.findtext("xpath") or "").strip()
             if not xpath:
                 continue
@@ -127,8 +129,8 @@ for base in (ROOT / "Defs", ROOT / "Patches", ROOT / "Compatibility"):
     for p in base.rglob("*.xml"):
         raw = p.read_text(encoding="utf-8", errors="ignore")
         low = raw.lower()
-        if "onac_" in low and 'mayrequire="idolord.onac"' not in low:
-            failures.append(f"WNG OWNED: ONAC reference lacks MayRequire and can become order-sensitive: {p}")
+        if "onac_" in low and not ("patchoperationfindmod" in low and "<li>onac</li>" in low):
+            failures.append(f"WNG OWNED: ONAC reference lacks PatchOperationFindMod(ONAC) and can leak unresolved defs: {p}")
         if "combatextended." in raw and "Compatibility/CombatExtended/" not in p.as_posix():
             failures.append(f"WNG OWNED: CE schema leaked outside CE-gated load folder: {p}")
 
@@ -202,7 +204,7 @@ print(" - hard dependency order contract: checked")
 print(" - direct optional loadAfter contract: checked")
 print(" - CE conditional load-folder isolation: checked")
 print(" - non-WNG destructive patch prohibition: checked")
-print(" - optional XML MayRequire gates: checked")
+print(" - optional XML FindMod gates: checked")
 print(" - optional assembly/static-constructor coupling: checked")
 print(" - Z Adaptive framework loadAfter and Harmony arbitration: checked")
 print(" - live permutations remain required because RimWorld resolves actual mod order only at startup")
