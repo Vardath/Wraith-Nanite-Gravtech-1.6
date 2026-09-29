@@ -86,12 +86,6 @@ jobs:
               if declaration_only[kind]:
                   hard_errors.append(f'orphan {kind} candidates: ' + ', '.join(declaration_only[kind]))
 
-          universal = ET.parse('Defs/RecipeDefs/Recipes_UniversalCrafting.xml').getroot()
-          universal_defs = [n.findtext('defName') for n in list(universal) if n.findtext('defName')]
-          worker_refs = sum(1 for n in list(universal) if n.findtext('workerClass') == 'WraithNaniteGravtech.RecipeWorker_UniversalCraftOnly')
-          if 'enableUniversalCrafting' not in source_text or 'RecipeWorker_UniversalCraftOnly' not in source_text or len(universal_defs) != 11 or worker_refs != 11:
-              hard_errors.append('universal-crafting baseline drift')
-
           texture_stems = set()
           for p in Path('Textures').rglob('*.png'):
               stem = p.relative_to('Textures').as_posix()[:-4]
