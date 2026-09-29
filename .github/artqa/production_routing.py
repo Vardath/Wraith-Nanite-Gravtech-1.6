@@ -72,6 +72,7 @@ for name,(path,node) in thingdefs.items():
     maker=node.find("./recipeMaker")
     if maker is None or (maker.get("IsNull") or "").lower()=="true":
         continue
+    failures.append(f"{name}: live recipeMaker is forbidden; use an explicit WNG RecipeDef ({path})")
     users=[(x.text or "").strip() for x in maker.findall("./recipeUsers/li") if (x.text or "").strip()]
     if not users:
         failures.append(f"{name}: recipeMaker has no recipeUsers ({path})")
