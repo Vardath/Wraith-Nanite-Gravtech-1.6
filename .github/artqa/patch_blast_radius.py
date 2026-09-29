@@ -184,14 +184,18 @@ for path in sorted(patch_paths):
             if cls != "PatchOperationAdd" or not allowed_external_add(xpath, value_text):
                 fail(f"{path}: sensitive external mutation is not allow-listed: {xpath}")
 
-    # Optional foreign references need explicit gating.
+    # Optional foreign references need a real runtime patch gate.
+    # MayRequire on a top-level PatchOperation is ignored by vanilla RimWorld and can
+    # leak unresolved ONAC ThingDefs into WNG costLists when ONAC is absent.
     if "ONAC_" in raw:
-        has_gate = (
-            'MayRequire="idolord.onac"' in raw
-            or ("PatchOperationFindMod" in raw and ("<li>ONAC</li>" in raw or "idolord.onac" in raw))
+        has_findmod_gate = (
+            "PatchOperationFindMod" in raw
+            and "<li>ONAC</li>" in raw
         )
-        if not has_gate:
-            fail(f"{path}: ONAC references are not protected by MayRequire/FindMod")
+        if not has_findmod_gate:
+            fail(f"{path}: ONAC references must be protected by PatchOperationFindMod(ONAC); top-level MayRequire is unsafe")
+        if 'MayRequire="idolord.onac"' in raw:
+            fail(f"{path}: unsafe top-level MayRequire ONAC gate detected; use PatchOperationFindMod(ONAC)")
 
     if "CombatExtended." in raw and not is_ce_path:
         fail(f"{path}: Combat Extended references exist outside CE-gated Compatibility/CombatExtended")
