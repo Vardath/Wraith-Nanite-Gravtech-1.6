@@ -574,7 +574,6 @@
         <maxSimultaneous>4</maxSimultaneous>
         <maxDistance>500</maxDistance>
       </li>
-      <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint">
         <family>Wraith</family>
         <role>Thruster</role>
@@ -645,7 +644,6 @@
         <maxSimultaneous>6</maxSimultaneous>
         <maxDistance>500</maxDistance>
       </li>
-      <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint">
         <family>Wraith</family>
         <role>Thruster</role>
@@ -1359,7 +1357,6 @@
         <maxSimultaneous>4</maxSimultaneous>
         <maxDistance>500</maxDistance>
       </li>
-      <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint">
         <family>Asuran</family>
         <role>Thruster</role>
@@ -1432,7 +1429,6 @@
         <maxSimultaneous>6</maxSimultaneous>
         <maxDistance>500</maxDistance>
       </li>
-      <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFuelEndpoint">
         <family>Asuran</family>
         <role>Thruster</role>
