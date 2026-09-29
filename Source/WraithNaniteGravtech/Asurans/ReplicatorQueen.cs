@@ -301,6 +301,27 @@ namespace WraithNaniteGravtech
     {
         public static GameComponent_ReplicatorQueenState State => Current.Game?.GetComponent<GameComponent_ReplicatorQueenState>();
 
+        public static void NormalizeGeneratedQueenChild(Pawn queen)
+        {
+            if (queen == null || queen.kindDef?.defName != "WNG_ReplicatorQueenChild")
+                return;
+
+            XenotypeDef expected = DefDatabase<XenotypeDef>.GetNamedSilentFail("WNG_HumanFormReplicator");
+            if (expected != null && queen.genes != null && queen.genes.Xenotype != expected)
+                queen.genes.SetXenotype(expected);
+
+            queen.gender = Gender.Female;
+            if (queen.ageTracker != null)
+            {
+                const long ticksAtThirteen = 13L * 3600000L;
+                queen.ageTracker.AgeBiologicalTicks = ticksAtThirteen;
+                if (queen.ageTracker.AgeChronologicalTicks < ticksAtThirteen)
+                    queen.ageTracker.AgeChronologicalTicks = ticksAtThirteen;
+            }
+
+            AsuranDefaultApparelUtility.EnsureRoleApparel(queen);
+        }
+
         public static bool IsExactQueen(Pawn pawn)
         {
             return pawn != null && State?.ExactQueen == pawn;
@@ -429,6 +450,7 @@ namespace WraithNaniteGravtech
             try
             {
                 queen = PawnGenerator.GeneratePawn(queenKind, null);
+                ReplicatorQueenUtility.NormalizeGeneratedQueenChild(queen);
                 if (queen?.genes == null)
                     throw new InvalidOperationException("Generated Queen has no gene tracker.");
                 if (!ReplicatorQueenUtility.HasQueenMarker(queen))
