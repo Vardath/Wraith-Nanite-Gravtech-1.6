@@ -184,7 +184,7 @@ for path, root in def_roots:
 
         if node.tag == "ThingDef":
             maker = node.find("./recipeMaker")
-            if maker is not None:
+            if maker is not None and (maker.get("IsNull") or "").lower() != "true":
                 for li in maker.findall("./recipeUsers/li"):
                     user = (li.text or "").strip()
                     if user in bench_additions:
@@ -248,7 +248,7 @@ for path, root in def_roots:
 
         elif node.tag == "ThingDef":
             maker = node.find("./recipeMaker")
-            if maker is None:
+            if maker is None or (maker.get("IsNull") or "").lower() == "true":
                 continue
 
             recipe_maker_count += 1
