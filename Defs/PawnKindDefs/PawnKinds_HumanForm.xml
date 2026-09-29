@@ -135,13 +135,13 @@
     <label>replicator child</label>
     <xenotypeSet Inherit="False"><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet>
     <fixedGender>Female</fixedGender>
-    <minGenerationAge>13</minGenerationAge>
-    <maxGenerationAge>13</maxGenerationAge>
+    <minGenerationAge>13.01</minGenerationAge>
+    <maxGenerationAge>13.99</maxGenerationAge>
     <allowOldAgeInjuries>false</allowOldAgeInjuries>
     <combatPower>55</combatPower>
     <isFighter>false</isFighter>
     <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
-    <apparelMoney>0</apparelMoney>
+    <apparelMoney>5000~5000</apparelMoney>
     <weaponMoney>0</weaponMoney>
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
     <initialWillRange>0~0</initialWillRange>
