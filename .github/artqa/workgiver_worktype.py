@@ -60,8 +60,8 @@ if "WNG_AsuranFabrication" in worktypes:
 if "WNG_DoAsuranFabrication" in workgivers:
     path,node=workgivers["WNG_DoAsuranFabrication"]
     users=[(x.text or "").strip() for x in node.findall("./fixedBillGiverDefs/li") if (x.text or "").strip()]
-    if users!=["TableSculpting"]:
-        failures.append(f"WNG_DoAsuranFabrication fixedBillGiverDefs must be exactly ['TableSculpting'], found {users}")
+    if users!=["WNG_PrecursorFabricator"]:
+        failures.append(f"WNG_DoAsuranFabrication fixedBillGiverDefs must be exactly ['WNG_PrecursorFabricator'], found {users}")
     if (node.findtext("workType") or "").strip()!="WNG_AsuranFabrication":
         failures.append("WNG_DoAsuranFabrication must use WNG_AsuranFabrication work type")
 
@@ -85,7 +85,7 @@ forbidden_source=(
     "DefDatabase<WorkTypeDef>.AllDefsListForReading",
     "pawn.workSettings.SetPriority(WorkTypeDefOf.",
     "WorkTypeDefOf.",
-    "TableSculpting.recipes",
+    
 )
 for token in forbidden_source:
     if token in fabrication_source:
@@ -106,10 +106,10 @@ for path in (ROOT/"Defs/RecipeDefs").rglob("*.xml"):
         users=[(x.text or "").strip() for x in node.findall("./recipeUsers/li") if (x.text or "").strip()]
         if required=="WNG_AsuranFabrication":
             required_worktype_recipes.append((name,path,users))
-            if "TableSculpting" not in users:
-                failures.append(f"{name}: requires WNG_AsuranFabrication but is not routed to TableSculpting")
+            if "WNG_PrecursorFabricator" not in users:
+                failures.append(f"{name}: requires WNG_AsuranFabrication but is not routed to WNG_PrecursorFabricator")
         elif "TableSculpting" in users:
-            ungated_table_sculpting.append(name)
+            failures.append(f"{name}: vanilla TableSculpting routing is forbidden")
 
 # Only the two hostile-trap statue recipes should use the Asuran-only work type.
 expected_gated={"Make_WNG_AsuranSleeperStatue","Make_WNG_AsuranFeederStatue","Make_WNG_AsuranReplicatorReliquary"}
@@ -117,10 +117,6 @@ actual_gated={name for name,_,_ in required_worktype_recipes}
 if actual_gated!=expected_gated:
     failures.append(f"Asuran-only recipe gate changed: expected {sorted(expected_gated)}, found {sorted(actual_gated)}")
 
-# Universal crafting duplicates may legitimately use TableSculpting without the restricted work type.
-for name in ungated_table_sculpting:
-    if name not in {"WNG_UniversalMake_AsuranSleeperStatue","WNG_UniversalMake_AsuranFeederStatue","WNG_UniversalMake_AsuranReplicatorReliquary"}:
-        failures.append(f"{name}: unexpected WNG TableSculpting recipe without WNG_AsuranFabrication gate")
 
 # ---------- JobDef / JobDriver integrity ----------
 jobdefs={}
