@@ -47,6 +47,12 @@ jobs:
           echo "Managed assembly:"
           ls -lh Assemblies/WraithNaniteGravtech.dll Assemblies/WraithNaniteGravtech.buildinfo.json
 
+      - name: Install master-audit dependencies
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Run master static release gate
+        run: python .github/artqa/master_release_gate.py
+
       - name: Commit refreshed managed assembly
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
@@ -98,6 +104,17 @@ jobs:
             cd release-unpacked/Wraith-Nanite-Gravtech
             python ../../.github/artqa/final_art_integrity.py
           )
+
+      - name: Validate Steam/GitHub runtime parity
+        shell: bash
+        run: |
+          python .github/artqa/build_release_package.py \
+            --zip release-steam-audit.zip \
+            --stage release-steam-stage
+          python .github/artqa/steam_packaging.py \
+            --github-root release-unpacked/Wraith-Nanite-Gravtech \
+            --steam-root release-steam-stage/Wraith-Nanite-Gravtech \
+            --workshop-description STEAM-WORKSHOP-DESCRIPTION.txt
 
       - name: Upload release package
         uses: actions/upload-artifact@v4
