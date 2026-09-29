@@ -38,7 +38,7 @@
     </ingestible>
     <recipeMaker>
       <researchPrerequisite>WNG_HoffanCountermeasure</researchPrerequisite>
-      <recipeUsers><li>DrugLab</li></recipeUsers>
+      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
       <workAmount>1500</workAmount>
       <workSkill>Intellectual</workSkill>
       <effectWorking>Cook</effectWorking>
