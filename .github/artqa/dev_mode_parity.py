@@ -86,31 +86,7 @@ for forbidden in ("WNGDev","DevModeDesignator","WithScopedGodMode","PlaceDirectl
     if hits:
         failures.append(f"unapproved developer-construction bypass token {forbidden}: {', '.join(hits)}")
 
-diag=SRC/"Diagnostics"/"Audit39DevModeParityDiagnostics.cs"
-dtext=diag.read_text(encoding="utf-8",errors="ignore") if diag.exists() else ""
-for token in (
-    'Audit 39 - dev mode parity',
-    'DebugSettings.godMode',
-    'forceDebugSpawnable',
-    'WorkToBuild',
-    'researchPrerequisites',
-    'Designator_Build_WNGGodMode',
-):
-    if token not in dtext:
-        failures.append("Audit 39 live contract missing: "+token)
-
-print("=== D170 DEV-MODE PARITY AUDIT ===")
-print(f" - production C# files scanned: {len(files)}")
-print(f" - production God Mode readers: {len(god_files)}")
-print(f" - forceDebugSpawnable writer files: {len(debug_spawn_writers)}")
-print(" - normal Architect contract: base Designator_Build semantics")
-print(" - God Mode contract: explicit DebugSettings.godMode only")
-print(" - direct Dev-spawn contract: physical WNG ThingDefs forceDebugSpawnable=true")
-print(" - normal cost/work/research/blueprint/frame mutation writers: 0 required")
-
-if notes:
-    print("\nNOTES:")
-    for n in notes: print(" -",n)
+# In-game audit diagnostic retired after audit completion; static CI checks remain.
 
 if failures:
     print("\nFAILURES:")
