@@ -10,7 +10,12 @@ BASELINE = ROOT / ".github" / "artqa" / "baselines" / "wng_log_callsite_baseline
 DIAG = SRC / "Diagnostics" / "Audit33LogDiffDiagnostics.cs"
 failures = []
 
-files = [p for p in SRC.rglob("*.cs") if "Diagnostics" not in p.parts]
+files = [
+    p for p in SRC.rglob("*.cs")
+    if "Diagnostics" not in p.parts
+    and "bin" not in p.parts
+    and "obj" not in p.parts
+]
 
 call_re = re.compile(r"\bLog\.(Warning|ErrorOnce|Error)\s*\(")
 literal_re = re.compile(r'(?:\$@|@\$|\$|@)?"((?:\\.|[^"\\])*)"')
