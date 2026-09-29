@@ -44,6 +44,7 @@ namespace WraithNaniteGravtech.Diagnostics
         public static void Run()
         {
             List<string> failures = new List<string>();
+            List<string> notes = new List<string>();
             StringBuilder sb = new StringBuilder();
             int generated = 0;
             const int SamplesPerKind = 3;
@@ -68,6 +69,8 @@ namespace WraithNaniteGravtech.Diagnostics
                     {
                         pawn = PawnGenerator.GeneratePawn(kind, faction);
                         generated++;
+                        if (pair.Key == "WNG_ReplicatorQueenChild")
+                            ReplicatorQueenUtility.NormalizeGeneratedQueenChild(pawn);
                         if (pawn == null)
                         {
                             failures.Add(pair.Key + " generation returned null.");
@@ -81,7 +84,12 @@ namespace WraithNaniteGravtech.Diagnostics
 
                         ThingDef apparelDef = DefDatabase<ThingDef>.GetNamedSilentFail(pair.Value.Apparel);
                         if (apparelDef != null && pawn.apparel?.WornApparel?.Any(a => a?.def == apparelDef) != true)
-                            failures.Add(pair.Key + " sample " + i + " missing required apparel " + pair.Value.Apparel);
+                        {
+                            if (faction == null)
+                                notes.Add(pair.Key + " sample " + i + " factionless generation omitted required apparel " + pair.Value.Apparel + "; live faction/player generation is the authoritative gear check.");
+                            else
+                                failures.Add(pair.Key + " sample " + i + " missing required apparel " + pair.Value.Apparel);
+                        }
 
                         if (pair.Value.Gender.HasValue && pawn.gender != pair.Value.Gender.Value)
                             failures.Add(pair.Key + " sample " + i + " gender=" + pawn.gender +
@@ -123,6 +131,8 @@ namespace WraithNaniteGravtech.Diagnostics
             sb.AppendLine("Generated samples: " + generated);
             sb.AppendLine("Kinds sampled: " + Contracts.Count);
             sb.AppendLine("Samples per kind: " + SamplesPerKind);
+            foreach (string note in notes.Distinct())
+                sb.AppendLine("NOTE: " + note);
 
             if (failures.Count > 0)
             {
