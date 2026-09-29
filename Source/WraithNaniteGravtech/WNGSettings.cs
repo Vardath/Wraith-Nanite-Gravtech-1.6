@@ -469,20 +469,5 @@ namespace WraithNaniteGravtech
         }
     }
 
-    // Recipes using this worker are deliberately hidden in normal progression and become available
-    // only when the player enables the global WNG fallback-crafting option. Keep those recipes free
-    // of normal research gates so the worker remains the single authority for the override path.
-    public sealed class RecipeWorker_UniversalCraftOnly : RecipeWorker
-    {
-        public override bool AvailableOnNow(Thing thing, BodyPartRecord part = null)
-        {
-            // These are ordinary production-bill recipes, not pawn/surgery recipes.
-            // Some bill/workbench managers probe RecipeWorker availability with a null or
-            // non-pawn Thing while building their global recipe menus. Calling the vanilla
-            // RecipeWorker implementation from this WNG-only gate can therefore poison the
-            // entire Add Bill list in large mod stacks. The WNG setting is the sole intended
-            // availability gate for these fallback recipes, so keep this probe side-effect-free.
-            return WNGSettingsUtility.UniversalCraftingEnabled;
-        }
-    }
+
 }
