@@ -107,7 +107,7 @@ for bench in ("ElectricStove","FueledStove","HandTailoringBench","ElectricTailor
 
 # Expected intentional external integration points.
 expected={
-    "FabricationBench": lambda n,p: p.name=="Recipes_UniversalCrafting.xml",
+    "FabricationBench": lambda n,p: False,
     "ElectricSmelter": lambda n,p: p.name=="Recipes_ReplicatorSalvage.xml",
 }
 for bench,pred in expected.items():
