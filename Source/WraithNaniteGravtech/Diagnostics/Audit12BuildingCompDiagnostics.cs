@@ -35,12 +35,12 @@ namespace WraithNaniteGravtech.Diagnostics
                 {
                     var duplicates = def.comps
                         .Where(c => c != null)
-                        .GroupBy(c => c.GetType())
+                        .GroupBy(c => c.compClass ?? c.GetType())
                         .Where(g => g.Count() > 1 &&
-                                    g.Key != typeof(CompProperties_AffectedByFacilities) &&
-                                    g.Key != typeof(CompProperties_WNGGravshipFacility));
+                                    !g.Any(c => c is CompProperties_AffectedByFacilities) &&
+                                    !g.Any(c => c is CompProperties_WNGGravshipFacility));
                     foreach (var dup in duplicates)
-                        failures.Add(def.defName + " has duplicate comp-properties type " + dup.Key.FullName + " x" + dup.Count());
+                        failures.Add(def.defName + " has duplicate effective comp class " + dup.Key.FullName + " x" + dup.Count());
 
                     foreach (CompProperties props in def.comps)
                     {
@@ -62,7 +62,8 @@ namespace WraithNaniteGravtech.Diagnostics
 
                 try
                 {
-                    Thing thing = ThingMaker.MakeThing(def);
+                    ThingDef stuff = def.MadeFromStuff ? GenStuff.DefaultStuffFor(def) : null;
+                    Thing thing = ThingMaker.MakeThing(def, stuff);
                     instantiated++;
                     if (thing is ThingWithComps twc && def.comps != null)
                     {
