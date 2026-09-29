@@ -11,6 +11,6 @@
     <gerund>manufacturing Asuran artifact</gerund>
     <requiredCapacities><li>Manipulation</li></requiredCapacities>
     <prioritizeSustains>true</prioritizeSustains>
-    <fixedBillGiverDefs><li>TableSculpting</li></fixedBillGiverDefs>
+    <fixedBillGiverDefs><li>WNG_PrecursorFabricator</li></fixedBillGiverDefs>
   </WorkGiverDef>
 </Defs>
