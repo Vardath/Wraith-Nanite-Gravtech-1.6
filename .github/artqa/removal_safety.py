@@ -40,8 +40,8 @@ for p in xmls:
     low=raw.lower()
     if "onac_" in low:
         onac_refs+=1
-        if 'mayrequire="idolord.onac"' not in low:
-            fail.append(f"{p}: ONAC Def reference is not guarded by MayRequire idolord.onac")
+        if not ("patchoperationfindmod" in low and "<li>onac</li>" in low):
+            fail.append(f"{p}: ONAC Def reference is not guarded by PatchOperationFindMod(ONAC)")
     if "combatextended." in low or "ammo_user" in low or "ammosetdef" in low:
         ce_refs+=1
         if "Compatibility/CombatExtended" not in p.as_posix():
@@ -154,15 +154,16 @@ if ce_root.exists():
 else:
     fail.append("CE compatibility folder missing")
 
-# ONAC patch files must be optional sequences so removal falls back to WNG defaults.
+# ONAC patch files must be guarded by a real mod-presence operation so removal
+# falls back to WNG defaults without leaving unresolved foreign Def references.
 for name in ("WNG_GoauldShuttleONACIntegration.xml","WNG_GoauldGravshipONACIntegration.xml"):
     p=patches/name
     if not p.exists():
         fail.append(f"missing ONAC optional patch {p}")
         continue
     raw=p.read_text(encoding="utf-8",errors="ignore").lower()
-    if 'class="patchoperationsequence"' not in raw or 'mayrequire="idolord.onac"' not in raw:
-        fail.append(f"{p}: ONAC patch is not an optional guarded sequence")
+    if not ("patchoperationfindmod" in raw and "<li>onac</li>" in raw and 'class="patchoperationsequence"' in raw):
+        fail.append(f"{p}: ONAC patch is not guarded by PatchOperationFindMod(ONAC) around its sequence")
 
 print("=== D160 REMOVAL SAFETY AUDIT ===")
 print(f" - production C# files scanned: {len(source_files)}")
