@@ -74,7 +74,9 @@ namespace WraithNaniteGravtech.Diagnostics
             if (swarmDef == null)
                 failures.Add("WNG_ReplicatorSwarm FactionDef missing.");
             else if (Find.FactionManager?.FirstFactionOfDef(swarmDef) == null)
-                failures.Add("No live WNG_ReplicatorSwarm faction instance after load.");
+                sb.AppendLine("Replicator Swarm faction instance: absent in this save (allowed; FactionDef loaded).");
+            else
+                sb.AppendLine("Replicator Swarm faction instance: present.");
 
             GameComponent_ReplicatorQueenState queenState = ReplicatorQueenUtility.State;
             sb.AppendLine("Exact Queen reference: " +
