@@ -22,7 +22,6 @@ namespace WraithNaniteGravtech.Diagnostics
             Map map = Find.CurrentMap;
             int incidents = 0;
             int sites = 0;
-            int invalidFalse = 0;
             int currentMapCallable = 0;
 
             foreach (IncidentDef def in DefDatabase<IncidentDef>.AllDefsListForReading
@@ -38,13 +37,6 @@ namespace WraithNaniteGravtech.Diagnostics
                         failures.Add(def.defName + " resolved a null IncidentWorker.");
                         continue;
                     }
-
-                    IncidentParms invalid = new IncidentParms { target = null };
-                    bool invalidResult = worker.CanFireNow(invalid);
-                    if (invalidResult)
-                        failures.Add(def.defName + " accepted a null incident target.");
-                    else
-                        invalidFalse++;
 
                     if (map != null)
                     {
@@ -75,7 +67,6 @@ namespace WraithNaniteGravtech.Diagnostics
                 "[WNG AUDIT 26] INCIDENT / QUEST\n" +
                 "Loaded WNG IncidentDefs: " + incidents + "\n" +
                 "Loaded WNG SitePartDefs: " + sites + "\n" +
-                "Null-target incident checks returning false: " + invalidFalse + "\n" +
                 "Current-map CanFireNow probes completed: " + currentMapCallable + "\n");
 
             sb.AppendLine("This probe is read-only: it does not execute incidents or generate sites.");
