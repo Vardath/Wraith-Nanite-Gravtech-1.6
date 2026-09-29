@@ -17,16 +17,6 @@
       <Mass>1.3</Mass>
       <EquipDelay>0.7</EquipDelay>
     </statBases>
-    <recipeMaker>
-      <researchPrerequisite>WNG_LivingWeapons</researchPrerequisite>
-      <workSkill>Crafting</workSkill>
-      <skillRequirements>
-        <Crafting>5</Crafting>
-      </skillRequirements>
-      <recipeUsers Inherit="False">
-        <li>WNG_LivingForge</li>
-      </recipeUsers>
-    </recipeMaker>
     <costList>
       <WNG_Biomass>18</WNG_Biomass>
     </costList>
@@ -90,16 +80,6 @@
       <Mass>3.7</Mass>
       <EquipDelay>1.1</EquipDelay>
     </statBases>
-    <recipeMaker>
-      <researchPrerequisite>WNG_AdvancedCarapace</researchPrerequisite>
-      <workSkill>Crafting</workSkill>
-      <skillRequirements>
-        <Crafting>7</Crafting>
-      </skillRequirements>
-      <recipeUsers Inherit="False">
-        <li>WNG_LivingForge</li>
-      </recipeUsers>
-    </recipeMaker>
     <costList>
       <WNG_Biomass>36</WNG_Biomass>
       <ComponentIndustrial>1</ComponentIndustrial>
@@ -167,16 +147,6 @@
       <AccuracyLong>0.05</AccuracyLong>
       <RangedWeapon_Cooldown>2.2</RangedWeapon_Cooldown>
     </statBases>
-    <recipeMaker>
-      <researchPrerequisite>WNG_LivingWeapons</researchPrerequisite>
-      <workSkill>Crafting</workSkill>
-      <skillRequirements>
-        <Crafting>5</Crafting>
-      </skillRequirements>
-      <recipeUsers Inherit="False">
-        <li>WNG_LivingForge</li>
-      </recipeUsers>
-    </recipeMaker>
     <costList>
       <WNG_Biomass>24</WNG_Biomass>
     </costList>
@@ -249,16 +219,6 @@
       <AccuracyLong>0.45</AccuracyLong>
       <RangedWeapon_Cooldown>1.5</RangedWeapon_Cooldown>
     </statBases>
-    <recipeMaker>
-      <researchPrerequisite>WNG_LivingWeapons</researchPrerequisite>
-      <workSkill>Crafting</workSkill>
-      <skillRequirements>
-        <Crafting>5</Crafting>
-      </skillRequirements>
-      <recipeUsers Inherit="False">
-        <li>WNG_LivingForge</li>
-      </recipeUsers>
-    </recipeMaker>
     <costList>
       <WNG_Biomass>18</WNG_Biomass>
     </costList>
@@ -318,16 +278,6 @@
       <AccuracyLong>0.50</AccuracyLong>
       <RangedWeapon_Cooldown>1.8</RangedWeapon_Cooldown>
     </statBases>
-    <recipeMaker>
-      <researchPrerequisite>WNG_LivingWeapons</researchPrerequisite>
-      <workSkill>Crafting</workSkill>
-      <skillRequirements>
-        <Crafting>6</Crafting>
-      </skillRequirements>
-      <recipeUsers Inherit="False">
-        <li>WNG_LivingForge</li>
-      </recipeUsers>
-    </recipeMaker>
     <costList>
       <WNG_Biomass>28</WNG_Biomass>
       <ComponentIndustrial>1</ComponentIndustrial>
@@ -391,16 +341,6 @@
       <AccuracyLong>0.58</AccuracyLong>
       <RangedWeapon_Cooldown>2.5</RangedWeapon_Cooldown>
     </statBases>
-    <recipeMaker>
-      <researchPrerequisite>WNG_AdvancedCarapace</researchPrerequisite>
-      <workSkill>Crafting</workSkill>
-      <skillRequirements>
-        <Crafting>8</Crafting>
-      </skillRequirements>
-      <recipeUsers Inherit="False">
-        <li>WNG_LivingForge</li>
-      </recipeUsers>
-    </recipeMaker>
     <costList>
       <WNG_Biomass>55</WNG_Biomass>
       <ComponentIndustrial>2</ComponentIndustrial>

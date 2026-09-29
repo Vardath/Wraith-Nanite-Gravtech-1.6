@@ -19,20 +19,6 @@
       <Neutroamine>4</Neutroamine>
       <ComponentSpacer>1</ComponentSpacer>
     </costList>
-    <recipeMaker>
-      <researchPrerequisite>WNG_WhispersDerivedImplants</researchPrerequisite>
-      <recipeUsers>
-        <li>WNG_PrecursorFabricator</li>
-      </recipeUsers>
-      <workAmount>3200</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements>
-        <Intellectual>10</Intellectual>
-      </skillRequirements>
-      <displayPriority>1910</displayPriority>
-    </recipeMaker>
   </ThingDef>
   <ThingDef ParentName="BodyPartProstheticBase">
     <defName>WNG_WhispersMistGland</defName>
@@ -53,19 +39,5 @@
       <Neutroamine>6</Neutroamine>
       <MedicineIndustrial>1</MedicineIndustrial>
     </costList>
-    <recipeMaker>
-      <researchPrerequisite>WNG_WhispersDerivedImplants</researchPrerequisite>
-      <recipeUsers>
-        <li>WNG_PrecursorFabricator</li>
-      </recipeUsers>
-      <workAmount>3600</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements>
-        <Intellectual>10</Intellectual>
-      </skillRequirements>
-      <displayPriority>1900</displayPriority>
-    </recipeMaker>
   </ThingDef>
 </Defs>

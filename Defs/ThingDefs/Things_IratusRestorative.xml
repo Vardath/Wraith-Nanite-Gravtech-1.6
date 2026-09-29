@@ -39,16 +39,6 @@
       <MaxHitPoints>50</MaxHitPoints>
     </statBases>
     <techLevel>Spacer</techLevel>
-    <recipeMaker>
-      <researchPrerequisite>WNG_IratusQueenRestoration</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workAmount>2200</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements><Intellectual>10</Intellectual></skillRequirements>
-      <displayPriority>1890</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_IratusQueenExtract>1</WNG_IratusQueenExtract>
       <WNG_RefinedWraithEnzyme>1</WNG_RefinedWraithEnzyme>

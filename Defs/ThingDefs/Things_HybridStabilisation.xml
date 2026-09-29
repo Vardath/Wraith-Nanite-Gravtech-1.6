@@ -17,16 +17,6 @@
       <MaxHitPoints>45</MaxHitPoints>
     </statBases>
     <techLevel>Spacer</techLevel>
-    <recipeMaker>
-      <researchPrerequisite>WNG_HybridStabilisation</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workAmount>2600</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements><Intellectual>11</Intellectual></skillRequirements>
-      <displayPriority>1820</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_WhispersHybridTissue>1</WNG_WhispersHybridTissue>
       <WNG_IratusGlandExtract>1</WNG_IratusGlandExtract>

@@ -54,17 +54,6 @@
         </li>
       </outcomeDoers>
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_IratusPharmacology</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workAmount>900</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements><Intellectual>6</Intellectual></skillRequirements>
-      <productCount>2</productCount>
-      <displayPriority>1880</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_IratusGlandExtract>1</WNG_IratusGlandExtract>
       <Neutroamine>2</Neutroamine>

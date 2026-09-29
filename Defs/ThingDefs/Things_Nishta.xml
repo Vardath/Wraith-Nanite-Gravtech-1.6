@@ -24,11 +24,6 @@
       <MedicineIndustrial>1</MedicineIndustrial>
       <ComponentIndustrial>1</ComponentIndustrial>
     </costList>
-    <recipeMaker>
-      <researchPrerequisite>WNG_NishtaBiocontrol</researchPrerequisite>
-      <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
-      <skillRequirements><Crafting>6</Crafting></skillRequirements>
-    </recipeMaker>
     <weaponTags Inherit="False">
       <li>GrenadeSmoke</li>
     </weaponTags>

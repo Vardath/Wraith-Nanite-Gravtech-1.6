@@ -17,16 +17,6 @@
       <MaxHitPoints>50</MaxHitPoints>
     </statBases>
     <techLevel>Spacer</techLevel>
-    <recipeMaker>
-      <researchPrerequisite>WNG_WraithFeedingIndependence</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workAmount>4200</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements><Intellectual>12</Intellectual></skillRequirements>
-      <displayPriority>1930</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_WraithRetrovirusDose>1</WNG_WraithRetrovirusDose>
       <WNG_IratusQueenExtract>1</WNG_IratusQueenExtract>

@@ -53,15 +53,6 @@
         </li>
       </outcomeDoers>
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_KassaRefining</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workSkill>Intellectual</workSkill>
-      <skillRequirements><Intellectual>5</Intellectual></skillRequirements>
-      <productCount>2</productCount>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <displayPriority>1800</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_Kassa>6</WNG_Kassa>
     </costList>
@@ -179,15 +170,6 @@
         </li>
       </outcomeDoers>
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_KassaRefining</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workSkill>Intellectual</workSkill>
-      <skillRequirements><Intellectual>7</Intellectual></skillRequirements>
-      <productCount>2</productCount>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <displayPriority>1810</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_Kassa>8</WNG_Kassa>
       <Neutroamine>1</Neutroamine>

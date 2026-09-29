@@ -36,17 +36,6 @@
         </li>
       </outcomeDoers>
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_HoffanCountermeasure</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workAmount>1500</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements><Intellectual>8</Intellectual></skillRequirements>
-      <productCount>2</productCount>
-      <displayPriority>1870</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_RawWraithEnzyme>1</WNG_RawWraithEnzyme>
       <Neutroamine>10</Neutroamine>

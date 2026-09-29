@@ -42,16 +42,6 @@
         </li>
       </outcomeDoers>
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_FeedingResistance</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workAmount>900</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements><Intellectual>6</Intellectual></skillRequirements>
-      <displayPriority>1810</displayPriority>
-    </recipeMaker>
     <costList>
       <Neutroamine>5</Neutroamine>
       <MedicineIndustrial>1</MedicineIndustrial>

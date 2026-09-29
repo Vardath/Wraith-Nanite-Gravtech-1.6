@@ -14,11 +14,6 @@
       <AccuracyTouch>0.62</AccuracyTouch><AccuracyShort>0.80</AccuracyShort><AccuracyMedium>0.76</AccuracyMedium><AccuracyLong>0.66</AccuracyLong>
       <RangedWeapon_Cooldown>1.9</RangedWeapon_Cooldown>
     </statBases>
-    <recipeMaker>
-      <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
-      <skillRequirements><Crafting>8</Crafting></skillRequirements>
-      <recipeUsers Inherit="False"><li>WNG_PrecursorFabricator</li></recipeUsers>
-    </recipeMaker>
     <costList><Plasteel>45</Plasteel><ComponentSpacer>2</ComponentSpacer></costList>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <tradeTags><li>WeaponRanged</li></tradeTags>

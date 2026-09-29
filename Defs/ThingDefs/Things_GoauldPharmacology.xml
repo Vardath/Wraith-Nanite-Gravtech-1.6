@@ -33,19 +33,6 @@
       <tableDesired>false</tableDesired>
       <outcomeDoers />
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_GoauldBiochemicalControl</researchPrerequisite>
-      <recipeUsers>
-        <li>WNG_PrecursorFabricator</li>
-      </recipeUsers>
-      <workAmount>850</workAmount>
-      <workSkill>Intellectual</workSkill>
-      <effectWorking>Cook</effectWorking>
-      <soundWorking>Recipe_Drug</soundWorking>
-      <skillRequirements><Intellectual>6</Intellectual></skillRequirements>
-      <productCount>4</productCount>
-      <displayPriority>1850</displayPriority>
-    </recipeMaker>
     <costList>
       <Neutroamine>6</Neutroamine>
       <MedicineIndustrial>1</MedicineIndustrial>

@@ -44,14 +44,6 @@
         </li>
       </outcomeDoers>
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_WraithEnzymeRefinement</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workSkill>Intellectual</workSkill>
-      <skillRequirements><Intellectual>7</Intellectual></skillRequirements>
-      <productCount>2</productCount>
-      <displayPriority>2300</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_RawWraithEnzyme>1</WNG_RawWraithEnzyme>
       <Neutroamine>2</Neutroamine>
@@ -138,14 +130,6 @@
         </li>
       </outcomeDoers>
     </ingestible>
-    <recipeMaker>
-      <researchPrerequisite>WNG_WraithEnzymeRefinement</researchPrerequisite>
-      <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
-      <workSkill>Intellectual</workSkill>
-      <skillRequirements><Intellectual>8</Intellectual></skillRequirements>
-      <productCount>2</productCount>
-      <displayPriority>2320</displayPriority>
-    </recipeMaker>
     <costList>
       <WNG_RawWraithEnzyme>1</WNG_RawWraithEnzyme>
       <Neutroamine>4</Neutroamine>
