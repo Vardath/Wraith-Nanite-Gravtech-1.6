@@ -513,6 +513,48 @@
           ]
         }
       ]
+    },
+    {
+      "id": "H025_required_apparel_generation_budget",
+      "title": "Required Wraith/Asuran apparel intermittently failed generation because mandatory gear exceeded pawn apparel budget",
+      "tests": [
+        ".github/artqa/pawn_generation.py",
+        ".github/artqa/apparel_equipment_retention.py"
+      ],
+      "guards": [
+        {
+          "path": "Defs/PawnKindDefs/PawnKinds_Wraith.xml",
+          "contains": [
+            "<apparelMoney>5000~5000</apparelMoney>",
+            "<apparelTags Inherit=\"False\"/>"
+          ]
+        },
+        {
+          "path": "Defs/PawnKindDefs/PawnKinds_HumanForm.xml",
+          "contains": [
+            "<apparelMoney>5000~5000</apparelMoney>",
+            "<apparelTags Inherit=\"False\"/>"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H026_replicator_child_generation_contract",
+      "title": "Replicator Queen child retried age generation 300 times and inherited the parent Asuran xenotype",
+      "tests": [
+        ".github/artqa/pawn_generation.py",
+        ".github/artqa/human_form_asuran_copy.py"
+      ],
+      "guards": [
+        {
+          "path": "Defs/PawnKindDefs/PawnKinds_HumanForm.xml",
+          "contains": [
+            "<xenotypeSet Inherit=\"False\"><xenotypeChances><WNG_HumanFormReplicator>1</WNG_HumanFormReplicator></xenotypeChances></xenotypeSet>",
+            "<minGenerationAge>13.01</minGenerationAge>",
+            "<maxGenerationAge>13.99</maxGenerationAge>"
+          ]
+        }
+      ]
     }
   ]
 }

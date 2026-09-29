@@ -19,6 +19,8 @@
     <isFighter>true</isFighter>
     <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
+    <apparelMoney>5000~5000</apparelMoney>
+    <apparelTags Inherit="False"/>
     <gearHealthRange>0.75~1</gearHealthRange>
     <itemQuality>Normal</itemQuality>
     <initialWillRange>8~18</initialWillRange>

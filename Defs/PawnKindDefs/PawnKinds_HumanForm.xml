@@ -11,7 +11,8 @@
     <allowOldAgeInjuries>false</allowOldAgeInjuries>
     <apparelIgnoreSeasons>true</apparelIgnoreSeasons>
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
-    <apparelMoney>0</apparelMoney>
+    <apparelMoney>5000~5000</apparelMoney>
+    <apparelTags Inherit="False"/>
     <gearHealthRange>0.9~1</gearHealthRange>
     <itemQuality>Good</itemQuality>
     <initialWillRange>12~24</initialWillRange>

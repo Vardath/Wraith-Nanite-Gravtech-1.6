@@ -169,7 +169,6 @@
         <maxSimultaneous>1</maxSimultaneous>
         <maxDistance>200</maxDistance>
       </li>
-      <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
         <family>Wraith</family>
         <role>Consumer</role>
@@ -952,7 +951,6 @@
           <li>WNG_AsuranGravEngine</li>
         </linkableBuildings>
       </li>
-      <li Class="CompProperties_Breakdownable" />
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
         <family>Asuran</family>
         <role>Consumer</role>
