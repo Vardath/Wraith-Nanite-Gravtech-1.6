@@ -16,6 +16,9 @@
       <MaxHitPoints>220</MaxHitPoints>
       <MarketValue>1100</MarketValue>
       <Mass>4.1</Mass>
+      <Flammability>0.08</Flammability>
+      <DeteriorationRate>0.08</DeteriorationRate>
+      <RangedWeapon_DamageMultiplier>1.0</RangedWeapon_DamageMultiplier>
       <AccuracyTouch>0.62</AccuracyTouch>
       <AccuracyShort>0.80</AccuracyShort>
       <AccuracyMedium>0.76</AccuracyMedium>
