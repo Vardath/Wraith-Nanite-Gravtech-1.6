@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RimWorld;
 using RimWorld.SketchGen;
 using Verse;
@@ -97,6 +98,40 @@ namespace WraithNaniteGravtech
             }
 
             return items;
+        }
+
+        private static void NotifyOptionalDiscoveriesOfStartingThings(List<Thing> startingItems)
+        {
+            if (startingItems == null)
+                return;
+
+            try
+            {
+                Type trackerType = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(a =>
+                    {
+                        try { return a.GetType("Discoveries.DiscoveryTracker", false); }
+                        catch { return null; }
+                    })
+                    .FirstOrDefault(t => t != null);
+
+                MethodInfo mark = trackerType?.GetMethod(
+                    "MarkStartingThingsDiscovered",
+                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                    null,
+                    new[] { typeof(List<Thing>) },
+                    null);
+
+                if (mark == null)
+                    return;
+
+                mark.Invoke(null, new object[] { startingItems });
+                Log.Message("[WNG] Discoveries compatibility: registered WNG orbital starting pawns/items with the normal discovery tracker.");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[WNG] Optional Discoveries startup compatibility callback failed safely: " + ex);
+            }
         }
 
         private static Sketch BuildFamilyStarterSketch(WNGStarterGravshipSpec spec)
@@ -229,6 +264,13 @@ namespace WraithNaniteGravtech
             InitializeFamilyShip(spec, spawned);
             PlaceStartingPawns(spec, map, shipRect);
             PlaceStartingItems(spec, map, shipRect, startingItems);
+
+            // Discoveries normally learns the player's starting pawns/items from Harmony
+            // postfixes on vanilla ScenPart_PlayerPawnsArriveMethod.DoDropPods/DoGravship.
+            // WNG's orbital starter replaces that vanilla ScenPart, so mirror that callback
+            // only when Discoveries is already loaded. Reflection keeps it fully optional.
+            NotifyOptionalDiscoveriesOfStartingThings(startingItems);
+
             UnfogFamilyDoors(spec, spawned);
             MarkShipHomeArea(spec, map, shipRect);
 
