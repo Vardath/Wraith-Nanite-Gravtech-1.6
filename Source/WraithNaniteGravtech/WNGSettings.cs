@@ -4,6 +4,7 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using WraithNaniteGravtech.Diagnostics;
 
 namespace WraithNaniteGravtech
 {
@@ -168,6 +169,9 @@ namespace WraithNaniteGravtech
             Settings = GetSettings<WNGSettings>();
             Settings?.ClampValues();
             LongEventHandler.ExecuteWhenFinished(WNGSettingsUtility.ApplyRuntimeDefSettings);
+            // Run the read-only recipe snapshot from the actual Mod initialization path.
+            // This avoids relying solely on StaticConstructorOnStartup discovery.
+            LongEventHandler.ExecuteWhenFinished(RecipeLossProbe.RunStartupSnapshot);
         }
 
         public override string SettingsCategory() => "Wraith & Nanite Gravtech";
