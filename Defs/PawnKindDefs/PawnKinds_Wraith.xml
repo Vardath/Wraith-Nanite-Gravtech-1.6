@@ -35,7 +35,7 @@
       <li><categories><li>WraithOrigin</li><li>WraithHunterAdult</li></categories></li>
     </backstoryFiltersOverride>
     <combatPower>95</combatPower>
-    <weaponMoney>250~700</weaponMoney>
+    <weaponMoney>650~1100</weaponMoney>
     <weaponTags><li>WraithCaptureWeapon</li><li>WraithLineWeapon</li></weaponTags>
     <apparelRequired><li>WNG_WraithHunterCoat</li></apparelRequired>
     <abilities><li>WNG_PredatorsPresence</li></abilities>
@@ -49,7 +49,7 @@
       <li><categories><li>WraithOrigin</li><li>WraithWarriorAdult</li></categories></li>
     </backstoryFiltersOverride>
     <combatPower>145</combatPower>
-    <weaponMoney>400~1000</weaponMoney>
+    <weaponMoney>650~1200</weaponMoney>
     <weaponTags><li>WraithLineWeapon</li></weaponTags>
     <apparelRequired><li>WNG_WraithWarriorCarapace</li></apparelRequired>
     <abilities><li>WNG_PredatorsPresence</li></abilities>
@@ -120,7 +120,7 @@
     <description>A player-aligned Wraith hunter. This is the same Hunter caste and Wraith xenotype as WNG_WraithHunter; the distinct PawnKind exists only so player starts can use independent Wraith histories without leaking those biographies into NPC Hive hunters.</description>
     <defaultFactionDef>PlayerColony</defaultFactionDef>
     <combatPower>95</combatPower>
-    <weaponMoney>250~700</weaponMoney>
+    <weaponMoney>650~1100</weaponMoney>
     <weaponTags><li>WraithCaptureWeapon</li><li>WraithLineWeapon</li></weaponTags>
     <apparelRequired><li>WNG_WraithHunterCoat</li></apparelRequired>
     <abilities><li>WNG_PredatorsPresence</li></abilities>
