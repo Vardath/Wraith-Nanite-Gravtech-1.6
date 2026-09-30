@@ -448,6 +448,14 @@ jobs:
                   failures.append(f"{engine_name} missing")
                   continue
 
+              if not any(
+                  comp.attrib.get("Class") == "CompProperties_Breakdownable"
+                  for comp in pilot.findall("./comps/li")
+              ):
+                  failures.append(
+                      f"{pilot_name} is missing native CompPilotConsole breakdown support"
+                  )
+
               if mode == "native":
                   pilot_comp = next(
                       (
