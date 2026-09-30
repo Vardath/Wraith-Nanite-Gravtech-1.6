@@ -161,6 +161,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
     <comps Inherit="False">
+      <li Class="CompProperties_Breakdownable"/>
       <li Class="CompProperties_GravshipFacility">
         <compClass>CompPilotConsole</compClass>
         <componentTypeDef>Controls</componentTypeDef>
@@ -939,6 +940,7 @@
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
     <comps Inherit="False">
+      <li Class="CompProperties_Breakdownable"/>
       <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole">
         <family>Asuran</family>
         <requiresFamilyPower>true</requiresFamilyPower>
