@@ -156,46 +156,45 @@ for kind,tags in sorted(weapon_tag_requirements.items()):
     if not any(weapons_by_tag.get(tag) for tag in tags):
         failures.append(f"{kind}: none of its weaponTags resolve to a current WNG weapon: {sorted(tags)}")
 
-# ---------- Retention implementation contract ----------
+# ---------- Native equipment desirability contract ----------
+# WNG must not fight the pawn AI by repeatedly re-equipping or re-wearing gear.
+# The legacy MapComponent remains only so older saves deserialize cleanly.
 retention_path=ROOT/"Source/WraithNaniteGravtech/Equipment/WNGSignatureGearRetention.cs"
 if not retention_path.exists():
-    failures.append("WNGSignatureGearRetention.cs missing")
+    failures.append("WNGSignatureGearRetention.cs compatibility shell missing")
     retention=""
 else:
     retention=retention_path.read_text(encoding="utf-8",errors="ignore")
 
-required_tokens=(
-    "SpawnRetentionTicks = 1800",
-    "kindName.StartsWith(\"WNG_\"",
-    "bool withinSpawnWindow",
-    "ReconcileRequiredApparel(pawn, withinSpawnWindow)",
-    "ReconcileSignatureWeapon(pawn, withinSpawnWindow, weaponRecoveryAttemptedPawnIds)",
-    "worn == null && withinSpawnWindow",
-    "FindDroppedApparel",
-    "pawn.apparel.Wear(worn, true)",
-    "if (!withinSpawnWindow || pawn.equipment == null || attemptedPawnIds == null)",
-    "FindDroppedSignatureWeapon",
-    "attemptedPawnIds.Add(pawnId)",
-    "pawn.equipment.AddEquipment(weapon)",
-    "pawn.outfits?.forcedHandler?.SetForced(apparel, true)",
-    "Scribe_Collections.Look",
-)
-for token in required_tokens:
-    if token not in retention:
-        failures.append(f"signature gear retention contract missing: {token}")
-
-# Retention may recover exact dropped gear, but must never manufacture replacements or
-# permanently force weapons/apparel after the short spawn window.
-for token in (
-    "ThingMaker.MakeThing(",
-    "PawnGenerator.GeneratePawn(",
-    "DestroyAll(",
-    "WornApparel.Clear(",
-    "equipment.DestroyAllEquipment(",
-    "SetForced(weapon",
+for forbidden in (
+    "pawn.apparel.Wear(",
+    "pawn.equipment.AddEquipment(",
+    "FindDroppedApparel(",
+    "FindDroppedSignatureWeapon(",
+    "SetForced(apparel",
+    "TryDropEquipment(",
 ):
-    if token in retention:
-        failures.append(f"signature retention contains destructive/manufacturing behavior: {token}")
+    if forbidden in retention:
+        failures.append(f"legacy signature retention still manipulates pawn gear: {forbidden}")
+
+if "Intentionally no gear manipulation" not in retention:
+    failures.append("signature gear compatibility shell no longer documents its no-manipulation contract")
+
+# Signature apparel should compete through ordinary RimWorld/SmartGear scoring.
+# Every canonical full-body WNG item needs thermal stats and an outfit role tag.
+for apparel in sorted(required_apparel_defs):
+    if apparel not in thingdefs:
+        continue
+    path,node=thingdefs[apparel]
+    cold=thing_inherited_text(node,"statBases/Insulation_Cold")
+    heat=thing_inherited_text(node,"statBases/Insulation_Heat")
+    outfit=thing_inherited_list(node,"apparel/defaultOutfitTags")
+    if not cold:
+        failures.append(f"{apparel}: missing Insulation_Cold; pawn gear scorers will undervalue it ({path})")
+    if not heat:
+        failures.append(f"{apparel}: missing Insulation_Heat; pawn gear scorers will undervalue it ({path})")
+    if not outfit:
+        failures.append(f"{apparel}: missing defaultOutfitTags ({path})")
 
 # ---------- Living Wraith equipment maturation must not discard/destroy equipment ----------
 maturation_path=ROOT/"Source/WraithNaniteGravtech/Wraith/WraithLivingEquipment.cs"
