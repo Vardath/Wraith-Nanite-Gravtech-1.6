@@ -22,7 +22,7 @@
     <apparelMoney>5000~5000</apparelMoney>
     <apparelTags Inherit="False"/>
     <gearHealthRange>0.75~1</gearHealthRange>
-    <itemQuality>Normal</itemQuality>
+    <itemQuality>Good</itemQuality>
     <initialWillRange>8~18</initialWillRange>
     <initialResistanceRange>12~28</initialResistanceRange>
   </PawnKindDef>
