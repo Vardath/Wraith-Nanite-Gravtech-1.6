@@ -83,6 +83,7 @@
       <bodyPartGroups><li>Waist</li></bodyPartGroups>
       <layers><li>Belt</li></layers>
       <tags><li>BeltDefense</li><li>WNG_PrecursorShield</li></tags>
+      <defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_PrecursorPersonalShield">
