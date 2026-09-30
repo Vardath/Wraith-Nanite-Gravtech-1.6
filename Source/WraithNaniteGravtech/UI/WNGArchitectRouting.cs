@@ -169,10 +169,15 @@ namespace WraithNaniteGravtech
             if (resolved != null)
                 return resolved;
 
-            // The normal Def resolver should have populated this before ExecuteWhenFinished.
-            // ResolveReferences is a safe fallback for unusual load-order interactions.
-            category.ResolveReferences();
-            return ResolvedDesignatorsField.GetValue(category) as List<Designator>;
+            // Never force a second ResolveReferences pass during ExecuteWhenFinished.
+            // Other frameworks may still be completing late def-resolution work here.
+            // If a category is not resolved yet, skip duplication rather than mutating global
+            // def state and retrying resolution out of order.
+            Log.WarningOnce(
+                "[WNG] Architect category '" + category.defName +
+                "' had no resolved designators during late routing; skipped WNG duplication for this category.",
+                category.shortHash ^ 0x574E4702);
+            return null;
         }
 
         private static string ArtPathFor(BuildableDef def)
