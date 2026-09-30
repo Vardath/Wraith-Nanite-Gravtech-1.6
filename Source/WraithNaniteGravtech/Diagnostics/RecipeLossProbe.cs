@@ -338,6 +338,7 @@ namespace WraithNaniteGravtech.Diagnostics
 
             sb.AppendLine("NAMED RECIPE " + defName + ": PRESENT owner=" + Owner(recipe));
             AppendRecipeState(sb, recipe, null, map, "  ");
+            AppendAvailabilityDiagnostics(sb, recipe, "  ");
         }
 
         private static void ProbeBench(StringBuilder sb, ThingDef bench, Map map)
@@ -396,6 +397,7 @@ namespace WraithNaniteGravtech.Diagnostics
 
             sb.AppendLine("PACKAGE RECIPES " + packageId + ": count=" + owned.Count);
 
+            int deepAvailabilitySamples = 0;
             foreach (RecipeDef recipe in owned)
             {
                 List<ThingDef> users = SafeUsers(recipe);
@@ -421,6 +423,13 @@ namespace WraithNaniteGravtech.Diagnostics
                 }
 
                 ProbeRecipeMarketSurface(sb, recipe, "    ");
+
+                if (deepAvailabilitySamples < 5 &&
+                    users.Any(u => u != null && string.Equals(u.defName, "Nanofabricator", StringComparison.OrdinalIgnoreCase)))
+                {
+                    AppendAvailabilityDiagnostics(sb, recipe, "    ");
+                    deepAvailabilitySamples++;
+                }
             }
         }
 
@@ -467,6 +476,243 @@ namespace WraithNaniteGravtech.Diagnostics
             }
 
             ProbeRecipeMarketSurface(sb, recipe, indent);
+        }
+
+        private static void AppendAvailabilityDiagnostics(StringBuilder sb, RecipeDef recipe, string indent)
+        {
+            if (recipe == null)
+                return;
+
+            try
+            {
+                string researchList = recipe.researchPrerequisites == null
+                    ? "<none>"
+                    : string.Join(",", recipe.researchPrerequisites.Where(r => r != null)
+                        .Select(r => r.defName + ":" + r.IsFinished));
+                string memes = recipe.memePrerequisitesAny == null
+                    ? "<none>"
+                    : string.Join(",", recipe.memePrerequisitesAny.Where(m => m != null).Select(m => m.defName));
+                string factionTags = recipe.factionPrerequisiteTags == null
+                    ? "<none>"
+                    : string.Join(",", recipe.factionPrerequisiteTags);
+
+                sb.AppendLine(indent + "VANILLA GATES researchPrerequisite=" +
+                              (recipe.researchPrerequisite == null ? "<none>" : recipe.researchPrerequisite.defName + ":" + recipe.researchPrerequisite.IsFinished) +
+                              " researchPrerequisites=[" + researchList + "]" +
+                              " memes=[" + memes + "]" +
+                              " factionTags=[" + factionTags + "]" +
+                              " fromIdeoBuildingPreceptOnly=" + recipe.fromIdeoBuildingPreceptOnly +
+                              " playerFaction=" + (Faction.OfPlayer?.def?.defName ?? "<null>"));
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine(indent + "VANILLA GATES THREW " + ex.GetType().Name + ": " + ex.Message);
+            }
+
+            AppendHarmonyAvailabilityOwners(sb, indent);
+            AppendDiscoveriesDiagnostics(sb, recipe, indent);
+        }
+
+        private static void AppendHarmonyAvailabilityOwners(StringBuilder sb, string indent)
+        {
+            try
+            {
+                Type harmonyType = FindLoadedType("HarmonyLib.Harmony");
+                if (harmonyType == null)
+                {
+                    sb.AppendLine(indent + "AVAILABLE NOW PATCHES Harmony=<absent>");
+                    return;
+                }
+
+                MethodInfo getter = typeof(RecipeDef).GetProperty(
+                    nameof(RecipeDef.AvailableNow),
+                    BindingFlags.Instance | BindingFlags.Public)?.GetGetMethod();
+
+                MethodInfo getPatchInfo = harmonyType.GetMethod(
+                    "GetPatchInfo",
+                    BindingFlags.Static | BindingFlags.Public,
+                    null,
+                    new[] { typeof(MethodBase) },
+                    null);
+
+                object patchInfo = getPatchInfo?.Invoke(null, new object[] { getter });
+                if (patchInfo == null)
+                {
+                    sb.AppendLine(indent + "AVAILABLE NOW PATCHES <none>");
+                    return;
+                }
+
+                HashSet<string> owners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                PropertyInfo ownersProperty = patchInfo.GetType().GetProperty("Owners", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                object ownersValue = ownersProperty?.GetValue(patchInfo, null);
+                if (ownersValue is System.Collections.IEnumerable enumerableOwners)
+                {
+                    foreach (object owner in enumerableOwners)
+                        if (owner != null) owners.Add(owner.ToString());
+                }
+
+                foreach (string groupName in new[] { "Prefixes", "Postfixes", "Transpilers", "Finalizers" })
+                {
+                    PropertyInfo group = patchInfo.GetType().GetProperty(groupName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    object groupValue = group?.GetValue(patchInfo, null);
+                    if (!(groupValue is System.Collections.IEnumerable patches))
+                        continue;
+                    foreach (object patch in patches)
+                    {
+                        if (patch == null) continue;
+                        PropertyInfo ownerProp = patch.GetType().GetProperty("owner", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                            ?? patch.GetType().GetProperty("Owner", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        FieldInfo ownerField = patch.GetType().GetField("owner", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        object owner = ownerProp?.GetValue(patch, null) ?? ownerField?.GetValue(patch);
+                        if (owner != null) owners.Add(owner.ToString());
+                    }
+                }
+
+                sb.AppendLine(indent + "AVAILABLE NOW PATCHES owners=[" + string.Join(",", owners.OrderBy(x => x)) + "]");
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine(indent + "AVAILABLE NOW PATCHES THREW " + ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        private static void AppendDiscoveriesDiagnostics(StringBuilder sb, RecipeDef recipe, string indent)
+        {
+            Type tracker = FindLoadedType("Discoveries.DiscoveryTracker");
+            Type mod = FindLoadedType("Discoveries.DiscoveriesMod");
+            if (tracker == null || mod == null)
+            {
+                sb.AppendLine(indent + "DISCOVERIES <not loaded>");
+                return;
+            }
+
+            try
+            {
+                object settings =
+                    mod.GetField("settings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(null) ??
+                    mod.GetProperty("settings", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(null, null);
+
+                bool? discoveryEnabled = ReadBoolMember(settings, "discoveryEnabled");
+                bool? enableThings = ReadBoolMember(settings, "enableDiscoveryForThings");
+                bool? hideIngredients = ReadBoolMember(settings, "hideRecipesWithUndiscoveredIngredients");
+                bool? excludeStarting = ReadBoolMember(settings, "excludeStartingScenario");
+
+                MethodInfo lockedMethod = tracker.GetMethod(
+                    "IsRecipeLockedByDiscovery",
+                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                    null,
+                    new[] { typeof(RecipeDef) },
+                    null);
+                object lockedValue = lockedMethod?.Invoke(null, new object[] { recipe });
+
+                FieldInfo discoveredField = tracker.GetField(
+                    "discoveredThingDefNames",
+                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                object discoveredValue = discoveredField?.GetValue(null);
+                int discoveredCount = CollectionCount(discoveredValue);
+
+                sb.AppendLine(indent + "DISCOVERIES loaded=True locked=" + (lockedValue ?? "<unknown>") +
+                              " discoveryEnabled=" + NullableBool(discoveryEnabled) +
+                              " enableDiscoveryForThings=" + NullableBool(enableThings) +
+                              " hideRecipesWithUndiscoveredIngredients=" + NullableBool(hideIngredients) +
+                              " excludeStartingScenario=" + NullableBool(excludeStarting) +
+                              " discoveredThingCount=" + discoveredCount);
+
+                MethodInfo getSlots = tracker.GetMethod(
+                    "GetIngredientSlots",
+                    BindingFlags.Static | BindingFlags.NonPublic,
+                    null,
+                    new[] { typeof(RecipeDef) },
+                    null);
+                MethodInfo isDiscovered = tracker.GetMethod(
+                    "IsIngredientDiscovered",
+                    BindingFlags.Static | BindingFlags.NonPublic,
+                    null,
+                    new[] { typeof(ThingDef) },
+                    null);
+
+                object slotsValue = getSlots?.Invoke(null, new object[] { recipe });
+                if (slotsValue is System.Collections.IEnumerable slots)
+                {
+                    int slotIndex = 0;
+                    foreach (object slotObj in slots)
+                    {
+                        IEnumerable<ThingDef> defs = (slotObj as IEnumerable<ThingDef>) ?? Enumerable.Empty<ThingDef>();
+                        List<ThingDef> slotDefs = defs.Where(d => d != null).ToList();
+                        List<string> discovered = new List<string>();
+                        List<string> undiscovered = new List<string>();
+
+                        foreach (ThingDef def in slotDefs)
+                        {
+                            bool known = false;
+                            try
+                            {
+                                object knownValue = isDiscovered?.Invoke(null, new object[] { def });
+                                known = knownValue is bool b && b;
+                            }
+                            catch
+                            {
+                            }
+
+                            if (known)
+                            {
+                                if (discovered.Count < 12) discovered.Add(def.defName);
+                            }
+                            else
+                            {
+                                if (undiscovered.Count < 20) undiscovered.Add(def.defName);
+                            }
+                        }
+
+                        sb.AppendLine(indent + "DISCOVERIES SLOT " + slotIndex +
+                                      " allowed=" + slotDefs.Count +
+                                      " discoveredSample=[" + string.Join(",", discovered) + "]" +
+                                      " undiscoveredSample=[" + string.Join(",", undiscovered) + "]" +
+                                      " anyDiscovered=" + (discovered.Count > 0));
+                        slotIndex++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine(indent + "DISCOVERIES THREW " + ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        private static bool? ReadBoolMember(object obj, string name)
+        {
+            if (obj == null)
+                return null;
+            try
+            {
+                Type type = obj.GetType();
+                FieldInfo field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (field?.GetValue(obj) is bool fb) return fb;
+                PropertyInfo prop = type.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (prop?.GetValue(obj, null) is bool pb) return pb;
+            }
+            catch
+            {
+            }
+            return null;
+        }
+
+        private static int CollectionCount(object value)
+        {
+            if (value == null)
+                return -1;
+            if (value is System.Collections.ICollection collection)
+                return collection.Count;
+
+            int count = 0;
+            if (value is System.Collections.IEnumerable enumerable)
+                foreach (object ignored in enumerable) count++;
+            return count;
+        }
+
+        private static string NullableBool(bool? value)
+        {
+            return value.HasValue ? value.Value.ToString() : "<unknown>";
         }
 
         private static List<ThingDef> SafeUsers(RecipeDef recipe)
