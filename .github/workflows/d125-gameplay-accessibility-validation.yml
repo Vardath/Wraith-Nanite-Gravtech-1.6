@@ -45,7 +45,9 @@ jobs:
               if token not in onac: failures.append(f"conditional Goa'uld gravship ONAC integration lost {token}")
           child_root = ET.parse("Defs/RecipeDefs/Recipes_ChildsToy.xml").getroot()
           child = next((n for n in list(child_root) if n.findtext("defName") == "WNG_MakeChildsToy"), None)
-          if child is None or "WNG_PrecursorFabricator" not in [x.text for x in child.findall("./recipeUsers/li")]: failures.append("WNG_MakeChildsToy is not isolated to the WNG Precursor Fabricator")
+          child_users = [x.text for x in child.findall("./recipeUsers/li")] if child is not None else []
+          if child is None or "WNG_PrecursorFabricator" not in child_users or "MechGestator" not in child_users:
+              failures.append("WNG_MakeChildsToy must remain available on both the Asuran Fabricator and vanilla Mech Gestator")
           # Generated pawn addictions iterate every drug and dereference ingestible.outcomeDoers.
           # A missing list can abort pawn/map generation with a NullReferenceException.
           for drug_path, drug_root in roots_under("Defs/ThingDefs"):
