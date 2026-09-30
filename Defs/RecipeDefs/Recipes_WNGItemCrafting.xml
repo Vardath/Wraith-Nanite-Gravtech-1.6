@@ -92,7 +92,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormCombatArmor>1</WNG_HumanFormCombatArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_HumanFormUniform">
@@ -111,7 +111,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormUniform>1</WNG_HumanFormUniform></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_AsuranPhaseBlade">
@@ -128,7 +128,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranPhaseBlade>1</WNG_AsuranPhaseBlade></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_AsuranFieldLance">
@@ -145,7 +145,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranFieldLance>1</WNG_AsuranFieldLance></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_WraithRetrovirusDose">
@@ -213,7 +213,7 @@
     <products><WNG_WhispersAcousticNode>1</WNG_WhispersAcousticNode></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
-    </recipeUsers>
+    <li>FabricationBench</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1910</displayPriority>
@@ -239,7 +239,7 @@
     <products><WNG_WhispersMistGland>1</WNG_WhispersMistGland></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
-    </recipeUsers>
+    <li>FabricationBench</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1900</displayPriority>
@@ -278,7 +278,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorCommandArmor>1</WNG_PrecursorCommandArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_HybridStabiliserDose">
@@ -449,7 +449,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorPulseRifle>1</WNG_PrecursorPulseRifle></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_NishtaCanister">
@@ -509,7 +509,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorFieldArmor>1</WNG_PrecursorFieldArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_PrecursorPersonalShield">
@@ -528,7 +528,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorPersonalShield>1</WNG_PrecursorPersonalShield></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
   <RecipeDef Name="Template_WNG_Make_FeedingIndependenceVector">
