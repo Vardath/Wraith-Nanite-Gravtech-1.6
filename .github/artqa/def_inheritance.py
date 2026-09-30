@@ -34,10 +34,15 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
             defname=(node.findtext("defName") or "").strip()
             parent=(node.get("ParentName") or "").strip()
             abstract=(node.get("Abstract") or "").lower()=="true"
+            legacy_recipe_alias = (
+                defname.startswith("Make_WNG_")
+                and parent.startswith("Template_WNG_Make_")
+            )
             wng_owned = (
                 not defname
                 or defname.startswith("WNG_")
                 or defname.endswith("_WNG_Kassa")
+                or legacy_recipe_alias
             )
             for elem in node.iter():
                 if (elem.get("Inherit") or "").lower()!="false":
@@ -60,8 +65,10 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
                         failures.append(
                             f"{path}: {defname} recipeUsers Inherit=False contains external user(s) {external}"
                         )
-                    if not users:
+                    if not users and not legacy_recipe_alias:
                         failures.append(f"{path}: {defname} recipeUsers Inherit=False is empty")
+                    if legacy_recipe_alias and users:
+                        failures.append(f"{path}: legacy recipe alias {defname} unexpectedly exposes recipeUsers {users}")
 
                 # Cost/research/ingredient replacement should never silently produce an empty gate.
                 if tag in {"costList","ingredients","researchPrerequisites","placeWorkers","thingCategories"}:
