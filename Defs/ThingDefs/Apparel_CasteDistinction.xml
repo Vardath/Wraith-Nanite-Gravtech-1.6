@@ -17,7 +17,7 @@
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
     <statBases>
-      <MaxHitPoints>320</MaxHitPoints><WorkToMake>36000</WorkToMake><Mass>10</Mass><EquipDelay>4</EquipDelay>
+      <MaxHitPoints>320</MaxHitPoints><MarketValue>2100</MarketValue><WorkToMake>36000</WorkToMake><Mass>10</Mass><EquipDelay>4</EquipDelay>
       <Flammability>0.12</Flammability><DeteriorationRate>0.2</DeteriorationRate><Insulation_Cold>64</Insulation_Cold><Insulation_Heat>11</Insulation_Heat>
       <ArmorRating_Sharp>1.45</ArmorRating_Sharp><ArmorRating_Blunt>0.65</ArmorRating_Blunt><ArmorRating_Heat>0.78</ArmorRating_Heat><Beauty>3</Beauty>
     </statBases>
