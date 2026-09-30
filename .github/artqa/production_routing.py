@@ -26,9 +26,25 @@ for path,root in roots:
 thingdefs=by_type["ThingDef"]
 recipes=by_type["RecipeDef"]
 
-allowed_external_users={
-    "Human"
+allowed_external_routes={
+    "WNG_Make_WraithRetrovirusDose": {"DrugLab"},
+    "WNG_Make_WraithSuppressionDose": {"DrugLab"},
+    "WNG_Make_HybridStabiliserDose": {"DrugLab"},
+    "WNG_Make_FeedingIndependenceVector": {"DrugLab"},
+    "WNG_Make_VitalResistanceDose": {"DrugLab"},
+    "WNG_Make_IratusQueenRestorative": {"DrugLab"},
+    "WNG_Make_RefinedWraithEnzyme": {"DrugLab"},
+    "WNG_Make_WraithEnzymeWeaningSerum": {"DrugLab"},
+    "WNG_Make_KassaConcentrate": {"DrugLab"},
+    "WNG_Make_KassaDistillate": {"DrugLab"},
+    "WNG_Make_Roshna": {"DrugLab"},
+    "WNG_Make_IratusParalytic": {"DrugLab"},
+    "WNG_Make_HoffanSerum": {"DrugLab"},
+    "WNG_ReprocessReplicatorMatter": {"ElectricSmelter"},
+    "WNG_DestroyReplicatorCoreFragment": {"ElectricSmelter"},
+    "WNG_MakeChildsToy": {"MechGestator"},
 }
+allowed_external_users={"Human"}
 
 external_usage=collections.defaultdict(list)
 wng_usage=collections.defaultdict(list)
@@ -51,8 +67,9 @@ for name,(path,node) in recipes.items():
                 failures.append(f"{name}: missing WNG recipe user ThingDef {user} ({path})")
         else:
             external_usage[user].append((name,path))
-            if user not in allowed_external_users:
-                failures.append(f"{name}: unexpected external recipe user {user} ({path})")
+            allowed = allowed_external_routes.get(name, set())
+            if user not in allowed_external_users and user not in allowed:
+                failures.append(f"{name}: unexpected external recipe user {user} ({path}); allowed={sorted(allowed)}")
 
     # Inherit=False is dangerous on external/vanilla routing because it can erase inherited users.
     ru=node.find("./recipeUsers")
@@ -83,8 +100,9 @@ for name,(path,node) in thingdefs.items():
                 failures.append(f"{name}: recipeMaker targets missing WNG ThingDef {user} ({path})")
         else:
             external_usage[user].append((name+" [recipeMaker]",path))
-            if user not in allowed_external_users:
-                failures.append(f"{name}: recipeMaker targets unexpected external user {user} ({path})")
+            allowed = allowed_external_routes.get(name, set())
+            if user not in allowed_external_users and user not in allowed:
+                failures.append(f"{name}: recipeMaker targets unexpected external user {user} ({path}); allowed={sorted(allowed)}")
     ru=maker.find("./recipeUsers")
     if ru is not None and (ru.get("Inherit") or "").lower()=="false":
         ext=[u for u in users if not u.startswith("WNG_")]
@@ -106,10 +124,13 @@ for bench in ("ElectricStove","FueledStove","HandTailoringBench","ElectricTailor
     if external_usage.get(bench):
         failures.append(f"{bench}: WNG unexpectedly injects {len(external_usage[bench])} recipe(s)")
 
-# WNG must not inject production recipes into vanilla/third-party workbenches.
+# Intentional vanilla integrations are allow-listed per recipe. Anything else remains forbidden.
 for user, refs in external_usage.items():
-    if user != "Human":
-        failures.append(f"{user}: WNG external workstation routing is forbidden: {refs}")
+    for recipe_name, recipe_path in refs:
+        if user == "Human":
+            continue
+        if user not in allowed_external_routes.get(recipe_name, set()):
+            failures.append(f"{recipe_name}: unexpected external workstation {user} ({recipe_path})")
 
 notes.append(f"Parsed {len(recipes)} RecipeDefs and {len(thingdefs)} ThingDefs")
 notes.append(f"WNG workstations referenced: {len(wng_usage)}")
