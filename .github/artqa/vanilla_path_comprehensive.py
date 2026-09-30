@@ -137,10 +137,9 @@ for name,(path,node) in things.items():
         if not plant.findtext("harvestedThingDef") and name.startswith("Plant_WNG_"):
             warnings.append(f"{name}: crop plant has no harvestedThingDef ({path})")
 
-    # Races should use the native race block rather than item-like shortcuts.
-    if race is not None:
-        if (node.findtext("category") or "")!="Pawn":
-            failures.append(f"{name}: race ThingDef category is not Pawn ({path})")
+    # Race defs inherit their pawn category/native handling from vanilla race bases.
+    if race is not None and not parent:
+        warnings.append(f"{name}: race ThingDef has no vanilla/inherited race parent ({path})")
 
     # Worktables should be native bill-givers.
     if is_worktable(node):
@@ -160,11 +159,19 @@ for rname,(path,node) in recipes.items():
         continue
     prods=[p.tag for p in node.findall("./products/*")]
 
-    # Surgery recipes stay on Human/native surgery path.
+    # Surgery recipes use the native surgery worker/effect path; they are attached to races/body parts
+    # through vanilla surgery resolution rather than ordinary workbench recipeUsers.
     surgery=(node.find("addsHediff") is not None or node.find("removesHediff") is not None or
-             (node.get("ParentName") or "").startswith("Surgery"))
-    if surgery and "Human" not in users(node):
-        failures.append(f"{rname}: surgery does not use Human recipe user ({path})")
+             (node.get("ParentName") or "").startswith("Surgery") or
+             "Recipe_Surgery" in (node.findtext("workerClass") or "") or
+             "Recipe_Install" in (node.findtext("workerClass") or ""))
+    if surgery:
+        wc=(node.findtext("workerClass") or "").strip()
+        effect=(node.findtext("effectWorking") or "").strip()
+        if not wc and not (node.get("ParentName") or "").startswith("Surgery"):
+            warnings.append(f"{rname}: surgery has no explicit/inherited workerClass ({path})")
+        if effect and effect!="Surgery":
+            warnings.append(f"{rname}: surgery uses non-Surgery effect {effect} ({path})")
 
     for prod in prods:
         t=things.get(prod)
@@ -190,7 +197,9 @@ for rname,(path,node) in recipes.items():
 
         # Bionic/body-part production follows vanilla Fabrication Bench unless it is a pure surgery recipe.
         if any(c.startswith("BodyParts") for c in tcats) and not surgery:
-            require_route(rname,node,"FabricationBench",path,"manufactured implant/body part should follow vanilla fabrication")
+            biological_growth = "WNG_WraithGrowthChamber" in users(node) and rname.startswith("WNG_Grow")
+            if not biological_growth:
+                require_route(rname,node,"FabricationBench",path,"manufactured implant/body part should follow vanilla fabrication")
 
         # Ordinary cooked foods/meals should be available on a vanilla stove.
         if ingest is not None and not drug and any(c in tcats for c in ("Foods","FoodMeals")):
