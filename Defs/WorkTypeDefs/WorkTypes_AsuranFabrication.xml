@@ -11,7 +11,7 @@
     <naturalPriority>500</naturalPriority>
     <alwaysStartActive>true</alwaysStartActive>
     <requireCapableColonist>true</requireCapableColonist>
-    <workTags><li>ManualSkilled</li><li>Artistic</li></workTags>
-    <relevantSkills><li>Artistic</li></relevantSkills>
+    <workTags><li>ManualSkilled</li></workTags>
+    <relevantSkills><li>Crafting</li></relevantSkills>
   </WorkTypeDef>
 </Defs>

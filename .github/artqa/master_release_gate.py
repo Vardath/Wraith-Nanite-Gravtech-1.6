@@ -5,6 +5,7 @@ import time
 
 ROOT = Path(".")
 CRITICAL = [
+    "vanilla_path_comprehensive.py",
     "bill_recipe_regression.py",
     "third_party_recipe_preservation.py",
     "patch_blast_radius.py",

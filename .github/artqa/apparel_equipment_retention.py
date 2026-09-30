@@ -156,45 +156,126 @@ for kind,tags in sorted(weapon_tag_requirements.items()):
     if not any(weapons_by_tag.get(tag) for tag in tags):
         failures.append(f"{kind}: none of its weaponTags resolve to a current WNG weapon: {sorted(tags)}")
 
-# ---------- Retention implementation contract ----------
+# ---------- Native equipment desirability contract ----------
+# WNG must not fight the pawn AI by repeatedly re-equipping or re-wearing gear.
+# The legacy MapComponent remains only so older saves deserialize cleanly.
 retention_path=ROOT/"Source/WraithNaniteGravtech/Equipment/WNGSignatureGearRetention.cs"
 if not retention_path.exists():
-    failures.append("WNGSignatureGearRetention.cs missing")
+    failures.append("WNGSignatureGearRetention.cs compatibility shell missing")
     retention=""
 else:
     retention=retention_path.read_text(encoding="utf-8",errors="ignore")
 
-required_tokens=(
-    "SpawnRetentionTicks = 1800",
-    "kindName.StartsWith(\"WNG_\"",
-    "bool withinSpawnWindow",
-    "ReconcileRequiredApparel(pawn, withinSpawnWindow)",
-    "ReconcileSignatureWeapon(pawn, withinSpawnWindow)",
-    "worn == null && withinSpawnWindow",
-    "FindDroppedApparel",
-    "pawn.apparel.Wear(worn, true)",
-    "if (!withinSpawnWindow || pawn.equipment == null)",
-    "FindDroppedSignatureWeapon",
-    "pawn.equipment.AddEquipment(weapon)",
-    "pawn.outfits?.forcedHandler?.SetForced(apparel, true)",
-    "Scribe_Collections.Look",
-)
-for token in required_tokens:
-    if token not in retention:
-        failures.append(f"signature gear retention contract missing: {token}")
-
-# Retention may recover exact dropped gear, but must never manufacture replacements or
-# permanently force weapons/apparel after the short spawn window.
-for token in (
-    "ThingMaker.MakeThing(",
-    "PawnGenerator.GeneratePawn(",
-    "DestroyAll(",
-    "WornApparel.Clear(",
-    "equipment.DestroyAllEquipment(",
-    "SetForced(weapon",
+for forbidden in (
+    "pawn.apparel.Wear(",
+    "pawn.equipment.AddEquipment(",
+    "FindDroppedApparel(",
+    "FindDroppedSignatureWeapon(",
+    "SetForced(apparel",
+    "TryDropEquipment(",
 ):
-    if token in retention:
-        failures.append(f"signature retention contains destructive/manufacturing behavior: {token}")
+    if forbidden in retention:
+        failures.append(f"legacy signature retention still manipulates pawn gear: {forbidden}")
+
+if "Intentionally no gear manipulation" not in retention:
+    failures.append("signature gear compatibility shell no longer documents its no-manipulation contract")
+
+# Signature apparel should compete through ordinary RimWorld/SmartGear scoring.
+# Every canonical full-body WNG item needs thermal stats and an outfit role tag.
+for apparel in sorted(required_apparel_defs):
+    if apparel not in thingdefs:
+        continue
+    path,node=thingdefs[apparel]
+    cold=thing_inherited_text(node,"statBases/Insulation_Cold")
+    heat=thing_inherited_text(node,"statBases/Insulation_Heat")
+    outfit=thing_inherited_list(node,"apparel/defaultOutfitTags")
+    if not cold:
+        failures.append(f"{apparel}: missing Insulation_Cold; pawn gear scorers will undervalue it ({path})")
+    if not heat:
+        failures.append(f"{apparel}: missing Insulation_Heat; pawn gear scorers will undervalue it ({path})")
+    if not outfit:
+        failures.append(f"{apparel}: missing defaultOutfitTags ({path})")
+
+# ---------- Whole-catalog vanilla compatibility ----------
+gear_files = set()
+all_apparel_defs = []
+all_weapon_defs = []
+
+for path in (ROOT/"Defs"/"ThingDefs").glob("Apparel_*.xml"):
+    gear_files.add(path)
+    root = ET.parse(path).getroot()
+    for node in list(root):
+        if node.tag == "ThingDef" and (node.findtext("defName") or "").startswith("WNG_") and node.find("apparel") is not None:
+            all_apparel_defs.append((path,node))
+
+for path in (ROOT/"Defs"/"ThingDefs").glob("Weapons_*.xml"):
+    gear_files.add(path)
+    root = ET.parse(path).getroot()
+    for node in list(root):
+        if node.tag != "ThingDef":
+            continue
+        name=(node.findtext("defName") or "").strip()
+        if not name.startswith("WNG_"):
+            continue
+        categories=[(x.text or "").strip() for x in node.findall("./thingCategories/li")]
+        if "WeaponsRanged" in categories or "WeaponsMelee" in categories:
+            all_weapon_defs.append((path,node))
+
+for path,node in all_apparel_defs:
+    name=(node.findtext("defName") or "").strip()
+    stat=node.find("statBases")
+    if stat is None:
+        failures.append(f"{name}: apparel has no statBases ({path})")
+        continue
+    for field in ("MaxHitPoints","MarketValue","Mass","EquipDelay"):
+        if stat.find(field) is None:
+            failures.append(f"{name}: apparel missing vanilla-style {field} ({path})")
+
+    layers=[(x.text or "").strip() for x in node.findall("./apparel/layers/li")]
+    outfits=[(x.text or "").strip() for x in node.findall("./apparel/defaultOutfitTags/li")]
+    if not outfits:
+        failures.append(f"{name}: apparel missing defaultOutfitTags ({path})")
+
+    # Full-body/shell equipment must provide environmental value like vanilla outerwear/power armour.
+    if any(layer in ("Shell","Outer","Middle") for layer in layers):
+        for field in ("Insulation_Cold","Insulation_Heat"):
+            if stat.find(field) is None:
+                failures.append(f"{name}: full-body apparel missing {field} ({path})")
+
+    if not node.findall("./apparel/bodyPartGroups/li"):
+        failures.append(f"{name}: apparel has no bodyPartGroups ({path})")
+
+for path,node in all_weapon_defs:
+    name=(node.findtext("defName") or "").strip()
+    categories=[(x.text or "").strip() for x in node.findall("./thingCategories/li")]
+    stat=node.find("statBases")
+    if stat is None:
+        failures.append(f"{name}: weapon has no statBases ({path})")
+        continue
+    for field in ("MaxHitPoints","MarketValue","Mass"):
+        if stat.find(field) is None:
+            failures.append(f"{name}: weapon missing vanilla-style {field} ({path})")
+    if not node.findall("./weaponTags/li"):
+        failures.append(f"{name}: weapon has no weaponTags ({path})")
+
+    if "WeaponsRanged" in categories:
+        for field in ("AccuracyTouch","AccuracyShort","AccuracyMedium","AccuracyLong","RangedWeapon_Cooldown"):
+            if stat.find(field) is None:
+                failures.append(f"{name}: ranged weapon missing {field} ({path})")
+        verb=node.find("./verbs/li")
+        if verb is None or verb.find("range") is None or verb.find("defaultProjectile") is None:
+            failures.append(f"{name}: ranged weapon missing normal verb/range/projectile contract ({path})")
+
+    if "WeaponsMelee" in categories and not node.findall("./tools/li"):
+        failures.append(f"{name}: melee weapon has no melee tools ({path})")
+
+# Standard pawn-carried Wraith/Asuran gear should be born at Good quality, not rely on a watchdog.
+for base_name in ("WNG_WraithPawnBase","WNG_NaniteHumanoidBase"):
+    base=named_pawnkinds.get(base_name)
+    if base is None:
+        failures.append(f"{base_name}: missing abstract pawn base")
+    elif base.findtext("itemQuality") != "Good":
+        failures.append(f"{base_name}: signature gear should generate at Good quality for native selection")
 
 # ---------- Living Wraith equipment maturation must not discard/destroy equipment ----------
 maturation_path=ROOT/"Source/WraithNaniteGravtech/Wraith/WraithLivingEquipment.cs"
@@ -243,4 +324,6 @@ if failures:
     for f in failures: print(" -",f)
     raise SystemExit(1)
 
-print("PASS: WNG signature apparel/weapons are structurally wearable, recoverable during spawn retention, and not permanently forced or destroyed.")
+print(f" - Whole-catalog apparel defs checked: {len(all_apparel_defs)}")
+print(f" - Whole-catalog weapon defs checked: {len(all_weapon_defs)}")
+print("PASS: all WNG apparel/weapons follow native RimWorld equipment-selection conventions; no live retention watchdog is required.")

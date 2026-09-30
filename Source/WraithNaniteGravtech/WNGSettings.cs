@@ -4,6 +4,7 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using WraithNaniteGravtech.Diagnostics;
 
 namespace WraithNaniteGravtech
 {
@@ -167,7 +168,14 @@ namespace WraithNaniteGravtech
         {
             Settings = GetSettings<WNGSettings>();
             Settings?.ClampValues();
+
+            // Optional diagnostics only: install a RimDoctor report append hook by reflection
+            // when RimDoctor (and Harmony) are already present. Neither is a WNG dependency.
+            RecipeLossProbe.InstallOptionalRimDoctorBridge();
+
             LongEventHandler.ExecuteWhenFinished(WNGSettingsUtility.ApplyRuntimeDefSettings);
+            // Run the read-only recipe snapshot from the actual Mod initialization path.
+            LongEventHandler.ExecuteWhenFinished(RecipeLossProbe.RunStartupSnapshot);
         }
 
         public override string SettingsCategory() => "Wraith & Nanite Gravtech";

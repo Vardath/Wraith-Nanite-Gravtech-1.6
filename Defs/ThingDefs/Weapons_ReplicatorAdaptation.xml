@@ -6,6 +6,8 @@
     <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A compact ranged emitter reproduced from assimilated weapon technology. It is an integrated Replicator machine organ and is destroyed if separated from its body.</description>
     <techLevel>Spacer</techLevel>
+    <tradeability>None</tradeability>
+    <smeltable>false</smeltable>
     <graphicData>
       <texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorPulseCaster</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -13,7 +15,11 @@
     </graphicData>
     <statBases>
       <MarketValue>1</MarketValue>
+      <MaxHitPoints>180</MaxHitPoints>
       <Mass>0.35</Mass>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <RangedWeapon_DamageMultiplier>1.0</RangedWeapon_DamageMultiplier>
       <AccuracyTouch>0.62</AccuracyTouch>
       <AccuracyShort>0.72</AccuracyShort>
       <AccuracyMedium>0.58</AccuracyMedium>
@@ -57,6 +63,8 @@
     <thingCategories Inherit="False"><li>WeaponsRanged</li></thingCategories>
     <description>A phase-tuned emitter grown after repeated real shield engagements. Its focused EMP harmonics collapse vulnerable barriers rather than granting universal shield immunity.</description>
     <techLevel>Ultra</techLevel>
+    <tradeability>None</tradeability>
+    <smeltable>false</smeltable>
     <graphicData>
       <texPath>Things/Item/Weapon/Replicator/WNG_ReplicatorShieldDisruptor</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -64,7 +72,11 @@
     </graphicData>
     <statBases>
       <MarketValue>1</MarketValue>
+      <MaxHitPoints>200</MaxHitPoints>
       <Mass>0.45</Mass>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <RangedWeapon_DamageMultiplier>1.0</RangedWeapon_DamageMultiplier>
       <AccuracyTouch>0.70</AccuracyTouch>
       <AccuracyShort>0.78</AccuracyShort>
       <AccuracyMedium>0.56</AccuracyMedium>
@@ -115,7 +127,11 @@
     </graphicData>
     <statBases>
       <MarketValue>1</MarketValue>
+      <MaxHitPoints>240</MaxHitPoints>
       <Mass>0.8</Mass>
+      <Flammability>0</Flammability>
+      <DeteriorationRate>0</DeteriorationRate>
+      <RangedWeapon_DamageMultiplier>1.05</RangedWeapon_DamageMultiplier>
       <AccuracyTouch>0.46</AccuracyTouch>
       <AccuracyShort>0.72</AccuracyShort>
       <AccuracyMedium>0.82</AccuracyMedium>

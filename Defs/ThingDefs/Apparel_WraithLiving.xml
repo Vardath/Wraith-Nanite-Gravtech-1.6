@@ -6,9 +6,10 @@
     <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>A long flexible coat grown from layered Wraith membrane, providing modest protection without the bulk of a full carapace.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
-    <statBases><MaxHitPoints>180</MaxHitPoints><WorkToMake>14000</WorkToMake><Mass>3.5</Mass><EquipDelay>2</EquipDelay><ArmorRating_Sharp>0.55</ArmorRating_Sharp><ArmorRating_Blunt>0.25</ArmorRating_Blunt><ArmorRating_Heat>0.4</ArmorRating_Heat></statBases>
+    <statBases><MaxHitPoints>180</MaxHitPoints><MarketValue>650</MarketValue><WorkToMake>14000</WorkToMake><Mass>3.5</Mass><EquipDelay>2</EquipDelay><Flammability>0.25</Flammability><DeteriorationRate>0.5</DeteriorationRate><Insulation_Cold>36</Insulation_Cold><Insulation_Heat>8</Insulation_Heat><ArmorRating_Sharp>0.55</ArmorRating_Sharp><ArmorRating_Blunt>0.25</ArmorRating_Blunt><ArmorRating_Heat>0.4</ArmorRating_Heat></statBases>
+    <equippedStatOffsets><MoveSpeed>0.05</MoveSpeed><WorkSpeedGlobal>0.05</WorkSpeedGlobal></equippedStatOffsets>
     <costList><WNG_Biomass>24</WNG_Biomass></costList>
-    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</wornGraphicPath><tags><li>WraithClothing</li></tags></apparel>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat</wornGraphicPath><tags><li>WraithClothing</li></tags><defaultOutfitTags><li>Worker</li><li>Soldier</li></defaultOutfitTags></apparel>
   
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
@@ -21,7 +22,8 @@
     <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A grown shell of layered chitin and regenerative membrane that flexes with the wearer while dispersing bullets, blades and heat.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WarriorCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
-    <statBases><MaxHitPoints>260</MaxHitPoints><WorkToMake>24000</WorkToMake><Mass>8</Mass><EquipDelay>3.5</EquipDelay><ArmorRating_Sharp>1.25</ArmorRating_Sharp><ArmorRating_Blunt>0.55</ArmorRating_Blunt><ArmorRating_Heat>0.65</ArmorRating_Heat></statBases>
+    <statBases><MaxHitPoints>260</MaxHitPoints><MarketValue>1450</MarketValue><WorkToMake>24000</WorkToMake><Mass>8</Mass><EquipDelay>3.5</EquipDelay><Flammability>0.15</Flammability><DeteriorationRate>0.3</DeteriorationRate><Insulation_Cold>58</Insulation_Cold><Insulation_Heat>10</Insulation_Heat><ArmorRating_Sharp>1.25</ArmorRating_Sharp><ArmorRating_Blunt>0.55</ArmorRating_Blunt><ArmorRating_Heat>0.65</ArmorRating_Heat></statBases>
+    <equippedStatOffsets><MoveSpeed>0.02</MoveSpeed></equippedStatOffsets>
     <costList><WNG_Biomass>45</WNG_Biomass><ComponentIndustrial>1</ComponentIndustrial></costList>
     <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WarriorCarapace</wornGraphicPath><tags><li>WraithArmor</li><li>WraithWarriorArmor</li></tags><defaultOutfitTags><li>Soldier</li></defaultOutfitTags></apparel>
   
@@ -36,7 +38,8 @@
     <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
     <description>A denser command-grade living shell with reinforced plates around the torso, shoulders and spine.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
-    <statBases><MaxHitPoints>320</MaxHitPoints><WorkToMake>36000</WorkToMake><Mass>10</Mass><EquipDelay>4</EquipDelay><ArmorRating_Sharp>1.45</ArmorRating_Sharp><ArmorRating_Blunt>0.65</ArmorRating_Blunt><ArmorRating_Heat>0.78</ArmorRating_Heat><Beauty>3</Beauty></statBases>
+    <statBases><MaxHitPoints>320</MaxHitPoints><MarketValue>2100</MarketValue><WorkToMake>36000</WorkToMake><Mass>10</Mass><EquipDelay>4</EquipDelay><Flammability>0.12</Flammability><DeteriorationRate>0.2</DeteriorationRate><Insulation_Cold>64</Insulation_Cold><Insulation_Heat>11</Insulation_Heat><ArmorRating_Sharp>1.45</ArmorRating_Sharp><ArmorRating_Blunt>0.65</ArmorRating_Blunt><ArmorRating_Heat>0.78</ArmorRating_Heat><Beauty>3</Beauty></statBases>
+    <equippedStatOffsets><MoveSpeed>0.04</MoveSpeed></equippedStatOffsets>
     <costList><WNG_Biomass>65</WNG_Biomass><ComponentIndustrial>2</ComponentIndustrial></costList>
     <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace</wornGraphicPath><tags><li>WraithArmor</li><li>WraithCommanderArmor</li></tags><defaultOutfitTags><li>Soldier</li></defaultOutfitTags></apparel>
   
@@ -51,9 +54,10 @@
     <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>Regal living robes grown for Wraith Queens and high-ranking brood leaders, reinforced with fine chitin ribs while remaining flowing and light.</description><techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
-    <statBases><MaxHitPoints>220</MaxHitPoints><WorkToMake>26000</WorkToMake><Mass>4</Mass><EquipDelay>2.5</EquipDelay><ArmorRating_Sharp>0.72</ArmorRating_Sharp><ArmorRating_Blunt>0.32</ArmorRating_Blunt><ArmorRating_Heat>0.52</ArmorRating_Heat><Beauty>5</Beauty></statBases>
+    <statBases><MaxHitPoints>220</MaxHitPoints><MarketValue>1200</MarketValue><WorkToMake>26000</WorkToMake><Mass>4</Mass><EquipDelay>2.5</EquipDelay><Flammability>0.2</Flammability><DeteriorationRate>0.35</DeteriorationRate><Insulation_Cold>42</Insulation_Cold><Insulation_Heat>10</Insulation_Heat><ArmorRating_Sharp>0.72</ArmorRating_Sharp><ArmorRating_Blunt>0.32</ArmorRating_Blunt><ArmorRating_Heat>0.52</ArmorRating_Heat><Beauty>5</Beauty></statBases>
+    <equippedStatOffsets><MoveSpeed>0.04</MoveSpeed><SocialImpact>0.1</SocialImpact></equippedStatOffsets>
     <costList><WNG_Biomass>38</WNG_Biomass><ComponentIndustrial>1</ComponentIndustrial></costList>
-    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment</wornGraphicPath><tags><li>WraithClothing</li><li>WraithQueenClothing</li></tags></apparel>
+    <apparel><bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups><layers><li>Shell</li></layers><wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment</wornGraphicPath><tags><li>WraithClothing</li><li>WraithQueenClothing</li></tags><defaultOutfitTags><li>Worker</li><li>Soldier</li></defaultOutfitTags></apparel>
   
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />

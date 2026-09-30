@@ -6,7 +6,7 @@
     RimWorld's global generated make-recipe pass. Every recipe is routed only to a WNG-owned
     station, isolating vanilla and earlier-loaded mods' bill lists from WNG recipe generation.
   -->
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithHunterCoat">
     <defName>WNG_Make_WraithHunterCoat</defName>
     <label>make wraith hunter coat</label>
     <description>Manufacture wraith hunter coat using WNG's dedicated production chain.</description>
@@ -23,7 +23,7 @@
     <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithWarriorCarapace">
     <defName>WNG_Make_WraithWarriorCarapace</defName>
     <label>make wraith warrior carapace</label>
     <description>Manufacture wraith warrior carapace using WNG's dedicated production chain.</description>
@@ -41,7 +41,7 @@
     <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithCommanderCarapace">
     <defName>WNG_Make_WraithCommanderCarapace</defName>
     <label>make wraith commander carapace</label>
     <description>Manufacture wraith commander carapace using WNG's dedicated production chain.</description>
@@ -59,7 +59,7 @@
     <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithQueenRaiment">
     <defName>WNG_Make_WraithQueenRaiment</defName>
     <label>make wraith queen raiment</label>
     <description>Manufacture wraith queen raiment using WNG's dedicated production chain.</description>
@@ -77,7 +77,7 @@
     <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_HumanFormCombatArmor">
     <defName>WNG_Make_HumanFormCombatArmor</defName>
     <label>make human-form replicator combat armor</label>
     <description>Manufacture human-form replicator combat armor using WNG's dedicated production chain.</description>
@@ -92,10 +92,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormCombatArmor>1</WNG_HumanFormCombatArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_HumanFormUniform">
     <defName>WNG_Make_HumanFormUniform</defName>
     <label>make human-form replicator uniform</label>
     <description>Manufacture human-form replicator uniform using WNG's dedicated production chain.</description>
@@ -111,10 +111,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormUniform>1</WNG_HumanFormUniform></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_AsuranPhaseBlade">
     <defName>WNG_Make_AsuranPhaseBlade</defName>
     <label>make Asuran phase blade</label>
     <description>Manufacture Asuran phase blade using WNG's dedicated production chain.</description>
@@ -128,10 +128,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranPhaseBlade>1</WNG_AsuranPhaseBlade></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_AsuranFieldLance">
     <defName>WNG_Make_AsuranFieldLance</defName>
     <label>make Asuran field lance</label>
     <description>Manufacture Asuran field lance using WNG's dedicated production chain.</description>
@@ -145,10 +145,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranFieldLance>1</WNG_AsuranFieldLance></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithRetrovirusDose">
     <defName>WNG_Make_WraithRetrovirusDose</defName>
     <label>make Wraith retrovirus dose</label>
     <description>Manufacture Wraith retrovirus dose using WNG's dedicated production chain.</description>
@@ -165,13 +165,13 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_IratusGlandExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_WraithRetrovirusDose>1</WNG_WraithRetrovirusDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1840</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithSuppressionDose">
     <defName>WNG_Make_WraithSuppressionDose</defName>
     <label>make Wraith suppression injection</label>
     <description>Manufacture Wraith suppression injection using WNG's dedicated production chain.</description>
@@ -187,13 +187,13 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_WraithSuppressionDose>4</WNG_WraithSuppressionDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1830</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WhispersAcousticNode">
     <defName>WNG_Make_WhispersAcousticNode</defName>
     <label>make Whispers acoustic sensory node</label>
     <description>Manufacture Whispers acoustic sensory node using WNG's dedicated production chain.</description>
@@ -213,13 +213,13 @@
     <products><WNG_WhispersAcousticNode>1</WNG_WhispersAcousticNode></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
-    </recipeUsers>
+    <li>FabricationBench</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1910</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WhispersMistGland">
     <defName>WNG_Make_WhispersMistGland</defName>
     <label>make Whispers mist gland</label>
     <description>Manufacture Whispers mist gland using WNG's dedicated production chain.</description>
@@ -239,13 +239,13 @@
     <products><WNG_WhispersMistGland>1</WNG_WhispersMistGland></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
-    </recipeUsers>
+    <li>FabricationBench</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1900</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithKeeperMantle">
     <defName>WNG_Make_WraithKeeperMantle</defName>
     <label>make wraith keeper mantle</label>
     <description>Manufacture wraith keeper mantle using WNG's dedicated production chain.</description>
@@ -263,7 +263,7 @@
     <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_PrecursorCommandArmor">
     <defName>WNG_Make_PrecursorCommandArmor</defName>
     <label>make precursor command armor</label>
     <description>Manufacture precursor command armor using WNG's dedicated production chain.</description>
@@ -278,10 +278,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorCommandArmor>1</WNG_PrecursorCommandArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_HybridStabiliserDose">
     <defName>WNG_Make_HybridStabiliserDose</defName>
     <label>make hybrid stabiliser dose</label>
     <description>Manufacture hybrid stabiliser dose using WNG's dedicated production chain.</description>
@@ -299,13 +299,13 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_WhispersHybridTissue</li><li>WNG_IratusGlandExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HybridStabiliserDose>1</WNG_HybridStabiliserDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1820</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithBoneBlade">
     <defName>WNG_Make_WraithBoneBlade</defName>
     <label>make living boneblade</label>
     <description>Manufacture living boneblade using WNG's dedicated production chain.</description>
@@ -326,7 +326,7 @@
     </recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithWarGlaive">
     <defName>WNG_Make_WraithWarGlaive</defName>
     <label>make living war glaive</label>
     <description>Manufacture living war glaive using WNG's dedicated production chain.</description>
@@ -348,7 +348,7 @@
     </recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithStunStaff">
     <defName>WNG_Make_WraithStunStaff</defName>
     <label>make wraith stun staff</label>
     <description>Manufacture wraith stun staff using WNG's dedicated production chain.</description>
@@ -369,7 +369,7 @@
     </recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithStunner">
     <defName>WNG_Make_WraithStunner</defName>
     <label>make living stunner</label>
     <description>Manufacture living stunner using WNG's dedicated production chain.</description>
@@ -390,7 +390,7 @@
     </recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithCarbine">
     <defName>WNG_Make_WraithCarbine</defName>
     <label>make living carbine</label>
     <description>Manufacture living carbine using WNG's dedicated production chain.</description>
@@ -412,7 +412,7 @@
     </recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithHeavyBioWeapon">
     <defName>WNG_Make_WraithHeavyBioWeapon</defName>
     <label>make heavy bio-weapon</label>
     <description>Manufacture heavy bio-weapon using WNG's dedicated production chain.</description>
@@ -434,7 +434,7 @@
     </recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_PrecursorPulseRifle">
     <defName>WNG_Make_PrecursorPulseRifle</defName>
     <label>make precursor pulse rifle</label>
     <description>Manufacture precursor pulse rifle using WNG's dedicated production chain.</description>
@@ -449,10 +449,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorPulseRifle>1</WNG_PrecursorPulseRifle></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_NishtaCanister">
     <defName>WNG_Make_NishtaCanister</defName>
     <label>make Nish'ta dispersal canister</label>
     <description>Manufacture Nish'ta dispersal canister using WNG's dedicated production chain.</description>
@@ -472,7 +472,7 @@
     <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_HoffanSerum">
     <defName>WNG_Make_HoffanSerum</defName>
     <label>make prototype Hoffan serum</label>
     <description>Manufacture prototype Hoffan serum using WNG's dedicated production chain.</description>
@@ -488,13 +488,13 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RawWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HoffanSerum>2</WNG_HoffanSerum></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1870</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_PrecursorFieldArmor">
     <defName>WNG_Make_PrecursorFieldArmor</defName>
     <label>make precursor field armor</label>
     <description>Manufacture precursor field armor using WNG's dedicated production chain.</description>
@@ -509,10 +509,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorFieldArmor>1</WNG_PrecursorFieldArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_PrecursorPersonalShield">
     <defName>WNG_Make_PrecursorPersonalShield</defName>
     <label>make precursor personal shield</label>
     <description>Manufacture precursor personal shield using WNG's dedicated production chain.</description>
@@ -528,10 +528,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorPersonalShield>1</WNG_PrecursorPersonalShield></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li><li>FabricationBench</li></recipeUsers>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_FeedingIndependenceVector">
     <defName>WNG_Make_FeedingIndependenceVector</defName>
     <label>make feeding-independence gene vector</label>
     <description>Manufacture feeding-independence gene vector using WNG's dedicated production chain.</description>
@@ -549,13 +549,13 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_WraithRetrovirusDose</li><li>WNG_IratusQueenExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_FeedingIndependenceVector>1</WNG_FeedingIndependenceVector></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1930</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_VitalResistanceDose">
     <defName>WNG_Make_VitalResistanceDose</defName>
     <label>make vital resistance dose</label>
     <description>Manufacture vital resistance dose using WNG's dedicated production chain.</description>
@@ -570,13 +570,13 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_VitalResistanceDose>1</WNG_VitalResistanceDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1810</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_IratusQueenRestorative">
     <defName>WNG_Make_IratusQueenRestorative</defName>
     <label>make Iratus queen restorative</label>
     <description>Manufacture Iratus queen restorative using WNG's dedicated production chain.</description>
@@ -593,13 +593,13 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_IratusQueenExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_IratusQueenRestorative>1</WNG_IratusQueenRestorative></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1890</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_RefinedWraithEnzyme">
     <defName>WNG_Make_RefinedWraithEnzyme</defName>
     <label>make refined Wraith enzyme</label>
     <description>Manufacture refined Wraith enzyme using WNG's dedicated production chain.</description>
@@ -614,11 +614,11 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RawWraithEnzyme</li><li>Neutroamine</li></thingDefs></fixedIngredientFilter>
     <products><WNG_RefinedWraithEnzyme>2</WNG_RefinedWraithEnzyme></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <displayPriority>2300</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_WraithEnzymeWeaningSerum">
     <defName>WNG_Make_WraithEnzymeWeaningSerum</defName>
     <label>make Wraith enzyme weaning serum</label>
     <description>Manufacture Wraith enzyme weaning serum using WNG's dedicated production chain.</description>
@@ -634,11 +634,11 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RawWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_WraithEnzymeWeaningSerum>2</WNG_WraithEnzymeWeaningSerum></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <displayPriority>2320</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_KassaConcentrate">
     <defName>WNG_Make_KassaConcentrate</defName>
     <label>make kassa concentrate</label>
     <description>Manufacture kassa concentrate using WNG's dedicated production chain.</description>
@@ -652,12 +652,12 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_Kassa</li></thingDefs></fixedIngredientFilter>
     <products><WNG_KassaConcentrate>2</WNG_KassaConcentrate></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1800</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_KassaDistillate">
     <defName>WNG_Make_KassaDistillate</defName>
     <label>make kassa distillate</label>
     <description>Manufacture kassa distillate using WNG's dedicated production chain.</description>
@@ -672,12 +672,12 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_Kassa</li><li>Neutroamine</li></thingDefs></fixedIngredientFilter>
     <products><WNG_KassaDistillate>2</WNG_KassaDistillate></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1810</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_Roshna">
     <defName>WNG_Make_Roshna</defName>
     <label>make roshna</label>
     <description>Manufacture roshna using WNG's dedicated production chain.</description>
@@ -694,13 +694,13 @@
     <products><WNG_Roshna>4</WNG_Roshna></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
-    </recipeUsers>
+    <li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1850</displayPriority>
   </RecipeDef>
 
-  <RecipeDef>
+  <RecipeDef Name="Template_WNG_Make_IratusParalytic">
     <defName>WNG_Make_IratusParalytic</defName>
     <label>make Iratus paralytic</label>
     <description>Manufacture Iratus paralytic using WNG's dedicated production chain.</description>
@@ -715,9 +715,219 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_IratusGlandExtract</li><li>Neutroamine</li></thingDefs></fixedIngredientFilter>
     <products><WNG_IratusParalytic>2</WNG_IratusParalytic></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li><li>DrugLab</li></recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1880</displayPriority>
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithHunterCoat">
+    <defName>Make_WNG_WraithHunterCoat</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithWarriorCarapace">
+    <defName>Make_WNG_WraithWarriorCarapace</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithCommanderCarapace">
+    <defName>Make_WNG_WraithCommanderCarapace</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithQueenRaiment">
+    <defName>Make_WNG_WraithQueenRaiment</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_HumanFormCombatArmor">
+    <defName>Make_WNG_HumanFormCombatArmor</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_HumanFormUniform">
+    <defName>Make_WNG_HumanFormUniform</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_AsuranPhaseBlade">
+    <defName>Make_WNG_AsuranPhaseBlade</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_AsuranFieldLance">
+    <defName>Make_WNG_AsuranFieldLance</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithRetrovirusDose">
+    <defName>Make_WNG_WraithRetrovirusDose</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithSuppressionDose">
+    <defName>Make_WNG_WraithSuppressionDose</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WhispersAcousticNode">
+    <defName>Make_WNG_WhispersAcousticNode</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WhispersMistGland">
+    <defName>Make_WNG_WhispersMistGland</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithKeeperMantle">
+    <defName>Make_WNG_WraithKeeperMantle</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_PrecursorCommandArmor">
+    <defName>Make_WNG_PrecursorCommandArmor</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_HybridStabiliserDose">
+    <defName>Make_WNG_HybridStabiliserDose</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithBoneBlade">
+    <defName>Make_WNG_WraithBoneBlade</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithWarGlaive">
+    <defName>Make_WNG_WraithWarGlaive</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithStunStaff">
+    <defName>Make_WNG_WraithStunStaff</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithStunner">
+    <defName>Make_WNG_WraithStunner</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithCarbine">
+    <defName>Make_WNG_WraithCarbine</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithHeavyBioWeapon">
+    <defName>Make_WNG_WraithHeavyBioWeapon</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_PrecursorPulseRifle">
+    <defName>Make_WNG_PrecursorPulseRifle</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_NishtaCanister">
+    <defName>Make_WNG_NishtaCanister</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_HoffanSerum">
+    <defName>Make_WNG_HoffanSerum</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_PrecursorFieldArmor">
+    <defName>Make_WNG_PrecursorFieldArmor</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_PrecursorPersonalShield">
+    <defName>Make_WNG_PrecursorPersonalShield</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_FeedingIndependenceVector">
+    <defName>Make_WNG_FeedingIndependenceVector</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_VitalResistanceDose">
+    <defName>Make_WNG_VitalResistanceDose</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_IratusQueenRestorative">
+    <defName>Make_WNG_IratusQueenRestorative</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_RefinedWraithEnzyme">
+    <defName>Make_WNG_RefinedWraithEnzyme</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_WraithEnzymeWeaningSerum">
+    <defName>Make_WNG_WraithEnzymeWeaningSerum</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_KassaConcentrate">
+    <defName>Make_WNG_KassaConcentrate</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_KassaDistillate">
+    <defName>Make_WNG_KassaDistillate</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_Roshna">
+    <defName>Make_WNG_Roshna</defName>
+    <recipeUsers Inherit="False" />
+  </RecipeDef>
+
+  <!-- Save-compatibility alias for the historical recipeMaker-generated name. -->
+  <RecipeDef ParentName="Template_WNG_Make_IratusParalytic">
+    <defName>Make_WNG_IratusParalytic</defName>
+    <recipeUsers Inherit="False" />
   </RecipeDef>
 </Defs>

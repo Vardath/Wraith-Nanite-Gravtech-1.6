@@ -11,7 +11,9 @@
     <equippedAngleOffset>180</equippedAngleOffset>
     <graphicData><texPath>Things/Item/Weapon/Precursor/WNG_PrecursorPulseRifle</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases>
-      <WorkToMake>42000</WorkToMake><Mass>4.1</Mass>
+      <MaxHitPoints>360</MaxHitPoints><MarketValue>2100</MarketValue>
+      <WorkToMake>42000</WorkToMake><Mass>4.1</Mass><Flammability>0.05</Flammability><DeteriorationRate>0.05</DeteriorationRate>
+      <RangedWeapon_DamageMultiplier>1.15</RangedWeapon_DamageMultiplier>
       <AccuracyTouch>0.62</AccuracyTouch><AccuracyShort>0.80</AccuracyShort><AccuracyMedium>0.76</AccuracyMedium><AccuracyLong>0.66</AccuracyLong>
       <RangedWeapon_Cooldown>1.9</RangedWeapon_Cooldown>
     </statBases>

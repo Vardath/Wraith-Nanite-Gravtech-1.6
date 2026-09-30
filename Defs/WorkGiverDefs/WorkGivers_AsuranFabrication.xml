@@ -5,7 +5,7 @@
     <label>manufacture Asuran artifacts</label>
     <giverClass>WraithNaniteGravtech.WorkGiver_DoAsuranFabrication</giverClass>
     <workType>WNG_AsuranFabrication</workType>
-    <workTags><li>ManualSkilled</li><li>Artistic</li></workTags>
+    <workTags><li>ManualSkilled</li></workTags>
     <priorityInType>100</priorityInType>
     <verb>manufacture</verb>
     <gerund>manufacturing Asuran artifact</gerund>

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection;
 using System.Linq;
 using RimWorld;
 using UnityEngine;
@@ -14,17 +13,13 @@ namespace WraithNaniteGravtech.Anomaly
     /// reclassifying ordinary animals as Anomaly entities. The exact animal pawn remains the thing
     /// carried into, held by, released from, and (when separately studiable) studied on the platform.
     /// </summary>
-    [StaticConstructorOnStartup]
     public static class AnimalHoldingPlatformBootstrap
     {
-        static AnimalHoldingPlatformBootstrap()
-        {
-            if (!ModsConfig.AnomalyActive)
-                return;
-
-            ConfigureAnimalStudyDefs(systematicStudyUnlocked: false);
-        }
-
+        // Do not mutate every animal ThingDef from a StaticConstructorOnStartup.
+        // HAR and other race frameworks still perform late ResolveReferences work at that stage,
+        // including recipeUsers/import processing. Comparative Xenobiology now applies the same
+        // animal-study configuration from WNGComparativeXenobiologyState.FinalizeInit(), after
+        // normal def resolution has completed.
         public static void ConfigureAnimalStudyDefs(bool systematicStudyUnlocked)
         {
             foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)

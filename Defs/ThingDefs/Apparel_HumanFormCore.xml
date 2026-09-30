@@ -10,9 +10,11 @@
     <techLevel>Spacer</techLevel>
     <graphicData><texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCombatArmor</texPath><graphicClass>Graphic_Single</graphicClass></graphicData>
     <statBases>
-      <MaxHitPoints>340</MaxHitPoints><WorkToMake>52000</WorkToMake><Mass>7.5</Mass><EquipDelay>3</EquipDelay>
+      <MaxHitPoints>340</MaxHitPoints><MarketValue>1950</MarketValue><WorkToMake>52000</WorkToMake><Mass>7.5</Mass><EquipDelay>3</EquipDelay>
+      <Flammability>0.15</Flammability><DeteriorationRate>0.2</DeteriorationRate><Insulation_Cold>68</Insulation_Cold><Insulation_Heat>12</Insulation_Heat>
       <ArmorRating_Sharp>1.58</ArmorRating_Sharp><ArmorRating_Blunt>0.68</ArmorRating_Blunt><ArmorRating_Heat>0.9</ArmorRating_Heat>
     </statBases>
+    <equippedStatOffsets><MoveSpeed>0.05</MoveSpeed></equippedStatOffsets>
     <costList><Plasteel>80</Plasteel><ComponentSpacer>3</ComponentSpacer></costList>
     <apparel>
       <bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
@@ -37,13 +39,19 @@
     </graphicData>
     <statBases>
       <MaxHitPoints>220</MaxHitPoints>
+      <MarketValue>700</MarketValue>
       <WorkToMake>18000</WorkToMake>
       <Mass>2.5</Mass>
       <EquipDelay>1.8</EquipDelay>
       <ArmorRating_Sharp>0.45</ArmorRating_Sharp>
       <ArmorRating_Blunt>0.22</ArmorRating_Blunt>
       <ArmorRating_Heat>0.45</ArmorRating_Heat>
+      <Flammability>0.25</Flammability>
+      <DeteriorationRate>0.4</DeteriorationRate>
+      <Insulation_Cold>32</Insulation_Cold>
+      <Insulation_Heat>8</Insulation_Heat>
     </statBases>
+    <equippedStatOffsets><MoveSpeed>0.05</MoveSpeed><WorkSpeedGlobal>0.08</WorkSpeedGlobal></equippedStatOffsets>
     <costList>
       <Synthread>45</Synthread>
       <Plasteel>10</Plasteel>

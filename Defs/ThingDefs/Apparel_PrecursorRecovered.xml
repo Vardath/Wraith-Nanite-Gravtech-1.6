@@ -22,10 +22,15 @@
       <Mass>9</Mass>
       <EquipDelay>3.5</EquipDelay>
       <MarketValue>1850</MarketValue>
+      <Flammability>0.1</Flammability>
+      <DeteriorationRate>0.1</DeteriorationRate>
+      <Insulation_Cold>72</Insulation_Cold>
+      <Insulation_Heat>14</Insulation_Heat>
       <ArmorRating_Sharp>1.72</ArmorRating_Sharp>
       <ArmorRating_Blunt>0.82</ArmorRating_Blunt>
       <ArmorRating_Heat>1.05</ArmorRating_Heat>
     </statBases>
+    <equippedStatOffsets><MoveSpeed>0.08</MoveSpeed><ShootingAccuracyPawn>0.05</ShootingAccuracyPawn></equippedStatOffsets>
     <costList>
       <Plasteel>70</Plasteel>
       <ComponentSpacer>3</ComponentSpacer>
@@ -78,6 +83,7 @@
       <bodyPartGroups><li>Waist</li></bodyPartGroups>
       <layers><li>Belt</li></layers>
       <tags><li>BeltDefense</li><li>WNG_PrecursorShield</li></tags>
+      <defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_PrecursorPersonalShield">

@@ -7,10 +7,9 @@
     <jobString>Making Asuran lattice sculpture.</jobString>
     <workAmount>32000</workAmount>
     <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
-    <workSkill>Artistic</workSkill>
+    <workSkill>Crafting</workSkill>
     <requiredGiverWorkType>WNG_AsuranFabrication</requiredGiverWorkType>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
-    <skillRequirements><Artistic>6</Artistic></skillRequirements>
     <ingredients>
       <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>35</count></li>
       <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>1</count></li>
@@ -31,10 +30,9 @@
     <jobString>Making Asuran shadow sculpture.</jobString>
     <workAmount>36000</workAmount>
     <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
-    <workSkill>Artistic</workSkill>
+    <workSkill>Crafting</workSkill>
     <requiredGiverWorkType>WNG_AsuranFabrication</requiredGiverWorkType>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
-    <skillRequirements><Artistic>6</Artistic></skillRequirements>
     <ingredients>
       <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>40</count></li>
       <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>2</count></li>
@@ -54,10 +52,9 @@
     <jobString>Making Asuran reliquary sculpture.</jobString>
     <workAmount>42000</workAmount>
     <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
-    <workSkill>Artistic</workSkill>
+    <workSkill>Crafting</workSkill>
     <requiredGiverWorkType>WNG_AsuranFabrication</requiredGiverWorkType>
     <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
-    <skillRequirements><Artistic>6</Artistic></skillRequirements>
     <ingredients>
       <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>50</count></li>
       <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>3</count></li>

@@ -21,19 +21,21 @@ jobs:
 
           source_path = Path("Source/WraithNaniteGravtech/Equipment/WNGSignatureGearRetention.cs")
           if not source_path.exists():
-              failures.append("signature gear retention MapComponent is missing")
+              failures.append("signature gear save-compatibility shell is missing")
           else:
               source = source_path.read_text(encoding="utf-8")
-              for label, needle in (
-                  ("spawn retention window", "SpawnRetentionTicks"),
-                  ("native forced apparel", "forcedHandler?.SetForced"),
-                  ("dropped apparel recovery", "pawn.apparel.Wear"),
-                  ("dropped weapon recovery", "pawn.equipment.AddEquipment"),
-                  ("weapon tag matching", "candidateTags"),
-                  ("save/load first-seen state", "Scribe_Collections.Look"),
+              if "Scribe_Collections.Look" not in source:
+                  failures.append("signature gear compatibility shell lost save migration state")
+              for forbidden in (
+                  "pawn.apparel.Wear(",
+                  "pawn.equipment.AddEquipment(",
+                  "forcedHandler?.SetForced",
+                  "TryDropEquipment(",
+                  "FindDroppedApparel(",
+                  "FindDroppedSignatureWeapon(",
               ):
-                  if needle not in source:
-                      failures.append(f"signature gear retention lost {label}")
+                  if forbidden in source:
+                      failures.append(f"signature gear compatibility shell still manipulates live gear: {forbidden}")
 
           human_root = ET.parse("Defs/PawnKindDefs/PawnKinds_HumanForm.xml").getroot()
           human = {n.findtext("defName"): n for n in list(human_root) if n.findtext("defName")}

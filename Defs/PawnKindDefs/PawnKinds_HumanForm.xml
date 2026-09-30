@@ -24,7 +24,7 @@
     <label>precursor engineer</label>
     <combatPower>110</combatPower>
     <isFighter>false</isFighter>
-    <weaponMoney>1005~1400</weaponMoney>
+    <weaponMoney>1100~2200</weaponMoney>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <backstoryFiltersOverride>
@@ -37,7 +37,7 @@
     <label>precursor soldier</label>
     <combatPower>220</combatPower>
     <isFighter>true</isFighter>
-    <weaponMoney>1005~2200</weaponMoney>
+    <weaponMoney>1100~2400</weaponMoney>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <apparelRequired><li>WNG_PrecursorFieldArmor</li></apparelRequired>
     <backstoryFiltersOverride>
@@ -68,7 +68,7 @@
     </xenotypeSet>
     <combatPower>180</combatPower>
     <isFighter>true</isFighter>
-    <weaponMoney>1005~1600</weaponMoney>
+    <weaponMoney>1100~2200</weaponMoney>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <apparelRequired><li>WNG_HumanFormCombatArmor</li></apparelRequired>
     <initialWillRange>0~0</initialWillRange>
@@ -106,7 +106,7 @@
     </xenotypeSet>
     <combatPower>180</combatPower>
     <isFighter>true</isFighter>
-    <weaponMoney>1005~1600</weaponMoney>
+    <weaponMoney>1100~2200</weaponMoney>
     <weaponTags><li>WNG_PrecursorWeapon</li></weaponTags>
     <apparelRequired><li>WNG_HumanFormUniform</li></apparelRequired>
     <initialWillRange>0~0</initialWillRange>
