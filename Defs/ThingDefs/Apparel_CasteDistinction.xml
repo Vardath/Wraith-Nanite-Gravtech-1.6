@@ -18,8 +18,10 @@
     </graphicData>
     <statBases>
       <MaxHitPoints>320</MaxHitPoints><WorkToMake>36000</WorkToMake><Mass>10</Mass><EquipDelay>4</EquipDelay>
+      <Flammability>0.12</Flammability><DeteriorationRate>0.2</DeteriorationRate><Insulation_Cold>64</Insulation_Cold><Insulation_Heat>11</Insulation_Heat>
       <ArmorRating_Sharp>1.45</ArmorRating_Sharp><ArmorRating_Blunt>0.65</ArmorRating_Blunt><ArmorRating_Heat>0.78</ArmorRating_Heat><Beauty>3</Beauty>
     </statBases>
+    <equippedStatOffsets><MoveSpeed>0.04</MoveSpeed></equippedStatOffsets>
     <costList><WNG_Biomass>65</WNG_Biomass><ComponentIndustrial>2</ComponentIndustrial></costList>
     <apparel>
       <bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
@@ -46,8 +48,10 @@
     </graphicData>
     <statBases>
       <MaxHitPoints>400</MaxHitPoints><WorkToMake>60000</WorkToMake><Mass>9</Mass><EquipDelay>3.5</EquipDelay><MarketValue>1850</MarketValue>
+      <Flammability>0.1</Flammability><DeteriorationRate>0.1</DeteriorationRate><Insulation_Cold>74</Insulation_Cold><Insulation_Heat>14</Insulation_Heat>
       <ArmorRating_Sharp>1.72</ArmorRating_Sharp><ArmorRating_Blunt>0.82</ArmorRating_Blunt><ArmorRating_Heat>1.05</ArmorRating_Heat>
     </statBases>
+    <equippedStatOffsets><MoveSpeed>0.08</MoveSpeed><ShootingAccuracyPawn>0.05</ShootingAccuracyPawn><SocialImpact>0.12</SocialImpact></equippedStatOffsets>
     <costList><Plasteel>70</Plasteel><ComponentSpacer>3</ComponentSpacer></costList>
     <apparel>
       <bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
