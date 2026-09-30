@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using LudeonTK;
 using RimWorld;
@@ -13,6 +14,11 @@ namespace WraithNaniteGravtech.Diagnostics
     /// </summary>
     public static class RecipeLossProbe
     {
+        private static string latestStartupSnapshot;
+        private static string latestManualProbe;
+        private static bool rimDoctorBridgeAttempted;
+        private static bool rimDoctorBridgeInstalled;
+        private const string RimDoctorHarmonyId = "vardath.wraithnanitegravtech.recipeprobe.rimdoctor";
         [DebugAction(
             "WNG",
             "Recipe loss probe (vanilla + Nanotech Overpower)",
@@ -75,7 +81,9 @@ namespace WraithNaniteGravtech.Diagnostics
             ProbeWngMarketValues(sb);
 
             sb.AppendLine("[WNG RECIPE LOSS PROBE] END");
-            Log.Message(sb.ToString());
+            latestManualProbe = sb.ToString();
+            Log.Message(latestManualProbe);
+            InstallOptionalRimDoctorBridge();
             Messages.Message(
                 "WNG recipe loss probe complete. Send the new Player.log; search for [WNG RECIPE LOSS PROBE].",
                 MessageTypeDefOf.NeutralEvent,
@@ -106,9 +114,212 @@ namespace WraithNaniteGravtech.Diagnostics
                 r => r != null && IsOwner(r, "hye.nto", "Nanotech Overpower"));
             sb.AppendLine("NanotechOverpowerRecipeDefCount=" + ntoCount);
             sb.AppendLine("[WNG RECIPE STARTUP SNAPSHOT] END");
-            Log.Message(sb.ToString());
+            latestStartupSnapshot = sb.ToString();
+            Log.Message(latestStartupSnapshot);
+            InstallOptionalRimDoctorBridge();
         }
 
+        /// <summary>
+        /// Optional RimDoctor bridge. There is deliberately no compile-time reference to
+        /// RimDoctor or Harmony. If both assemblies are already present in the user's mod
+        /// stack, WNG patches RimDoctor's report builder by reflection and appends a fresh,
+        /// read-only recipe snapshot. If either assembly is absent, WNG continues normally.
+        /// </summary>
+        public static void InstallOptionalRimDoctorBridge()
+        {
+            if (rimDoctorBridgeAttempted)
+                return;
+            rimDoctorBridgeAttempted = true;
+
+            try
+            {
+                Type reportBuilderType = FindLoadedType("RimDoctor.ReportBuilder");
+                MethodInfo build = reportBuilderType?.GetMethod(
+                    "Build",
+                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                    null,
+                    Type.EmptyTypes,
+                    null);
+
+                if (build == null)
+                {
+                    Log.Message("[WNG RECIPE PROBE] RimDoctor not detected; Player.log diagnostics remain active.");
+                    return;
+                }
+
+                Type harmonyType = FindLoadedType("HarmonyLib.Harmony");
+                Type harmonyMethodType = FindLoadedType("HarmonyLib.HarmonyMethod");
+                if (harmonyType == null || harmonyMethodType == null)
+                {
+                    Log.Warning("[WNG RECIPE PROBE] RimDoctor detected but Harmony is not loaded. RimDoctor report append is unavailable; Player.log diagnostics remain active.");
+                    return;
+                }
+
+                object harmony = Activator.CreateInstance(harmonyType, new object[] { RimDoctorHarmonyId });
+                MethodInfo postfixMethod = typeof(RecipeLossProbe).GetMethod(
+                    nameof(RimDoctorBuildPostfix),
+                    BindingFlags.Static | BindingFlags.Public);
+
+                object harmonyMethod;
+                ConstructorInfo hmCtor = harmonyMethodType.GetConstructor(new[] { typeof(MethodInfo) });
+                if (hmCtor != null)
+                {
+                    harmonyMethod = hmCtor.Invoke(new object[] { postfixMethod });
+                }
+                else
+                {
+                    harmonyMethod = Activator.CreateInstance(harmonyMethodType);
+                    FieldInfo methodField = harmonyMethodType.GetField("method", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    PropertyInfo methodProperty = harmonyMethodType.GetProperty("method", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    if (methodField != null) methodField.SetValue(harmonyMethod, postfixMethod);
+                    else if (methodProperty != null && methodProperty.CanWrite) methodProperty.SetValue(harmonyMethod, postfixMethod, null);
+                    else throw new MissingMemberException("HarmonyMethod.method");
+                }
+
+                MethodInfo patch = harmonyType.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                    .FirstOrDefault(m =>
+                    {
+                        if (m.Name != "Patch")
+                            return false;
+                        ParameterInfo[] ps = m.GetParameters();
+                        return ps.Length >= 3 &&
+                               typeof(MethodBase).IsAssignableFrom(ps[0].ParameterType) &&
+                               ps.Any(x => string.Equals(x.Name, "postfix", StringComparison.OrdinalIgnoreCase));
+                    });
+
+                if (patch == null)
+                    throw new MissingMethodException("Harmony.Patch");
+
+                ParameterInfo[] parameters = patch.GetParameters();
+                object[] args = new object[parameters.Length];
+                args[0] = build;
+                for (int i = 1; i < parameters.Length; i++)
+                {
+                    if (string.Equals(parameters[i].Name, "postfix", StringComparison.OrdinalIgnoreCase))
+                        args[i] = harmonyMethod;
+                    else
+                        args[i] = null;
+                }
+
+                patch.Invoke(harmony, args);
+                rimDoctorBridgeInstalled = true;
+                Log.Message("[WNG RECIPE PROBE] RimDoctor detected. A fresh WNG recipe-loss section will be appended to Diagnostics -> Save report.");
+            }
+            catch (Exception ex)
+            {
+                rimDoctorBridgeInstalled = false;
+                Log.Warning("[WNG RECIPE PROBE] Optional RimDoctor bridge could not be installed. This does not affect WNG gameplay: " + ex);
+            }
+        }
+
+        public static void RimDoctorBuildPostfix(ref string __result)
+        {
+            try
+            {
+                StringBuilder report = new StringBuilder(65536);
+                report.AppendLine();
+                report.AppendLine("## WNG recipe-loss probe");
+                report.AppendLine();
+                report.AppendLine("Collected by Wraith & Nanite Gravtech through an optional reflection-only RimDoctor bridge. RimDoctor is not a WNG dependency.");
+                report.AppendLine();
+                report.AppendLine("### Fresh report-time snapshot");
+                report.AppendLine();
+                report.AppendLine(BuildReportTimeSnapshot().TrimEnd());
+
+                if (!string.IsNullOrEmpty(latestManualProbe))
+                {
+                    report.AppendLine();
+                    report.AppendLine("### Latest manual in-game probe");
+                    report.AppendLine();
+                    report.AppendLine(latestManualProbe.TrimEnd());
+                }
+                else if (!string.IsNullOrEmpty(latestStartupSnapshot))
+                {
+                    report.AppendLine();
+                    report.AppendLine("### Earlier startup snapshot");
+                    report.AppendLine();
+                    report.AppendLine(latestStartupSnapshot.TrimEnd());
+                }
+
+                __result = (__result ?? string.Empty) + report;
+            }
+            catch (Exception ex)
+            {
+                __result = (__result ?? string.Empty) +
+                           "\n\n## WNG recipe-loss probe\n(RimDoctor append failed safely: " +
+                           ex.GetType().Name + ": " + ex.Message + ")\n";
+            }
+        }
+
+        private static string BuildReportTimeSnapshot()
+        {
+            StringBuilder sb = new StringBuilder(32768);
+            sb.AppendLine("[WNG RIMDOCTOR RECIPE SNAPSHOT] START");
+            sb.AppendLine("RimDoctorBridgeInstalled=" + rimDoctorBridgeInstalled);
+            sb.AppendLine("RecipeDefCount=" + DefDatabase<RecipeDef>.AllDefsListForReading.Count);
+
+            Map map = Find.CurrentMap;
+
+            ProbeNamedRecipe(sb, "CookMealSimple", map);
+            ProbeNamedRecipe(sb, "CookMealFine", map);
+            ProbeNamedRecipe(sb, "CookMealLavish", map);
+            ProbeNamedRecipe(sb, "CookMealSimpleBulk", map);
+            ProbeNamedRecipe(sb, "CookMealFineBulk", map);
+            ProbeNamedRecipe(sb, "CookMealLavishBulk", map);
+            ProbeNamedRecipe(sb, "Make_Pemmican", map);
+            ProbeNamedRecipe(sb, "Make_Kibble", map);
+
+            HashSet<ThingDef> benches = new HashSet<ThingDef>();
+            AddBench(benches, "FueledStove");
+            AddBench(benches, "ElectricStove");
+            AddBench(benches, "TableButcher");
+            AddBench(benches, "ElectricSmelter");
+            AddBench(benches, "DrugLab");
+            AddBench(benches, "FabricationBench");
+            AddBench(benches, "Nanofabricator");
+
+            foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)
+            {
+                if (def == null)
+                    continue;
+                string name = def.defName ?? string.Empty;
+                string label = def.label ?? string.Empty;
+                if (name.IndexOf("stove", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    label.IndexOf("stove", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    name.IndexOf("butcher", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    label.IndexOf("butcher", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    name.IndexOf("nanofabric", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    label.IndexOf("nanofabric", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    benches.Add(def);
+                }
+            }
+
+            foreach (ThingDef bench in benches.OrderBy(b => b.defName))
+                ProbeBench(sb, bench, map);
+
+            ProbePackageRecipes(sb, "hye.nto", "Nanotech Overpower", benches, map);
+
+            sb.AppendLine("[WNG RIMDOCTOR RECIPE SNAPSHOT] END");
+            return sb.ToString();
+        }
+
+        private static Type FindLoadedType(string fullName)
+        {
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    Type type = assembly.GetType(fullName, false);
+                    if (type != null)
+                        return type;
+                }
+                catch
+                {
+                }
+            }
+            return null;
+        }
         private static void AddBench(HashSet<ThingDef> benches, string defName)
         {
             ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
