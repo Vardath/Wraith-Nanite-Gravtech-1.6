@@ -162,9 +162,25 @@ for base in (ROOT / "Defs", ROOT / "Compatibility"):
             continue
         def_roots.append((path, root))
 
-allowed_external_users = {
-    "Human",
+allowed_external_routes = {
+    "WNG_Make_WraithRetrovirusDose": {"DrugLab"},
+    "WNG_Make_WraithSuppressionDose": {"DrugLab"},
+    "WNG_Make_HybridStabiliserDose": {"DrugLab"},
+    "WNG_Make_FeedingIndependenceVector": {"DrugLab"},
+    "WNG_Make_VitalResistanceDose": {"DrugLab"},
+    "WNG_Make_IratusQueenRestorative": {"DrugLab"},
+    "WNG_Make_RefinedWraithEnzyme": {"DrugLab"},
+    "WNG_Make_WraithEnzymeWeaningSerum": {"DrugLab"},
+    "WNG_Make_KassaConcentrate": {"DrugLab"},
+    "WNG_Make_KassaDistillate": {"DrugLab"},
+    "WNG_Make_Roshna": {"DrugLab"},
+    "WNG_Make_IratusParalytic": {"DrugLab"},
+    "WNG_Make_HoffanSerum": {"DrugLab"},
+    "WNG_ReprocessReplicatorMatter": {"ElectricSmelter"},
+    "WNG_DestroyReplicatorCoreFragment": {"ElectricSmelter"},
+    "WNG_MakeChildsToy": {"MechGestator"},
 }
+allowed_external_users = {"Human"}
 bench_additions = {b: [] for b in representative}
 custom_worker_refs = []
 
@@ -179,7 +195,7 @@ for path, root in def_roots:
                 user = (li.text or "").strip()
                 if user in bench_additions:
                     bench_additions[user].append((defname, path))
-                if user and not user.startswith("WNG_") and user not in allowed_external_users:
+                if user and not user.startswith("WNG_") and user not in allowed_external_users and user not in allowed_external_routes.get(defname, set()):
                     fail(f"WNG RecipeDef {defname} targets unexpected external recipe user {user} ({path})")
 
         if node.tag == "ThingDef":
@@ -189,13 +205,14 @@ for path, root in def_roots:
                     user = (li.text or "").strip()
                     if user in bench_additions:
                         bench_additions[user].append((defname + " [recipeMaker]", path))
-                    if user and not user.startswith("WNG_") and user not in allowed_external_users:
+                    if user and not user.startswith("WNG_") and user not in allowed_external_users and user not in allowed_external_routes.get(defname, set()):
                         fail(f"WNG ThingDef {defname} recipeMaker targets unexpected external recipe user {user} ({path})")
 
-# All external production benches must remain completely untouched by WNG.
+# External benches may host only explicitly supported WNG integrations.
 for bench in sorted(representative):
-    if bench_additions[bench]:
-        fail(f"WNG unexpectedly injects recipes into external bench {bench}: {bench_additions[bench]}")
+    for recipe_name, recipe_path in bench_additions[bench]:
+        if bench not in allowed_external_routes.get(recipe_name.replace(" [recipeMaker]",""), set()):
+            fail(f"WNG unexpectedly injects {recipe_name} into external bench {bench} ({recipe_path})")
 
 for bench in sorted(representative):
     note(f"{bench}: {len(bench_additions[bench])} additive WNG recipe(s)")
