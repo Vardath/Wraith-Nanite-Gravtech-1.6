@@ -7,17 +7,7 @@ using RimWorld;
 using Verse;
 
 namespace WraithNaniteGravtech.Diagnostics
-{
-    [StaticConstructorOnStartup]
-    public static class RecipeLossStartupSnapshot
-    {
-        static RecipeLossStartupSnapshot()
-        {
-            LongEventHandler.ExecuteWhenFinished(RecipeLossProbe.RunStartupSnapshot);
-        }
-    }
-
-    /// <summary>
+{    /// <summary>
     /// Narrow live diagnostic for the external/vanilla recipe-loss regression.
     /// It is deliberately read-only: no recipe, bench, filter, category or Def is modified.
     /// </summary>
