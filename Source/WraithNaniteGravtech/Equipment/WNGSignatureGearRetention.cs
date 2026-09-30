@@ -22,6 +22,7 @@ namespace WraithNaniteGravtech
         private const float RecoveryRadius = 4.25f;
 
         private Dictionary<int, int> firstSeenTickByPawnId = new Dictionary<int, int>();
+        private List<int> weaponRecoveryAttemptedPawnIds = new List<int>();
 
         public MapComponent_WNGSignatureGearRetention(Map map) : base(map)
         {
@@ -31,8 +32,14 @@ namespace WraithNaniteGravtech
         {
             base.ExposeData();
             Scribe_Collections.Look(ref firstSeenTickByPawnId, "wngSignatureGearFirstSeen", LookMode.Value, LookMode.Value);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit && firstSeenTickByPawnId == null)
-                firstSeenTickByPawnId = new Dictionary<int, int>();
+            Scribe_Collections.Look(ref weaponRecoveryAttemptedPawnIds, "wngSignatureWeaponRecoveryAttempted", LookMode.Value);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                if (firstSeenTickByPawnId == null)
+                    firstSeenTickByPawnId = new Dictionary<int, int>();
+                if (weaponRecoveryAttemptedPawnIds == null)
+                    weaponRecoveryAttemptedPawnIds = new List<int>();
+            }
         }
 
         public override void MapComponentTick()
@@ -64,7 +71,7 @@ namespace WraithNaniteGravtech
 
                 bool withinSpawnWindow = now - firstSeenTick <= SpawnRetentionTicks;
                 ReconcileRequiredApparel(pawn, withinSpawnWindow);
-                ReconcileSignatureWeapon(pawn, withinSpawnWindow);
+                ReconcileSignatureWeapon(pawn, withinSpawnWindow, weaponRecoveryAttemptedPawnIds);
             }
 
             if (now % CleanupIntervalTicks == 0)
@@ -168,12 +175,19 @@ namespace WraithNaniteGravtech
             }
         }
 
-        private static void ReconcileSignatureWeapon(Pawn pawn, bool withinSpawnWindow)
+        private static void ReconcileSignatureWeapon(Pawn pawn, bool withinSpawnWindow, List<int> attemptedPawnIds)
         {
-            if (!withinSpawnWindow || pawn.equipment == null)
+            if (!withinSpawnWindow || pawn.equipment == null || attemptedPawnIds == null)
                 return;
 
             if (pawn.equipment.Primary != null)
+                return;
+
+            if (!pawn.Position.IsValid || pawn.Map == null || !pawn.Position.InBounds(pawn.Map))
+                return;
+
+            int pawnId = pawn.thingIDNumber;
+            if (attemptedPawnIds.Contains(pawnId))
                 return;
 
             List<string> requiredTags = pawn.kindDef.weaponTags;
@@ -181,8 +195,14 @@ namespace WraithNaniteGravtech
                 return;
 
             ThingWithComps weapon = FindDroppedSignatureWeapon(pawn, requiredTags);
-            if (weapon == null)
+            if (weapon == null || weapon.Map != pawn.Map || !weapon.Position.IsValid || !weapon.Position.InBounds(pawn.Map))
                 return;
+
+            // One recovery attempt is enough. Repeatedly re-equipping a weapon that another
+            // equipment manager deliberately drops creates a tug-of-war and can eventually make
+            // that manager attempt to drop the item at IntVec3.Invalid. Preserve the original
+            // spawn-gear safety net without fighting later AI/player equipment decisions.
+            attemptedPawnIds.Add(pawnId);
 
             try
             {
@@ -252,7 +272,10 @@ namespace WraithNaniteGravtech
                 return;
 
             for (int i = 0; i < stale.Count; i++)
+            {
                 firstSeenTickByPawnId.Remove(stale[i]);
+                weaponRecoveryAttemptedPawnIds?.Remove(stale[i]);
+            }
         }
     }
 }
