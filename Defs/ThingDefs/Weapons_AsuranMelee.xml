@@ -19,9 +19,13 @@
       <drawSize>(1.45,1.45)</drawSize>
     </graphicData>
     <statBases>
+      <MaxHitPoints>300</MaxHitPoints>
+      <MarketValue>1750</MarketValue>
       <WorkToMake>18000</WorkToMake>
       <Mass>1.2</Mass>
       <EquipDelay>0.6</EquipDelay>
+      <Flammability>0.05</Flammability>
+      <DeteriorationRate>0.05</DeteriorationRate>
     </statBases>
     <costList><WNG_ReplicatorMatter>14</WNG_ReplicatorMatter></costList>
     <weaponTags><li>WNG_PrecursorWeapon</li><li>WNG_AsuranWeapon</li></weaponTags>
@@ -29,11 +33,11 @@
     <tools>
       <li>
         <label>phase edge</label><capacities><li>Cut</li></capacities>
-        <power>19</power><cooldownTime>1.05</cooldownTime><armorPenetration>0.45</armorPenetration>
+        <power>21</power><cooldownTime>1.05</cooldownTime><armorPenetration>0.65</armorPenetration>
       </li>
       <li>
         <label>phase point</label><capacities><li>Stab</li></capacities>
-        <power>15</power><cooldownTime>1.0</cooldownTime><armorPenetration>0.42</armorPenetration><chanceFactor>0.4</chanceFactor>
+        <power>17</power><cooldownTime>1.0</cooldownTime><armorPenetration>0.60</armorPenetration><chanceFactor>0.4</chanceFactor>
       </li>
       <li>
         <label>hilt strike</label><capacities><li>Blunt</li></capacities>
@@ -56,9 +60,13 @@
       <drawSize>(1.9,1.9)</drawSize>
     </graphicData>
     <statBases>
+      <MaxHitPoints>360</MaxHitPoints>
+      <MarketValue>2350</MarketValue>
       <WorkToMake>30000</WorkToMake>
       <Mass>3.2</Mass>
       <EquipDelay>1.0</EquipDelay>
+      <Flammability>0.04</Flammability>
+      <DeteriorationRate>0.04</DeteriorationRate>
     </statBases>
     <costList><WNG_ReplicatorMatter>20</WNG_ReplicatorMatter></costList>
     <weaponTags><li>WNG_PrecursorWeapon</li><li>WNG_AsuranWeapon</li></weaponTags>
@@ -66,11 +74,11 @@
     <tools>
       <li>
         <label>field point</label><capacities><li>Stab</li></capacities>
-        <power>27</power><cooldownTime>1.8</cooldownTime><armorPenetration>0.60</armorPenetration>
+        <power>29</power><cooldownTime>1.8</cooldownTime><armorPenetration>0.75</armorPenetration>
       </li>
       <li>
         <label>field edge</label><capacities><li>Cut</li></capacities>
-        <power>20</power><cooldownTime>1.7</cooldownTime><armorPenetration>0.48</armorPenetration><chanceFactor>0.35</chanceFactor>
+        <power>22</power><cooldownTime>1.7</cooldownTime><armorPenetration>0.62</armorPenetration><chanceFactor>0.35</chanceFactor>
       </li>
       <li>
         <label>reinforced shaft</label><capacities><li>Blunt</li></capacities>
