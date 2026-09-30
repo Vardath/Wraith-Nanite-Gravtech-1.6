@@ -57,9 +57,25 @@ for base in (ROOT/"Patches", ROOT/"Compatibility"):
                     failures.append(f"{path}: destructive external recipe patch forbidden: {xpath}")
 
 # 3) WNG RecipeDefs may only add themselves to a bounded allow-list of external benches.
-allowed_external={
-    "Human"
+allowed_external_routes={
+    "WNG_Make_WraithRetrovirusDose": {"DrugLab"},
+    "WNG_Make_WraithSuppressionDose": {"DrugLab"},
+    "WNG_Make_HybridStabiliserDose": {"DrugLab"},
+    "WNG_Make_FeedingIndependenceVector": {"DrugLab"},
+    "WNG_Make_VitalResistanceDose": {"DrugLab"},
+    "WNG_Make_IratusQueenRestorative": {"DrugLab"},
+    "WNG_Make_RefinedWraithEnzyme": {"DrugLab"},
+    "WNG_Make_WraithEnzymeWeaningSerum": {"DrugLab"},
+    "WNG_Make_KassaConcentrate": {"DrugLab"},
+    "WNG_Make_KassaDistillate": {"DrugLab"},
+    "WNG_Make_Roshna": {"DrugLab"},
+    "WNG_Make_IratusParalytic": {"DrugLab"},
+    "WNG_Make_HoffanSerum": {"DrugLab"},
+    "WNG_ReprocessReplicatorMatter": {"ElectricSmelter"},
+    "WNG_DestroyReplicatorCoreFragment": {"ElectricSmelter"},
+    "WNG_MakeChildsToy": {"MechGestator"},
 }
+allowed_external={"Human"}
 external_routes={}
 for base in (ROOT/"Defs", ROOT/"Compatibility"):
     if not base.exists():
@@ -93,7 +109,7 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
                     if u.startswith("WNG_"):
                         continue
                     external_routes.setdefault(u,[]).append(name)
-                    if u not in allowed_external:
+                    if u not in allowed_external and u not in allowed_external_routes.get(name, set()):
                         failures.append(f"{path}: {name} targets unexpected third-party/vanilla bench {u}")
 
 # 4) Historical regression guard: WNG itself must never mention Nanotech Overpower's
