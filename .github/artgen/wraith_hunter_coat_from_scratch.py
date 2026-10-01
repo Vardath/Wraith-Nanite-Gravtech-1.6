@@ -14,7 +14,7 @@ BODIES = {
     "Female": (0.91, 0.94, 0),
     "Thin":   (0.83, 0.88, 1),
     "Fat":    (1.15, 1.12, 0),
-    "Hulk":   (1.28, 1.20, -2),
+    "Hulk":   (1.28, 1.20, 0),
 }
 
 def S(v): return int(round(v * SS))
