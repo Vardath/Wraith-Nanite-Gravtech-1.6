@@ -38,7 +38,7 @@
     <recipeMaker IsNull="True" />
     <label>precursor command armor</label>
     <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
-    <description>A command-grade presentation of precursor field armor used by Asuran coordinators. Protection and manufacture track the standard field suit; the current field-armor visual is temporary pending professional command-armour art.</description>
+    <description>A command-grade precursor armor shell used by senior coordinators and Ancient-technology specialists. Gold command tracery overlays the pale field plates while a reinforced luminous core manages suit power and battlefield telemetry.</description>
     <techLevel>Ultra</techLevel>
     <graphicData>
       <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorCommandArmor</texPath>

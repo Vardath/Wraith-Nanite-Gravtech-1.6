@@ -494,6 +494,24 @@
     <displayPriority>1870</displayPriority>
   </RecipeDef>
 
+
+  <RecipeDef>
+    <defName>WNG_Make_PrecursorUniform</defName>
+    <label>make precursor uniform</label>
+    <description>Manufacture a precursor uniform using WNG's dedicated production chain.</description>
+    <jobString>Making precursor uniform.</jobString>
+    <workAmount>24000</workAmount><workSkill>Crafting</workSkill>
+    <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
+    <skillRequirements><Crafting>6</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Synthread</li></thingDefs></filter><count>55</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>12</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_PrecursorUniform>1</WNG_PrecursorUniform></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+
   <RecipeDef>
     <defName>WNG_Make_PrecursorFieldArmor</defName>
     <label>make precursor field armor</label>
