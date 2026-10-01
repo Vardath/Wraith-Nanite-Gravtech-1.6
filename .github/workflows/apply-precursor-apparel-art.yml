@@ -1,0 +1,197 @@
+name: Apply Precursor apparel art pass
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-precursor-apparel-art.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout WNG
+        uses: actions/checkout@v4
+
+      - name: Install Pillow
+        run: python -m pip install pillow
+
+      - name: Apply Precursor apparel art
+        shell: bash
+        run: |
+          cat > /tmp/precursor_art_pass.py <<'PY'
+          from PIL import Image, ImageFilter, ImageDraw, ImageChops
+          from pathlib import Path
+          import random
+
+          MOD=Path('.')
+          APP=MOD/'Textures/Things/Pawn/Humanlike/Apparel/Precursor'
+
+          def erode(mask,size=5):
+              return mask.filter(ImageFilter.MinFilter(size))
+
+          def blur_noise_field(w,h,seed,scale=9):
+              rnd=random.Random(seed)
+              sw=max(2,w//scale); sh=max(2,h//scale)
+              n=Image.new('L',(sw,sh))
+              px=n.load()
+              for y in range(sh):
+                  for x in range(sw):
+                      px[x,y]=rnd.randint(70,185)
+              return n.resize((w,h),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(max(1,scale//3)))
+
+          def render(template_path, family, out_path):
+              src=Image.open(template_path).convert('RGBA')
+              a=src.getchannel('A')
+              bbox=a.getbbox()
+              if not bbox:
+                  src.save(out_path); return
+              x0,y0,x1,y1=bbox
+              bw=x1-x0; bh=y1-y0; cx=(x0+x1)//2
+              W,H=src.size
+              seed=sum(ord(c) for c in Path(out_path).name)+{'uniform':11,'field':23,'command':37}[family]
+              noise=blur_noise_field(W,H,seed)
+              nv=noise.load(); ma=a.load()
+              out=Image.new('RGBA',(W,H),(0,0,0,0)); op=out.load()
+
+              for y in range(y0,y1):
+                  for x in range(x0,x1):
+                      aa=ma[x,y]
+                      if aa==0: continue
+                      nx=(x-x0)/max(1,bw-1); ny=(y-y0)/max(1,bh-1)
+                      dome=max(0,1-abs(nx-.5)*1.6)
+                      top=1-ny
+                      n=(nv[x,y]-128)/128
+                      if family=='uniform':
+                          r=194+38*dome+12*top+10*n
+                          g=201+38*dome+14*top+11*n
+                          b=204+36*dome+17*top+14*n
+                      else:
+                          r=154+49*dome+18*top+14*n
+                          g=164+52*dome+20*top+15*n
+                          b=173+58*dome+24*top+18*n
+                      op[x,y]=(int(max(0,min(255,r))),int(max(0,min(255,g))),int(max(0,min(255,b))),aa)
+
+              inner=erode(a,5); ie=inner.load(); op=out.load()
+              for y in range(y0,y1):
+                  for x in range(x0,x1):
+                      if ma[x,y] and ie[x,y] < 90:
+                          r,g,b,aa=op[x,y]
+                          op[x,y]=(int(r*.38),int(g*.42),int(b*.47),aa)
+
+              d=ImageDraw.Draw(out,'RGBA')
+              cyan=(62,224,255,240); cyan2=(91,190,232,160)
+              gold=(222,174,72,235); dark=(21,31,39,220)
+              hi=(241,246,244,175); softgold=(218,184,104,125)
+              name=Path(out_path).name.lower()
+              north='_north' in name
+              east='_east' in name
+              west='_west' in name
+              side=east or west
+              sx=cx+(int(.07*bw) if east else -int(.07*bw) if west else 0)
+              yA=y0+int(.17*bh); yB=y0+int(.78*bh)
+
+              def ln(points,fill,width=1):
+                  d.line(points,fill=fill,width=width,joint='curve')
+
+              ln([(x0+int(.12*bw),y0+int(.20*bh)),(x0+int(.31*bw),y0+int(.30*bh)),(x0+int(.26*bw),y0+int(.52*bh))],hi,1)
+              ln([(x0+int(.88*bw),y0+int(.20*bh)),(x0+int(.69*bw),y0+int(.30*bh)),(x0+int(.74*bw),y0+int(.52*bh))],hi,1)
+
+              if family=='uniform':
+                  ln([(sx,yA),(sx,yB)],cyan,2)
+                  ln([(x0+int(.23*bw),y0+int(.23*bh)),(sx,y0+int(.39*bh)),(x0+int(.77*bw),y0+int(.23*bh))],cyan2,1)
+                  ln([(x0+int(.18*bw),y0+int(.67*bh)),(sx,y0+int(.78*bh)),(x0+int(.82*bw),y0+int(.67*bh))],softgold,1)
+                  if not north:
+                      cy=y0+int(.41*bh); rr=max(2,int(.022*min(bw,bh)))
+                      d.ellipse((sx-rr,cy-rr,sx+rr,cy+rr),fill=(87,235,255,245),outline=(235,252,255,220),width=1)
+              elif family=='field':
+                  ln([(sx,yA),(sx,yB)],cyan,2)
+                  ln([(x0+int(.20*bw),y0+int(.28*bh)),(sx,y0+int(.44*bh)),(x0+int(.80*bw),y0+int(.28*bh))],dark,2)
+                  ln([(x0+int(.29*bw),y0+int(.60*bh)),(sx,y0+int(.71*bh)),(x0+int(.71*bw),y0+int(.60*bh))],cyan2,1)
+                  if not north:
+                      cy=y0+int(.42*bh); rr=max(2,int(.03*min(bw,bh)))
+                      d.polygon([(sx,cy-2*rr),(sx+2*rr,cy),(sx,cy+2*rr),(sx-2*rr,cy)],fill=(72,229,255,245),outline=(230,253,255,220))
+              else:
+                  ln([(sx,yA),(sx,yB)],cyan,2)
+                  ln([(x0+int(.10*bw),y0+int(.18*bh)),(x0+int(.34*bw),y0+int(.29*bh)),(sx,y0+int(.19*bh)),(x0+int(.66*bw),y0+int(.29*bh)),(x0+int(.90*bw),y0+int(.18*bh))],gold,2)
+                  ln([(x0+int(.18*bw),y0+int(.52*bh)),(x0+int(.33*bw),y0+int(.63*bh))],softgold,1)
+                  ln([(x0+int(.82*bw),y0+int(.52*bh)),(x0+int(.67*bw),y0+int(.63*bh))],softgold,1)
+                  ln([(x0+int(.29*bw),y0+int(.64*bh)),(sx,y0+int(.75*bh)),(x0+int(.71*bw),y0+int(.64*bh))],cyan2,1)
+                  if not north:
+                      cy=y0+int(.40*bh); rr=max(3,int(.036*min(bw,bh)))
+                      d.polygon([(sx,cy-2*rr),(sx+2*rr,cy),(sx,cy+2*rr),(sx-2*rr,cy)],fill=(60,224,255,245),outline=gold)
+
+              if north:
+                  d.rectangle((sx-1,y0+int(.25*bh),sx+1,y0+int(.69*bh)),fill=(53,169,207,125))
+
+              glow=Image.new('RGBA',(W,H),(0,0,0,0))
+              gd=ImageDraw.Draw(glow,'RGBA')
+              gd.line([(sx,yA),(sx,yB)],fill=(0,194,255,85),width=5)
+              glow=glow.filter(ImageFilter.GaussianBlur(2.2))
+              glow.putalpha(ImageChops.multiply(glow.getchannel('A'),a))
+              out=Image.alpha_composite(out,glow)
+              out.putalpha(a)
+              out.save(out_path,optimize=True)
+
+          for family,prefix in [('field','WNG_PrecursorFieldArmor'),('command','WNG_PrecursorCommandArmor')]:
+              for p in sorted(APP.glob(prefix+'*.png')):
+                  render(p,family,p)
+
+          for src in sorted(APP.glob('WNG_HumanFormUniform*.png')):
+              suffix=src.name[len('WNG_HumanFormUniform'):]
+              dst=APP/('WNG_PrecursorUniform'+suffix)
+              render(src,'uniform',dst)
+
+          apparel_xml=MOD/'Defs/ThingDefs/Apparel_PrecursorRecovered.xml'
+          s=apparel_xml.read_text(encoding='utf-8')
+          s=s.replace(
+              'A high-grade Ancient-derived combat shell combining dense precursor composites with field-distribution layers. The current visual is provisional; its protection and acquisition path are functional independently of later art replacement.',
+              'A high-grade Ancient-derived combat shell combining dense precursor composites with field-distribution layers. Pale ceramic-metal plates route impact energy through luminous field channels while keeping the suit compact enough for ordinary field operations.'
+          )
+          if '<defName>WNG_PrecursorUniform</defName>' not in s:
+              new_def='''\n  <ThingDef ParentName="ApparelBase">\n    <defName>WNG_PrecursorUniform</defName>\n    <recipeMaker IsNull="True" />\n    <label>precursor uniform</label>\n    <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>\n    <description>A pale Ancient-derived field uniform woven from self-aligning precursor fibers. Cyan conductor seams regulate temperature and distribute minor impacts while the close-fitted cut remains suitable beneath heavier precursor armor.</description>\n    <techLevel>Ultra</techLevel>\n    <graphicData>\n      <texPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorUniform</texPath>\n      <graphicClass>Graphic_Single</graphicClass>\n    </graphicData>\n    <statBases>\n      <MaxHitPoints>260</MaxHitPoints><WorkToMake>24000</WorkToMake><Mass>3</Mass><EquipDelay>2</EquipDelay><MarketValue>950</MarketValue>\n      <ArmorRating_Sharp>0.55</ArmorRating_Sharp><ArmorRating_Blunt>0.28</ArmorRating_Blunt><ArmorRating_Heat>0.58</ArmorRating_Heat>\n    </statBases>\n    <costList><Synthread>55</Synthread><Plasteel>12</Plasteel></costList>\n    <apparel>\n      <bodyPartGroups><li>Torso</li><li>Arms</li><li>Legs</li></bodyPartGroups>\n      <layers><li>OnSkin</li></layers>\n      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorUniform</wornGraphicPath>\n      <tags><li>WNG_PrecursorClothing</li></tags>\n      <defaultOutfitTags><li>Worker</li><li>Spacefarer</li></defaultOutfitTags>\n    </apparel>\n  </ThingDef>\n'''
+              marker='  <ThingDef ParentName="ApparelBase">\n    <defName>WNG_PrecursorPersonalShield</defName>'
+              if marker not in s:
+                  raise RuntimeError('uniform insertion marker not found')
+              s=s.replace(marker,new_def+'\n'+marker)
+          apparel_xml.write_text(s,encoding='utf-8')
+
+          caste_xml=MOD/'Defs/ThingDefs/Apparel_CasteDistinction.xml'
+          s=caste_xml.read_text(encoding='utf-8')
+          s=s.replace(
+              'A command-grade presentation of precursor field armor used by Asuran coordinators. Protection and manufacture track the standard field suit; the current field-armor visual is temporary pending professional command-armour art.',
+              'A command-grade precursor armor shell used by senior coordinators and Ancient-technology specialists. Gold command tracery overlays the pale field plates while a reinforced luminous core manages suit power and battlefield telemetry.'
+          )
+          caste_xml.write_text(s,encoding='utf-8')
+
+          recipes=MOD/'Defs/RecipeDefs/Recipes_WNGItemCrafting.xml'
+          s=recipes.read_text(encoding='utf-8')
+          if '<defName>WNG_Make_PrecursorUniform</defName>' not in s:
+              rec='''\n  <RecipeDef>\n    <defName>WNG_Make_PrecursorUniform</defName>\n    <label>make precursor uniform</label>\n    <description>Manufacture a precursor uniform using WNG's dedicated production chain.</description>\n    <jobString>Making precursor uniform.</jobString>\n    <workAmount>24000</workAmount><workSkill>Crafting</workSkill>\n    <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>\n    <skillRequirements><Crafting>6</Crafting></skillRequirements>\n    <ingredients>\n      <li><filter><thingDefs><li>Synthread</li></thingDefs></filter><count>55</count></li>\n      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>12</count></li>\n    </ingredients>\n    <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li></thingDefs></fixedIngredientFilter>\n    <products><WNG_PrecursorUniform>1</WNG_PrecursorUniform></products>\n    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>\n  </RecipeDef>\n'''
+              marker='  <RecipeDef>\n    <defName>WNG_Make_PrecursorFieldArmor</defName>'
+              if marker not in s:
+                  raise RuntimeError('recipe insertion marker not found')
+              s=s.replace(marker,rec+'\n'+marker)
+          recipes.write_text(s,encoding='utf-8')
+
+          print('Precursor uniform files:',len(list(APP.glob('WNG_PrecursorUniform*.png'))))
+          print('Precursor field armor files:',len(list(APP.glob('WNG_PrecursorFieldArmor*.png'))))
+          print('Precursor command armor files:',len(list(APP.glob('WNG_PrecursorCommandArmor*.png'))))
+          PY
+          python /tmp/precursor_art_pass.py
+
+      - name: Commit Precursor apparel pass
+        shell: bash
+        run: |
+          git config user.name "Vardath WNG Art"
+          git config user.email "59270526+Vardath@users.noreply.github.com"
+          git add Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorFieldArmor*.png
+          git add Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorCommandArmor*.png
+          git add Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorUniform*.png
+          git add Defs/ThingDefs/Apparel_PrecursorRecovered.xml
+          git add Defs/ThingDefs/Apparel_CasteDistinction.xml
+          git add Defs/RecipeDefs/Recipes_WNGItemCrafting.xml
+          git commit -m "Professionalize Precursor apparel art" || exit 0
+          git push
