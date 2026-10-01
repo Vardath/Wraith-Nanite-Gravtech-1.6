@@ -6,6 +6,7 @@ WNG is a large faction, race, technology and gravship expansion built around the
 The goal is not just to add themed items. WNG gives each group its own gameplay loop, progression, threats, resources, technology and craft while using native RimWorld and Odyssey systems wherever they already provide the right behaviour.
 
 [h2]Wraith[/h2]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Building/Wraith/Shuttle/WNG_WraithCruiser.png[/img]
 [list]
 [*]A Wraith xenotype with Hunter, Warrior, Commander, Keeper and Queen roles.
 [*]Life Force feeding, Drain Life, partial feeding, regeneration and hibernation.
@@ -17,6 +18,8 @@ The goal is not just to add themed items. WNG gives each group its own gameplay 
 [/list]
 
 [h2]Block Replicators[/h2]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Pawn/Replicator/WNG_ReplicatorDrone.png[/img]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Pawn/Replicator/WNG_ReplicatorSiegeMass.png[/img]
 [list]
 [*]A physical size hierarchy: Drone -> Hunter -> Bulwark -> Titan -> Siege Mass.
 [*]Destroying a higher form produces two operational lower-tier Replicators.
@@ -30,6 +33,7 @@ The goal is not just to add themed items. WNG gives each group its own gameplay 
 [/list]
 
 [h2]Human-form Replicators / Asurans[/h2]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Building/Precursor/Collective/WNG_AsuranPatternArchive_south.png[/img]
 [list]
 [*]Human-form nanite beings with Nanite Reserve physiology, self-repair and reconstruction.
 [*]The hostile Lattice Collective and the non-hostile Quiet Lattice.
@@ -41,6 +45,8 @@ The goal is not just to add themed items. WNG gives each group its own gameplay 
 [/list]
 
 [h2]Ancient / Precursor technology[/h2]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Building/Precursor/Shuttle/WNG_PuddleJumper.png[/img]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Building/Precursor/Gravship/WNG_PrecursorPilotConsole_south.png[/img]
 [list]
 [*]Puddle Jumpers with dedicated directional art and Odyssey shuttle behaviour.
 [*]Precursor pulse weapons, personal shields and settlement shield projectors.
@@ -50,6 +56,8 @@ The goal is not just to add themed items. WNG gives each group its own gameplay 
 [/list]
 
 [h2]Goa'uld technology[/h2]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Building/Goauld/Shuttle/WNG_AlkeshTransport.png[/img]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Building/Goauld/Shuttle/WNG_GoauldDeathGlider.png[/img]
 [list]
 [*]Al'kesh transport/bomber craft and Death Gliders.
 [*]Goa'uld gravship construction with themed hulls, peltac, grav engine, power, fuel, navigation, shields, plasma weapons and support systems.
@@ -93,6 +101,8 @@ No third-party Stargate mod is required for the base WNG content.
 
 [h2]Art and development[/h2]
 WNG has its own growing library of faction-specific RimWorld-style art for Wraith, Replicator, Asuran/Precursor and Goa'uld content.
+
+[url=https://vardath.github.io/wng-art.html]Browse the live WNG Art Gallery[/url]
 
 [h2]Important note[/h2]
 WNG is an unofficial, non-commercial fan-made project. It is not affiliated with or endorsed by the owners of Stargate or by Ludeon Studios.
