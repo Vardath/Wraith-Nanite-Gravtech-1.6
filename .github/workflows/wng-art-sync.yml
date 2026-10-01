@@ -28,7 +28,9 @@ jobs:
 
           temp=Path('.tmp/wng-art')
           def load_src(name):
-              raw=base64.b64decode((temp/f'{name}.b64').read_text().strip())
+              s=''.join((temp/f'{name}.b64').read_text().split())
+    s += '=' * (-len(s) % 4)
+    raw=base64.b64decode(s)
               p=Path('/tmp')/f'{name}.png'
               p.write_bytes(raw)
               return Image.open(p).convert('RGBA')
