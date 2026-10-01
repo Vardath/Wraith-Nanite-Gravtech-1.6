@@ -32,3 +32,5 @@ jobs:
           git commit -m "Replace Wraith Warrior Carapace art and tile [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
+
+# rerun after full 30-slot coverage
