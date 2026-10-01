@@ -26,4 +26,5 @@ jobs:
           git add Textures/Things/Pawn/Humanlike/Apparel/Wraith/
           git add Textures/Things/Pawn/Humanlike/Apparel/Precursor/
           git commit -m "Rebuild professional Stargate/RimWorld apparel art"
+          git pull --rebase origin main
           git push
