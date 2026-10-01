@@ -1,0 +1,41 @@
+name: WNG Hunter Coat From Scratch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/artgen/wraith_hunter_coat_from_scratch.py'
+      - '.github/workflows/wng-hunter-coat-from-scratch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Generate Hunter Coat from blank canvases
+        run: python .github/artgen/wraith_hunter_coat_from_scratch.py
+      - name: Run apparel art audit
+        run: python .github/artqa/apparel_art_audit.py
+      - name: Commit only Hunter Coat art
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat*.png
+          if git diff --cached --quiet; then
+            echo "No Hunter Coat changes"
+            exit 1
+          fi
+          git commit -m "Replace Wraith Hunter Coat with from-scratch art [skip ci]"
+          git push origin HEAD:main
