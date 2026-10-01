@@ -38,4 +38,5 @@ jobs:
             exit 1
           fi
           git commit -m "Replace Wraith Hunter Coat with from-scratch art [skip ci]"
+          git pull --rebase origin main
           git push origin HEAD:main
