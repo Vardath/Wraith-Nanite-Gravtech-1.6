@@ -1,0 +1,111 @@
+name: Final WNG apparel art correction
+
+on:
+  push:
+    paths:
+      - '.github/workflows/final-wng-apparel-art.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install pillow
+      - name: Correct apparel production art
+        shell: bash
+        run: |
+          cat > /tmp/fix.py <<'PY'
+          from PIL import Image, ImageFilter, ImageChops, ImageDraw
+          from pathlib import Path
+
+          ROOT=Path('.')
+          APP=ROOT/'Textures/Things/Pawn/Humanlike/Apparel/Precursor'
+          WRAITH=ROOT/'Textures/Things/Pawn/Humanlike/Apparel/Wraith'
+
+          # Previous pass rotated all north sprites upside-down. Restore the original upright back views.
+          for pref in ['WNG_HumanFormUniform','WNG_HumanFormCombatArmor']:
+              for p in sorted(APP.glob(pref+'*_north.png')):
+                  im=Image.open(p).convert('RGBA').rotate(180,resample=Image.Resampling.BICUBIC,expand=False)
+                  im.save(p,optimize=True)
+
+          for p in sorted(WRAITH.glob('*_north.png')):
+              im=Image.open(p).convert('RGBA').rotate(180,resample=Image.Resampling.BICUBIC,expand=False)
+              im.save(p,optimize=True)
+
+          def gold_accent(src,strength=0.35,command=False,is_north=False):
+              im=src.copy().convert('RGBA')
+              w,h=im.size
+              px=im.load()
+              cyan=Image.new('L',(w,h),0); cp=cyan.load()
+
+              for y in range(h):
+                  for x in range(w):
+                      r,g,b,a=px[x,y]
+                      if not a: continue
+                      if (b>130 and g>105 and b>r*1.12 and g>r*1.02) or (b>165 and g>140 and r<135):
+                          cp[x,y]=a
+
+              dil=cyan.filter(ImageFilter.MaxFilter(5 if command else 3))
+              ring=ImageChops.subtract(dil,cyan)
+              rp=ring.load()
+
+              for y in range(h):
+                  for x in range(w):
+                      if not px[x,y][3]: continue
+                      t=min(strength,rp[x,y]/255*strength)
+                      if t>0.01:
+                          r,g,b,a=px[x,y]
+                          px[x,y]=(int(r*(1-t)+218*t),int(g*(1-t)+170*t),int(b*(1-t)+70*t),a)
+
+              if command and not is_north:
+                  a=im.getchannel('A')
+                  bb=a.getbbox()
+                  if bb:
+                      x0,y0,x1,y1=bb
+                      cx=(x0+x1)//2
+                      cy=y0+int((y1-y0)*.38)
+                      rr=max(2,int(min(x1-x0,y1-y0)*.045))
+                      d=ImageDraw.Draw(im,'RGBA')
+                      d.polygon([(cx,cy-2*rr),(cx+2*rr,cy),(cx,cy+2*rr),(cx-2*rr,cy)],
+                                fill=(219,172,69,245),outline=(248,226,153,245))
+                      d.polygon([(cx,cy-rr),(cx+rr,cy),(cx,cy+rr),(cx-rr,cy)],
+                                fill=(35,222,248,255),outline=(214,253,255,255))
+              return im
+
+          # Build the Precursor production families from the already-polished RimWorld-compatible HumanForm art.
+          # This keeps body silhouettes, side views, item icons, and north/back geometry consistent.
+          for target,source,mode in [
+              ('WNG_PrecursorUniform','WNG_HumanFormUniform','uniform'),
+              ('WNG_PrecursorFieldArmor','WNG_HumanFormCombatArmor','field'),
+              ('WNG_PrecursorCommandArmor','WNG_HumanFormCombatArmor','command'),
+          ]:
+              for sp in sorted(APP.glob(source+'*.png')):
+                  suffix=sp.name[len(source):]
+                  dst=APP/(target+suffix)
+                  im=Image.open(sp).convert('RGBA')
+                  if mode=='uniform':
+                      im=gold_accent(im,0.22,False,'_north' in dst.stem.lower())
+                  elif mode=='command':
+                      im=gold_accent(im,0.62,True,'_north' in dst.stem.lower())
+                  im.save(dst,optimize=True)
+
+          print('corrected HumanForm north',len(list(APP.glob('WNG_HumanForm*_north.png'))))
+          print('corrected Wraith north',len(list(WRAITH.glob('*_north.png'))))
+          print('Precursor uniform',len(list(APP.glob('WNG_PrecursorUniform*.png'))))
+          print('Precursor field',len(list(APP.glob('WNG_PrecursorFieldArmor*.png'))))
+          print('Precursor command',len(list(APP.glob('WNG_PrecursorCommandArmor*.png'))))
+          PY
+          python /tmp/fix.py
+
+      - name: Commit corrected mod art
+        shell: bash
+        run: |
+          git config user.name "Vardath WNG Art"
+          git config user.email "59270526+Vardath@users.noreply.github.com"
+          git add Textures/Things/Pawn/Humanlike/Apparel/Precursor/
+          git add Textures/Things/Pawn/Humanlike/Apparel/Wraith/
+          git commit -m "Finalize WNG apparel production art"
+          git push
