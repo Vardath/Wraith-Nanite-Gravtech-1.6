@@ -1,0 +1,28 @@
+name: Package current WNG mod
+
+on:
+  push:
+    paths:
+      - '.github/workflows/package-current-wng.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build install-ready folder
+        shell: bash
+        run: |
+          mkdir -p out/Wraith-Nanite-Gravtech
+          for p in About Assemblies Compatibility Defs Patches Sounds Textures LoadFolders.xml PublishedFileId.txt; do
+            if [ -e "$p" ]; then cp -a "$p" out/Wraith-Nanite-Gravtech/; fi
+          done
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: WNG-PROFESSIONAL-APPAREL-MOD
+          path: out/Wraith-Nanite-Gravtech
+          compression-level: 6
