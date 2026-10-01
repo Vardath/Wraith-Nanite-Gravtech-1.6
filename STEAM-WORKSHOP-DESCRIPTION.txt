@@ -6,7 +6,7 @@ WNG is a large faction, race, technology and gravship expansion built around the
 The goal is not just to add themed items. WNG gives each group its own gameplay loop, progression, threats, resources, technology and craft while using native RimWorld and Odyssey systems wherever they already provide the right behaviour.
 
 [h2]Wraith[/h2]
-[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/main/Textures/Things/Building/Wraith/Shuttle/WNG_WraithCruiser.png[/img]
+[img]https://raw.githubusercontent.com/Vardath/Wraith-Nanite-Gravtech-1.6/643892a4e7aeb3937a4f5a3dc559cbf9bf5d5904/Textures/Things/Building/Wraith/Shuttle/WNG_WraithCruiser.png[/img]
 [list]
 [*]A Wraith xenotype with Hunter, Warrior, Commander, Keeper and Queen roles.
 [*]Life Force feeding, Drain Life, partial feeding, regeneration and hibernation.
