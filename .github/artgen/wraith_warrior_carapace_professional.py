@@ -155,13 +155,15 @@ def save(im,path):
     arr=np.array(im); arr[arr[...,3]==0,:3]=0; Image.fromarray(arr,'RGBA').save(path,optimize=True)
 
 save(render_icon(),OUT/'WNG_WarriorCarapace.png')
+for direction in ('north','south','east','west'):
+    save(render_worn('Male',direction),OUT/f'WNG_WarriorCarapace_{direction}.png')
 for body in BODIES:
     save(render_worn(body,'south'),OUT/f'WNG_WarriorCarapace_{body}.png')
     for direction in ('north','south','east','west'):
         save(render_worn(body,direction),OUT/f'WNG_WarriorCarapace_{body}_{direction}.png')
 
 files=sorted(OUT.glob('WNG_WarriorCarapace*.png'))
-assert len(files)==26,len(files)
+assert len(files)==30,len(files)
 for p in files:
     im=Image.open(p).convert('RGBA'); im.load(); assert im.size==(192,192)
     a=np.array(im.getchannel('A')); ys,xs=np.nonzero(a>0); assert len(xs)
