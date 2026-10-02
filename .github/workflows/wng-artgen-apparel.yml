@@ -37,34 +37,49 @@ jobs:
         shell: bash
         run: |
           PROFILE="${{ github.event.inputs.profile }}"
-          if [ -z "$PROFILE" ]; then
-            mapfile -t CHANGED < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^ArtSource/Apparel/\([^/]*\)/.*#\1#p' | sort -u)
-            if [ "${#CHANGED[@]}" -ne 1 ]; then
-              echo "A single item's finished master art must change before forging." >&2
-              exit 1
-            fi
-            PROFILE="${CHANGED[0]}"
+          if [ -n "$PROFILE" ]; then
+            test -f "Tools/ApparelForge/profiles/${PROFILE}.json"
+            echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
+            echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
+            exit 0
           fi
+          mapfile -t CHANGED < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^ArtSource/Apparel/\([^/]*\)/.*#\1#p' | sort -u)
+          if [ "${#CHANGED[@]}" -eq 0 ]; then
+            echo "Tooling/profile-only change: validate pipeline, do not forge art."
+            echo "HAS_MASTERS=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          if [ "${#CHANGED[@]}" -ne 1 ]; then
+            echo "One clothing item at a time." >&2
+            exit 1
+          fi
+          PROFILE="${CHANGED[0]}"
           test -f "Tools/ApparelForge/profiles/${PROFILE}.json"
+          echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
           echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
       - name: Require finished external masters
+        if: env.HAS_MASTERS == 'true'
         run: |
           test -f "ArtSource/Apparel/$PROFILE/master_south.png"
           test -f "ArtSource/Apparel/$PROFILE/master_north.png"
           test -f "ArtSource/Apparel/$PROFILE/master_east.png"
       - name: Fetch vanilla RimWorld geometry
+        if: env.HAS_MASTERS == 'true'
         run: |
           git clone --depth 1 https://github.com/SamuelBucher/Madness-Pawns.git /tmp/madness
           git clone --depth 1 https://github.com/DaLongZhuaZi/RWonVela.git /tmp/rwvela
       - name: Forge RimWorld variants from finished masters
+        if: env.HAS_MASTERS == 'true'
         run: |
           python Tools/ApparelForge/apparel_forge.py "$PROFILE" \
             --vanilla-dir "/tmp/madness/Raw sprites/apparel" \
             --body-dir "/tmp/rwvela/src/common/human/bodies" \
             --workdir /tmp/wng-apparel-forge
       - name: Validate live apparel contract
+        if: env.HAS_MASTERS == 'true'
         run: python .github/artqa/apparel_art_audit.py
       - name: Commit live PNGs only
+        if: env.HAS_MASTERS == 'true'
         shell: bash
         run: |
           ITEM="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
