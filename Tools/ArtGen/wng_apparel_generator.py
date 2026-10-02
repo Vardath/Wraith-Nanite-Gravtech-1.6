@@ -1,371 +1,442 @@
 from __future__ import annotations
-from PIL import Image, ImageDraw, ImageFilter, ImageEnhance, ImageChops
-from pathlib import Path
+
 from dataclasses import dataclass
-import argparse, io, json, math, random, subprocess
+from pathlib import Path
+from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
+from bs4 import BeautifulSoup
+import argparse, hashlib, io, json, math, random, re, subprocess
 import numpy as np
+import requests
 from scipy.ndimage import gaussian_filter, distance_transform_edt
 
 ROOT = Path(__file__).resolve().parents[2]
 APPAREL_ROOT = ROOT / "Textures/Things/Pawn/Humanlike/Apparel"
 BUILDING_ROOT = ROOT / "Textures/Things/Building"
-
-HI = 768
+PROFILE_ROOT = ROOT / "Tools/ArtGen/profiles"
 OUT = 192
-BODIES = ["Male","Female","Thin","Fat","Hulk"]
-DIRS = ["south","north","east"]
+HI = 768
 HIST_REF = "22ab5e03335aad03731814541361ab29d5124319"
+UA = "WNG-ArtGen/2.0 (+reference research for local mod art)"
 
 @dataclass
-class Profile:
-    key: str
-    faction: str
-    output_dir: str
-    basename: str
-    vanilla_family: str
-    historical_item: str
-    accent_item: str
-    material_refs: list[str]
-    palette_shadow: tuple[int,int,int]
-    palette_mid: tuple[int,int,int]
-    palette_high: tuple[int,int,int]
-    accent_rgb: tuple[int,int,int]
-    tile_family: str
-    garment_kind: str
+class RefReport:
+    verified: int
+    total: int
+    pages: list[dict]
+    image_stats: list[dict]
 
-PROFILES = {
-    "hunter_coat": Profile(
-        key="hunter_coat",
-        faction="Wraith",
-        output_dir="Wraith",
-        basename="WNG_HunterCoat",
-        vanilla_family="Duster",
-        historical_item="WNG_HunterCoat",
-        accent_item="WNG_QueenRaiment",
-        material_refs=[
-            "Wraith/Shuttle/WNG_WraithDart_south.png",
-            "Wraith/Shuttle/WNG_WraithStrikeCraft_south.png",
-            "Wraith/Shuttle/WNG_WraithCruiser_south.png",
-        ],
-        palette_shadow=(16,13,20),
-        palette_mid=(66,49,74),
-        palette_high=(173,136,188),
-        accent_rgb=(192,184,255),
-        tile_family="Duster",
-        garment_kind="coat",
-    ),
-}
+class StargateReferencePass:
+    def __init__(self, profile: dict, workdir: Path):
+        self.profile = profile
+        self.cfg = profile["stage_1_stargate"]
+        self.workdir = workdir
+        self.session = requests.Session()
+        self.session.headers["User-Agent"] = UA
 
-def old_png(path: str) -> Image.Image:
-    raw = subprocess.check_output(["git","show",f"{HIST_REF}:{path}"])
-    return Image.open(io.BytesIO(raw)).convert("RGBA")
+    def _text(self, html: str) -> str:
+        soup = BeautifulSoup(html, "html.parser")
+        for tag in soup(["script","style","noscript"]):
+            tag.extract()
+        return " ".join(soup.stripped_strings)
 
-def load_rgba(path: Path) -> Image.Image:
-    return Image.open(path).convert("RGBA")
+    def _candidate_images(self, html: str, base_url: str) -> list[str]:
+        soup = BeautifulSoup(html, "html.parser")
+        urls = []
+        for prop in ("og:image","twitter:image"):
+            node = soup.find("meta", attrs={"property":prop}) or soup.find("meta", attrs={"name":prop})
+            if node and node.get("content"):
+                urls.append(requests.compat.urljoin(base_url,node["content"]))
+        for img in soup.find_all("img"):
+            words = " ".join([img.get("alt",""),img.get("title",""),img.get("class",[None])[0] or ""]).lower()
+            src = img.get("src") or img.get("data-src")
+            if src and any(k in words for k in ("wraith","costume","queen","armor","armour","hive","stargate")):
+                urls.append(requests.compat.urljoin(base_url,src))
+        dedup=[]
+        for u in urls:
+            if u not in dedup: dedup.append(u)
+        return dedup[:4]
 
-def save_clean(im: Image.Image, path: Path):
-    im = im.convert("RGBA")
-    a = np.array(im)
-    a[a[...,3] == 0,:3] = 0
-    Image.fromarray(a.astype(np.uint8),"RGBA").save(path,optimize=True)
+    def _download_image_stats(self, url: str) -> dict|None:
+        try:
+            r=self.session.get(url,timeout=18)
+            r.raise_for_status()
+            if len(r.content)>8_000_000: return None
+            im=Image.open(io.BytesIO(r.content)).convert("RGB")
+            im.thumbnail((512,512),Image.Resampling.LANCZOS)
+            a=np.array(im,dtype=np.float32)
+            lum=.2126*a[...,0]+.7152*a[...,1]+.0722*a[...,2]
+            sat=a.max(2)-a.min(2)
+            return {
+                "url":url,
+                "sha256":hashlib.sha256(r.content).hexdigest(),
+                "mean_luminance":float(lum.mean()),
+                "contrast":float(lum.std()),
+                "mean_saturation":float(sat.mean()),
+                "size":[im.width,im.height]
+            }
+        except Exception:
+            return None
 
-def visible_mask_from_vanilla(im: Image.Image) -> Image.Image:
-    im = im.resize((HI,HI),Image.Resampling.LANCZOS)
-    a = np.array(im.getchannel("A"))
-    rgb = np.array(im)[...,:3]
-    # public vanilla mirrors often include an opaque black preview background.
-    m = ((a > 8) & (rgb.max(axis=2) > 28)).astype(np.uint8) * 255
-    return Image.fromarray(m,"L").filter(ImageFilter.GaussianBlur(.45))
+    def run(self) -> RefReport:
+        pages=[]; image_stats=[]; verified=0
+        for src in self.cfg["sources"]:
+            row={"url":src["url"],"role":src["role"],"ok":False,"terms":{}}
+            try:
+                r=self.session.get(src["url"],timeout=20)
+                row["http_status"]=r.status_code
+                row["sha256"]=hashlib.sha256(r.content).hexdigest()
+                r.raise_for_status()
+                text=self._text(r.text)
+                low=text.lower()
+                for term in src.get("required_terms",[]):
+                    row["terms"][term]=term.lower() in low
+                row["ok"]=all(row["terms"].values()) if row["terms"] else True
+                if row["ok"]: verified+=1
+                if src.get("image_policy")!="metadata_only":
+                    for u in self._candidate_images(r.text,src["url"]):
+                        st=self._download_image_stats(u)
+                        if st: image_stats.append(st)
+            except Exception as e:
+                row["error"]=str(e)[:300]
+            pages.append(row)
 
-def bbox(mask: Image.Image):
-    b = mask.getbbox()
-    if not b: raise RuntimeError("Empty garment mask")
-    return b
+        minimum=max(3,math.ceil(len(self.cfg["sources"])*0.5))
+        if verified < minimum:
+            raise RuntimeError(f"StargateReferencePass failed: {verified}/{len(self.cfg['sources'])} verified; need {minimum}")
+        rep=RefReport(verified,len(self.cfg["sources"]),pages,image_stats)
+        self.workdir.mkdir(parents=True,exist_ok=True)
+        (self.workdir/"stargate_reference_report.json").write_text(json.dumps(rep.__dict__,indent=2))
+        return rep
 
-def fit_alpha(src: Image.Image, bb, canvas=(HI,HI)) -> Image.Image:
-    sb = src.getchannel("A").getbbox()
-    if not sb: return Image.new("RGBA",canvas,(0,0,0,0))
-    crop = src.crop(sb).resize((bb[2]-bb[0],bb[3]-bb[1]),Image.Resampling.LANCZOS)
-    out = Image.new("RGBA",canvas,(0,0,0,0))
-    out.alpha_composite(crop,(bb[0],bb[1]))
-    return out
+class RimWorldImplementationPass:
+    def __init__(self, profile: dict, vanilla_dir: Path):
+        self.profile=profile
+        self.cfg=profile["stage_2_rimworld"]
+        self.vanilla_dir=vanilla_dir
 
-def tonalize(im: Image.Image, low, mid, high) -> Image.Image:
-    rgba=np.array(im.convert("RGBA"),dtype=np.float32)
-    rgb=rgba[...,:3]
-    lum=(.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2])/255.
-    lo=np.array(low,float); mi=np.array(mid,float); hi=np.array(high,float)
-    out=np.zeros_like(rgb)
-    lower=lum<.5
-    t=np.clip(lum*2,0,1)
-    out[lower]=lo+(mi-lo)*t[lower,None]
-    t2=np.clip((lum-.5)*2,0,1)
-    out[~lower]=mi+(hi-mi)*t2[~lower,None]
-    return Image.fromarray(np.dstack([np.clip(out,0,255).astype(np.uint8),rgba[...,3].astype(np.uint8)]),"RGBA")
-
-def crop_visible(im: Image.Image, rel):
-    a=np.array(im.getchannel("A"))
-    ys,xs=np.nonzero(a>8)
-    if len(xs)==0: return im
-    x0,x1=xs.min(),xs.max()+1; y0,y1=ys.min(),ys.max()+1
-    w=x1-x0; h=y1-y0
-    rx0,ry0,rx1,ry1=rel
-    return im.crop((int(x0+rx0*w),int(y0+ry0*h),int(x0+rx1*w),int(y0+ry1*h)))
-
-def patch_to_canvas(src: Image.Image, target_bb, mirror=False):
-    if mirror: src=src.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-    tw=max(1,target_bb[2]-target_bb[0]); th=max(1,target_bb[3]-target_bb[1])
-    src=src.resize((tw,th),Image.Resampling.LANCZOS)
-    out=Image.new("RGBA",(HI,HI),(0,0,0,0))
-    out.alpha_composite(src,(target_bb[0],target_bb[1]))
-    return out
-
-def polygon_mask(bb, rel, feather=7):
-    x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
-    pts=[(int(x0+x*w),int(y0+y*h)) for x,y in rel]
-    m=Image.new("L",(HI,HI),0); ImageDraw.Draw(m).polygon(pts,fill=255)
-    if feather: m=m.filter(ImageFilter.GaussianBlur(feather))
-    return m
-
-def line_mask(points,width,blur=2):
-    m=Image.new("L",(HI,HI),0)
-    ImageDraw.Draw(m).line(points,fill=255,width=max(1,int(width)),joint="curve")
-    if blur: m=m.filter(ImageFilter.GaussianBlur(blur))
-    return m
-
-def clipped(layer: Image.Image, mask: Image.Image):
-    a=np.array(layer.getchannel("A"),dtype=np.uint16)
-    m=np.array(mask,dtype=np.uint16)
-    layer=layer.copy()
-    layer.putalpha(Image.fromarray(((a*m)//255).astype(np.uint8),"L"))
-    return layer
-
-def history_material(profile: Profile, body: str, direction: str, item: str, bb):
-    p=f"Textures/Things/Pawn/Humanlike/Apparel/{profile.output_dir}/{item}_{body}_{direction}.png"
-    try: src=old_png(p)
-    except Exception: src=old_png(f"Textures/Things/Pawn/Humanlike/Apparel/{profile.output_dir}/{item}_Male_{direction}.png")
-    return fit_alpha(src.resize((HI,HI),Image.Resampling.LANCZOS),bb)
-
-def ship_materials(profile: Profile):
-    ims=[]
-    for rel in profile.material_refs:
-        ims.append(load_rgba(BUILDING_ROOT / rel).resize((HI,HI),Image.Resampling.LANCZOS))
-    return ims
-
-def apply_fold_model(base: Image.Image, hist: Image.Image, mask: Image.Image, strength=.32):
-    lum=np.array(hist.convert("L"),dtype=np.float32)
-    folds=(lum-gaussian_filter(lum,7)) + .35*(gaussian_filter(lum,18)-gaussian_filter(lum,46))
-    a=np.array(base,dtype=np.float32); m=np.array(mask,dtype=np.float32)/255.
-    for c in range(3):
-        a[...,c]=np.clip(a[...,c]+folds*strength*m,0,255)
-    a[...,3]=np.array(mask)
-    return Image.fromarray(a.astype(np.uint8),"RGBA")
-
-def apply_microtexture(base: Image.Image, src: Image.Image, mask: Image.Image, strength=.25):
-    s=np.array(src.convert("RGB"),dtype=np.float32)
-    lum=.2126*s[...,0]+.7152*s[...,1]+.0722*s[...,2]
-    hp=lum-gaussian_filter(lum,10)
-    a=np.array(base,dtype=np.float32); m=np.array(mask,dtype=np.float32)/255.
-    factor=hp*strength
-    for c in range(3): a[...,c]=np.clip(a[...,c]+factor*m,0,255)
-    return Image.fromarray(a.astype(np.uint8),"RGBA")
-
-def edge_finish(im: Image.Image, mask: Image.Image):
-    m=np.array(mask)>16
-    dist=distance_transform_edt(m)
-    a=np.array(im,dtype=np.float32)
-    edge=(dist>0)&(dist<5)
-    bevel=(dist>=5)&(dist<13)
-    a[edge,:3]=a[edge,:3]*.45+np.array([15,12,18])*.55
-    a[bevel,:3]=a[bevel,:3]*.86+np.array([188,148,200])*.14
-    a[...,3]=np.array(mask)
-    return Image.fromarray(np.clip(a,0,255).astype(np.uint8),"RGBA")
-
-def add_gem(im: Image.Image, x:int,y:int,r:int,color):
-    glow=Image.new("RGBA",(HI,HI),(0,0,0,0))
-    d=ImageDraw.Draw(glow)
-    d.ellipse((x-r*5,y-r*5,x+r*5,y+r*5),fill=color+(46,))
-    im.alpha_composite(glow.filter(ImageFilter.GaussianBlur(r*2.4)))
-    d=ImageDraw.Draw(im)
-    d.ellipse((x-r,y-r,x+r,y+r),fill=(230,226,255,242),outline=(72,56,105,255),width=max(2,r//3))
-    d.ellipse((x-r//2,y-r//2,x+r//2,y+r//2),fill=(255,255,255,250))
-
-def add_stitch(im: Image.Image, pts, spacing=20):
-    d=ImageDraw.Draw(im)
-    # polyline samples
-    segs=[]
-    total=0
-    for a,b in zip(pts[:-1],pts[1:]):
-        dx=b[0]-a[0]; dy=b[1]-a[1]; L=(dx*dx+dy*dy)**.5
-        segs.append((a,b,L)); total+=L
-    pos=0
-    while pos<total:
-        remain=pos
-        for a,b,L in segs:
-            if remain<=L:
-                t=remain/max(L,1)
-                x=a[0]+(b[0]-a[0])*t; y=a[1]+(b[1]-a[1])*t
-                d.ellipse((x-2,y-2,x+2,y+2),fill=(153,130,151,150))
-                break
-            remain-=L
-        pos+=spacing
-
-def paint_hunter(profile: Profile, body: str, direction: str, vanilla_dir: Path, ships):
-    vm=visible_mask_from_vanilla(load_rgba(vanilla_dir/f"{profile.vanilla_family}_{body}_{direction}.png"))
-    bb=bbox(vm); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
-    hist=history_material(profile,body,direction,profile.historical_item,bb)
-    accent=history_material(profile,body,direction,profile.accent_item,bb)
-
-    # base = historical garment fold field, retuned to current approved Wraith palette.
-    base=tonalize(hist,profile.palette_shadow,profile.palette_mid,profile.palette_high)
-    base=apply_fold_model(base,hist,vm,.42)
-    base.putalpha(vm)
-    out=Image.new("RGBA",(HI,HI),(0,0,0,0)); out.alpha_composite(base)
-
-    dart,strike,cruiser=ships
-    # approved ship-painted chitin patches (actual painted pixels) for hard biological trim.
-    sourceL=crop_visible(strike,(.03,.28,.43,.80))
-    sourceR=crop_visible(strike,(.57,.28,.97,.80))
-    sourceSpine=crop_visible(cruiser,(.36,.08,.64,.92))
-
-    if direction=="south":
-        lm=polygon_mask(bb,[(.00,.04),(.38,.02),(.44,.30),(.32,.43),(.06,.36)],6)
-        rm=polygon_mask(bb,[(1,.04),(.62,.02),(.56,.30),(.68,.43),(.94,.36)],6)
-        lm=ImageChops.multiply(lm,vm); rm=ImageChops.multiply(rm,vm)
-        lp=patch_to_canvas(sourceL,(x0,y0,x0+int(.46*w),y0+int(.46*h)))
-        rp=patch_to_canvas(sourceR,(x1-int(.46*w),y0,x1,y0+int(.46*h)))
-        out.alpha_composite(clipped(lp,lm)); out.alpha_composite(clipped(rp,rm))
-
-        # contrast leather lapels: real historical coat surface, sharpened, asymmetrical.
-        lpts=[(int(x0+.41*w),int(y0+.08*h)),(int(x0+.34*w),int(y0+.30*h)),(int(x0+.43*w),int(y0+.51*h))]
-        rpts=[(int(x0+.59*w),int(y0+.08*h)),(int(x0+.66*w),int(y0+.27*h)),(int(x0+.58*w),int(y0+.49*h))]
-        for pts in (lpts,rpts):
-            m=line_mask(pts,max(10,int(.045*w)),2); m=ImageChops.multiply(m,vm)
-            mat=tonalize(hist,(24,19,27),(83,63,87),(166,133,173))
-            out.alpha_composite(clipped(mat,m))
-        # diagonal Wraith belt/closure from costume language.
-        belt=[(int(x0+.20*w),int(y0+.54*h)),(int(x0+.51*w),int(y0+.58*h)),(int(x0+.79*w),int(y0+.53*h))]
-        bm=line_mask(belt,max(8,int(.026*h)),1); bm=ImageChops.multiply(bm,vm)
-        bmat=tonalize(accent,(15,12,17),(48,39,51),(104,90,106))
-        out.alpha_composite(clipped(bmat,bm))
-        add_stitch(out,[(int(x0+.25*w),int(y0+.27*h)),(int(x0+.29*w),int(y0+.82*h))],max(12,int(.045*h)))
-        add_gem(out,int(x0+.50*w),int(y0+.35*h),max(4,int(.018*w)),profile.accent_rgb)
-
-    elif direction=="north":
-        shoulder=polygon_mask(bb,[(.00,.05),(.38,.02),(.45,.30),(.32,.42),(.06,.36)],6)
-        both=ImageChops.lighter(shoulder,Image.fromarray(np.fliplr(np.array(shoulder)).copy(),"L"))
-        both=ImageChops.multiply(both,vm)
-        mat=patch_to_canvas(sourceSpine,(x0,y0,x1,y0+int(.47*h)))
-        out.alpha_composite(clipped(mat,both))
-        spinepts=[(int(x0+.50*w),int(y0+.10*h)),(int(x0+.50*w),int(y0+.74*h))]
-        sm=line_mask(spinepts,max(9,int(.03*w)),2); sm=ImageChops.multiply(sm,vm)
-        out.alpha_composite(clipped(patch_to_canvas(sourceSpine,bb),sm))
-        add_stitch(out,[(int(x0+.27*w),int(y0+.26*h)),(int(x0+.24*w),int(y0+.78*h))],max(12,int(.045*h)))
-        add_gem(out,int(x0+.50*w),int(y0+.18*h),max(4,int(.015*w)),profile.accent_rgb)
-
-    else:
-        side=polygon_mask(bb,[(.07,.05),(.68,.03),(.92,.25),(.73,.52),(.53,.47),(.26,.30)],6)
-        side=ImageChops.multiply(side,vm)
-        mat=patch_to_canvas(crop_visible(dart,(.18,.12,.78,.84)),bb)
-        out.alpha_composite(clipped(mat,side))
-        seam=[(int(x0+.63*w),int(y0+.16*h)),(int(x0+.66*w),int(y0+.65*h))]
-        sm=line_mask(seam,max(8,int(.035*w)),2); sm=ImageChops.multiply(sm,vm)
-        out.alpha_composite(clipped(tonalize(accent,(23,18,27),(79,59,84),(153,122,164)),sm))
-        add_gem(out,int(x0+.64*w),int(y0+.26*h),max(4,int(.015*w)),profile.accent_rgb)
-
-    # carry real ship microtexture over painted garment while keeping cloth fold hierarchy.
-    out=apply_microtexture(out,cruiser,vm,.19)
-    out=apply_fold_model(out,hist,vm,.23)
-    out=edge_finish(out,vm)
-    out=ImageEnhance.Contrast(out).enhance(1.12)
-    out=ImageEnhance.Brightness(out).enhance(1.06)
-    out=out.filter(ImageFilter.UnsharpMask(radius=3.6,percent=95,threshold=4))
-    out.putalpha(vm)
-    return save_size(out)
-
-def save_size(im):
-    im=im.resize((OUT,OUT),Image.Resampling.LANCZOS)
-    return clean(im)
-
-def clean(im):
-    a=np.array(im.convert("RGBA")); a[a[...,3]==0,:3]=0
-    return Image.fromarray(a.astype(np.uint8),"RGBA")
-
-def render_tile(profile, vanilla_dir, ships):
-    van=load_rgba(vanilla_dir/f"{profile.tile_family}.png").resize((HI,HI),Image.Resampling.LANCZOS)
-    vm=visible_mask_from_vanilla(van); bb=bbox(vm)
-    hist=old_png(f"Textures/Things/Pawn/Humanlike/Apparel/{profile.output_dir}/{profile.historical_item}.png").resize((HI,HI),Image.Resampling.LANCZOS)
-    hist=fit_alpha(hist,bb)
-    base=tonalize(hist,profile.palette_shadow,profile.palette_mid,profile.palette_high)
-    base=apply_fold_model(base,hist,vm,.40); base.putalpha(vm)
-    out=base.copy()
-    # ship-painted shoulder/chitin framing on tile.
-    strike=ships[1]
-    left=patch_to_canvas(crop_visible(strike,(.04,.29,.43,.78)),(bb[0],bb[1],bb[0]+int((bb[2]-bb[0])*.44),bb[1]+int((bb[3]-bb[1])*.42)))
-    lm=polygon_mask(bb,[(.00,.04),(.40,.02),(.44,.30),(.30,.44),(.04,.36)],6)
-    lm=ImageChops.multiply(lm,vm)
-    out.alpha_composite(clipped(left,lm))
-    rm=Image.fromarray(np.fliplr(np.array(lm)).copy(),"L")
-    out.alpha_composite(clipped(left.transpose(Image.Transpose.FLIP_LEFT_RIGHT),rm))
-    add_gem(out,int(bb[0]+(bb[2]-bb[0])*.50),int(bb[1]+(bb[3]-bb[1])*.34),max(4,int((bb[2]-bb[0])*.018)),profile.accent_rgb)
-    out=edge_finish(out,vm)
-    out=ImageEnhance.Contrast(out).enhance(1.12)
-    out=ImageEnhance.Brightness(out).enhance(1.06)
-    out.putalpha(vm)
-    return save_size(out)
-
-def build(profile: Profile, vanilla_dir: Path, preview: Path|None):
-    outdir=APPAREL_ROOT/profile.output_dir
-    outdir.mkdir(parents=True,exist_ok=True)
-    ships=ship_materials(profile)
-
-    render_tile(profile,vanilla_dir,ships).save(outdir/f"{profile.basename}.png",optimize=True)
-    for body in BODIES:
-        south=paint_hunter(profile,body,"south",vanilla_dir,ships)
-        south.save(outdir/f"{profile.basename}_{body}.png",optimize=True)
-        south.save(outdir/f"{profile.basename}_{body}_south.png",optimize=True)
-        north=paint_hunter(profile,body,"north",vanilla_dir,ships)
-        north.save(outdir/f"{profile.basename}_{body}_north.png",optimize=True)
-        east=paint_hunter(profile,body,"east",vanilla_dir,ships)
-        east.save(outdir/f"{profile.basename}_{body}_east.png",optimize=True)
-        east.transpose(Image.Transpose.FLIP_LEFT_RIGHT).save(outdir/f"{profile.basename}_{body}_west.png",optimize=True)
-
-    files=sorted(outdir.glob(f"{profile.basename}*.png"))
-    expected=26
-    if len(files)!=expected: raise RuntimeError(f"{profile.basename}: expected {expected}, got {len(files)}")
-
-    for p in files:
-        im=load_rgba(p)
-        if im.size!=(192,192): raise RuntimeError((p,im.size))
+    def _visible_mask(self, path: Path) -> Image.Image:
+        im=Image.open(path).convert("RGBA").resize((HI,HI),Image.Resampling.LANCZOS)
         a=np.array(im.getchannel("A"))
-        if not np.any(a>0): raise RuntimeError(f"blank {p}")
-        rgba=np.array(im)
-        if not np.all(rgba[rgba[...,3]==0,:3]==0): raise RuntimeError(f"dirty alpha {p}")
+        rgb=np.array(im)[...,:3]
+        m=((a>8)&(rgb.max(axis=2)>28)).astype(np.uint8)*255
+        return Image.fromarray(m,"L").filter(ImageFilter.GaussianBlur(.45))
 
-    if preview:
-        chosen=[
-          outdir/f"{profile.basename}.png",
-          outdir/f"{profile.basename}_Male_south.png",
-          outdir/f"{profile.basename}_Male_north.png",
-          outdir/f"{profile.basename}_Male_east.png",
-          outdir/f"{profile.basename}_Female_south.png",
-          outdir/f"{profile.basename}_Hulk_south.png",
-        ]
-        sheet=Image.new("RGBA",(OUT*3,OUT*2),(18,16,22,255))
-        for i,p in enumerate(chosen):
-            sheet.alpha_composite(load_rgba(p),((i%3)*OUT,(i//3)*OUT))
-        preview.parent.mkdir(parents=True,exist_ok=True)
-        sheet.save(preview,optimize=True)
+    def run(self) -> dict:
+        fam=self.cfg["vanilla_family"]
+        masks={}
+        metrics={}
+        for body in self.cfg["body_types"]:
+            masks[body]={}
+            for d in ("south","north","east"):
+                p=self.vanilla_dir/f"{fam}_{body}_{d}.png"
+                if not p.exists(): raise FileNotFoundError(p)
+                m=self._visible_mask(p)
+                if not m.getbbox(): raise RuntimeError(f"empty vanilla mask {p}")
+                masks[body][d]=m
+                b=m.getbbox()
+                metrics[f"{body}_{d}"]={"bbox":list(b),"opaque":int((np.array(m)>128).sum())}
+        tile=self._visible_mask(self.vanilla_dir/f"{self.cfg['tile_family']}.png")
+        return {"masks":masks,"tile":tile,"metrics":metrics}
 
-    print(json.dumps({"profile":profile.key,"files":len(files),"status":"ok"}))
+class SynthesisPass:
+    def __init__(self, profile: dict, ref: RefReport, impl: dict):
+        self.profile=profile
+        self.s1=profile["stage_1_stargate"]
+        self.s3=profile["stage_3_synthesis"]
+        self.ref=ref
+        self.impl=impl
+        self.palette=self.s3["palette"]
+        self.rng=np.random.default_rng(int(hashlib.sha256(profile["id"].encode()).hexdigest()[:8],16))
+        self.benchmark_stats=self._benchmark_stats()
+
+    def _benchmark_stats(self):
+        stats=[]
+        for rel in self.s3["wNG_quality_benchmarks"]:
+            p=ROOT/rel
+            im=Image.open(p).convert("RGBA")
+            a=np.array(im)
+            m=a[...,3]>16
+            if not m.any(): continue
+            rgb=a[...,:3].astype(np.float32)
+            lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
+            stats.append({"contrast":float(lum[m].std()),"luminance":float(lum[m].mean())})
+        return stats
+
+    def _historical(self, item: str, body: str, direction: str, bb) -> Image.Image:
+        base=f"Textures/Things/Pawn/Humanlike/Apparel/Wraith/{item}_{body}_{direction}.png"
+        try: raw=subprocess.check_output(["git","show",f"{HIST_REF}:{base}"])
+        except subprocess.CalledProcessError:
+            raw=subprocess.check_output(["git","show",f"{HIST_REF}:Textures/Things/Pawn/Humanlike/Apparel/Wraith/{item}_Male_{direction}.png"])
+        im=Image.open(io.BytesIO(raw)).convert("RGBA")
+        sb=im.getchannel("A").getbbox()
+        crop=im.crop(sb).resize((bb[2]-bb[0],bb[3]-bb[1]),Image.Resampling.LANCZOS)
+        out=Image.new("RGBA",(HI,HI),(0,0,0,0)); out.alpha_composite(crop,(bb[0],bb[1]))
+        return out
+
+    def _noise(self, sigma: float, shape=(HI,HI)):
+        n=self.rng.normal(0,1,shape)
+        n=gaussian_filter(n,sigma)
+        return (n-n.mean())/(n.std()+1e-6)
+
+    def _material(self, mask: Image.Image, shadow, mid, high, kind: str, hist: Image.Image|None=None):
+        m=np.array(mask,dtype=np.float32)/255
+        yy,xx=np.mgrid[0:HI,0:HI]
+        broad=(1-yy/HI)*.65+(1-xx/HI)*.35
+        n1=self._noise(1.0 if kind=="leather" else 1.8)
+        n2=self._noise(5.5 if kind=="leather" else 8.0)
+        n3=self._noise(22)
+        grain=4.5*n1+7*n2+4*n3
+        if kind=="leather":
+            grain += 3*np.sin((xx+1.7*yy)/19.0)
+        else:
+            grain += 5*np.cos((xx-.8*yy)/28.0)
+
+        fold=np.zeros((HI,HI),dtype=np.float32)
+        if hist is not None:
+            hl=np.array(hist.convert("L"),dtype=np.float32)
+            fold=(hl-gaussian_filter(hl,7))*.42+(gaussian_filter(hl,18)-gaussian_filter(hl,45))*.28
+
+        dist=distance_transform_edt(m>0.1)
+        edge=np.clip(1-dist/14,0,1)
+        lum=np.clip(.42+.24*broad+grain/120+fold/255-.18*edge,0,1)
+
+        lo=np.array(shadow,float); mi=np.array(mid,float); hi=np.array(high,float)
+        rgb=np.empty((HI,HI,3),dtype=np.float32)
+        lower=lum<.5
+        t=np.clip(lum*2,0,1)
+        rgb[lower]=lo+(mi-lo)*t[lower,None]
+        t2=np.clip((lum-.5)*2,0,1)
+        rgb[~lower]=mi+(hi-mi)*t2[~lower,None]
+        out=np.dstack([np.clip(rgb,0,255).astype(np.uint8),(m*255).astype(np.uint8)])
+        return Image.fromarray(out,"RGBA")
+
+    def _poly_mask(self, bb, pts, feather=5):
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        q=[(int(x0+x*w),int(y0+y*h)) for x,y in pts]
+        m=Image.new("L",(HI,HI),0)
+        ImageDraw.Draw(m).polygon(q,fill=255)
+        if feather: m=m.filter(ImageFilter.GaussianBlur(feather))
+        return m
+
+    def _line_mask(self, pts, width, blur=1.5):
+        m=Image.new("L",(HI,HI),0); d=ImageDraw.Draw(m)
+        d.line(pts,fill=255,width=max(1,int(width)),joint="curve")
+        if blur: m=m.filter(ImageFilter.GaussianBlur(blur))
+        return m
+
+    def _clip(self, layer, mask):
+        a=np.array(layer.getchannel("A"),dtype=np.uint16)
+        mm=np.array(mask,dtype=np.uint16)
+        layer=layer.copy(); layer.putalpha(Image.fromarray(((a*mm)//255).astype(np.uint8),"L"))
+        return layer
+
+    def _bone(self, mask, hist=None):
+        p=self.palette
+        return self._material(mask,p["bone_shadow"],p["bone_mid"],p["bone_high"],"bone",hist)
+
+    def _leather(self, mask, hist=None, contrast=False):
+        p=self.palette
+        if contrast:
+            sh=[max(0,x+7) for x in p["leather_shadow"]]
+            md=[min(255,x+15) for x in p["leather_mid"]]
+            hi=[min(255,x+18) for x in p["leather_high"]]
+        else:
+            sh=p["leather_shadow"]; md=p["leather_mid"]; hi=p["leather_high"]
+        return self._material(mask,sh,md,hi,"leather",hist)
+
+    def _stitch(self, im, pts, spacing=18):
+        d=ImageDraw.Draw(im)
+        seg=[]
+        for a,b in zip(pts[:-1],pts[1:]):
+            L=math.dist(a,b); seg.append((a,b,L))
+        total=sum(x[2] for x in seg)
+        pos=0
+        while pos<total:
+            remain=pos
+            for a,b,L in seg:
+                if remain<=L:
+                    t=remain/max(1,L); x=a[0]+(b[0]-a[0])*t; y=a[1]+(b[1]-a[1])*t
+                    d.ellipse((x-1.5,y-1.5,x+1.5,y+1.5),fill=(137,124,134,170)); break
+                remain-=L
+            pos+=spacing
+
+    def _gem(self, im,x,y,r):
+        col=tuple(self.palette["biotech"])
+        g=Image.new("RGBA",(HI,HI),(0,0,0,0)); gd=ImageDraw.Draw(g)
+        gd.ellipse((x-r*4,y-r*4,x+r*4,y+r*4),fill=col+(40,))
+        im.alpha_composite(g.filter(ImageFilter.GaussianBlur(r*2)))
+        d=ImageDraw.Draw(im)
+        d.ellipse((x-r,y-r,x+r,y+r),fill=(218,211,248,238),outline=(70,62,91,255),width=max(1,r//3))
+
+    def _paint(self, body, direction, mask):
+        bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        hist=self._historical("WNG_HunterCoat",body,direction,bb)
+        accent=self._historical("WNG_QueenRaiment",body,direction,bb)
+        out=self._leather(mask,hist,False)
+
+        # Canon-derived three-piece construction: body + two contrast-leather side/lapel pieces.
+        if direction=="south":
+            left=self._poly_mask(bb,[(.08,.11),(.40,.04),(.47,.26),(.40,.78),(.16,.92),(.10,.54)],4)
+            right=self._poly_mask(bb,[(.92,.11),(.60,.04),(.53,.26),(.60,.78),(.84,.92),(.90,.54)],4)
+            left=ImageChops.multiply(left,mask); right=ImageChops.multiply(right,mask)
+            out.alpha_composite(self._clip(self._leather(left,hist,True),left))
+            out.alpha_composite(self._clip(self._leather(right,accent,True),right))
+
+            # restrained bone shoulder/collar accents, inside vanilla Duster silhouette.
+            boneL=self._poly_mask(bb,[(.06,.10),(.29,.04),(.41,.13),(.34,.26),(.14,.28)],3)
+            boneR=self._poly_mask(bb,[(.94,.10),(.71,.04),(.59,.13),(.66,.26),(.86,.28)],3)
+            for bm in (boneL,boneR):
+                bm=ImageChops.multiply(bm,mask)
+                out.alpha_composite(self._bone(bm,hist))
+
+            # diagonal waist belt and asymmetrical closure; no neon piping.
+            belt=[(int(x0+.19*w),int(y0+.57*h)),(int(x0+.49*w),int(y0+.61*h)),(int(x0+.80*w),int(y0+.55*h))]
+            bmask=ImageChops.multiply(self._line_mask(belt,max(8,.032*h),1.2),mask)
+            out.alpha_composite(self._clip(self._leather(bmask,accent,True),bmask))
+            self._stitch(out,[(int(x0+.25*w),int(y0+.28*h)),(int(x0+.29*w),int(y0+.84*h))],max(14,.05*h))
+            self._gem(out,int(x0+.47*w),int(y0+.36*h),max(3,int(.012*w)))
+
+        elif direction=="north":
+            shoulder=self._poly_mask(bb,[(.07,.09),(.34,.03),(.45,.14),(.38,.29),(.14,.29)],3)
+            shoulder2=Image.fromarray(np.fliplr(np.array(shoulder)).copy(),"L")
+            for bm in (shoulder,shoulder2):
+                bm=ImageChops.multiply(bm,mask)
+                out.alpha_composite(self._bone(bm,hist))
+            spine=[(int(x0+.50*w),int(y0+.15*h)),(int(x0+.49*w),int(y0+.76*h))]
+            sm=ImageChops.multiply(self._line_mask(spine,max(6,.018*w),1),mask)
+            out.alpha_composite(self._clip(self._leather(sm,accent,True),sm))
+            self._stitch(out,[(int(x0+.27*w),int(y0+.28*h)),(int(x0+.25*w),int(y0+.80*h))],max(14,.05*h))
+
+        else:
+            bone=self._poly_mask(bb,[(.20,.08),(.69,.04),(.87,.20),(.73,.34),(.51,.29)],3)
+            bone=ImageChops.multiply(bone,mask)
+            out.alpha_composite(self._bone(bone,hist))
+            seam=[(int(x0+.58*w),int(y0+.22*h)),(int(x0+.62*w),int(y0+.70*h))]
+            sm=ImageChops.multiply(self._line_mask(seam,max(5,.018*w),1),mask)
+            out.alpha_composite(self._clip(self._leather(sm,accent,True),sm))
+            self._stitch(out,[(int(x0+.36*w),int(y0+.29*h)),(int(x0+.38*w),int(y0+.79*h))],max(14,.05*h))
+
+        # Professional readability treatment benchmarked against WNG ships, without copying their pixels.
+        target_contrast=np.mean([x["contrast"] for x in self.benchmark_stats]) if self.benchmark_stats else 35
+        a=np.array(out,dtype=np.float32); m=np.array(mask)>16
+        rgb=a[...,:3]; lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
+        cur=lum[m].std() if m.any() else 1
+        scale=np.clip(target_contrast/max(cur,1),.92,1.28)
+        mean=rgb[m].mean(axis=0) if m.any() else np.array([60,50,65])
+        rgb=(rgb-mean)*scale+mean
+        a[...,:3]=np.clip(rgb,0,255)
+        a[...,3]=np.array(mask)
+        out=Image.fromarray(a.astype(np.uint8),"RGBA")
+        out=out.filter(ImageFilter.UnsharpMask(radius=3.0,percent=85,threshold=4))
+        out=ImageEnhance.Contrast(out).enhance(1.06)
+        out.putalpha(mask)
+        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+
+    def _tile(self, mask):
+        bb=mask.getbbox()
+        hist=self._historical("WNG_HunterCoat","Male","south",bb)
+        out=self._leather(mask,hist,False)
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        for pts in (
+            [(.07,.10),(.32,.03),(.43,.17),(.34,.31),(.12,.30)],
+            [(.93,.10),(.68,.03),(.57,.17),(.66,.31),(.88,.30)]
+        ):
+            bm=ImageChops.multiply(self._poly_mask(bb,pts,3),mask)
+            out.alpha_composite(self._bone(bm,hist))
+        belt=[(int(x0+.20*w),int(y0+.58*h)),(int(x0+.50*w),int(y0+.61*h)),(int(x0+.80*w),int(y0+.56*h))]
+        bm=ImageChops.multiply(self._line_mask(belt,max(8,.03*h),1),mask)
+        out.alpha_composite(self._clip(self._leather(bm,hist,True),bm))
+        self._gem(out,int(x0+.47*w),int(y0+.36*h),max(3,int(.012*w)))
+        out.putalpha(mask)
+        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+
+    def _symmetry(self, im):
+        a=np.array(im.convert("L"),dtype=np.float32)
+        b=np.fliplr(a)
+        denom=max(1,float(np.mean(np.abs(a))+np.mean(np.abs(b))))
+        return float(1-np.mean(np.abs(a-b))/denom)
+
+    def _qa(self, generated: dict, impl: dict):
+        q=self.s3["quality"]
+        rows=[]
+        for key,im in generated.items():
+            if key=="tile": vm=impl["tile"].resize((OUT,OUT),Image.Resampling.LANCZOS)
+            else:
+                body,d=key.split("_",1)
+                srcd="east" if d=="west" else d
+                vm=impl["masks"][body][srcd].resize((OUT,OUT),Image.Resampling.LANCZOS)
+            ga=np.array(im.getchannel("A"))>16; va=np.array(vm)>16
+            inter=(ga&va).sum(); union=(ga|va).sum()
+            iou=float(inter/max(1,union))
+            rgb=np.array(im)[...,:3].astype(np.float32)
+            lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
+            contrast=float(lum[ga].std()) if ga.any() else 0
+            biotech=np.all(rgb>np.array([135,130,190]),axis=2)&ga
+            lumfrac=float(biotech.sum()/max(1,ga.sum()))
+            sym=self._symmetry(im)
+            rows.append({"key":key,"iou":iou,"contrast":contrast,"luminous_fraction":lumfrac,"symmetry":sym})
+            if iou<q["silhouette_iou_min"]: raise RuntimeError(f"QA silhouette {key}: {iou}")
+            if lumfrac>q["max_luminous_area_fraction"]: raise RuntimeError(f"QA luminous area {key}: {lumfrac}")
+            if contrast<q["min_local_contrast"]: raise RuntimeError(f"QA contrast {key}: {contrast}")
+        return rows
+
+    def run(self, preview: Path|None, workdir: Path):
+        cfg=self.profile["stage_2_rimworld"]
+        outdir=APPAREL_ROOT/"Wraith"
+        generated={}
+        tile=self._tile(self.impl["tile"])
+        generated["tile"]=tile
+        save_clean(tile,outdir/"WNG_HunterCoat.png")
+        for body in cfg["body_types"]:
+            for d in ("south","north","east"):
+                im=self._paint(body,d,self.impl["masks"][body][d])
+                generated[f"{body}_{d}"]=im
+                if d=="south": save_clean(im,outdir/f"WNG_HunterCoat_{body}.png")
+                save_clean(im,outdir/f"WNG_HunterCoat_{body}_{d}.png")
+                if d=="east":
+                    west=im.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                    generated[f"{body}_west"]=west
+                    save_clean(west,outdir/f"WNG_HunterCoat_{body}_west.png")
+
+        qa=self._qa(generated,self.impl)
+        workdir.mkdir(parents=True,exist_ok=True)
+        (workdir/"synthesis_qa.json").write_text(json.dumps(qa,indent=2))
+        if preview:
+            order=["tile","Male_south","Male_north","Male_east","Female_south","Hulk_south"]
+            sh=Image.new("RGBA",(OUT*3,OUT*2),(18,16,22,255))
+            for i,k in enumerate(order): sh.alpha_composite(generated[k],((i%3)*OUT,(i//3)*OUT))
+            preview.parent.mkdir(parents=True,exist_ok=True)
+            sh.save(preview,optimize=True)
+
+def save_clean(im: Image.Image, p: Path):
+    p.parent.mkdir(parents=True,exist_ok=True)
+    a=np.array(im.convert("RGBA")); a[a[...,3]==0,:3]=0
+    Image.fromarray(a.astype(np.uint8),"RGBA").save(p,optimize=True)
+
+def load_profile(path: Path):
+    return json.loads(path.read_text())
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument("profile",choices=PROFILES)
-    ap.add_argument("--vanilla-dir",required=True,type=Path)
+    ap.add_argument("profile",help="profile id, e.g. wraith_hunter_coat")
+    ap.add_argument("--vanilla-dir",type=Path,required=True)
+    ap.add_argument("--workdir",type=Path,default=Path(".github/artgen/runtime"))
     ap.add_argument("--preview",type=Path)
     args=ap.parse_args()
-    build(PROFILES[args.profile],args.vanilla_dir,args.preview)
+
+    profile=load_profile(PROFILE_ROOT/f"{args.profile}.json")
+
+    # ORDER IS ENFORCED: Stargate -> RimWorld -> synthesis.
+    ref=StargateReferencePass(profile,args.workdir).run()
+    impl=RimWorldImplementationPass(profile,args.vanilla_dir).run()
+    synth=SynthesisPass(profile,ref,impl)
+    synth.run(args.preview,args.workdir)
+
+    print(json.dumps({
+        "status":"ok",
+        "order":["StargateReferencePass","RimWorldImplementationPass","SynthesisPass"],
+        "verified_stargate_sources":f"{ref.verified}/{ref.total}"
+    }))
 
 if __name__=="__main__":
     main()
