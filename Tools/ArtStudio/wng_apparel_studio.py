@@ -153,9 +153,22 @@ class RasterStudio:
         x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
         return [(x0+x*w,y0+y*h) for x,y in points]
 
-    def region_mask(self, outer, points, feather=.7):
+    def region_mask(self, outer, points, feather=.7, irregularity=0.0, seed=0):
         bb=outer.getbbox()
         pts=chaikin(self.normpts(bb,points),4)
+        if irregularity and pts:
+            cx=sum(x for x,_ in pts)/len(pts); cy=sum(y for _,y in pts)/len(pts)
+            amp=float(irregularity)*min(bb[2]-bb[0],bb[3]-bb[1])
+            rng=random.Random(self.seed+seed*431)
+            p1=rng.uniform(0,math.tau); p2=rng.uniform(0,math.tau)
+            n=len(pts); varied=[]
+            for i,(x,y) in enumerate(pts):
+                dx=x-cx; dy=y-cy; mag=max(1.0,math.hypot(dx,dy))
+                wave=.62*math.sin(math.tau*i/n*3+p1)+.28*math.sin(math.tau*i/n*7+p2)
+                wave+=rng.uniform(-.10,.10)
+                off=amp*wave
+                varied.append((x+(dx/mag)*off,y+(dy/mag)*off))
+            pts=varied
         m=Image.new("L",(HI,HI),0)
         ImageDraw.Draw(m).polygon([(round(x),round(y)) for x,y in pts],fill=255)
         if feather: m=m.filter(ImageFilter.GaussianBlur(feather))
@@ -304,6 +317,51 @@ class RasterStudio:
                     wd.line((x,y,x+rng.randint(2,7),y+rng.randint(-1,2)),fill=hi+(rng.randint(14,34),),width=1)
             out.alpha_composite(wear)
 
+    def prop_glaze(self, out, piece, seed=0, strength=.5):
+        """Broken clear-cover reflections for screen-used Wraith cast-rubber armour."""
+        bb=piece.getbbox()
+        if not bb: return
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        rng=random.Random(self.seed+seed*577)
+        layer=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        wash=Image.new("L",(HI,HI),0); wd=ImageDraw.Draw(wash)
+        wd.ellipse((round(x0-w*.12),round(y0-h*.16),round(x0+w*.82),round(y0+h*.75)),
+                   fill=round(25*strength))
+        wash=ImageChops.multiply(wash.filter(ImageFilter.GaussianBlur(max(4,round(min(w,h)*.055)))),piece)
+        tint=Image.new("RGBA",(HI,HI),(160,178,172,0)); tint.putalpha(wash)
+        layer.alpha_composite(tint)
+        d=ImageDraw.Draw(layer)
+        for i in range(3):
+            yy=round(y0+h*(.20+i*.22)+rng.uniform(-.02,.02)*h)
+            xa=round(x0+w*(.17+rng.uniform(-.02,.025)))
+            xb=round(x0+w*(.70+rng.uniform(-.025,.04)))
+            d.arc((xa,yy-round(h*.045),xb,yy+round(h*.045)),198,338,
+                  fill=(219,229,225,round(17+27*strength)),
+                  width=max(1,round(min(w,h)*.006)))
+        out.alpha_composite(ImageChops.multiply(layer,Image.merge("RGBA",(piece,piece,piece,piece))).filter(ImageFilter.GaussianBlur(.45)))
+
+    def hard_edge_wear(self, out, piece, material_name, seed=0):
+        """Sparse rubbed/chipped prop edges; never a continuous bright outline."""
+        spec=self.cfg["materials"][material_name]
+        if spec["kind"] not in ("rubber","bone"): return
+        a=np.array(piece)>20
+        dist=distance_transform_edt(a)
+        ys,xs=np.nonzero((dist>1)&(dist<8))
+        if not len(xs): return
+        rng=random.Random(self.seed+seed*619)
+        hi=tuple(spec["high"]); sh=tuple(spec["shadow"])
+        layer=Image.new("RGBA",(HI,HI),(0,0,0,0)); d=ImageDraw.Draw(layer)
+        count=max(7,min(30,len(xs)//650))
+        for i in range(count):
+            k=rng.randrange(len(xs)); x=int(xs[k]); y=int(ys[k])
+            if i%4:
+                d.line((x,y,x+rng.randint(2,8),y+rng.randint(-2,2)),
+                       fill=hi+(rng.randint(16,40),),width=1)
+            else:
+                rr=rng.choice([1,1,2])
+                d.ellipse((x-rr,y-rr,x+rr,y+rr),fill=sh+(rng.randint(35,70),))
+        out.alpha_composite(ImageChops.multiply(layer,Image.merge("RGBA",(piece,piece,piece,piece))))
+
     def contact_shadow(self, outer, piece, strength=62, radius=7, offset=(2,3)):
         sh=piece.filter(ImageFilter.GaussianBlur(radius*1.25))
         moved=Image.new("L",(HI,HI),0); moved.paste(sh,offset)
@@ -347,6 +405,22 @@ class RasterStudio:
                     lx=x0+(l0[0]*(1-t)+l1[0]*t)*w; ly=y0+(l0[1]*(1-t)+l1[1]*t)*h
                     rx=x0+(r0[0]*(1-t)+r1[0]*t)*w; ry=y0+(r0[1]*(1-t)+r1[1]*t)*h
                     d.line((round(lx),round(ly),round(rx),round(ry)),fill=(7,7,8,210),width=max(1,round(w*.004)))
+            elif typ=="segmented_belt":
+                a,b=c.get("from",[.24,.625]),c.get("to",[.76,.625])
+                count=max(3,int(c.get("count",7)))
+                p0=(x0+a[0]*w,y0+a[1]*h); p1=(x0+b[0]*w,y0+b[1]*h)
+                band=max(4,round(min(w,h)*c.get("width",.020)))
+                d.line((round(p0[0]),round(p0[1]),round(p1[0]),round(p1[1])),
+                       fill=(7,9,9,230),width=band)
+                for i in range(count):
+                    t=(i+.5)/count
+                    x=round(p0[0]*(1-t)+p1[0]*t); y=round(p0[1]*(1-t)+p1[1]*t)
+                    sw=max(5,round(abs(p1[0]-p0[0])/count*.58)); sh=max(3,round(band*.68))
+                    d.rounded_rectangle((x-sw//2,y-sh//2,x+sw//2,y+sh//2),
+                        radius=max(1,sh//3),fill=(23,29,26,235),outline=(77,84,79,145),width=1)
+                bx=round((p0[0]+p1[0])*.5); by=round((p0[1]+p1[1])*.5); rr=max(3,round(band*.55))
+                d.rounded_rectangle((bx-rr,by-rr,bx+rr,by+rr),radius=max(1,rr//3),
+                    fill=(14,17,16,245),outline=(105,108,103,165),width=max(1,rr//3))
             elif typ=="self_destruct":
                 px,py=c.get("position",[.50,.31])
                 x=round(x0+px*w); y=round(y0+py*h); r=max(4,round(min(w,h)*c.get("radius",.018)))
@@ -377,11 +451,15 @@ class RasterStudio:
         union=Image.new("L",(HI,HI),0)
 
         for i,p in enumerate(view["components"]):
-            pm=self.region_mask(mask,p["contour"],float(p.get("feather",.7)))
+            pm=self.region_mask(mask,p["contour"],float(p.get("feather",.7)),
+                                float(p.get("edge_irregularity",0)),seed_base+20+i)
             union=ImageChops.lighter(union,pm)
             out.alpha_composite(self.contact_shadow(mask,pm,int(p.get("shadow",58)),int(p.get("shadow_radius",7)),tuple(p.get("shadow_offset",[2,3]))))
             layer=self.material(pm,p["material"],p.get("relief",[]),seed_base+20+i)
             out.alpha_composite(layer)
+            if p.get("clear_cover"):
+                self.prop_glaze(out,pm,seed_base+20+i,float(p.get("clear_cover_strength",.5)))
+            self.hard_edge_wear(out,pm,p["material"],seed_base+20+i)
             if p.get("mirror"):
                 mir=pm.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                 out.alpha_composite(self.contact_shadow(mask,mir,int(p.get("shadow",58)),int(p.get("shadow_radius",7)),(-2,int(p.get("shadow_offset",[2,3])[1]))))
@@ -389,6 +467,9 @@ class RasterStudio:
                 for c in p.get("relief",[]):
                     cc=dict(c); cc["points"]=[[1-x,y] for x,y in c["points"]]; relief.append(cc)
                 out.alpha_composite(self.material(mir,p["material"],relief,seed_base+120+i))
+                if p.get("clear_cover"):
+                    self.prop_glaze(out,mir,seed_base+120+i,float(p.get("clear_cover_strength",.5)))
+                self.hard_edge_wear(out,mir,p["material"],seed_base+120+i)
                 union=ImageChops.lighter(union,mir)
 
         for s in view.get("seams",[]): self.seam(out,bb,s)
