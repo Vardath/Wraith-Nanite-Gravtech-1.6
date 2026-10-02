@@ -408,7 +408,7 @@
     },
     "garment_contract": {
       "max_single_piece_fraction": 0.36,
-      "min_base_garment_visible_fraction": 0.38,
+      "min_base_garment_visible_fraction": 0.32,
       "max_semantic_pieces_per_view": 12,
       "min_seams_per_view": 3
     },
@@ -1772,5 +1772,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-primary-source-gate"
+  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-layered-garment-contract"
 }
