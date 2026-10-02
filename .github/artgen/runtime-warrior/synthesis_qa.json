@@ -1,0 +1,149 @@
+[
+  {
+    "key": "tile",
+    "iou": 1.0,
+    "contrast": 41.219688415527344,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.8545417785644531
+  },
+  {
+    "key": "Male_south",
+    "iou": 1.0,
+    "contrast": 36.96669387817383,
+    "luminous_fraction": 0.00015979546180888463,
+    "symmetry": 0.8434079885482788
+  },
+  {
+    "key": "Male_north",
+    "iou": 1.0,
+    "contrast": 38.336910247802734,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.8545893430709839
+  },
+  {
+    "key": "Male_east",
+    "iou": 1.0,
+    "contrast": 39.80144119262695,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.5913810729980469
+  },
+  {
+    "key": "Male_west",
+    "iou": 1.0,
+    "contrast": 39.80144119262695,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.5913810729980469
+  },
+  {
+    "key": "Female_south",
+    "iou": 1.0,
+    "contrast": 36.925086975097656,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.8159294128417969
+  },
+  {
+    "key": "Female_north",
+    "iou": 1.0,
+    "contrast": 37.82980728149414,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.8291265964508057
+  },
+  {
+    "key": "Female_east",
+    "iou": 1.0,
+    "contrast": 40.08603286743164,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.2559308409690857
+  },
+  {
+    "key": "Female_west",
+    "iou": 1.0,
+    "contrast": 40.08603286743164,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.2559308409690857
+  },
+  {
+    "key": "Thin_south",
+    "iou": 1.0,
+    "contrast": 37.00265884399414,
+    "luminous_fraction": 0.0002883506343713956,
+    "symmetry": 0.7279049158096313
+  },
+  {
+    "key": "Thin_north",
+    "iou": 1.0,
+    "contrast": 37.259803771972656,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.7116968631744385
+  },
+  {
+    "key": "Thin_east",
+    "iou": 1.0,
+    "contrast": 40.544776916503906,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.18721723556518555
+  },
+  {
+    "key": "Thin_west",
+    "iou": 1.0,
+    "contrast": 40.544776916503906,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.18721723556518555
+  },
+  {
+    "key": "Fat_south",
+    "iou": 1.0,
+    "contrast": 36.88161087036133,
+    "luminous_fraction": 0.00018183471224656787,
+    "symmetry": 0.7358452081680298
+  },
+  {
+    "key": "Fat_north",
+    "iou": 1.0,
+    "contrast": 38.35868453979492,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.8103471398353577
+  },
+  {
+    "key": "Fat_east",
+    "iou": 1.0,
+    "contrast": 40.55473327636719,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.5346410870552063
+  },
+  {
+    "key": "Fat_west",
+    "iou": 1.0,
+    "contrast": 40.55473327636719,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.5346410870552063
+  },
+  {
+    "key": "Hulk_south",
+    "iou": 1.0,
+    "contrast": 36.99747848510742,
+    "luminous_fraction": 0.00022465178972592482,
+    "symmetry": 0.7659711241722107
+  },
+  {
+    "key": "Hulk_north",
+    "iou": 1.0,
+    "contrast": 38.23000717163086,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.7601865530014038
+  },
+  {
+    "key": "Hulk_east",
+    "iou": 1.0,
+    "contrast": 40.892269134521484,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.49971550703048706
+  },
+  {
+    "key": "Hulk_west",
+    "iou": 1.0,
+    "contrast": 40.892269134521484,
+    "luminous_fraction": 0.0,
+    "symmetry": 0.49971550703048706
+  }
+]
