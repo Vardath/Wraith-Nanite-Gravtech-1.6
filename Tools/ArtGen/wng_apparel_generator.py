@@ -493,6 +493,9 @@ class SynthesisPass:
         for i in range(5):
             self._snap(out,int(x0+.51*w),int(y0+h*(.27+i*.075)),2)
         out=self._finish(out,mask)
+        # Ground/inventory tiles need slightly stronger value separation than worn art.
+        out=ImageEnhance.Contrast(out).enhance(1.20)
+        out.putalpha(mask)
         return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
 
     def _symmetry(self, im):
