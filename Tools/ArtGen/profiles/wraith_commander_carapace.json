@@ -8,43 +8,70 @@
       {
         "url": "https://www.stargate-fusion.com/fiches/coulisses/23-costumes-uniformes/5733-commandant-wraith-lunion-fait-la-force.html",
         "role": "screen_used_wraith_commander_costume_primary",
-        "required_terms": ["Wraith costume", "cuir", "épaulettes"],
+        "required_terms": [
+          "Wraith costume",
+          "cuir",
+          "épaulettes"
+        ],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://www.stargate-fusion.com/fiches/6511-costume-commandant-wraith.html",
         "role": "screen_used_wraith_commander_layering",
-        "required_terms": ["Wraith Costume", "cuir souple", "panneaux texturés"],
+        "required_terms": [
+          "Wraith Costume",
+          "cuir souple",
+          "panneaux texturés"
+        ],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://josephmallozzi.com/2008/10/25/october-25-2008-stargate-atlantis-constume-designer-val-halverson-answers-your-questions/",
         "role": "stargate_atlantis_costume_designer_primary",
-        "required_terms": ["WRAITH COSTUME", "LEATHER", "GAUNTLETS"],
+        "required_terms": [
+          "WRAITH COSTUME",
+          "LEATHER",
+          "GAUNTLETS"
+        ],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://abcdocz.com/doc/68928/",
         "role": "production_wraith_carapace_material_reference",
-        "required_terms": ["Carapace torso armor", "hard rubber silver front and back armor", "black leather under-vest"],
+        "required_terms": [
+          "Carapace torso armor",
+          "hard rubber silver front and back armor",
+          "black leather under-vest"
+        ],
         "image_policy": "metadata_only"
       },
       {
         "url": "https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/",
         "role": "screen_used_wraith_drone_costume_context",
-        "required_terms": ["Wraith Drone Costume", "footsoldiers"],
+        "required_terms": [
+          "Wraith Drone Costume",
+          "footsoldiers"
+        ],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://www.stargate-fusion.com/fiches/5691-costume-wraith-teyla-la-nouvelle-reine.html",
         "role": "reptile_leather_and_rank_material_language",
-        "required_terms": ["reptile", "cuir", "corset"],
+        "required_terms": [
+          "reptile",
+          "cuir",
+          "corset"
+        ],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://www.stargate-fusion.com/fiches/coulisses/37-accessoires-de-tournage/5938-dispositif-douverture-de-porte-wraith-2.html",
         "role": "organic_wraith_surface_language",
-        "required_terms": ["organique", "latex", "vert"],
+        "required_terms": [
+          "organique",
+          "latex",
+          "vert"
+        ],
         "image_policy": "og_and_relevant"
       }
     ],
@@ -52,12 +79,30 @@
     "minimum_visual_references": 2,
     "design_rules": {
       "material_priority": [
-        ["green_black_leather_command_shell", 0.36],
-        ["black_reptile_pattern_leather", 0.25],
-        ["dark_flexible_leather_understructure", 0.15],
-        ["layered_command_epaulettes", 0.10],
-        ["aged_lacing_snaps_and_fasteners", 0.08],
-        ["restrained_bone_chitin_edge_detail", 0.06]
+        [
+          "green_black_leather_command_shell",
+          0.36
+        ],
+        [
+          "black_reptile_pattern_leather",
+          0.25
+        ],
+        [
+          "dark_flexible_leather_understructure",
+          0.15
+        ],
+        [
+          "layered_command_epaulettes",
+          0.1
+        ],
+        [
+          "aged_lacing_snaps_and_fasteners",
+          0.08
+        ],
+        [
+          "restrained_bone_chitin_edge_detail",
+          0.06
+        ]
       ],
       "construction": [
         "armoured translation of the screen-used green leather Wraith commander trenchcoat",
@@ -91,8 +136,19 @@
     "implementation_mode": "powerarmor_svg_deformed",
     "vanilla_family": "PowerArmor",
     "tile_family": "PowerArmor",
-    "body_types": ["Male", "Female", "Thin", "Fat", "Hulk"],
-    "facings": ["south", "north", "east", "west"],
+    "body_types": [
+      "Male",
+      "Female",
+      "Thin",
+      "Fat",
+      "Hulk"
+    ],
+    "facings": [
+      "south",
+      "north",
+      "east",
+      "west"
+    ],
     "silhouette_rule": "vanilla_powerarmor_contour_authoritative",
     "readability_rule": "details must survive at 192x192 and normal pawn zoom",
     "legacy_bare_directions": true
@@ -107,27 +163,105 @@
       "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace",
       "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat"
     ],
-    "post_downsample_contrast": 1.22,
+    "post_downsample_contrast": 1.18,
     "palette": {
-      "leather_shadow": [6, 9, 8],
-      "leather_mid": [24, 35, 29],
-      "leather_high": [112, 134, 115],
-      "contrast_shadow": [6, 6, 8],
-      "contrast_mid": [27, 24, 30],
-      "contrast_high": [118, 106, 122],
-      "reptile_shadow": [7, 7, 9],
-      "reptile_mid": [31, 30, 34],
-      "reptile_high": [138, 130, 142],
-      "metal": [126, 124, 129],
-      "biotech": [90, 116, 108]
+      "leather_shadow": [
+        6,
+        9,
+        8
+      ],
+      "leather_mid": [
+        24,
+        35,
+        29
+      ],
+      "leather_high": [
+        104,
+        122,
+        106
+      ],
+      "contrast_shadow": [
+        6,
+        6,
+        8
+      ],
+      "contrast_mid": [
+        27,
+        24,
+        30
+      ],
+      "contrast_high": [
+        118,
+        106,
+        122
+      ],
+      "reptile_shadow": [
+        7,
+        8,
+        7
+      ],
+      "reptile_mid": [
+        27,
+        31,
+        28
+      ],
+      "reptile_high": [
+        92,
+        100,
+        94
+      ],
+      "metal": [
+        126,
+        124,
+        129
+      ],
+      "biotech": [
+        90,
+        116,
+        108
+      ],
+      "shell_shadow": [
+        22,
+        28,
+        25
+      ],
+      "shell_mid": [
+        58,
+        72,
+        64
+      ],
+      "shell_high": [
+        128,
+        145,
+        132
+      ],
+      "bone_shadow": [
+        48,
+        49,
+        47
+      ],
+      "bone_mid": [
+        100,
+        103,
+        99
+      ],
+      "bone_high": [
+        180,
+        183,
+        176
+      ]
     },
     "quality": {
       "silhouette_iou_min": 0.985,
       "max_luminous_area_fraction": 0.004,
       "min_local_contrast": 18,
       "max_symmetry_score": 0.95,
-      "microdetail_scale_px": [1, 5],
+      "microdetail_scale_px": [
+        1,
+        5
+      ],
       "render_scale": 4
-    }
+    },
+    "renderer": "wraith_commander_carapace"
   }
 }
