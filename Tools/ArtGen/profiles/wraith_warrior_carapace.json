@@ -6,6 +6,17 @@
   "stage_1_stargate": {
     "sources": [
       {
+        "url": "https://abcdocz.com/doc/68928/",
+        "role": "propworx_wraith_drone_uniform_technical_description",
+        "required_terms": [
+          "Carapace torso armor",
+          "hard rubber silver front and back armor",
+          "simulated bone silver shoulder armor",
+          "black leather under-vest"
+        ],
+        "image_policy": "metadata_only"
+      },
+      {
         "url": "https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/",
         "role": "wraith_drone_footsoldier_costume",
         "required_terms": [
@@ -65,43 +76,48 @@
         "image_policy": "og_and_relevant"
       }
     ],
-    "minimum_live_sources": 4,
+    "minimum_live_sources": 5,
     "minimum_visual_references": 2,
     "design_rules": {
       "material_priority": [
         [
-          "dark_grown_chitin",
-          0.44
+          "silver_hard_rubber_grown_carapace",
+          0.42
         ],
         [
-          "black_reptile_leather_underlayer",
-          0.2
+          "black_leather_under_vest_and_jointing",
+          0.22
         ],
         [
-          "regenerative_membrane",
+          "silver_simulated_bone_shoulders_and_limb_armor",
           0.16
         ],
         [
-          "bone_like_ridges",
-          0.12
+          "dark_regenerative_membrane",
+          0.1
         ],
         [
-          "aged_metallic_fasteners",
+          "clear_translucent_chest_cover",
           0.05
         ],
         [
-          "subtle_biotech_light",
+          "aged_fasteners_and_ridged_detail",
           0.03
+        ],
+        [
+          "subtle_biotech_self_destruct_core",
+          0.02
         ]
       ],
       "construction": [
-        "full shell coverage",
-        "layered shoulder carapace",
-        "segmented chest and abdomen plates",
-        "flexible dark membrane at joints",
-        "organic spine and flank articulation",
-        "gauntlet-like forearm treatment",
-        "grown rather than manufactured surface transitions"
+        "hard-rubber silver front and back torso carapace",
+        "black leather under-vest visible between shell sections",
+        "silver simulated-bone shoulder armor",
+        "silver thigh knee and shin armor over black leather chaps and greaves",
+        "black leather gauntlet language",
+        "central self-destruct unit under a translucent chest covering",
+        "intricate ridged Wraith detailing",
+        "grown-organic transitions rather than machine panel seams"
       ],
       "motifs": [
         "insect exoskeleton articulation",
@@ -111,13 +127,14 @@
         "organic Wraith technology"
       ],
       "avoid": [
+        "green armor as dominant material",
         "flat vector armour panels",
         "superhero chest plate",
         "neon piping",
         "generic marine armour paintover",
         "purple geometric shapes",
         "ship fins pasted onto a pawn",
-        "excessively bright bone"
+        "clean white sci-fi plating"
       ]
     }
   },
@@ -154,54 +171,54 @@
     ],
     "palette": {
       "shell_shadow": [
-        13,
-        17,
-        16
+        42,
+        46,
+        46
       ],
       "shell_mid": [
-        45,
-        58,
-        52
+        92,
+        98,
+        97
       ],
       "shell_high": [
-        126,
-        145,
-        132
+        174,
+        181,
+        179
       ],
       "membrane_shadow": [
-        8,
-        8,
-        10
+        6,
+        7,
+        8
       ],
       "membrane_mid": [
-        28,
-        26,
-        31
+        22,
+        24,
+        25
       ],
       "membrane_high": [
-        76,
-        71,
-        82
+        58,
+        62,
+        64
       ],
       "bone_shadow": [
-        42,
-        41,
-        43
+        62,
+        63,
+        66
       ],
       "bone_mid": [
-        91,
-        89,
-        92
+        122,
+        124,
+        128
       ],
       "bone_high": [
-        162,
-        158,
-        164
+        207,
+        208,
+        212
       ],
       "biotech": [
-        111,
-        147,
-        157
+        72,
+        155,
+        150
       ]
     },
     "quality": {
