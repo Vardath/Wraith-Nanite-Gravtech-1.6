@@ -37,10 +37,21 @@ jobs:
       - name: Install ArtGen dependencies
         run: python -m pip install --disable-pip-version-check pillow numpy scipy requests beautifulsoup4 cairosvg
 
+      - name: Select apparel profile
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.profile }}" ]; then
+            PROFILE="${{ github.event.inputs.profile }}"
+          else
+            PROFILE="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^Tools/ArtGen/profiles/\(.*\)\.json$#\1#p' | head -n 1)"
+            [ -n "$PROFILE" ] || PROFILE="wraith_commander_carapace"
+          fi
+          echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
+          echo "Selected WNG apparel profile: $PROFILE"
+
       - name: Run ordered WNG apparel pipeline
         shell: bash
         run: |
-          PROFILE="${{ github.event.inputs.profile || 'wraith_commander_carapace' }}"
           python Tools/ArtGen/wng_apparel_generator.py "$PROFILE" \
             --vanilla-dir "/tmp/madness/Raw sprites/apparel" \
             --body-dir "/tmp/rwvela/src/common/human/bodies" \
@@ -53,7 +64,6 @@ jobs:
       - name: Commit live apparel assets only
         shell: bash
         run: |
-          PROFILE="${{ github.event.inputs.profile || 'wraith_commander_carapace' }}"
           ITEM="$(python -c "import json; p=json.load(open('Tools/ArtGen/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
           OUTDIR="$(python -c "import json; p=json.load(open('Tools/ArtGen/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
           git config user.name "github-actions[bot]"
