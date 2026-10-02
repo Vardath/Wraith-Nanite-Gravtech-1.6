@@ -52,6 +52,23 @@ def deform_mask(base, body, direction):
     cy = acy + (tcy-mcy)
     out.paste(crop,(int(round(cx-nw/2)),int(round(cy-nh/2))))
     arr=np.array(out,dtype=np.uint8)
+    # Preserve the vanilla contour, but keep every body variant inside the texture canvas.
+    ys,xs=np.nonzero(arr>8)
+    if len(xs):
+        pad=20
+        dx=0; dy=0
+        if xs.min()<pad: dx=pad-xs.min()
+        if xs.max()>HI-1-pad: dx=(HI-1-pad)-xs.max()
+        if ys.min()<pad: dy=pad-ys.min()
+        if ys.max()>HI-1-pad: dy=(HI-1-pad)-ys.max()
+        if dx or dy:
+            shifted=np.zeros_like(arr)
+            y0=max(0,dy); y1=min(HI,HI+dy)
+            x0=max(0,dx); x1=min(HI,HI+dx)
+            sy0=max(0,-dy); sy1=sy0+(y1-y0)
+            sx0=max(0,-dx); sx1=sx0+(x1-x0)
+            shifted[y0:y1,x0:x1]=arr[sy0:sy1,sx0:sx1]
+            arr=shifted
     return arr
 
 def smooth_noise(shape, sigma, seed):
