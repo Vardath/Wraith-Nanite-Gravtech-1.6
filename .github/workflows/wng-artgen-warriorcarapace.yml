@@ -44,3 +44,5 @@ jobs:
           git commit -m "Generate Warrior Carapace with Stargate-first WNG ArtGen [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
+
+# rerun after body-dir CLI fix
