@@ -497,11 +497,12 @@ class SynthesisPass:
         elif kind in ("leather","reptile_leather"):
             surface *= .72
         elif kind in ("hard_rubber","grown_rubber"):
-            surface *= .15
-            surface += np.sin((xx*.035)+(yy*.018))*.010
+            surface *= .10
+            surface += np.sin((xx*.030)+(yy*.014))*.007
+            surface += np.sin((xx*.012)-(yy*.021))*.004
         elif kind in ("simulated_bone","bone_chitin"):
-            surface *= .28
-            surface += (np.sin(xx*.052+yy*.011)+np.sin(yy*.041))*.012
+            surface *= .18
+            surface += (np.sin(xx*.044+yy*.010)+np.sin(yy*.036))*.010
         elif kind in ("silk","satin"):
             surface *= .35
         elif kind in ("spandex","stretch_fabric"):
@@ -555,6 +556,32 @@ class SynthesisPass:
                 row+=1
             out.alpha_composite(self._clip(tex,mask))
         return out
+
+    def _garment_relief(self, out, bb, piece_mask, guides, material_name):
+        """Profile-authored organic grooves/ridges inside a semantic costume piece.
+
+        This is deliberately not procedural paneling: every relief path comes from
+        the Stargate item profile and is clipped to the named garment/armour piece.
+        """
+        if not guides:
+            return
+        spec=self._material_spec(material_name)
+        shadow=np.array(spec["shadow"],dtype=int)
+        high=np.array(spec["high"],dtype=int)
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        layer=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        d=ImageDraw.Draw(layer)
+        for g in guides:
+            pts=[(int(x0+float(x)*w),int(y0+float(y)*h)) for x,y in g.get("points",[])]
+            if len(pts)<2:
+                continue
+            width=max(2,int(float(g.get("width",.010))*min(w,h)))
+            alpha=int(g.get("alpha",135))
+            dark=tuple(np.clip(shadow*.72,0,255).astype(int))+(alpha,)
+            light=tuple(np.clip(high*1.05,0,255).astype(int))+(max(35,int(alpha*.55)),)
+            d.line(pts,fill=dark,width=max(2,width+2),joint="curve")
+            d.line([(x-1,y-2) for x,y in pts],fill=light,width=max(1,width//2),joint="curve")
+        out.alpha_composite(self._clip(layer,piece_mask))
 
     def _garment_seam(self, out, bb, seam):
         pts=seam.get("points",[])
@@ -641,15 +668,27 @@ class SynthesisPass:
 
         for i,piece in enumerate(view.get("pieces",[])):
             pm=self._garment_mask(bb,piece["points"],mask,float(piece.get("feather",.65)))
+            # Semantic cutouts let screen-derived costume pieces form crescents,
+            # split guards and open lacing zones instead of becoming filled blobs.
+            for cut in piece.get("cutouts",[]):
+                cm=self._garment_mask(bb,cut,mask,float(piece.get("feather",.65)))
+                pm=ImageChops.subtract(pm,cm)
             semantic_union=ImageChops.lighter(semantic_union,pm)
             frac=float((np.array(pm)>16).sum()/mask_area)
             max_piece_frac=max(max_piece_frac,frac)
             layer=self._garment_material(pm,piece["material"],hist,piece.get("folds",[]),200+i)
             out.alpha_composite(layer)
+            self._garment_relief(out,bb,pm,piece.get("relief",[]),piece["material"])
             if piece.get("mirror_x"):
                 mirrored=pm.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                 layer2=self._garment_material(mirrored,piece["material"],hist,piece.get("folds",[]),300+i)
                 out.alpha_composite(layer2)
+                mirrored_relief=[]
+                for g in piece.get("relief",[]):
+                    mg=dict(g)
+                    mg["points"]=[[1-float(x),float(y)] for x,y in g.get("points",[])]
+                    mirrored_relief.append(mg)
+                self._garment_relief(out,bb,mirrored,mirrored_relief,piece["material"])
                 semantic_union=ImageChops.lighter(semantic_union,mirrored)
                 max_piece_frac=max(max_piece_frac,float((np.array(mirrored)>16).sum()/mask_area))
 
