@@ -726,29 +726,44 @@ class SynthesisPass:
         return base
 
     def _garment_relief(self, out, bb, piece_mask, guides, material_name):
-        """Profile-authored organic grooves/ridges inside a semantic costume piece.
+        """Hand-painted authored relief for Raster Painter v3.
 
-        This is deliberately not procedural paneling: every relief path comes from
-        the Stargate item profile and is clipped to the named garment/armour piece.
+        Each path becomes a broad recessed shadow, a narrow crease and an offset
+        rubbed catch. This is the same kind of depth hierarchy used by finished WNG
+        vehicle art, but constrained to Stargate costume construction.
         """
         if not guides:
             return
         spec=self._material_spec(material_name)
-        shadow=np.array(spec["shadow"],dtype=int)
-        high=np.array(spec["high"],dtype=int)
+        kind=str(spec["kind"]).lower()
+        shadow=np.array(spec["shadow"],dtype=float)
+        mid=np.array(spec["mid"],dtype=float)
+        high=np.array(spec["high"],dtype=float)
         x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+
         layer=Image.new("RGBA",(HI,HI),(0,0,0,0))
         d=ImageDraw.Draw(layer)
         for g in guides:
             pts=[(int(x0+float(x)*w),int(y0+float(y)*h)) for x,y in g.get("points",[])]
             if len(pts)<2:
                 continue
-            width=max(2,int(float(g.get("width",.010))*min(w,h)))
-            alpha=int(g.get("alpha",135))
-            dark=tuple(np.clip(shadow*.72,0,255).astype(int))+(alpha,)
-            light=tuple(np.clip(high*1.05,0,255).astype(int))+(max(35,int(alpha*.55)),)
-            d.line(pts,fill=dark,width=max(2,width+2),joint="curve")
-            d.line([(x-1,y-2) for x,y in pts],fill=light,width=max(1,width//2),joint="curve")
+            width=max(3,int(float(g.get("width",.010))*min(w,h)))
+            height=float(g.get("height",g.get("strength",.5)))
+            alpha=int(g.get("alpha",70))
+
+            broad=max(width+5,int(width*(2.1 if kind in ("hard_rubber","grown_rubber","simulated_bone","bone_chitin") else 1.6)))
+            recess=tuple(np.clip(shadow*.55,0,255).astype(int))+(min(150,int(alpha*(1.10+height*.55))),)
+            crease=tuple(np.clip(shadow*.30,0,255).astype(int))+(min(190,int(alpha*(1.30+height*.65))),)
+            catch=tuple(np.clip(mid+(high-mid)*.68,0,255).astype(int))+(min(120,int(alpha*(.55+height*.55))),)
+
+            # broad hand-painted recess
+            d.line([(x+2,y+3) for x,y in pts],fill=recess,width=broad,joint="curve")
+            # central structural groove
+            d.line(pts,fill=crease,width=max(2,width),joint="curve")
+            # rubbed upper-left edge catch
+            d.line([(x-2,y-2) for x,y in pts],fill=catch,width=max(1,int(width*.36)),joint="curve")
+
+        layer=layer.filter(ImageFilter.GaussianBlur(.32))
         out.alpha_composite(self._clip(layer,piece_mask))
 
     def _garment_seam(self, out, bb, seam):
@@ -871,6 +886,7 @@ class SynthesisPass:
                 tuple(piece.get("shadow_offset",[2,3]))))
             layer=self._garment_material(pm,piece["material"],hist,piece.get("folds",[]),200+i,piece.get("relief",[]))
             out.alpha_composite(layer)
+            self._garment_relief(out,bb,pm,piece.get("relief",[]),piece["material"])
             if piece.get("mirror_x"):
                 mirrored=pm.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                 mirrored_relief=[]
@@ -883,6 +899,7 @@ class SynthesisPass:
                     tuple(piece.get("shadow_offset",[-2,3]))))
                 layer2=self._garment_material(mirrored,piece["material"],hist,piece.get("folds",[]),300+i,mirrored_relief)
                 out.alpha_composite(layer2)
+                self._garment_relief(out,bb,mirrored,mirrored_relief,piece["material"])
                 semantic_union=ImageChops.lighter(semantic_union,mirrored)
                 max_piece_frac=max(max_piece_frac,float((np.array(mirrored)>16).sum()/mask_area))
 
