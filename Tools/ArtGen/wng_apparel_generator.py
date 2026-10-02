@@ -190,26 +190,39 @@ class SynthesisPass:
         return (n-n.mean())/(n.std()+1e-6)
 
     def _material(self, mask: Image.Image, shadow, mid, high, kind: str, hist: Image.Image|None=None):
-        m=np.array(mask,dtype=np.float32)/255
+        """
+        Painted material model for RimWorld scale.
+        Leather is driven by broad garment folds + controlled specular response.
+        Fine grain is subordinate; reptile pattern is added separately by _reptile().
+        """
+        m=np.array(mask,dtype=np.float32)/255.0
         yy,xx=np.mgrid[0:HI,0:HI]
-        broad=(1-yy/HI)*.65+(1-xx/HI)*.35
-        n1=self._noise(1.0 if kind=="leather" else 1.8)
-        n2=self._noise(5.5 if kind=="leather" else 8.0)
-        n3=self._noise(22)
-        grain=4.5*n1+7*n2+4*n3
-        if kind=="leather":
-            grain += 3*np.sin((xx+1.7*yy)/19.0)
-        else:
-            grain += 5*np.cos((xx-.8*yy)/28.0)
 
+        # Soft directional studio light similar to vanilla RimWorld readability.
+        light=((1-yy/HI)*0.68 + (1-xx/HI)*0.32)
+        light=(light-light.min())/(light.max()-light.min()+1e-6)
+
+        # Very restrained surface grain. Previous multi-scale noise was too strong and
+        # made leather read as moss/fur.
+        fine=self._noise(1.25)
+        medium=self._noise(8.5)
+        broad_noise=self._noise(34.0)
+        grain=1.15*fine + 1.75*medium + 0.55*broad_noise
+
+        # Historical Wraith clothing is used only as a fold-field reference.
         fold=np.zeros((HI,HI),dtype=np.float32)
         if hist is not None:
             hl=np.array(hist.convert("L"),dtype=np.float32)
-            fold=(hl-gaussian_filter(hl,7))*.42+(gaussian_filter(hl,18)-gaussian_filter(hl,45))*.28
+            broad_fold=gaussian_filter(hl,13)-gaussian_filter(hl,42)
+            crease=hl-gaussian_filter(hl,5)
+            fold=.58*broad_fold + .72*crease
 
         dist=distance_transform_edt(m>0.1)
-        edge=np.clip(1-dist/14,0,1)
-        lum=np.clip(.42+.24*broad+grain/120+fold/255-.18*edge,0,1)
+        edge=np.clip(1-dist/13,0,1)
+
+        # Smooth leather body value with fold modelling and minimal grain.
+        lum=.265 + .285*light + grain/310.0 + fold/235.0 - .105*edge
+        lum=np.clip(lum,0,1)
 
         lo=np.array(shadow,float); mi=np.array(mid,float); hi=np.array(high,float)
         rgb=np.empty((HI,HI,3),dtype=np.float32)
@@ -218,7 +231,16 @@ class SynthesisPass:
         rgb[lower]=lo+(mi-lo)*t[lower,None]
         t2=np.clip((lum-.5)*2,0,1)
         rgb[~lower]=mi+(hi-mi)*t2[~lower,None]
-        out=np.dstack([np.clip(rgb,0,255).astype(np.uint8),(m*255).astype(np.uint8)])
+
+        # Polished leather has narrow soft highlights rather than fuzzy bright noise.
+        spec=np.clip((lum-.50)/.38,0,1)**2.5
+        if kind=="leather":
+            sheen=np.array([27,30,27],dtype=np.float32)
+        else:
+            sheen=np.array([22,22,24],dtype=np.float32)
+        rgb=np.clip(rgb+spec[...,None]*sheen,0,255)
+
+        out=np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)])
         return Image.fromarray(out,"RGBA")
 
     def _poly_mask(self, bb, pts, feather=5):
@@ -248,26 +270,34 @@ class SynthesisPass:
         return self._material(mask,p["leather_shadow"],p["leather_mid"],p["leather_high"],"leather",hist)
 
     def _reptile(self, mask, hist=None, seed_offset=0):
+        """
+        Black reptile-pattern leather from the Stargate commander costume.
+        Pattern is deliberately larger/cleaner than noise so it survives 192px.
+        """
         p=self.palette
-        base=self._material(mask,p["reptile_shadow"],p["reptile_mid"],p["reptile_high"],"leather",hist)
+        base=self._material(mask,p["reptile_shadow"],p["reptile_mid"],p["reptile_high"],"reptile",hist)
         bb=mask.getbbox()
-        if not bb: return base
+        if not bb:
+            return base
         x0,y0,x1,y1=bb
+        w=x1-x0
         rng=random.Random(49031+seed_offset+x0+y0)
+
         tex=Image.new("RGBA",(HI,HI),(0,0,0,0))
         d=ImageDraw.Draw(tex)
-        step_x=max(12,int((x1-x0)*.045))
-        step_y=max(9,int(step_x*.63))
+        step_x=max(18,int(w*.072))
+        step_y=max(12,int(step_x*.58))
         row=0
         for y in range(y0-step_y,y1+step_y,step_y):
-            offset=(step_x//2) if row%2 else 0
+            offset=step_x//2 if row%2 else 0
             for x in range(x0-step_x,x1+step_x,step_x):
-                cx=x+offset+rng.randint(-2,2)
-                cy=y+rng.randint(-2,2)
-                rx=max(4,int(step_x*.43+rng.randint(-2,2)))
-                ry=max(3,int(step_y*.40+rng.randint(-1,1)))
-                d.arc((cx-rx,cy-ry,cx+rx,cy+ry),195,345,fill=(14,13,16,115),width=max(1,int(HI/384)))
-                d.arc((cx-rx+1,cy-ry+1,cx+rx-1,cy+ry-1),15,165,fill=(128,118,132,55),width=max(1,int(HI/512)))
+                cx=x+offset+rng.randint(-1,1)
+                cy=y+rng.randint(-1,1)
+                rx=max(6,int(step_x*.43))
+                ry=max(4,int(step_y*.43))
+                # Dark lower edge + restrained upper catchlight = leather scale, not armour plate.
+                d.arc((cx-rx,cy-ry,cx+rx,cy+ry),188,352,fill=(9,8,11,175),width=max(2,int(HI/320)))
+                d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),12,168,fill=(154,144,158,78),width=max(1,int(HI/420)))
             row+=1
         tex=self._clip(tex,mask)
         base.alpha_composite(tex)
