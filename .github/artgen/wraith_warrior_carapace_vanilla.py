@@ -55,7 +55,7 @@ def deform_mask(base, body, direction):
     # Preserve the vanilla contour, but keep every body variant inside the texture canvas.
     ys,xs=np.nonzero(arr>8)
     if len(xs):
-        pad=20
+        pad=44
         dx=0; dy=0
         if xs.min()<pad: dx=pad-xs.min()
         if xs.max()>HI-1-pad: dx=(HI-1-pad)-xs.max()
