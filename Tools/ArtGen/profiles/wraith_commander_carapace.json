@@ -351,7 +351,7 @@
       }
     },
     "garment_contract": {
-      "max_single_piece_fraction": 0.285,
+      "max_single_piece_fraction": 0.29,
       "min_base_garment_visible_fraction": 0.43,
       "max_semantic_pieces_per_view": 8,
       "min_seams_per_view": 3
