@@ -61,3 +61,5 @@ jobs:
 # rerun after leather-material refinement
 
 # rerun after fold-normalized leather pass
+
+# rerun after structured leather lighting
