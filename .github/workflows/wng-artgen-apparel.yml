@@ -1,28 +1,24 @@
-name: WNG Apparel ArtGen
+name: WNG Apparel Studio
 
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/wng-artgen-apparel.yml'
-      - 'Tools/ArtGen/wng_apparel_generator.py'
-      - 'Tools/ArtGen/profiles/**'
+      - 'Tools/ArtStudio/wng_apparel_studio.py'
+      - 'Tools/ArtStudio/profiles/**'
   workflow_dispatch:
     inputs:
       profile:
-        description: 'Exactly one Tools/ArtGen/profiles profile id to generate'
+        description: 'Exactly one Tools/ArtStudio profile id'
         required: true
-        default: 'wraith_hunter_coat'
+        default: 'wraith_commander_carapace'
 
 permissions:
   contents: write
 
-concurrency:
-  group: wng-apparel-artgen
-  cancel-in-progress: false
-
 jobs:
-  apparel-artgen:
+  apparel-studio:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,82 +29,66 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install ArtGen dependencies
+      - name: Install studio dependencies
         run: python -m pip install --disable-pip-version-check pillow numpy scipy requests beautifulsoup4 cairosvg
 
-      - name: Compile and validate permanent ArtGen
+      - name: Compile and validate studio
         run: |
-          python -m py_compile Tools/ArtGen/wng_apparel_generator.py
-          python Tools/ArtGen/wng_apparel_generator.py --validate-profiles-only
+          python -m py_compile Tools/ArtStudio/wng_apparel_studio.py
+          python Tools/ArtStudio/wng_apparel_studio.py --validate-profiles-only
 
-      - name: Select exactly one apparel profile
+      - name: Select one profile
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             PROFILE="${{ github.event.inputs.profile }}"
-            test -f "Tools/ArtGen/profiles/${PROFILE}.json"
+            test -f "Tools/ArtStudio/profiles/${PROFILE}.json"
             echo "HAS_PROFILE=true" >> "$GITHUB_ENV"
             echo "PROFILE=${PROFILE}" >> "$GITHUB_ENV"
             exit 0
           fi
-
-          mapfile -t CHANGED < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^Tools/ArtGen/profiles/\(.*\)\.json$#\1#p')
+          mapfile -t CHANGED < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^Tools/ArtStudio/profiles/\(.*\)\.json$#\1#p')
           if [ "${#CHANGED[@]}" -eq 0 ]; then
-            echo "Generator/tooling-only change: validate architecture, do not regenerate clothing."
             echo "HAS_PROFILE=false" >> "$GITHUB_ENV"
           elif [ "${#CHANGED[@]}" -eq 1 ]; then
             echo "HAS_PROFILE=true" >> "$GITHUB_ENV"
             echo "PROFILE=${CHANGED[0]}" >> "$GITHUB_ENV"
           else
-            echo "One clothing item at a time: found ${#CHANGED[@]} changed profiles." >&2
-            printf '%s\n' "${CHANGED[@]}" >&2
+            echo "One item at a time." >&2
             exit 1
           fi
 
-      - name: Fetch vanilla RimWorld implementation references
+      - name: Fetch vanilla RimWorld geometry
         if: env.HAS_PROFILE == 'true'
         run: |
           git clone --depth 1 https://github.com/SamuelBucher/Madness-Pawns.git /tmp/madness
           git clone --depth 1 https://github.com/DaLongZhuaZi/RWonVela.git /tmp/rwvela
 
-      - name: Run Stargate-first apparel pipeline
+      - name: Paint one apparel item
         if: env.HAS_PROFILE == 'true'
-        shell: bash
         run: |
-          python Tools/ArtGen/wng_apparel_generator.py "$PROFILE" \
+          python Tools/ArtStudio/wng_apparel_studio.py "$PROFILE" \
             --vanilla-dir "/tmp/madness/Raw sprites/apparel" \
             --body-dir "/tmp/rwvela/src/common/human/bodies" \
-            --workdir /tmp/wng-artgen-runtime \
-            --preview /tmp/wng-apparel-contact-sheet.png
+            --workdir /tmp/wng-artstudio
 
-      - name: Validate RimWorld apparel implementation
+      - name: Validate live RimWorld apparel
         if: env.HAS_PROFILE == 'true'
         run: python .github/artqa/apparel_art_audit.py
 
-      - name: Commit live apparel assets only
+      - name: Commit live apparel only
         if: env.HAS_PROFILE == 'true'
         shell: bash
         run: |
-          ITEM="$(python -c "import json; p=json.load(open('Tools/ArtGen/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
-          OUTDIR="$(python -c "import json; p=json.load(open('Tools/ArtGen/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
-          TARGET="Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR"
-          TMP="/tmp/wng-final-assets"
-          mkdir -p "$TMP"
-          cp "$TARGET/${ITEM}"*.png "$TMP/"
-
-          # Other WNG validation/build workflows may update main while ArtGen is rendering.
-          # Rebase-by-replay caused generated-art conflicts. Instead, anchor to the latest
-          # main and copy only the already-QA'd live PNGs back onto that snapshot.
-          git fetch origin main
-          git reset --hard origin/main
-          cp "$TMP/${ITEM}"*.png "$TARGET/"
-
+          ITEM="$(python -c "import json; p=json.load(open('Tools/ArtStudio/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
+          OUTDIR="$(python -c "import json; p=json.load(open('Tools/ArtStudio/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$TARGET/${ITEM}"*.png
+          git add "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
           if git diff --cached --quiet; then
-            echo "No live apparel asset changes."
+            echo "No live art changes."
             exit 0
           fi
-          git commit -m "Generate ${ITEM} with Stargate-first WNG ArtGen [skip ci]"
+          git commit -m "Paint ${ITEM} with WNG Apparel Studio [skip ci]"
+          git pull --rebase origin main
           git push origin HEAD:main
