@@ -163,22 +163,22 @@
       "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace",
       "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat"
     ],
-    "post_downsample_contrast": 1.18,
+    "post_downsample_contrast": 1.14,
     "palette": {
       "leather_shadow": [
-        6,
-        9,
-        8
+        5,
+        8,
+        7
       ],
       "leather_mid": [
-        24,
-        35,
-        29
+        22,
+        31,
+        26
       ],
       "leather_high": [
-        104,
-        122,
-        106
+        82,
+        98,
+        85
       ],
       "contrast_shadow": [
         6,
@@ -196,59 +196,59 @@
         122
       ],
       "reptile_shadow": [
-        7,
-        8,
-        7
+        5,
+        6,
+        6
       ],
       "reptile_mid": [
-        27,
-        31,
-        28
+        22,
+        26,
+        24
       ],
       "reptile_high": [
-        92,
-        100,
-        94
+        74,
+        82,
+        78
       ],
       "metal": [
-        126,
-        124,
-        129
+        132,
+        128,
+        126
       ],
       "biotech": [
-        90,
-        116,
-        108
+        74,
+        98,
+        86
       ],
       "shell_shadow": [
-        22,
-        28,
-        25
+        20,
+        25,
+        23
       ],
       "shell_mid": [
-        58,
-        72,
-        64
+        52,
+        63,
+        57
       ],
       "shell_high": [
-        128,
-        145,
-        132
+        108,
+        122,
+        112
       ],
       "bone_shadow": [
-        48,
-        49,
-        47
+        46,
+        47,
+        45
       ],
       "bone_mid": [
-        100,
-        103,
-        99
+        96,
+        98,
+        94
       ],
       "bone_high": [
-        180,
-        183,
-        176
+        176,
+        178,
+        171
       ]
     },
     "quality": {
