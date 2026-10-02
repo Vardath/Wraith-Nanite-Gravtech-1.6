@@ -258,9 +258,10 @@ class RasterStudio:
                 x=rng.randint(x0,x1-1); y=rng.randint(y0,y1-1)
                 ln=max(5,round(w*rng.uniform(.025,.085)))
                 dy=rng.randint(-4,4)
-                d.line((x,y,min(x1-1,x+ln),y+dy),fill=hi+(rng.randint(18,42),),width=max(1,round(w*.0025)))
+                stroke=max(2,round(SCALE*.42),round(w*.0038))
+                d.line((x,y,min(x1-1,x+ln),y+dy),fill=hi+(rng.randint(20,48),),width=stroke)
                 if rng.random()<.62:
-                    d.line((x+1,y+2,min(x1-1,x+ln)+1,y+dy+2),fill=sh+(rng.randint(20,46),),width=max(1,round(w*.0028)))
+                    d.line((x+2,y+2,min(x1-1,x+ln)+2,y+dy+2),fill=sh+(rng.randint(24,52),),width=stroke)
 
         elif kind=="reptile":
             step=max(18,round(w*.072)); row=0
@@ -287,7 +288,7 @@ class RasterStudio:
             for _ in range(3):
                 y=rng.randint(round(y0+h*.20),round(y0+h*.70))
                 d.arc((round(x0+w*.18),y-round(h*.03),round(x0+w*.78),y+round(h*.03)),
-                      195,340,fill=(190,205,199,24),width=max(1,round(w*.006)))
+                      195,340,fill=(190,205,199,32),width=max(2,round(SCALE*.34),round(w*.008)))
 
         elif kind=="bone":
             for i in range(8):
@@ -314,7 +315,7 @@ class RasterStudio:
             for _ in range(min(26,max(6,len(xs)//900))):
                 k=rng.randrange(len(xs)); x=int(xs[k]); y=int(ys[k])
                 if rng.random()<.58:
-                    wd.line((x,y,x+rng.randint(2,7),y+rng.randint(-1,2)),fill=hi+(rng.randint(14,34),),width=1)
+                    wd.line((x,y,x+rng.randint(3,10),y+rng.randint(-2,3)),fill=hi+(rng.randint(18,42),),width=max(2,round(SCALE*.34)))
             out.alpha_composite(wear)
 
     def prop_glaze(self, out, piece, seed=0, strength=.5):
@@ -485,9 +486,17 @@ class RasterStudio:
         rgb=np.clip(rgb-edge[...,None]*7,0,255)
         a[...,:3]=rgb; a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=out.filter(ImageFilter.UnsharpMask(radius=.8*SCALE/6,percent=45,threshold=3))
         out.putalpha(mask)
-        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        small=out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        alpha=small.getchannel("A")
+        small=ImageEnhance.Contrast(small).enhance(float(self.cfg.get("final_contrast",1.025)))
+        small=small.filter(ImageFilter.UnsharpMask(
+            radius=float(self.cfg.get("final_unsharp_radius",.62)),
+            percent=int(self.cfg.get("final_unsharp_percent",58)),
+            threshold=int(self.cfg.get("final_unsharp_threshold",2))
+        ))
+        small.putalpha(alpha)
+        return small
 
     def run(self, outdir: Path, workdir: Path):
         outdir.mkdir(parents=True,exist_ok=True)
