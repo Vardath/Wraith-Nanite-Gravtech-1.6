@@ -473,7 +473,7 @@ class SynthesisPass:
         out.putalpha(mask)
         return out
 
-    def _paint(self, body, direction, mask):
+    def _paint_hunter(self, body, direction, mask):
         bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
         hist=self._historical("WNG_HunterCoat",body,direction,bb)
         accent=self._historical("WNG_QueenRaiment",body,direction,bb)
@@ -556,7 +556,7 @@ class SynthesisPass:
         out=self._finish(out,mask)
         return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
 
-    def _tile(self, mask):
+    def _tile_hunter(self, mask):
         bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
         hist=self._historical("WNG_HunterCoat","Male","south",bb)
         out=self._leather(mask,hist,False)
@@ -585,6 +585,156 @@ class SynthesisPass:
         out.putalpha(mask)
         return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
 
+
+    def _chitin(self, mask, hist=None, bone=False, seed_offset=0):
+        """Paint grown Wraith shell with sculpted bevels and restrained organic variation."""
+        p=self.palette
+        if bone:
+            shadow,mid,high=p["bone_shadow"],p["bone_mid"],p["bone_high"]
+        else:
+            shadow,mid,high=p["shell_shadow"],p["shell_mid"],p["shell_high"]
+        m=np.array(mask,dtype=np.float32)/255.0
+        inside=m>.08
+        dist=distance_transform_edt(inside)
+        yy,xx=np.mgrid[0:HI,0:HI]
+        bb=mask.getbbox()
+        if not bb:
+            return Image.new("RGBA",(HI,HI),(0,0,0,0))
+        x0,y0,x1,y1=bb; w=max(1,x1-x0); h=max(1,y1-y0)
+        lx=(xx-x0)/w; ly=(yy-y0)/h
+        broad=np.exp(-(((lx-.32)/.40)**2+((ly-.28)/.65)**2))
+        n1=self._noise(2.4)
+        n2=self._noise(14.0)
+        # organic shell should read as one grown surface, not noisy stone
+        organic=.7*n1+1.15*n2
+        if hist is not None:
+            hl=np.array(hist.convert("L"),dtype=np.float32)
+            valid=inside
+            vals=hl[valid]
+            if vals.size:
+                lo=float(np.percentile(vals,12)); hi=float(np.percentile(vals,90))
+                hn=np.clip((hl-lo)/max(8.0,hi-lo),0,1)-.5
+            else:
+                hn=0
+        else:
+            hn=0
+        bevel=np.clip(dist/18,0,1)
+        rim=np.clip(1-dist/9,0,1)
+        lum=.28+.34*broad+.12*bevel-.12*rim+organic/42.0+.12*hn
+        lum=np.clip(lum,0,1)
+        lo=np.array(shadow,float); mi=np.array(mid,float); hi=np.array(high,float)
+        rgb=np.empty((HI,HI,3),dtype=np.float32)
+        lower=lum<.5
+        t=np.clip(lum*2,0,1)
+        rgb[lower]=lo+(mi-lo)*t[lower,None]
+        t2=np.clip((lum-.5)*2,0,1)
+        rgb[~lower]=mi+(hi-mi)*t2[~lower,None]
+        # narrow moist/chitin catchlight
+        spec=(np.clip((lum-.54)/.34,0,1)**2.4)*(0.4+0.6*bevel)
+        rgb=np.clip(rgb+spec[...,None]*(np.array([28,33,30]) if not bone else np.array([20,20,21])),0,255)
+        out=np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)])
+        return Image.fromarray(out,"RGBA")
+
+    def _membrane(self, mask, hist=None):
+        p=self.palette
+        return self._material(mask,p["membrane_shadow"],p["membrane_mid"],p["membrane_high"],"reptile",hist)
+
+    def _plate(self, out, fullmask, bb, pts, hist, bone=False, seed=0):
+        pm=ImageChops.multiply(self._poly_mask(bb,pts,2),fullmask)
+        out.alpha_composite(self._chitin(pm,hist,bone,seed))
+        return pm
+
+    def _paint_warrior(self, body, direction, mask):
+        bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        hist=self._historical("WNG_WarriorCarapace",body,direction,bb)
+        cmd=self._historical("WNG_CommanderCarapace",body,direction,bb)
+
+        # Flexible black/reptile understructure remains visible between grown plates.
+        out=self._membrane(mask,hist)
+
+        if direction=="south":
+            # Anatomical breast shell and clavicle plates.
+            self._plate(out,mask,bb,[(.23,.10),(.42,.05),(.49,.19),(.45,.48),(.31,.57),(.18,.39)],hist,False,1)
+            self._plate(out,mask,bb,[(.77,.10),(.58,.05),(.51,.19),(.55,.48),(.69,.57),(.82,.39)],hist,False,2)
+            # Layered shoulder carapace from Wraith warrior/commander language.
+            self._plate(out,mask,bb,[(.04,.08),(.22,.03),(.35,.10),(.30,.22),(.11,.24)],cmd,True,3)
+            self._plate(out,mask,bb,[(.96,.08),(.78,.03),(.65,.10),(.70,.22),(.89,.24)],cmd,True,4)
+            # Central sternum and segmented abdominal ribs.
+            stern=self._line_mask([(int(x0+.50*w),int(y0+.17*h)),(int(x0+.49*w),int(y0+.69*h))],max(8,.035*w),1)
+            stern=ImageChops.multiply(stern,mask); out.alpha_composite(self._chitin(stern,cmd,True,5))
+            for i,yy in enumerate((.48,.58,.68,.78)):
+                left=[(.27,yy),(.43,yy+.015),(.49,yy+.045)]
+                right=[(.73,yy),(.57,yy+.015),(.51,yy+.045)]
+                self._plate(out,mask,bb,left,hist,False,10+i)
+                self._plate(out,mask,bb,right,hist,False,20+i)
+            # Thigh/hip shell leaves membrane channels visible.
+            self._plate(out,mask,bb,[(.18,.72),(.42,.70),(.44,.95),(.25,.96),(.13,.86)],hist,False,31)
+            self._plate(out,mask,bb,[(.82,.72),(.58,.70),(.56,.95),(.75,.96),(.87,.86)],hist,False,32)
+            # Tiny biotech node only.
+            self._gem(out,int(x0+.50*w),int(y0+.31*h),max(3,int(.010*w)))
+
+        elif direction=="north":
+            self._plate(out,mask,bb,[(.05,.09),(.28,.03),(.43,.12),(.36,.27),(.12,.28)],cmd,True,40)
+            self._plate(out,mask,bb,[(.95,.09),(.72,.03),(.57,.12),(.64,.27),(.88,.28)],cmd,True,41)
+            # Grown spinal chain.
+            for i,yy in enumerate((.18,.30,.42,.54,.66,.78)):
+                self._plate(out,mask,bb,[(.44,yy-.035),(.50,yy-.065),(.56,yy-.035),(.54,yy+.045),(.46,yy+.045)],cmd,False,50+i)
+            # Back ribs and lower flank plates.
+            for i,yy in enumerate((.36,.50,.64)):
+                self._plate(out,mask,bb,[(.19,yy),(.39,yy+.025),(.46,yy+.065),(.31,yy+.12)],hist,False,60+i)
+                self._plate(out,mask,bb,[(.81,yy),(.61,yy+.025),(.54,yy+.065),(.69,yy+.12)],hist,False,70+i)
+            self._plate(out,mask,bb,[(.19,.72),(.43,.70),(.44,.95),(.24,.96),(.13,.84)],hist,False,80)
+            self._plate(out,mask,bb,[(.81,.72),(.57,.70),(.56,.95),(.76,.96),(.87,.84)],hist,False,81)
+
+        else:
+            # Side-facing shoulder crown and overlapping flank carapace.
+            self._plate(out,mask,bb,[(.22,.07),(.58,.03),(.83,.15),(.78,.29),(.48,.31),(.30,.22)],cmd,True,90)
+            self._plate(out,mask,bb,[(.34,.24),(.72,.25),(.75,.48),(.61,.58),(.38,.50)],hist,False,91)
+            for i,yy in enumerate((.50,.62,.74)):
+                self._plate(out,mask,bb,[(.34,yy),(.62,yy+.01),(.72,yy+.06),(.58,yy+.12),(.36,yy+.10)],hist,False,100+i)
+            self._plate(out,mask,bb,[(.31,.72),(.64,.70),(.68,.94),(.43,.97),(.27,.86)],hist,False,110)
+            # Organic seam/ridge.
+            ridge=self._line_mask([(int(x0+.59*w),int(y0+.23*h)),(int(x0+.62*w),int(y0+.67*h))],max(6,.020*w),1)
+            ridge=ImageChops.multiply(ridge,mask)
+            out.alpha_composite(self._chitin(ridge,cmd,True,111))
+
+        out=self._finish(out,mask)
+        out.putalpha(mask)
+        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+
+    def _tile_warrior(self, mask):
+        bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        hist=self._historical("WNG_WarriorCarapace","Male","south",bb)
+        cmd=self._historical("WNG_CommanderCarapace","Male","south",bb)
+        out=self._membrane(mask,hist)
+        for pts,bone,seed in [
+            ([(.23,.10),(.42,.05),(.49,.19),(.45,.48),(.31,.57),(.18,.39)],False,201),
+            ([(.77,.10),(.58,.05),(.51,.19),(.55,.48),(.69,.57),(.82,.39)],False,202),
+            ([(.04,.08),(.22,.03),(.35,.10),(.30,.22),(.11,.24)],True,203),
+            ([(.96,.08),(.78,.03),(.65,.10),(.70,.22),(.89,.24)],True,204),
+            ([(.18,.72),(.42,.70),(.44,.95),(.25,.96),(.13,.86)],False,205),
+            ([(.82,.72),(.58,.70),(.56,.95),(.75,.96),(.87,.86)],False,206)
+        ]:
+            self._plate(out,mask,bb,pts,cmd if bone else hist,bone,seed)
+        for i,yy in enumerate((.48,.59,.70)):
+            self._plate(out,mask,bb,[(.27,yy),(.43,yy+.015),(.49,yy+.045)],hist,False,210+i)
+            self._plate(out,mask,bb,[(.73,yy),(.57,yy+.015),(.51,yy+.045)],hist,False,220+i)
+        self._gem(out,int(x0+.50*w),int(y0+.31*h),max(3,int(.010*w)))
+        out=self._finish(out,mask)
+        out=ImageEnhance.Contrast(out).enhance(1.12)
+        out.putalpha(mask)
+        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+
+    def _paint(self, body, direction, mask):
+        if self.profile["id"]=="wraith_warrior_carapace":
+            return self._paint_warrior(body,direction,mask)
+        return self._paint_hunter(body,direction,mask)
+
+    def _tile(self, mask):
+        if self.profile["id"]=="wraith_warrior_carapace":
+            return self._tile_warrior(mask)
+        return self._tile_hunter(mask)
+
     def _symmetry(self, im):
         a=np.array(im.convert("L"),dtype=np.float32)
         b=np.fliplr(a)
@@ -609,7 +759,8 @@ class SynthesisPass:
             rgb=np.array(im)[...,:3].astype(np.float32)
             lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
             contrast=float(lum[ga].std()) if ga.any() else 0
-            biotech=np.all(rgb>np.array([135,130,190]),axis=2)&ga
+            bio=np.array(self.palette.get("biotech",[150,145,200]),dtype=np.float32)
+            biotech=(np.linalg.norm(rgb-bio[None,None,:],axis=2)<72)&ga
             lumfrac=float(biotech.sum()/max(1,ga.sum()))
             sym=self._symmetry(im)
             rows.append({"key":key,"iou":iou,"contrast":contrast,"luminous_fraction":lumfrac,"symmetry":sym})
@@ -620,21 +771,29 @@ class SynthesisPass:
 
     def run(self, preview: Path|None, workdir: Path):
         cfg=self.profile["stage_2_rimworld"]
-        outdir=APPAREL_ROOT/"Wraith"
+        outdir=APPAREL_ROOT/self.profile.get("output_dir","Wraith")
+        item=self.profile["item"]
         generated={}
         tile=self._tile(self.impl["tile"])
         generated["tile"]=tile
-        save_clean(tile,outdir/"WNG_HunterCoat.png")
+        save_clean(tile,outdir/f"{item}.png")
         for body in cfg["body_types"]:
             for d in ("south","north","east"):
                 im=self._paint(body,d,self.impl["masks"][body][d])
                 generated[f"{body}_{d}"]=im
-                if d=="south": save_clean(im,outdir/f"WNG_HunterCoat_{body}.png")
-                save_clean(im,outdir/f"WNG_HunterCoat_{body}_{d}.png")
+                if d=="south":
+                    save_clean(im,outdir/f"{item}_{body}.png")
+                save_clean(im,outdir/f"{item}_{body}_{d}.png")
                 if d=="east":
                     west=im.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                     generated[f"{body}_west"]=west
-                    save_clean(west,outdir/f"WNG_HunterCoat_{body}_west.png")
+                    save_clean(west,outdir/f"{item}_{body}_west.png")
+
+        if cfg.get("legacy_bare_directions"):
+            save_clean(generated["Male_south"],outdir/f"{item}_south.png")
+            save_clean(generated["Male_north"],outdir/f"{item}_north.png")
+            save_clean(generated["Male_east"],outdir/f"{item}_east.png")
+            save_clean(generated["Male_west"],outdir/f"{item}_west.png")
 
         qa=self._qa(generated,self.impl)
         workdir.mkdir(parents=True,exist_ok=True)
@@ -642,7 +801,8 @@ class SynthesisPass:
         if preview:
             order=["tile","Male_south","Male_north","Male_east","Female_south","Hulk_south"]
             sh=Image.new("RGBA",(OUT*3,OUT*2),(18,16,22,255))
-            for i,k in enumerate(order): sh.alpha_composite(generated[k],((i%3)*OUT,(i//3)*OUT))
+            for i,k in enumerate(order):
+                sh.alpha_composite(generated[k],((i%3)*OUT,(i//3)*OUT))
             preview.parent.mkdir(parents=True,exist_ok=True)
             sh.save(preview,optimize=True)
 
@@ -666,7 +826,7 @@ def main():
 
     # ORDER IS ENFORCED: Stargate -> RimWorld -> synthesis.
     ref=StargateReferencePass(profile,args.workdir).run()
-    impl=RimWorldImplementationPass(profile,args.vanilla_dir).run()
+    impl=RimWorldImplementationPass(profile,args.vanilla_dir,args.body_dir).run()
     synth=SynthesisPass(profile,ref,impl)
     synth.run(args.preview,args.workdir)
 
