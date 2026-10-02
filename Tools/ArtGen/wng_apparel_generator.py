@@ -512,13 +512,22 @@ class SynthesisPass:
         medium=(medium-medium.mean())/(medium.std()+1e-6)
         surface=(fine*.35+medium*.65)*grain
 
-        if kind in ("cloth","woven","uniform_fabric"):
+        if kind in ("cloth","woven","uniform_fabric","wool"):
             weave=(np.sin(xx*.42)+np.sin(yy*.46))*0.018
             surface += weave
+        elif kind=="velvet":
+            # Velvet reads through dark directional nap and soft fold catches,
+            # not hard highlights or geometric texture.
+            nap=(np.sin((xx*.12)+(yy*.035))*0.5+0.5)
+            surface=surface*.18 + (nap-.5)*.055
         elif kind in ("leather","reptile_leather"):
             surface *= .72
         elif kind in ("silk","satin"):
             surface *= .35
+        elif kind in ("spandex","stretch_fabric"):
+            # Smooth fitted fabric with restrained directional sheen.
+            surface *= .20
+            surface += np.sin(yy*.095)*.012
         elif kind in ("crystalline_fabric","ancient_fabric"):
             surface *= .28
 
@@ -536,6 +545,10 @@ class SynthesisPass:
 
         # Material-appropriate highlight response.
         specular=(np.clip((lum-.58)/.32,0,1)**(1.7+rough*2.2))*(1-rough*.55)
+        if kind=="velvet":
+            specular*=.28
+        elif kind in ("spandex","stretch_fabric"):
+            specular*=.72
         spec_tint=np.array(spec.get("specular_tint",[30,30,30]),dtype=np.float32)
         rgb=np.clip(rgb+specular[...,None]*spec_tint,0,255)
 
