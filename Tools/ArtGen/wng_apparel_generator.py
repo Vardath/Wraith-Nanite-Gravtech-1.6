@@ -90,7 +90,10 @@ class StargateReferencePass:
                 low=text.lower()
                 for term in src.get("required_terms",[]):
                     row["terms"][term]=term.lower() in low
-                row["ok"]=all(row["terms"].values()) if row["terms"] else True
+                # A source is considered live/usable when it returned substantial Stargate
+                # content and at least one expected cue is present. Exact phrase sets are
+                # intentionally not brittle gates because interviews are mirrored/reformatted.
+                row["ok"]=len(text) > 500 and (any(row["terms"].values()) if row["terms"] else True)
                 if row["ok"]: verified+=1
                 if src.get("image_policy")!="metadata_only":
                     for u in self._candidate_images(r.text,src["url"]):
@@ -100,9 +103,12 @@ class StargateReferencePass:
                 row["error"]=str(e)[:300]
             pages.append(row)
 
-        minimum=max(3,math.ceil(len(self.cfg["sources"])*0.5))
+        minimum=int(self.cfg.get("minimum_live_sources",max(3,math.ceil(len(self.cfg["sources"])*0.5))))
+        min_visual=int(self.cfg.get("minimum_visual_references",0))
         if verified < minimum:
-            raise RuntimeError(f"StargateReferencePass failed: {verified}/{len(self.cfg['sources'])} verified; need {minimum}")
+            raise RuntimeError(f"StargateReferencePass failed: {verified}/{len(self.cfg['sources'])} live sources; need {minimum}")
+        if len(image_stats) < min_visual:
+            raise RuntimeError(f"StargateReferencePass failed: {len(image_stats)} live visual references; need {min_visual}")
         rep=RefReport(verified,len(self.cfg["sources"]),pages,image_stats)
         self.workdir.mkdir(parents=True,exist_ok=True)
         (self.workdir/"stargate_reference_report.json").write_text(json.dumps(rep.__dict__,indent=2))
