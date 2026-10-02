@@ -207,7 +207,7 @@ class SynthesisPass:
         fine=self._noise(1.25)
         medium=self._noise(8.5)
         broad_noise=self._noise(34.0)
-        grain=1.15*fine + 1.75*medium + 0.55*broad_noise
+        grain=0.32*fine + 0.58*medium + 0.16*broad_noise
 
         # Historical Wraith clothing is used only as a fold-field reference.
         fold=np.zeros((HI,HI),dtype=np.float32)
@@ -215,13 +215,13 @@ class SynthesisPass:
             hl=np.array(hist.convert("L"),dtype=np.float32)
             broad_fold=gaussian_filter(hl,13)-gaussian_filter(hl,42)
             crease=hl-gaussian_filter(hl,5)
-            fold=.58*broad_fold + .72*crease
+            fold=.34*broad_fold + .46*crease
 
         dist=distance_transform_edt(m>0.1)
         edge=np.clip(1-dist/13,0,1)
 
         # Smooth leather body value with fold modelling and minimal grain.
-        lum=.265 + .285*light + grain/310.0 + fold/235.0 - .105*edge
+        lum=.245 + .305*light + grain/430.0 + fold/320.0 - .085*edge
         lum=np.clip(lum,0,1)
 
         lo=np.array(shadow,float); mi=np.array(mid,float); hi=np.array(high,float)
@@ -235,9 +235,9 @@ class SynthesisPass:
         # Polished leather has narrow soft highlights rather than fuzzy bright noise.
         spec=np.clip((lum-.50)/.38,0,1)**2.5
         if kind=="leather":
-            sheen=np.array([27,30,27],dtype=np.float32)
+            sheen=np.array([16,18,16],dtype=np.float32)
         else:
-            sheen=np.array([22,22,24],dtype=np.float32)
+            sheen=np.array([14,14,16],dtype=np.float32)
         rgb=np.clip(rgb+spec[...,None]*sheen,0,255)
 
         out=np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)])
@@ -353,14 +353,15 @@ class SynthesisPass:
         rgb=a[...,:3]
         lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
         cur=lum[m].std() if m.any() else 1
-        scale=np.clip(target/max(cur,1),.96,1.72)
+        target=min(target,34.0)
+        scale=np.clip(target/max(cur,1),.98,1.20)
         mean=rgb[m].mean(axis=0) if m.any() else np.array([45,48,46])
         rgb=(rgb-mean)*scale+mean
         a[...,:3]=np.clip(rgb,0,255)
         a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=ImageEnhance.Contrast(out).enhance(1.13)
-        out=out.filter(ImageFilter.UnsharpMask(radius=2.0,percent=96,threshold=3))
+        out=ImageEnhance.Contrast(out).enhance(1.06)
+        out=out.filter(ImageFilter.UnsharpMask(radius=1.35,percent=72,threshold=4))
         out.putalpha(mask)
         return out
 
@@ -385,9 +386,8 @@ class SynthesisPass:
 
             # Layered reptile-leather epaulettes; three small overlapping panels per shoulder.
             shoulders=[
-              [(.06,.09),(.22,.04),(.34,.08),(.31,.17),(.12,.18)],
-              [(.10,.15),(.25,.09),(.37,.13),(.33,.22),(.15,.23)],
-              [(.13,.21),(.28,.15),(.39,.19),(.34,.28),(.17,.29)]
+              [(.10,.10),(.22,.055),(.32,.085),(.30,.17),(.14,.18)],
+              [(.13,.16),(.25,.11),(.34,.14),(.31,.22),(.17,.23)]
             ]
             for idx,pts in enumerate(shoulders):
                 for side in (pts,[(1-x,y) for x,y in pts]):
@@ -456,8 +456,8 @@ class SynthesisPass:
         vest=ImageChops.multiply(vest,mask)
         out.alpha_composite(self._reptile(vest,hist,150))
         shoulders=[
-          [(.06,.09),(.22,.04),(.34,.08),(.31,.17),(.12,.18)],
-          [(.10,.16),(.25,.10),(.37,.14),(.33,.23),(.15,.24)]
+          [(.10,.10),(.22,.055),(.32,.085),(.30,.17),(.14,.18)],
+          [(.13,.16),(.25,.11),(.34,.14),(.31,.22),(.17,.23)]
         ]
         for idx,pts in enumerate(shoulders):
             for side in (pts,[(1-x,y) for x,y in pts]):
