@@ -192,36 +192,38 @@ class SynthesisPass:
     def _material(self, mask: Image.Image, shadow, mid, high, kind: str, hist: Image.Image|None=None):
         """
         Painted material model for RimWorld scale.
-        Leather is driven by broad garment folds + controlled specular response.
-        Fine grain is subordinate; reptile pattern is added separately by _reptile().
+        Broad garment folds define form; grain is subtle. The leather response is
+        smooth and polished, while reptile scales are added separately.
         """
         m=np.array(mask,dtype=np.float32)/255.0
         yy,xx=np.mgrid[0:HI,0:HI]
 
-        # Soft directional studio light similar to vanilla RimWorld readability.
-        light=((1-yy/HI)*0.68 + (1-xx/HI)*0.32)
+        light=((1-yy/HI)*0.67 + (1-xx/HI)*0.33)
         light=(light-light.min())/(light.max()-light.min()+1e-6)
 
-        # Very restrained surface grain. Previous multi-scale noise was too strong and
-        # made leather read as moss/fur.
         fine=self._noise(1.25)
-        medium=self._noise(8.5)
-        broad_noise=self._noise(34.0)
-        grain=0.32*fine + 0.58*medium + 0.16*broad_noise
+        medium=self._noise(9.0)
+        broad_noise=self._noise(36.0)
+        grain=.18*fine + .34*medium + .08*broad_noise
 
-        # Historical Wraith clothing is used only as a fold-field reference.
-        fold=np.zeros((HI,HI),dtype=np.float32)
+        fold_shape=np.zeros((HI,HI),dtype=np.float32)
+        crease=np.zeros((HI,HI),dtype=np.float32)
         if hist is not None:
             hl=np.array(hist.convert("L"),dtype=np.float32)
-            broad_fold=gaussian_filter(hl,13)-gaussian_filter(hl,42)
-            crease=hl-gaussian_filter(hl,5)
-            fold=.34*broad_fold + .46*crease
+            valid=m>.10
+            vals=hl[valid]
+            if vals.size:
+                p12=float(np.percentile(vals,12))
+                p90=float(np.percentile(vals,90))
+                norm=np.clip((hl-p12)/max(8.0,p90-p12),0,1)
+                fold_shape=gaussian_filter(norm,5.0)-.5
+            crease=hl-gaussian_filter(hl,4.0)
 
-        dist=distance_transform_edt(m>0.1)
+        dist=distance_transform_edt(m>.1)
         edge=np.clip(1-dist/13,0,1)
 
-        # Smooth leather body value with fold modelling and minimal grain.
-        lum=.245 + .305*light + grain/430.0 + fold/320.0 - .085*edge
+        # Historical painted folds provide most of the value structure.
+        lum=.235 + .255*light + grain/480.0 + .285*fold_shape + crease/335.0 - .09*edge
         lum=np.clip(lum,0,1)
 
         lo=np.array(shadow,float); mi=np.array(mid,float); hi=np.array(high,float)
@@ -232,12 +234,10 @@ class SynthesisPass:
         t2=np.clip((lum-.5)*2,0,1)
         rgb[~lower]=mi+(hi-mi)*t2[~lower,None]
 
-        # Polished leather has narrow soft highlights rather than fuzzy bright noise.
-        spec=np.clip((lum-.50)/.38,0,1)**2.5
-        if kind=="leather":
-            sheen=np.array([16,18,16],dtype=np.float32)
-        else:
-            sheen=np.array([14,14,16],dtype=np.float32)
+        # Narrow polished-leather catchlights sit on raised folds only.
+        raised=np.clip(fold_shape+.18,0,1)
+        spec=(np.clip((lum-.41)/.34,0,1)**2.15) * (.34+.66*raised)
+        sheen=np.array([46,50,46],dtype=np.float32) if kind=="leather" else np.array([31,30,34],dtype=np.float32)
         rgb=np.clip(rgb+spec[...,None]*sheen,0,255)
 
         out=np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)])
@@ -353,15 +353,15 @@ class SynthesisPass:
         rgb=a[...,:3]
         lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
         cur=lum[m].std() if m.any() else 1
-        target=min(target,34.0)
-        scale=np.clip(target/max(cur,1),.98,1.20)
+        target=min(target,36.0)
+        scale=np.clip(target/max(cur,1),1.00,2.20)
         mean=rgb[m].mean(axis=0) if m.any() else np.array([45,48,46])
         rgb=(rgb-mean)*scale+mean
         a[...,:3]=np.clip(rgb,0,255)
         a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=ImageEnhance.Contrast(out).enhance(1.06)
-        out=out.filter(ImageFilter.UnsharpMask(radius=1.35,percent=72,threshold=4))
+        out=ImageEnhance.Contrast(out).enhance(1.18)
+        out=out.filter(ImageFilter.UnsharpMask(radius=1.55,percent=88,threshold=3))
         out.putalpha(mask)
         return out
 
