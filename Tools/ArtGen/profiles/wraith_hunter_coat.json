@@ -172,10 +172,7 @@
       "Textures/Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft_south.png",
       "Textures/Things/Building/Wraith/Shuttle/WNG_WraithCruiser_south.png"
     ],
-    "historical_continuity": [
-      "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat",
-      "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment"
-    ],
+    "historical_continuity": [],
     "renderer": "costume_blueprint_v2",
     "post_downsample_contrast": 1.1,
     "tile_contrast": 1.08,
@@ -372,7 +369,6 @@
     "garment_blueprint": {
       "design_class": "coat",
       "base_material": "green_leather",
-      "historical_reference_index": 0,
       "views": {
         "south": {
           "folds": [

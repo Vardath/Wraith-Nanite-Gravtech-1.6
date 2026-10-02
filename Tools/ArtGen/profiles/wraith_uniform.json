@@ -355,7 +355,6 @@
     "garment_blueprint": {
       "design_class": "uniform",
       "base_material": "green_black_leather",
-      "historical_reference_index": 0,
       "views": {
         "south": {
           "folds": [

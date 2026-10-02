@@ -36,15 +36,19 @@ Materials are profile-defined using shadow/mid/high response plus a material kin
 The generator supports cloth/woven uniform fabric, leather, reptile leather,
 silk/satin and high-technology fabrics without reducing faction identity to colour.
 
-Broad form, authored fold guides, seams, stitching, closures, wear and controlled
-historical grayscale relief create the surface. Random noise is deliberately
-subordinate and cannot define the garment structure.
+Broad form, authored fold guides, seams, stitching, closures and wear create the
+surface. Random noise is deliberately subordinate and cannot define the garment
+structure.
 
-## Historical WNG art
+## Historical WNG apparel — forbidden
 
-Historical WNG clothing may contribute fine grayscale relief and continuity cues.
-It may **not** provide the silhouette, faction brief, or replacement for Stargate
-research.
+Historical WNG clothing or armour may **not** be used as a synthesis input at all:
+no pixel transfer, grayscale relief, texture transfer, palette transfer, silhouette
+transfer, or repainting. Profile validation rejects non-empty historical-apparel
+inputs and the legacy history loader throws if called.
+
+Continuity comes from Stargate production references and lore. WNG ships/buildings
+may remain **quality benchmarks only**; they do not donate clothing geometry or texture.
 
 ## Garment QA
 

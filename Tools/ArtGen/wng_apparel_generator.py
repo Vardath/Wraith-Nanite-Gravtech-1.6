@@ -313,23 +313,10 @@ class SynthesisPass:
         return stats
 
     def _historical(self, item: str, body: str, direction: str, bb) -> Image.Image:
-        # Accept either an item stem or a full repository-relative texture stem.
-        # Historical art may inform fold/value detail only; it is never silhouette authority.
-        if "/" in item:
-            stem=item
-        else:
-            outdir=self.profile.get("output_dir","Wraith")
-            stem=f"Textures/Things/Pawn/Humanlike/Apparel/{outdir}/{item}"
-        base=f"{stem}_{body}_{direction}.png"
-        try:
-            raw=subprocess.check_output(["git","show",f"{HIST_REF}:{base}"])
-        except subprocess.CalledProcessError:
-            raw=subprocess.check_output(["git","show",f"{HIST_REF}:{stem}_Male_{direction}.png"])
-        im=Image.open(io.BytesIO(raw)).convert("RGBA")
-        sb=im.getchannel("A").getbbox()
-        crop=im.crop(sb).resize((bb[2]-bb[0],bb[3]-bb[1]),Image.Resampling.LANCZOS)
-        out=Image.new("RGBA",(HI,HI),(0,0,0,0)); out.alpha_composite(crop,(bb[0],bb[1]))
-        return out
+        raise RuntimeError(
+            "Historical WNG apparel input is forbidden. Rebuild the profile from "
+            "Stargate references + vanilla RimWorld geometry + non-apparel WNG quality benchmarks."
+        )
 
     def _noise(self, sigma: float, shape=(HI,HI)):
         n=self.rng.normal(0,1,shape)
@@ -353,18 +340,10 @@ class SynthesisPass:
         broad_noise=self._noise(36.0)
         grain=.18*fine + .34*medium + .08*broad_noise
 
+        if hist is not None:
+            raise RuntimeError("Historical apparel relief is forbidden in the WNG ArtGen")
         fold_shape=np.zeros((HI,HI),dtype=np.float32)
         crease=np.zeros((HI,HI),dtype=np.float32)
-        if hist is not None:
-            hl=np.array(hist.convert("L"),dtype=np.float32)
-            valid=m>.10
-            vals=hl[valid]
-            if vals.size:
-                p12=float(np.percentile(vals,12))
-                p90=float(np.percentile(vals,90))
-                norm=np.clip((hl-p12)/max(8.0,p90-p12),0,1)
-                fold_shape=gaussian_filter(norm,5.0)-.5
-            crease=hl-gaussian_filter(hl,4.0)
 
         dist=distance_transform_edt(m>.1)
         edge=np.clip(1-dist/13,0,1)
@@ -493,14 +472,9 @@ class SynthesisPass:
         broad=.52 + .19*(1-ly) + .12*(1-lx)
         fold=self._garment_fold_field(bb,fold_guides or [])
 
-        # Historical WNG clothing can lend fine painted relief, never outline or colour.
-        relief=np.zeros((HI,HI),dtype=np.float32)
         if hist is not None:
-            hl=np.array(hist.convert("L"),dtype=np.float32)
-            hf=gaussian_filter(hl,1.2)-gaussian_filter(hl,8.5)
-            vals=np.abs(hf[inside])
-            if vals.size:
-                relief=np.clip(hf/max(4.0,float(np.percentile(vals,88))),-1,1)
+            raise RuntimeError("Historical apparel relief is forbidden in costume_blueprint_v2")
+        relief=np.zeros((HI,HI),dtype=np.float32)
 
         # Material-specific surface response. Randomness is deliberately subordinate
         # to authored folds/seams so the result reads as wardrobe, not procedural texture.
@@ -522,6 +496,12 @@ class SynthesisPass:
             surface=surface*.18 + (nap-.5)*.055
         elif kind in ("leather","reptile_leather"):
             surface *= .72
+        elif kind in ("hard_rubber","grown_rubber"):
+            surface *= .15
+            surface += np.sin((xx*.035)+(yy*.018))*.010
+        elif kind in ("simulated_bone","bone_chitin"):
+            surface *= .28
+            surface += (np.sin(xx*.052+yy*.011)+np.sin(yy*.041))*.012
         elif kind in ("silk","satin"):
             surface *= .35
         elif kind in ("spandex","stretch_fabric"):
@@ -549,6 +529,10 @@ class SynthesisPass:
             specular*=.28
         elif kind in ("spandex","stretch_fabric"):
             specular*=.72
+        elif kind in ("hard_rubber","grown_rubber"):
+            specular*=.58
+        elif kind in ("simulated_bone","bone_chitin"):
+            specular*=.42
         spec_tint=np.array(spec.get("specular_tint",[30,30,30]),dtype=np.float32)
         rgb=np.clip(rgb+specular[...,None]*spec_tint,0,255)
 
@@ -647,13 +631,7 @@ class SynthesisPass:
         if not bb:
             return Image.new("RGBA",(OUT,OUT),(0,0,0,0))
 
-        refs=self.s3.get("historical_continuity",[])
         hist=None
-        if refs:
-            try:
-                hist=self._historical(refs[int(bp.get("historical_reference_index",0))],body,direction,bb)
-            except Exception:
-                hist=None
 
         base_material=bp["base_material"]
         out=self._garment_material(mask,base_material,hist,view.get("folds",[]),100)
@@ -1583,6 +1561,11 @@ def validate_profile(profile: dict, path: Path|None=None):
         raise RuntimeError(f"{where}: RimWorldImplementationPass requires vanilla family and body types")
 
     s3=profile["stage_3_synthesis"]
+    if s3.get("historical_continuity"):
+        raise RuntimeError(
+            f"{where}: historical WNG apparel is forbidden as a synthesis input; "
+            "use Stargate references, vanilla RimWorld geometry and non-apparel WNG quality benchmarks only"
+        )
     renderer=s3.get("renderer",profile["id"])
     if renderer=="costume_blueprint_v2":
         mats=s3.get("materials",{})

@@ -2,7 +2,7 @@
   "id": "wraith_commander_carapace",
   "item": "WNG_CommanderCarapace",
   "faction": "Wraith",
-  "purpose": "Command-grade Wraith combat shell derived first from Stargate Atlantis commander wardrobe: green-black leather, black reptile-pattern leather, layered epaulettes, lacing and aged closures, translated onto a vanilla RimWorld PowerArmor-family full-shell contour rather than generic sci-fi plate.",
+  "purpose": "Command-grade Wraith combat clothing/armour rebuilt only from Stargate Atlantis production references. A fitted green-black leather and black reptile-leather commander uniform sits beneath screen-used Wraith silver hard-rubber carapace and simulated-bone shoulder protection, all translated onto vanilla RimWorld PowerArmor geometry. It must read as Stargate Wraith wardrobe first and armour second, never as generic panelled sci-fi plate.",
   "stage_1_stargate": {
     "sources": [
       {
@@ -37,11 +37,11 @@
       },
       {
         "url": "https://abcdocz.com/doc/68928/",
-        "role": "production_wraith_carapace_material_reference",
+        "role": "propworx_screen_used_wraith_carapace_technical_description",
         "required_terms": [
           "Carapace torso armor",
           "hard rubber silver front and back armor",
-          "black leather under-vest"
+          "simulated bone silver shoulder armor"
         ],
         "image_policy": "metadata_only"
       },
@@ -53,82 +53,70 @@
           "footsoldiers"
         ],
         "image_policy": "og_and_relevant"
-      },
-      {
-        "url": "https://www.stargate-fusion.com/fiches/5691-costume-wraith-teyla-la-nouvelle-reine.html",
-        "role": "reptile_leather_and_rank_material_language",
-        "required_terms": [
-          "reptile",
-          "cuir",
-          "corset"
-        ],
-        "image_policy": "og_and_relevant"
-      },
-      {
-        "url": "https://www.stargate-fusion.com/fiches/coulisses/37-accessoires-de-tournage/5938-dispositif-douverture-de-porte-wraith-2.html",
-        "role": "organic_wraith_surface_language",
-        "required_terms": [
-          "organique",
-          "latex",
-          "vert"
-        ],
-        "image_policy": "og_and_relevant"
       }
     ],
-    "minimum_live_sources": 5,
-    "minimum_visual_references": 2,
+    "minimum_live_sources": 4,
+    "minimum_visual_references": 1,
     "design_rules": {
       "material_priority": [
         [
-          "green_black_leather_command_shell",
-          0.36
+          "green_black_soft_leather_commander_uniform",
+          0.31
         ],
         [
-          "black_reptile_pattern_leather",
-          0.25
+          "black_reptile_pattern_leather_vest",
+          0.18
         ],
         [
-          "dark_flexible_leather_understructure",
-          0.15
+          "silver_hard_rubber_carapace",
+          0.24
         ],
         [
-          "layered_command_epaulettes",
-          0.1
+          "simulated_bone_silver_shoulders",
+          0.12
         ],
         [
-          "aged_lacing_snaps_and_fasteners",
+          "dark_leather_lacing_straps_and_understructure",
           0.08
         ],
         [
-          "restrained_bone_chitin_edge_detail",
-          0.06
+          "aged_fasteners_and_production_wear",
+          0.05
+        ],
+        [
+          "restrained_organic_growth_detail",
+          0.02
         ]
       ],
       "construction": [
-        "armoured translation of the screen-used green leather Wraith commander trenchcoat",
-        "black reptile-pattern leather vest and inset panels",
-        "layered textured epaulettes integrated into the shell shoulders",
-        "side and back lacing as visible construction rather than glowing piping",
-        "aged dark fasteners and closure hardware",
-        "flexible black leather visible between protective command-shell masses",
-        "subtle bone/chitin edge cues only where they reinforce Wraith identity"
+        "fitted green-black Wraith commander leather uniform as the continuous base garment",
+        "black reptile-pattern leather vest and upper-back yoke taken from screen-used commander tailoring",
+        "single anatomically coherent silver hard-rubber front/back carapace rather than stacks of invented plates",
+        "layered simulated-bone shoulder protection derived from screen-used Wraith drone armour",
+        "flexible dark leather left visible at waist, flanks, inner arms and joints",
+        "side/back lacing, snaps and closure hardware as practical costume construction",
+        "small restrained thigh guards only where the PowerArmor silhouette needs lower-body protection",
+        "production wear, rubbed edges and hand-built irregularity"
       ],
       "motifs": [
-        "predatory Wraith tailoring",
-        "reptile leather",
-        "organic grown reinforcement",
-        "command-rank shoulder treatment",
-        "worn hand-built production costume character"
+        "Wraith commander reptile-leather tailoring",
+        "screen-used drone carapace material language",
+        "bone shoulder anatomy",
+        "predatory organic asymmetry",
+        "aged leather and practical fasteners",
+        "continuous costume construction beneath armour"
       ],
       "avoid": [
-        "purple armor with cyan lines",
-        "flat vector polygons",
-        "uniform neon piping",
-        "superhero symmetry",
-        "clean white sci-fi plate",
+        "historical WNG apparel input",
+        "anonymous armour panels",
+        "stacked geometric plates",
+        "purple armour with cyan lines",
+        "uniform glow piping",
+        "superhero chest segmentation",
         "ship fins pasted onto clothing",
-        "generic marine recolor",
-        "muddy cloud noise"
+        "flat vector polygons",
+        "cloud noise",
+        "clean generic marine armour"
       ]
     }
   },
@@ -150,7 +138,7 @@
       "west"
     ],
     "silhouette_rule": "vanilla_powerarmor_contour_authoritative",
-    "readability_rule": "details must survive at 192x192 and normal pawn zoom",
+    "readability_rule": "must read as a continuous Stargate Wraith command uniform with integrated screen-derived carapace at 192x192; no invented pawn silhouette",
     "legacy_bare_directions": true
   },
   "stage_3_synthesis": {
@@ -159,117 +147,1367 @@
       "Textures/Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft_south.png",
       "Textures/Things/Building/Wraith/Shuttle/WNG_WraithCruiser_south.png"
     ],
-    "historical_continuity": [
-      "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace",
-      "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat"
-    ],
-    "post_downsample_contrast": 1.14,
+    "historical_continuity": [],
+    "renderer": "costume_blueprint_v2",
+    "post_downsample_contrast": 1.12,
+    "tile_contrast": 1.08,
     "palette": {
       "leather_shadow": [
-        5,
-        8,
-        7
+        4,
+        7,
+        5
       ],
       "leather_mid": [
-        22,
-        31,
-        26
+        21,
+        30,
+        24
       ],
       "leather_high": [
-        82,
-        98,
-        85
+        76,
+        91,
+        79
       ],
       "contrast_shadow": [
-        6,
-        6,
-        8
+        3,
+        4,
+        4
       ],
       "contrast_mid": [
-        27,
-        24,
-        30
+        17,
+        20,
+        19
       ],
       "contrast_high": [
-        118,
-        106,
-        122
+        58,
+        63,
+        59
       ],
       "reptile_shadow": [
-        5,
-        6,
-        6
+        3,
+        4,
+        4
       ],
       "reptile_mid": [
         22,
-        26,
+        25,
         24
       ],
       "reptile_high": [
-        74,
-        82,
-        78
+        78,
+        84,
+        80
       ],
       "metal": [
-        132,
         128,
-        126
+        126,
+        122
       ],
       "biotech": [
-        74,
-        98,
-        86
-      ],
-      "shell_shadow": [
-        20,
-        25,
-        23
-      ],
-      "shell_mid": [
-        52,
-        63,
-        57
-      ],
-      "shell_high": [
-        108,
-        122,
-        112
-      ],
-      "bone_shadow": [
-        46,
-        47,
-        45
-      ],
-      "bone_mid": [
-        96,
-        98,
-        94
-      ],
-      "bone_high": [
-        176,
-        178,
-        171
+        56,
+        78,
+        70
       ]
+    },
+    "materials": {
+      "green_black_leather": {
+        "kind": "leather",
+        "shadow": [
+          4,
+          7,
+          5
+        ],
+        "mid": [
+          22,
+          31,
+          25
+        ],
+        "high": [
+          79,
+          94,
+          81
+        ],
+        "roughness": 0.54,
+        "grain": 0.09,
+        "specular_tint": [
+          25,
+          29,
+          26
+        ]
+      },
+      "black_reptile": {
+        "kind": "reptile_leather",
+        "shadow": [
+          3,
+          4,
+          4
+        ],
+        "mid": [
+          21,
+          24,
+          23
+        ],
+        "high": [
+          77,
+          83,
+          79
+        ],
+        "roughness": 0.48,
+        "grain": 0.07,
+        "specular_tint": [
+          29,
+          29,
+          28
+        ]
+      },
+      "black_leather": {
+        "kind": "leather",
+        "shadow": [
+          2,
+          3,
+          3
+        ],
+        "mid": [
+          14,
+          17,
+          16
+        ],
+        "high": [
+          50,
+          55,
+          52
+        ],
+        "roughness": 0.58,
+        "grain": 0.07,
+        "specular_tint": [
+          23,
+          24,
+          23
+        ]
+      },
+      "silver_hard_rubber": {
+        "kind": "hard_rubber",
+        "shadow": [
+          24,
+          27,
+          27
+        ],
+        "mid": [
+          68,
+          73,
+          72
+        ],
+        "high": [
+          149,
+          155,
+          153
+        ],
+        "roughness": 0.49,
+        "grain": 0.025,
+        "specular_tint": [
+          34,
+          36,
+          36
+        ]
+      },
+      "simulated_bone": {
+        "kind": "simulated_bone",
+        "shadow": [
+          46,
+          48,
+          48
+        ],
+        "mid": [
+          105,
+          108,
+          106
+        ],
+        "high": [
+          186,
+          189,
+          184
+        ],
+        "roughness": 0.61,
+        "grain": 0.05,
+        "specular_tint": [
+          22,
+          22,
+          21
+        ]
+      }
+    },
+    "garment_contract": {
+      "max_single_piece_fraction": 0.34,
+      "min_base_garment_visible_fraction": 0.34,
+      "max_semantic_pieces_per_view": 9,
+      "min_seams_per_view": 3
+    },
+    "garment_blueprint": {
+      "design_class": "armoured_uniform",
+      "base_material": "green_black_leather",
+      "views": {
+        "south": {
+          "folds": [
+            {
+              "points": [
+                [
+                  0.22,
+                  0.2
+                ],
+                [
+                  0.2,
+                  0.51
+                ],
+                [
+                  0.22,
+                  0.89
+                ]
+              ],
+              "width": 0.019,
+              "strength": 0.58
+            },
+            {
+              "points": [
+                [
+                  0.78,
+                  0.2
+                ],
+                [
+                  0.8,
+                  0.51
+                ],
+                [
+                  0.78,
+                  0.89
+                ]
+              ],
+              "width": 0.019,
+              "strength": 0.54
+            },
+            {
+              "points": [
+                [
+                  0.34,
+                  0.35
+                ],
+                [
+                  0.32,
+                  0.6
+                ],
+                [
+                  0.34,
+                  0.84
+                ]
+              ],
+              "width": 0.014,
+              "strength": 0.38
+            }
+          ],
+          "pieces": [
+            {
+              "name": "commander reptile under-vest",
+              "role": "vest",
+              "material": "black_reptile",
+              "points": [
+                [
+                  0.34,
+                  0.055
+                ],
+                [
+                  0.66,
+                  0.055
+                ],
+                [
+                  0.63,
+                  0.26
+                ],
+                [
+                  0.6,
+                  0.58
+                ],
+                [
+                  0.55,
+                  0.68
+                ],
+                [
+                  0.45,
+                  0.68
+                ],
+                [
+                  0.4,
+                  0.58
+                ],
+                [
+                  0.37,
+                  0.26
+                ]
+              ]
+            },
+            {
+              "name": "single silver thorax cuirass",
+              "role": "cuirass",
+              "material": "silver_hard_rubber",
+              "points": [
+                [
+                  0.25,
+                  0.14
+                ],
+                [
+                  0.75,
+                  0.14
+                ],
+                [
+                  0.71,
+                  0.42
+                ],
+                [
+                  0.64,
+                  0.57
+                ],
+                [
+                  0.54,
+                  0.62
+                ],
+                [
+                  0.46,
+                  0.62
+                ],
+                [
+                  0.36,
+                  0.57
+                ],
+                [
+                  0.29,
+                  0.42
+                ]
+              ],
+              "folds": [
+                {
+                  "points": [
+                    [
+                      0.38,
+                      0.2
+                    ],
+                    [
+                      0.41,
+                      0.48
+                    ]
+                  ],
+                  "width": 0.014,
+                  "strength": 0.33
+                },
+                {
+                  "points": [
+                    [
+                      0.62,
+                      0.2
+                    ],
+                    [
+                      0.59,
+                      0.48
+                    ]
+                  ],
+                  "width": 0.014,
+                  "strength": 0.29
+                }
+              ]
+            },
+            {
+              "name": "left layered simulated-bone shoulder guard",
+              "role": "shoulder_guard",
+              "material": "simulated_bone",
+              "points": [
+                [
+                  0.055,
+                  0.09
+                ],
+                [
+                  0.17,
+                  0.025
+                ],
+                [
+                  0.31,
+                  0.075
+                ],
+                [
+                  0.3,
+                  0.19
+                ],
+                [
+                  0.13,
+                  0.23
+                ]
+              ],
+              "mirror_x": true
+            },
+            {
+              "name": "left command thigh guard",
+              "role": "thigh_guard",
+              "material": "silver_hard_rubber",
+              "points": [
+                [
+                  0.12,
+                  0.69
+                ],
+                [
+                  0.31,
+                  0.66
+                ],
+                [
+                  0.39,
+                  0.78
+                ],
+                [
+                  0.36,
+                  0.96
+                ],
+                [
+                  0.18,
+                  0.97
+                ],
+                [
+                  0.08,
+                  0.86
+                ]
+              ],
+              "mirror_x": true
+            },
+            {
+              "name": "narrow dark collar",
+              "role": "collar",
+              "material": "black_leather",
+              "points": [
+                [
+                  0.35,
+                  0.025
+                ],
+                [
+                  0.65,
+                  0.025
+                ],
+                [
+                  0.68,
+                  0.11
+                ],
+                [
+                  0.58,
+                  0.15
+                ],
+                [
+                  0.42,
+                  0.15
+                ],
+                [
+                  0.32,
+                  0.11
+                ]
+              ]
+            },
+            {
+              "name": "lower flexible waist inset",
+              "role": "waistband",
+              "material": "black_leather",
+              "points": [
+                [
+                  0.26,
+                  0.59
+                ],
+                [
+                  0.74,
+                  0.59
+                ],
+                [
+                  0.72,
+                  0.69
+                ],
+                [
+                  0.28,
+                  0.69
+                ]
+              ]
+            }
+          ],
+          "seams": [
+            {
+              "points": [
+                [
+                  0.23,
+                  0.28
+                ],
+                [
+                  0.19,
+                  0.5
+                ],
+                [
+                  0.18,
+                  0.7
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.034,
+              "highlight": [
+                78,
+                85,
+                79
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.77,
+                  0.28
+                ],
+                [
+                  0.81,
+                  0.5
+                ],
+                [
+                  0.82,
+                  0.7
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.034,
+              "highlight": [
+                78,
+                85,
+                79
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.31,
+                  0.61
+                ],
+                [
+                  0.5,
+                  0.66
+                ],
+                [
+                  0.69,
+                  0.61
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.036,
+              "highlight": [
+                70,
+                73,
+                69
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.29,
+                  0.18
+                ],
+                [
+                  0.39,
+                  0.15
+                ],
+                [
+                  0.5,
+                  0.16
+                ],
+                [
+                  0.61,
+                  0.15
+                ],
+                [
+                  0.71,
+                  0.18
+                ]
+              ],
+              "stitch": false,
+              "highlight": [
+                128,
+                132,
+                129
+              ]
+            }
+          ],
+          "closures": [
+            {
+              "type": "lacing",
+              "left": [
+                [
+                  0.16,
+                  0.34
+                ],
+                [
+                  0.17,
+                  0.62
+                ]
+              ],
+              "right": [
+                [
+                  0.205,
+                  0.34
+                ],
+                [
+                  0.215,
+                  0.62
+                ]
+              ],
+              "pairs": 5
+            },
+            {
+              "type": "snaps",
+              "from": [
+                0.5,
+                0.22
+              ],
+              "to": [
+                0.5,
+                0.48
+              ],
+              "count": 4,
+              "radius": 0.005
+            }
+          ],
+          "wear": {
+            "seed": 101,
+            "count": 5,
+            "x_range": [
+              0.1,
+              0.9
+            ],
+            "y_range": [
+              0.18,
+              0.92
+            ],
+            "highlight": [
+              157,
+              160,
+              153
+            ]
+          }
+        },
+        "north": {
+          "folds": [
+            {
+              "points": [
+                [
+                  0.21,
+                  0.22
+                ],
+                [
+                  0.19,
+                  0.53
+                ],
+                [
+                  0.21,
+                  0.9
+                ]
+              ],
+              "width": 0.019,
+              "strength": 0.54
+            },
+            {
+              "points": [
+                [
+                  0.79,
+                  0.22
+                ],
+                [
+                  0.81,
+                  0.53
+                ],
+                [
+                  0.79,
+                  0.9
+                ]
+              ],
+              "width": 0.019,
+              "strength": 0.5
+            }
+          ],
+          "pieces": [
+            {
+              "name": "commander reptile back yoke",
+              "role": "yoke",
+              "material": "black_reptile",
+              "points": [
+                [
+                  0.16,
+                  0.07
+                ],
+                [
+                  0.84,
+                  0.07
+                ],
+                [
+                  0.79,
+                  0.2
+                ],
+                [
+                  0.65,
+                  0.25
+                ],
+                [
+                  0.5,
+                  0.27
+                ],
+                [
+                  0.35,
+                  0.25
+                ],
+                [
+                  0.21,
+                  0.2
+                ]
+              ]
+            },
+            {
+              "name": "single silver back cuirass",
+              "role": "cuirass",
+              "material": "silver_hard_rubber",
+              "points": [
+                [
+                  0.23,
+                  0.18
+                ],
+                [
+                  0.77,
+                  0.18
+                ],
+                [
+                  0.72,
+                  0.49
+                ],
+                [
+                  0.62,
+                  0.61
+                ],
+                [
+                  0.5,
+                  0.65
+                ],
+                [
+                  0.38,
+                  0.61
+                ],
+                [
+                  0.28,
+                  0.49
+                ]
+              ]
+            },
+            {
+              "name": "left rear simulated-bone shoulder guard",
+              "role": "shoulder_guard",
+              "material": "simulated_bone",
+              "points": [
+                [
+                  0.055,
+                  0.09
+                ],
+                [
+                  0.17,
+                  0.025
+                ],
+                [
+                  0.31,
+                  0.075
+                ],
+                [
+                  0.3,
+                  0.19
+                ],
+                [
+                  0.13,
+                  0.23
+                ]
+              ],
+              "mirror_x": true
+            },
+            {
+              "name": "left rear command thigh guard",
+              "role": "thigh_guard",
+              "material": "silver_hard_rubber",
+              "points": [
+                [
+                  0.12,
+                  0.69
+                ],
+                [
+                  0.31,
+                  0.66
+                ],
+                [
+                  0.39,
+                  0.78
+                ],
+                [
+                  0.36,
+                  0.96
+                ],
+                [
+                  0.18,
+                  0.97
+                ],
+                [
+                  0.08,
+                  0.86
+                ]
+              ],
+              "mirror_x": true
+            },
+            {
+              "name": "central leather spine insert",
+              "role": "back_insert",
+              "material": "black_leather",
+              "points": [
+                [
+                  0.455,
+                  0.22
+                ],
+                [
+                  0.545,
+                  0.22
+                ],
+                [
+                  0.54,
+                  0.68
+                ],
+                [
+                  0.46,
+                  0.68
+                ]
+              ]
+            },
+            {
+              "name": "rear flexible waist inset",
+              "role": "waistband",
+              "material": "black_leather",
+              "points": [
+                [
+                  0.26,
+                  0.6
+                ],
+                [
+                  0.74,
+                  0.6
+                ],
+                [
+                  0.72,
+                  0.69
+                ],
+                [
+                  0.28,
+                  0.69
+                ]
+              ]
+            }
+          ],
+          "seams": [
+            {
+              "points": [
+                [
+                  0.22,
+                  0.29
+                ],
+                [
+                  0.18,
+                  0.51
+                ],
+                [
+                  0.18,
+                  0.71
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.034,
+              "highlight": [
+                76,
+                83,
+                77
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.78,
+                  0.29
+                ],
+                [
+                  0.82,
+                  0.51
+                ],
+                [
+                  0.82,
+                  0.71
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.034,
+              "highlight": [
+                76,
+                83,
+                77
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.31,
+                  0.62
+                ],
+                [
+                  0.5,
+                  0.67
+                ],
+                [
+                  0.69,
+                  0.62
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.036,
+              "highlight": [
+                69,
+                72,
+                68
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.5,
+                  0.25
+                ],
+                [
+                  0.5,
+                  0.61
+                ]
+              ],
+              "stitch": false,
+              "highlight": [
+                118,
+                123,
+                120
+              ]
+            }
+          ],
+          "closures": [
+            {
+              "type": "lacing",
+              "left": [
+                [
+                  0.7,
+                  0.34
+                ],
+                [
+                  0.69,
+                  0.61
+                ]
+              ],
+              "right": [
+                [
+                  0.745,
+                  0.34
+                ],
+                [
+                  0.735,
+                  0.61
+                ]
+              ],
+              "pairs": 5
+            }
+          ],
+          "wear": {
+            "seed": 102,
+            "count": 4,
+            "x_range": [
+              0.1,
+              0.9
+            ],
+            "y_range": [
+              0.18,
+              0.92
+            ],
+            "highlight": [
+              151,
+              154,
+              148
+            ]
+          }
+        },
+        "east": {
+          "folds": [
+            {
+              "points": [
+                [
+                  0.29,
+                  0.21
+                ],
+                [
+                  0.27,
+                  0.54
+                ],
+                [
+                  0.29,
+                  0.89
+                ]
+              ],
+              "width": 0.018,
+              "strength": 0.54
+            },
+            {
+              "points": [
+                [
+                  0.69,
+                  0.24
+                ],
+                [
+                  0.72,
+                  0.55
+                ],
+                [
+                  0.69,
+                  0.88
+                ]
+              ],
+              "width": 0.015,
+              "strength": 0.4
+            }
+          ],
+          "pieces": [
+            {
+              "name": "side reptile under-vest",
+              "role": "vest",
+              "material": "black_reptile",
+              "points": [
+                [
+                  0.45,
+                  0.07
+                ],
+                [
+                  0.66,
+                  0.08
+                ],
+                [
+                  0.68,
+                  0.56
+                ],
+                [
+                  0.61,
+                  0.67
+                ],
+                [
+                  0.49,
+                  0.6
+                ]
+              ]
+            },
+            {
+              "name": "single side silver cuirass",
+              "role": "cuirass",
+              "material": "silver_hard_rubber",
+              "points": [
+                [
+                  0.28,
+                  0.16
+                ],
+                [
+                  0.72,
+                  0.16
+                ],
+                [
+                  0.75,
+                  0.43
+                ],
+                [
+                  0.65,
+                  0.58
+                ],
+                [
+                  0.45,
+                  0.61
+                ],
+                [
+                  0.31,
+                  0.49
+                ]
+              ]
+            },
+            {
+              "name": "side simulated-bone shoulder guard",
+              "role": "shoulder_guard",
+              "material": "simulated_bone",
+              "points": [
+                [
+                  0.15,
+                  0.09
+                ],
+                [
+                  0.43,
+                  0.025
+                ],
+                [
+                  0.72,
+                  0.09
+                ],
+                [
+                  0.78,
+                  0.18
+                ],
+                [
+                  0.62,
+                  0.24
+                ],
+                [
+                  0.31,
+                  0.24
+                ]
+              ]
+            },
+            {
+              "name": "side command thigh guard",
+              "role": "thigh_guard",
+              "material": "silver_hard_rubber",
+              "points": [
+                [
+                  0.21,
+                  0.69
+                ],
+                [
+                  0.51,
+                  0.66
+                ],
+                [
+                  0.68,
+                  0.78
+                ],
+                [
+                  0.63,
+                  0.96
+                ],
+                [
+                  0.34,
+                  0.97
+                ],
+                [
+                  0.18,
+                  0.87
+                ]
+              ]
+            },
+            {
+              "name": "side dark collar",
+              "role": "collar",
+              "material": "black_leather",
+              "points": [
+                [
+                  0.34,
+                  0.035
+                ],
+                [
+                  0.61,
+                  0.035
+                ],
+                [
+                  0.68,
+                  0.13
+                ],
+                [
+                  0.57,
+                  0.17
+                ],
+                [
+                  0.4,
+                  0.16
+                ]
+              ]
+            },
+            {
+              "name": "side flexible waist inset",
+              "role": "waistband",
+              "material": "black_leather",
+              "points": [
+                [
+                  0.27,
+                  0.59
+                ],
+                [
+                  0.7,
+                  0.59
+                ],
+                [
+                  0.68,
+                  0.69
+                ],
+                [
+                  0.29,
+                  0.69
+                ]
+              ]
+            }
+          ],
+          "seams": [
+            {
+              "points": [
+                [
+                  0.26,
+                  0.27
+                ],
+                [
+                  0.23,
+                  0.5
+                ],
+                [
+                  0.24,
+                  0.7
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.034,
+              "highlight": [
+                74,
+                82,
+                76
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.69,
+                  0.27
+                ],
+                [
+                  0.72,
+                  0.49
+                ],
+                [
+                  0.7,
+                  0.69
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.034,
+              "highlight": [
+                74,
+                82,
+                76
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.29,
+                  0.61
+                ],
+                [
+                  0.48,
+                  0.66
+                ],
+                [
+                  0.68,
+                  0.61
+                ]
+              ],
+              "stitch": true,
+              "stitch_spacing": 0.036,
+              "highlight": [
+                68,
+                71,
+                67
+              ]
+            },
+            {
+              "points": [
+                [
+                  0.31,
+                  0.19
+                ],
+                [
+                  0.49,
+                  0.16
+                ],
+                [
+                  0.7,
+                  0.19
+                ]
+              ],
+              "stitch": false,
+              "highlight": [
+                125,
+                130,
+                126
+              ]
+            }
+          ],
+          "closures": [
+            {
+              "type": "lacing",
+              "left": [
+                [
+                  0.24,
+                  0.35
+                ],
+                [
+                  0.25,
+                  0.62
+                ]
+              ],
+              "right": [
+                [
+                  0.29,
+                  0.35
+                ],
+                [
+                  0.3,
+                  0.62
+                ]
+              ],
+              "pairs": 5
+            },
+            {
+              "type": "snaps",
+              "from": [
+                0.57,
+                0.24
+              ],
+              "to": [
+                0.59,
+                0.46
+              ],
+              "count": 3,
+              "radius": 0.005
+            }
+          ],
+          "wear": {
+            "seed": 103,
+            "count": 4,
+            "x_range": [
+              0.12,
+              0.78
+            ],
+            "y_range": [
+              0.18,
+              0.92
+            ],
+            "highlight": [
+              153,
+              156,
+              149
+            ]
+          }
+        }
+      }
     },
     "quality": {
       "silhouette_iou_min": 0.985,
-      "max_luminous_area_fraction": 0.004,
+      "max_luminous_area_fraction": 0.001,
       "min_local_contrast": 18,
-      "max_symmetry_score": 0.95,
+      "max_symmetry_score": 0.96,
       "microdetail_scale_px": [
         1,
         5
       ],
       "render_scale": 4
-    },
-    "renderer": "wraith_commander_carapace",
-    "detail_rules": {
-      "plate_outline": "authored control-point contours smoothed into grown organic shells; never alter the vanilla PowerArmor outer silhouette",
-      "surface_relief": "historical WNG Commander art contributes grayscale high-frequency relief only, never silhouette or palette",
-      "internal_structure": "ridges follow each plate long axis with sparse branching growth marks instead of repeated geometric panel lines",
-      "material_read": "green-black leather and reptile understructure remain visible between shell masses at 192px",
-      "command_cues": "layered epaulettes, asymmetric lacing, snaps and restrained bone reinforcement; no neon rank piping",
-      "wear": "sparse rubbed cuts, pits, edge catches and production distress; no cloud-noise texture"
     }
-  }
+  },
+  "profile_revision": "2026-10-02-commander-restart-no-historical-apparel"
 }
