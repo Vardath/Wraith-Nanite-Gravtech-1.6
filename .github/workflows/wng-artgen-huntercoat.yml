@@ -19,21 +19,25 @@ jobs:
           python-version: '3.11'
       - name: Fetch vanilla Duster implementation
         run: git clone --depth 1 https://github.com/emipa606/Norbals.git /tmp/norbals
-      - name: Install generator dependencies
-        run: python -m pip install --disable-pip-version-check pillow numpy scipy
-      - name: Run reusable WNG apparel generator
+      - name: Install ArtGen dependencies
+        run: python -m pip install --disable-pip-version-check pillow numpy scipy requests beautifulsoup4
+      - name: Run Stargate-first WNG ArtGen
         run: |
-          python Tools/ArtGen/wng_apparel_generator.py hunter_coat \
+          python Tools/ArtGen/wng_apparel_generator.py wraith_hunter_coat \
             --vanilla-dir /tmp/norbals/LegacyAssets/Textures/Apparel \
+            --workdir .github/artgen/runtime \
             --preview .github/artgen/huntercoat_generator_preview.png
-      - name: Validate generated apparel
+      - name: Validate RimWorld apparel implementation
         run: python .github/artqa/apparel_art_audit.py
-      - name: Commit generated Hunter Coat
+      - name: Commit Hunter Coat result and QA evidence
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat*.png .github/artgen/huntercoat_generator_preview.png
-          git commit -m "Generate Hunter Coat with reusable WNG ArtGen [skip ci]"
+          git add Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat*.png \
+                  .github/artgen/huntercoat_generator_preview.png \
+                  .github/artgen/runtime/stargate_reference_report.json \
+                  .github/artgen/runtime/synthesis_qa.json
+          git commit -m "Generate Hunter Coat with Stargate-first WNG ArtGen [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
