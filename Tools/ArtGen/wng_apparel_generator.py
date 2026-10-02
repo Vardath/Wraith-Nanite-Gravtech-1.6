@@ -347,21 +347,42 @@ class SynthesisPass:
         ship_contrast=[x["contrast"] for x in self.benchmark_stats]
         live_contrast=[x["contrast"] for x in self.ref.image_stats if min(x.get("size",[0,0]))>=100 and 15<x["contrast"]<95]
         vals=ship_contrast+live_contrast
-        target=float(np.median(vals)) if vals else 32.0
+        target=min(float(np.median(vals)) if vals else 28.0,28.0)
+
         a=np.array(out,dtype=np.float32)
         m=np.array(mask)>16
         rgb=a[...,:3]
+        yy,xx=np.mgrid[0:HI,0:HI]
+
+        # Broad leather modelling, not cloud noise.
+        bb=mask.getbbox()
+        if bb:
+            x0,y0,x1,y1=bb
+            w=max(1,x1-x0); h=max(1,y1-y0)
+            localx=(xx-x0)/w; localy=(yy-y0)/h
+            broad=np.exp(-(((localx-.34)/.30)**2+((localy-.34)/.58)**2))
+            broad=(broad-.22)*14.0
+            rgb=np.clip(rgb+broad[...,None]*m[...,None],0,255)
+
+        # Vanilla-readable leather edge: dark boundary, narrow polished catch just inside it.
+        dist=distance_transform_edt(m)
+        outer=(dist>0)&(dist<=3)
+        catch=(dist>3)&(dist<=8)
+        recess=(dist>8)&(dist<=15)
+        rgb[outer]=np.clip(rgb[outer]-np.array([8,8,8]),0,255)
+        rgb[catch]=np.clip(rgb[catch]+np.array([12,13,12]),0,255)
+        rgb[recess]=np.clip(rgb[recess]-np.array([3,3,3]),0,255)
+
         lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
         cur=lum[m].std() if m.any() else 1
-        target=min(target,36.0)
-        scale=np.clip(target/max(cur,1),1.00,2.20)
+        scale=np.clip(target/max(cur,1),1.0,1.58)
         mean=rgb[m].mean(axis=0) if m.any() else np.array([45,48,46])
         rgb=(rgb-mean)*scale+mean
         a[...,:3]=np.clip(rgb,0,255)
         a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=ImageEnhance.Contrast(out).enhance(1.18)
-        out=out.filter(ImageFilter.UnsharpMask(radius=1.55,percent=88,threshold=3))
+        out=ImageEnhance.Contrast(out).enhance(1.09)
+        out=out.filter(ImageFilter.UnsharpMask(radius=1.10,percent=64,threshold=4))
         out.putalpha(mask)
         return out
 
