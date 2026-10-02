@@ -1,14 +1,23 @@
 {
   "verified": 5,
-  "total": 6,
+  "total": 7,
   "pages": [
+    {
+      "url": "https://abcdocz.com/doc/68928/",
+      "role": "propworx_wraith_drone_uniform_technical_description",
+      "ok": false,
+      "terms": {},
+      "http_status": 403,
+      "sha256": "acb761b49ebb14716a8995ba504e8a69c24e37d716c5c47bf66236d01dbc5ca9",
+      "error": "403 Client Error: Forbidden for url: https://abcdocz.com/doc/68928/"
+    },
     {
       "url": "https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/",
       "role": "wraith_drone_footsoldier_costume",
       "ok": false,
       "terms": {},
       "http_status": 403,
-      "sha256": "3f9e05585789cb5eaeb6d3b30f1c6d1b18571643e01b6c39fa006edcd12e94c3",
+      "sha256": "792122545731c07f8e5b870c8b192dc63e12648ef4992c3d33a4d809dfaf4526",
       "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/"
     },
     {
@@ -45,7 +54,7 @@
         "GAUNTLETS": true
       },
       "http_status": 200,
-      "sha256": "08835273fc2c060339c967add48ad5b1a903aaf1f0016867dbfbffbcc5151480"
+      "sha256": "c76258b6f07409d7619cd17d23f1c8041b5ae908bba1bbcc0ba0ae9b00440453"
     },
     {
       "url": "https://www.stargate-fusion.com/fiches/5691-costume-wraith-teyla-la-nouvelle-reine.html",
