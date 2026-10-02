@@ -139,7 +139,8 @@
       "west"
     ],
     "silhouette_rule": "vanilla_powerarmor_contour_authoritative",
-    "readability_rule": "details must survive at 192x192 and normal pawn zoom"
+    "readability_rule": "details must survive at 192x192 and normal pawn zoom",
+    "legacy_bare_directions": true
   },
   "stage_3_synthesis": {
     "wNG_quality_benchmarks": [
