@@ -62,6 +62,11 @@ class StargateReferencePass:
             r.raise_for_status()
             if len(r.content)>8_000_000: return None
             im=Image.open(io.BytesIO(r.content)).convert("RGB")
+            if im.width < 100 or im.height < 100:
+                return None
+            bad=url.lower()
+            if any(k in bad for k in ("gravatar","banner","poster","button","logo","avatar")):
+                return None
             im.thumbnail((512,512),Image.Resampling.LANCZOS)
             a=np.array(im,dtype=np.float32)
             lum=.2126*a[...,0]+.7152*a[...,1]+.0722*a[...,2]
@@ -236,21 +241,39 @@ class SynthesisPass:
         layer=layer.copy(); layer.putalpha(Image.fromarray(((a*mm)//255).astype(np.uint8),"L"))
         return layer
 
-    def _bone(self, mask, hist=None):
-        p=self.palette
-        return self._material(mask,p["bone_shadow"],p["bone_mid"],p["bone_high"],"bone",hist)
-
     def _leather(self, mask, hist=None, contrast=False):
         p=self.palette
         if contrast:
-            sh=[max(0,x+7) for x in p["leather_shadow"]]
-            md=[min(255,x+15) for x in p["leather_mid"]]
-            hi=[min(255,x+18) for x in p["leather_high"]]
-        else:
-            sh=p["leather_shadow"]; md=p["leather_mid"]; hi=p["leather_high"]
-        return self._material(mask,sh,md,hi,"leather",hist)
+            return self._material(mask,p["contrast_shadow"],p["contrast_mid"],p["contrast_high"],"leather",hist)
+        return self._material(mask,p["leather_shadow"],p["leather_mid"],p["leather_high"],"leather",hist)
 
-    def _stitch(self, im, pts, spacing=18):
+    def _reptile(self, mask, hist=None, seed_offset=0):
+        p=self.palette
+        base=self._material(mask,p["reptile_shadow"],p["reptile_mid"],p["reptile_high"],"leather",hist)
+        bb=mask.getbbox()
+        if not bb: return base
+        x0,y0,x1,y1=bb
+        rng=random.Random(49031+seed_offset+x0+y0)
+        tex=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        d=ImageDraw.Draw(tex)
+        step_x=max(12,int((x1-x0)*.045))
+        step_y=max(9,int(step_x*.63))
+        row=0
+        for y in range(y0-step_y,y1+step_y,step_y):
+            offset=(step_x//2) if row%2 else 0
+            for x in range(x0-step_x,x1+step_x,step_x):
+                cx=x+offset+rng.randint(-2,2)
+                cy=y+rng.randint(-2,2)
+                rx=max(4,int(step_x*.43+rng.randint(-2,2)))
+                ry=max(3,int(step_y*.40+rng.randint(-1,1)))
+                d.arc((cx-rx,cy-ry,cx+rx,cy+ry),195,345,fill=(14,13,16,115),width=max(1,int(HI/384)))
+                d.arc((cx-rx+1,cy-ry+1,cx+rx-1,cy+ry-1),15,165,fill=(128,118,132,55),width=max(1,int(HI/512)))
+            row+=1
+        tex=self._clip(tex,mask)
+        base.alpha_composite(tex)
+        return base
+
+    def _stitch(self, im, pts, spacing=18, color=(122,112,119,150)):
         d=ImageDraw.Draw(im)
         seg=[]
         for a,b in zip(pts[:-1],pts[1:]):
@@ -261,18 +284,55 @@ class SynthesisPass:
             remain=pos
             for a,b,L in seg:
                 if remain<=L:
-                    t=remain/max(1,L); x=a[0]+(b[0]-a[0])*t; y=a[1]+(b[1]-a[1])*t
-                    d.ellipse((x-1.5,y-1.5,x+1.5,y+1.5),fill=(137,124,134,170)); break
+                    t=remain/max(1,L)
+                    x=a[0]+(b[0]-a[0])*t; y=a[1]+(b[1]-a[1])*t
+                    d.line((x-2,y-1,x+2,y+1),fill=color,width=1)
+                    break
                 remain-=L
             pos+=spacing
 
-    def _gem(self, im,x,y,r):
-        col=tuple(self.palette["biotech"])
-        g=Image.new("RGBA",(HI,HI),(0,0,0,0)); gd=ImageDraw.Draw(g)
-        gd.ellipse((x-r*4,y-r*4,x+r*4,y+r*4),fill=col+(40,))
-        im.alpha_composite(g.filter(ImageFilter.GaussianBlur(r*2)))
+    def _snap(self, im, x, y, r=3):
+        col=tuple(self.palette["metal"])
         d=ImageDraw.Draw(im)
-        d.ellipse((x-r,y-r,x+r,y+r),fill=(218,211,248,238),outline=(70,62,91,255),width=max(1,r//3))
+        d.ellipse((x-r,y-r,x+r,y+r),fill=(32,30,33,230),outline=col+(205,),width=max(1,r//2))
+        d.ellipse((x-r*.35,y-r*.35,x+r*.35,y+r*.35),fill=(174,169,175,180))
+
+    def _lacing(self, im, left_pts, right_pts, pairs=7):
+        d=ImageDraw.Draw(im)
+        # Sample straight-ish paired eyelets and crossing cords.
+        for i in range(pairs):
+            t=(i+.5)/pairs
+            lx=left_pts[0][0]*(1-t)+left_pts[-1][0]*t
+            ly=left_pts[0][1]*(1-t)+left_pts[-1][1]*t
+            rx=right_pts[0][0]*(1-t)+right_pts[-1][0]*t
+            ry=right_pts[0][1]*(1-t)+right_pts[-1][1]*t
+            self._snap(im,int(lx),int(ly),2)
+            self._snap(im,int(rx),int(ry),2)
+            if i%2==0:
+                d.line((lx,ly,rx,ry+3),fill=(20,18,21,210),width=2)
+            else:
+                d.line((rx,ry,lx,ly+3),fill=(20,18,21,210),width=2)
+
+    def _finish(self, out, mask):
+        ship_contrast=[x["contrast"] for x in self.benchmark_stats]
+        live_contrast=[x["contrast"] for x in self.ref.image_stats if min(x.get("size",[0,0]))>=100 and 15<x["contrast"]<95]
+        vals=ship_contrast+live_contrast
+        target=float(np.median(vals)) if vals else 32.0
+        a=np.array(out,dtype=np.float32)
+        m=np.array(mask)>16
+        rgb=a[...,:3]
+        lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
+        cur=lum[m].std() if m.any() else 1
+        scale=np.clip(target/max(cur,1),.94,1.18)
+        mean=rgb[m].mean(axis=0) if m.any() else np.array([45,48,46])
+        rgb=(rgb-mean)*scale+mean
+        a[...,:3]=np.clip(rgb,0,255)
+        a[...,3]=np.array(mask)
+        out=Image.fromarray(a.astype(np.uint8),"RGBA")
+        out=ImageEnhance.Contrast(out).enhance(1.05)
+        out=out.filter(ImageFilter.UnsharpMask(radius=2.0,percent=78,threshold=4))
+        out.putalpha(mask)
+        return out
 
     def _paint(self, body, direction, mask):
         bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
@@ -280,80 +340,108 @@ class SynthesisPass:
         accent=self._historical("WNG_QueenRaiment",body,direction,bb)
         out=self._leather(mask,hist,False)
 
-        # Canon-derived three-piece construction: body + two contrast-leather side/lapel pieces.
         if direction=="south":
-            left=self._poly_mask(bb,[(.08,.11),(.40,.04),(.47,.26),(.40,.78),(.16,.92),(.10,.54)],4)
-            right=self._poly_mask(bb,[(.92,.11),(.60,.04),(.53,.26),(.60,.78),(.84,.92),(.90,.54)],4)
-            left=ImageChops.multiply(left,mask); right=ImageChops.multiply(right,mask)
-            out.alpha_composite(self._clip(self._leather(left,hist,True),left))
-            out.alpha_composite(self._clip(self._leather(right,accent,True),right))
+            # Black reptile-leather inner vest, matching production Wraith commander construction.
+            vest=self._poly_mask(bb,[(.34,.05),(.66,.05),(.62,.55),(.56,.83),(.44,.83),(.38,.55)],1)
+            vest=ImageChops.multiply(vest,mask)
+            out.alpha_composite(self._reptile(vest,accent,10))
 
-            # restrained bone shoulder/collar accents, inside vanilla Duster silhouette.
-            boneL=self._poly_mask(bb,[(.06,.10),(.29,.04),(.41,.13),(.34,.26),(.14,.28)],3)
-            boneR=self._poly_mask(bb,[(.94,.10),(.71,.04),(.59,.13),(.66,.26),(.86,.28)],3)
-            for bm in (boneL,boneR):
-                bm=ImageChops.multiply(bm,mask)
-                out.alpha_composite(self._bone(bm,hist))
+            # Narrow contrast leather lapels following the Duster neck/torso, not armour plates.
+            lapL=self._poly_mask(bb,[(.31,.06),(.43,.05),(.48,.22),(.42,.51),(.35,.47)],1)
+            lapR=self._poly_mask(bb,[(.69,.06),(.57,.05),(.52,.22),(.58,.51),(.65,.47)],1)
+            for lm in (lapL,lapR):
+                lm=ImageChops.multiply(lm,mask)
+                out.alpha_composite(self._leather(lm,hist,True))
 
-            # diagonal waist belt and asymmetrical closure; no neon piping.
-            belt=[(int(x0+.19*w),int(y0+.57*h)),(int(x0+.49*w),int(y0+.61*h)),(int(x0+.80*w),int(y0+.55*h))]
-            bmask=ImageChops.multiply(self._line_mask(belt,max(8,.032*h),1.2),mask)
-            out.alpha_composite(self._clip(self._leather(bmask,accent,True),bmask))
-            self._stitch(out,[(int(x0+.25*w),int(y0+.28*h)),(int(x0+.29*w),int(y0+.84*h))],max(14,.05*h))
-            self._gem(out,int(x0+.47*w),int(y0+.36*h),max(3,int(.012*w)))
+            # Layered reptile-leather epaulettes; three small overlapping panels per shoulder.
+            shoulders=[
+              [(.06,.09),(.22,.04),(.34,.08),(.31,.17),(.12,.18)],
+              [(.10,.15),(.25,.09),(.37,.13),(.33,.22),(.15,.23)],
+              [(.13,.21),(.28,.15),(.39,.19),(.34,.28),(.17,.29)]
+            ]
+            for idx,pts in enumerate(shoulders):
+                for side in (pts,[(1-x,y) for x,y in pts]):
+                    sm=ImageChops.multiply(self._poly_mask(bb,side,1),mask)
+                    out.alpha_composite(self._reptile(sm,hist,30+idx))
+
+            # Side lacing and subtle front closures.
+            self._lacing(
+                out,
+                [(int(x0+.18*w),int(y0+.38*h)),(int(x0+.20*w),int(y0+.74*h))],
+                [(int(x0+.24*w),int(y0+.38*h)),(int(x0+.26*w),int(y0+.74*h))],
+                6
+            )
+            for i in range(5):
+                yy=int(y0+h*(.27+i*.075))
+                self._snap(out,int(x0+.51*w),yy,2)
+            self._stitch(out,[(int(x0+.70*w),int(y0+.30*h)),(int(x0+.74*w),int(y0+.78*h))],max(13,.055*h))
 
         elif direction=="north":
-            shoulder=self._poly_mask(bb,[(.07,.09),(.34,.03),(.45,.14),(.38,.29),(.14,.29)],3)
-            shoulder2=Image.fromarray(np.fliplr(np.array(shoulder)).copy(),"L")
-            for bm in (shoulder,shoulder2):
-                bm=ImageChops.multiply(bm,mask)
-                out.alpha_composite(self._bone(bm,hist))
-            spine=[(int(x0+.50*w),int(y0+.15*h)),(int(x0+.49*w),int(y0+.76*h))]
-            sm=ImageChops.multiply(self._line_mask(spine,max(6,.018*w),1),mask)
-            out.alpha_composite(self._clip(self._leather(sm,accent,True),sm))
-            self._stitch(out,[(int(x0+.27*w),int(y0+.28*h)),(int(x0+.25*w),int(y0+.80*h))],max(14,.05*h))
+            # Back yoke and layered shoulder panels.
+            yoke=self._poly_mask(bb,[(.12,.08),(.88,.08),(.79,.29),(.50,.34),(.21,.29)],1)
+            yoke=ImageChops.multiply(yoke,mask)
+            out.alpha_composite(self._reptile(yoke,hist,80))
+            center=self._poly_mask(bb,[(.43,.18),(.57,.18),(.55,.80),(.45,.80)],1)
+            center=ImageChops.multiply(center,mask)
+            out.alpha_composite(self._leather(center,accent,True))
+
+            # Characteristic side/back lacing from production costume.
+            self._lacing(
+                out,
+                [(int(x0+.36*w),int(y0+.31*h)),(int(x0+.38*w),int(y0+.76*h))],
+                [(int(x0+.43*w),int(y0+.31*h)),(int(x0+.45*w),int(y0+.76*h))],
+                7
+            )
+            self._lacing(
+                out,
+                [(int(x0+.57*w),int(y0+.31*h)),(int(x0+.55*w),int(y0+.76*h))],
+                [(int(x0+.64*w),int(y0+.31*h)),(int(x0+.62*w),int(y0+.76*h))],
+                7
+            )
 
         else:
-            bone=self._poly_mask(bb,[(.20,.08),(.69,.04),(.87,.20),(.73,.34),(.51,.29)],3)
-            bone=ImageChops.multiply(bone,mask)
-            out.alpha_composite(self._bone(bone,hist))
-            seam=[(int(x0+.58*w),int(y0+.22*h)),(int(x0+.62*w),int(y0+.70*h))]
-            sm=ImageChops.multiply(self._line_mask(seam,max(5,.018*w),1),mask)
-            out.alpha_composite(self._clip(self._leather(sm,accent,True),sm))
-            self._stitch(out,[(int(x0+.36*w),int(y0+.29*h)),(int(x0+.38*w),int(y0+.79*h))],max(14,.05*h))
+            # Side profile: reptile shoulder panel + inner vest glimpse + visible lacing.
+            shoulder=self._poly_mask(bb,[(.28,.06),(.70,.05),(.86,.20),(.72,.29),(.43,.23)],1)
+            shoulder=ImageChops.multiply(shoulder,mask)
+            out.alpha_composite(self._reptile(shoulder,hist,110))
+            sidepanel=self._poly_mask(bb,[(.48,.24),(.72,.26),(.69,.76),(.53,.80)],1)
+            sidepanel=ImageChops.multiply(sidepanel,mask)
+            out.alpha_composite(self._reptile(sidepanel,accent,120))
+            self._lacing(
+                out,
+                [(int(x0+.50*w),int(y0+.36*h)),(int(x0+.52*w),int(y0+.74*h))],
+                [(int(x0+.57*w),int(y0+.36*h)),(int(x0+.59*w),int(y0+.74*h))],
+                6
+            )
+            self._stitch(out,[(int(x0+.31*w),int(y0+.28*h)),(int(x0+.34*w),int(y0+.78*h))],max(13,.055*h))
 
-        # Professional readability treatment benchmarked against WNG ships, without copying their pixels.
-        target_contrast=np.mean([x["contrast"] for x in self.benchmark_stats]) if self.benchmark_stats else 35
-        a=np.array(out,dtype=np.float32); m=np.array(mask)>16
-        rgb=a[...,:3]; lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
-        cur=lum[m].std() if m.any() else 1
-        scale=np.clip(target_contrast/max(cur,1),.92,1.28)
-        mean=rgb[m].mean(axis=0) if m.any() else np.array([60,50,65])
-        rgb=(rgb-mean)*scale+mean
-        a[...,:3]=np.clip(rgb,0,255)
-        a[...,3]=np.array(mask)
-        out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=out.filter(ImageFilter.UnsharpMask(radius=3.0,percent=85,threshold=4))
-        out=ImageEnhance.Contrast(out).enhance(1.06)
-        out.putalpha(mask)
+        out=self._finish(out,mask)
         return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
 
     def _tile(self, mask):
-        bb=mask.getbbox()
+        bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
         hist=self._historical("WNG_HunterCoat","Male","south",bb)
         out=self._leather(mask,hist,False)
-        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
-        for pts in (
-            [(.07,.10),(.32,.03),(.43,.17),(.34,.31),(.12,.30)],
-            [(.93,.10),(.68,.03),(.57,.17),(.66,.31),(.88,.30)]
-        ):
-            bm=ImageChops.multiply(self._poly_mask(bb,pts,3),mask)
-            out.alpha_composite(self._bone(bm,hist))
-        belt=[(int(x0+.20*w),int(y0+.58*h)),(int(x0+.50*w),int(y0+.61*h)),(int(x0+.80*w),int(y0+.56*h))]
-        bm=ImageChops.multiply(self._line_mask(belt,max(8,.03*h),1),mask)
-        out.alpha_composite(self._clip(self._leather(bm,hist,True),bm))
-        self._gem(out,int(x0+.47*w),int(y0+.36*h),max(3,int(.012*w)))
-        out.putalpha(mask)
+        vest=self._poly_mask(bb,[(.34,.05),(.66,.05),(.62,.58),(.55,.84),(.45,.84),(.38,.58)],1)
+        vest=ImageChops.multiply(vest,mask)
+        out.alpha_composite(self._reptile(vest,hist,150))
+        shoulders=[
+          [(.06,.09),(.22,.04),(.34,.08),(.31,.17),(.12,.18)],
+          [(.10,.16),(.25,.10),(.37,.14),(.33,.23),(.15,.24)]
+        ]
+        for idx,pts in enumerate(shoulders):
+            for side in (pts,[(1-x,y) for x,y in pts]):
+                sm=ImageChops.multiply(self._poly_mask(bb,side,1),mask)
+                out.alpha_composite(self._reptile(sm,hist,160+idx))
+        self._lacing(
+            out,
+            [(int(x0+.18*w),int(y0+.39*h)),(int(x0+.20*w),int(y0+.73*h))],
+            [(int(x0+.24*w),int(y0+.39*h)),(int(x0+.26*w),int(y0+.73*h))],
+            6
+        )
+        for i in range(5):
+            self._snap(out,int(x0+.51*w),int(y0+h*(.27+i*.075)),2)
+        out=self._finish(out,mask)
         return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
 
     def _symmetry(self, im):
