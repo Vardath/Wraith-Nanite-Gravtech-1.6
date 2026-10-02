@@ -87,7 +87,7 @@
         "image_policy": "metadata_only"
       }
     ],
-    "minimum_live_sources": 4,
+    "minimum_live_sources": 3,
     "minimum_visual_references": 1,
     "design_rules": {
       "material_priority": [
@@ -156,7 +156,12 @@
         "cloud noise",
         "overly symmetrical geometric plate stacks"
       ]
-    }
+    },
+    "primary_research_basis": [
+      "Propworx screen-used Teyla Wraith Queen costume technical description",
+      "Val Halverson costume-designer Q&A covering Wraith Queen dress/armour, latex and leather",
+      "Val Halverson wardrobe Q&A confirming the riding-skirt lower construction for physical movement"
+    ]
   },
   "stage_2_rimworld": {
     "implementation_mode": "svg_family_deformed",
@@ -1767,5 +1772,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-source-repair-2"
+  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-primary-source-gate"
 }
