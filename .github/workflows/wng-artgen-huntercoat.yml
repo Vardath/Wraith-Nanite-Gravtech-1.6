@@ -45,3 +45,5 @@ jobs:
 # rerun after Stargate reference gate hardening
 
 # rerun after ArtGen import fix
+
+# rerun after west silhouette QA correction
