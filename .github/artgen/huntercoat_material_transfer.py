@@ -127,8 +127,8 @@ def build(body, direction):
     # painterly historical Wraith clothing forms the material basis
     hfit=fit_to_bbox(hist,bb)
     qfit=fit_to_bbox(queen,bb)
-    hfit=colorize_luminance(hfit,(22,18,25),(105,82,115))
-    qfit=colorize_luminance(qfit,(20,17,24),(91,71,102))
+    hfit=colorize_luminance(hfit,(30,24,34),(150,116,160))
+    qfit=colorize_luminance(qfit,(27,22,31),(132,101,145))
 
     out=Image.new("RGBA",(HI,HI),(0,0,0,0))
     base=Image.blend(hfit,qfit,.28)
@@ -138,7 +138,7 @@ def build(body, direction):
     x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
     # darker lower leather tail, feathered rather than hard geometry
     lower=soft_region((HI,HI),bb,[(0,.48),(1,.48),(1,1),(0,1)],blur=32)
-    dark=Image.new("RGBA",(HI,HI),(14,12,17,105))
+    dark=Image.new("RGBA",(HI,HI),(17,14,20,65))
     dark.putalpha(ImageChops.multiply(lower,mask))
     out.alpha_composite(dark)
 
@@ -146,7 +146,7 @@ def build(body, direction):
     ship1=load_rgba(ROOT.parent.parent.parent.parent/"Building/Wraith/Shuttle/WNG_WraithDart_south.png").resize((HI,HI),Image.Resampling.LANCZOS)
     ship2=load_rgba(ROOT.parent.parent.parent.parent/"Building/Wraith/Shuttle/WNG_WraithCruiser_south.png").resize((HI,HI),Image.Resampling.LANCZOS)
     ship=Image.blend(ship1,ship2,.50)
-    shipmat=sample_ship_material(ship,bb,(96,73,106))
+    shipmat=sample_ship_material(ship,bb,(142,108,154))
 
     # shoulder/outer-panel chitin: soft, texture-rich, follows vanilla coat shell
     if direction in ("south","north"):
@@ -185,7 +185,7 @@ def build(body, direction):
         add_glow_gem(out,int(x0+w*.64),int(y0+h*.25),max(3,int(w*.014)))
 
     # ship-derived high-frequency detail so surfaces reach vehicle-art richness
-    out=highpass_overlay(out,ship,mask,.20)
+    out=highpass_overlay(out,ship,mask,.32)
 
     # production-worn distress: irregular scratches and rubbed leather, restrained
     arr=np.array(out,dtype=np.float32); m=np.array(mask)>0
@@ -194,8 +194,8 @@ def build(body, direction):
     rng=np.random.default_rng(abs(hash(body+direction))%2**32)
     noise=gaussian_filter(rng.normal(0,1,(HI,HI)),2.4)
     wear=(noise>1.15)&m
-    arr[wear,:3]=np.clip(arr[wear,:3]+12,0,255)
-    arr[...,:3]=np.clip(arr[...,:3]*(1-.12*edge[...,None]),0,255)
+    arr[wear,:3]=np.clip(arr[wear,:3]+20,0,255)
+    arr[...,:3]=np.clip(arr[...,:3]*(1-.07*edge[...,None]),0,255)
     arr[...,3]=np.array(mask)
     out=Image.fromarray(arr.astype(np.uint8),"RGBA")
 
@@ -203,9 +203,15 @@ def build(body, direction):
     histlum=np.array(hfit.convert("L"),dtype=np.float32)
     hp=histlum-gaussian_filter(histlum,18)
     arr=np.array(out,dtype=np.float32)
-    arr[...,:3]=np.clip(arr[...,:3]+hp[...,None]*.12*(np.array(mask)[...,None]/255),0,255)
+    arr[...,:3]=np.clip(arr[...,:3]+hp[...,None]*.24*(np.array(mask)[...,None]/255),0,255)
     arr[...,3]=np.array(mask)
     out=Image.fromarray(arr.astype(np.uint8),"RGBA")
+
+    # final painted readability: local contrast and restrained specular lift
+    out=ImageEnhance.Contrast(out).enhance(1.18)
+    out=ImageEnhance.Brightness(out).enhance(1.10)
+    out=out.filter(ImageFilter.UnsharpMask(radius=1.2*SS, percent=85, threshold=3))
+    out.putalpha(mask)
 
     out=out.resize((OUT,OUT),Image.Resampling.LANCZOS)
     return clean_alpha(out)
@@ -216,9 +222,9 @@ trgb=np.array(tile)[...,:3]; ta=np.array(tile.getchannel("A"))
 tmask=Image.fromarray((((ta>8)&(trgb.max(axis=2)>20)).astype(np.uint8)*255),"L").filter(ImageFilter.MaxFilter(5))
 tbb=tmask.getbbox()
 histtile=old_png("Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat.png").resize((HI,HI),Image.Resampling.LANCZOS)
-ht=fit_to_bbox(histtile,tbb); ht=colorize_luminance(ht,(20,17,23),(106,83,115)); ht.putalpha(tmask)
+ht=fit_to_bbox(histtile,tbb); ht=colorize_luminance(ht,(28,23,32),(148,113,158)); ht.putalpha(tmask)
 ship=Image.blend(load_rgba(ROOT.parent.parent.parent.parent/"Building/Wraith/Shuttle/WNG_WraithDart_south.png").resize((HI,HI),Image.Resampling.LANCZOS),load_rgba(ROOT.parent.parent.parent.parent/"Building/Wraith/Shuttle/WNG_WraithCruiser_south.png").resize((HI,HI),Image.Resampling.LANCZOS),.5)
-ht=highpass_overlay(ht,ship,tmask,.22)
+ht=highpass_overlay(ht,ship,tmask,.34)
 x0,y0,x1,y1=tbb; w=x1-x0; h=y1-y0
 bm=line_mask((HI,HI),[(int(x0+w*.26),int(y0+h*.53)),(int(x0+w*.75),int(y0+h*.53))],max(6,int(h*.035)),2)
 bm=ImageChops.multiply(bm,tmask)
