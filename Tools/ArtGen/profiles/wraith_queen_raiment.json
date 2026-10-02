@@ -1766,7 +1766,8 @@
         5
       ],
       "render_scale": 4
-    }
+    },
+    "painting_mode": "raster_brush_v3"
   },
-  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-layered-contract-final"
+  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-layered-contract-final-raster-v3-ready"
 }
