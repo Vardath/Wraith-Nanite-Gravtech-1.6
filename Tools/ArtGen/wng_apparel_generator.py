@@ -818,6 +818,7 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("profile",help="profile id, e.g. wraith_hunter_coat")
     ap.add_argument("--vanilla-dir",type=Path,required=True)
+    ap.add_argument("--body-dir",type=Path)
     ap.add_argument("--workdir",type=Path,default=Path(".github/artgen/runtime"))
     ap.add_argument("--preview",type=Path)
     args=ap.parse_args()
