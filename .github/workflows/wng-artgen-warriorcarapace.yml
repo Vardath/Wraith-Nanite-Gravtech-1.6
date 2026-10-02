@@ -50,3 +50,5 @@ jobs:
 # rerun after biotech node helper fix
 
 # rerun after biotech QA refinement
+
+# rerun after chroma-specific biotech QA
