@@ -3027,5 +3027,5 @@
     "finish_unsharp_radius": 0.85,
     "finish_unsharp_threshold": 3
   },
-  "profile_revision": "2026-10-02-commander-stage1-ridged-prop-pass-aligned"
+  "profile_revision": "2026-10-02-commander-stage1-ridged-prop-pass-rerun-clean-main"
 }
