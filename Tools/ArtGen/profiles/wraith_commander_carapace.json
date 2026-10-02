@@ -262,6 +262,14 @@
       ],
       "render_scale": 4
     },
-    "renderer": "wraith_commander_carapace"
+    "renderer": "wraith_commander_carapace",
+    "detail_rules": {
+      "plate_outline": "authored control-point contours smoothed into grown organic shells; never alter the vanilla PowerArmor outer silhouette",
+      "surface_relief": "historical WNG Commander art contributes grayscale high-frequency relief only, never silhouette or palette",
+      "internal_structure": "ridges follow each plate long axis with sparse branching growth marks instead of repeated geometric panel lines",
+      "material_read": "green-black leather and reptile understructure remain visible between shell masses at 192px",
+      "command_cues": "layered epaulettes, asymmetric lacing, snaps and restrained bone reinforcement; no neon rank piping",
+      "wear": "sparse rubbed cuts, pits, edge catches and production distress; no cloud-noise texture"
+    }
   }
 }

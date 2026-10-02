@@ -338,6 +338,23 @@ class SynthesisPass:
         if feather: m=m.filter(ImageFilter.GaussianBlur(feather))
         return m
 
+    def _organic_poly_mask(self, bb, pts, feather=0.65):
+        """Smooth an authored plate outline without changing its construction zone."""
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        q=[(x0+x*w,y0+y*h) for x,y in pts]
+        for _ in range(3):
+            nxt=[]
+            for i,p0 in enumerate(q):
+                p1=q[(i+1)%len(q)]
+                nxt.append((.75*p0[0]+.25*p1[0],.75*p0[1]+.25*p1[1]))
+                nxt.append((.25*p0[0]+.75*p1[0],.25*p0[1]+.75*p1[1]))
+            q=nxt
+        m=Image.new("L",(HI,HI),0)
+        ImageDraw.Draw(m).polygon([(int(x),int(y)) for x,y in q],fill=255)
+        if feather:
+            m=m.filter(ImageFilter.GaussianBlur(feather))
+        return m
+
     def _line_mask(self, pts, width, blur=1.5):
         m=Image.new("L",(HI,HI),0); d=ImageDraw.Draw(m)
         d.line(pts,fill=255,width=max(1,int(width)),joint="curve")
@@ -824,7 +841,10 @@ class SynthesisPass:
         This deliberately avoids flat polygon fills: the polygon only defines the
         anatomical construction zone; material, bevel, edge wear and ridges are painted.
         """
-        pm=self._plate(out,fullmask,bb,pts,hist,bone,seed)
+        # Commander plates use smoothed authored contours; the vanilla PowerArmor
+        # mask still owns the garment silhouette and clips every plate.
+        pm=ImageChops.multiply(self._organic_poly_mask(bb,pts,.65),fullmask)
+        out.alpha_composite(self._chitin(pm,hist,bone,seed))
         arr=np.array(pm)>12
         if not arr.any():
             return pm
@@ -848,27 +868,59 @@ class SynthesisPass:
         ca[...,3]=(catch*105).astype(np.uint8)
         out.alpha_composite(Image.fromarray(ca,"RGBA"))
 
-        # Two deliberate grown ribs per plate, not noise.  Each has a recessed
-        # dark side and a narrow raised catch like the organic paneling on Wraith tech.
+        # Historical WNG art contributes only high-frequency relief: never its
+        # silhouette or colour.  This keeps established hand-painted complexity
+        # while Stargate construction and vanilla geometry remain authoritative.
+        hl=np.array(hist.convert("L"),dtype=np.float32)
+        relief=gaussian_filter(hl,1.1)-gaussian_filter(hl,7.2)
+        vals=np.abs(relief[arr])
+        if vals.size:
+            scale=max(4.0,float(np.percentile(vals,88)))
+            relief=np.clip(relief/scale,-1,1)
+            ra=np.zeros((HI,HI,4),dtype=np.uint8)
+            positive=relief>=0
+            dark=np.array([9,12,11],dtype=np.uint8)
+            for c in range(3):
+                ra[...,c]=np.where(positive,high[c],dark[c]).astype(np.uint8)
+            ra[...,3]=(np.abs(relief)*74*arr).astype(np.uint8)
+            out.alpha_composite(Image.fromarray(ra,"RGBA"))
+
+        # Grown ribs follow each plate's actual long axis.  Avoid repeated
+        # all-vertical grooves that read as generic procedural sci-fi panels.
         pb=pm.getbbox()
         if pb:
             px0,py0,px1,py1=pb; pw=px1-px0; ph=py1-py0
             rng=random.Random(99001+seed*131)
             detail=Image.new("RGBA",(HI,HI),(0,0,0,0))
             dd=ImageDraw.Draw(detail)
-            for k,xf in enumerate((.36,.64)):
+            horizontal=pw>ph*1.18
+            for f in (.39,.64):
                 pts2=[]
-                phase=rng.uniform(-.5,.5)
-                for j in range(9):
-                    t=j/8
-                    xx=px0+pw*(xf+math.sin(t*math.pi*1.7+phase)*.035)
-                    yy=py0+ph*(.12+.76*t)
+                phase=rng.uniform(-.45,.45)
+                for j in range(11):
+                    t=j/10
+                    if horizontal:
+                        xx=px0+pw*(.10+.80*t)
+                        yy=py0+ph*(f+math.sin(t*math.pi*1.55+phase)*.045)
+                    else:
+                        xx=px0+pw*(f+math.sin(t*math.pi*1.55+phase)*.040)
+                        yy=py0+ph*(.10+.80*t)
                     pts2.append((int(xx),int(yy)))
-                darkw=max(3,int(pw*.030))
-                litew=max(1,int(pw*.010))
-                dd.line(pts2,fill=(11,14,13,175),width=darkw,joint="curve")
-                dd.line([(x-2,y-1) for x,y in pts2],
-                        fill=tuple(int(v) for v in high)+(125,),width=litew,joint="curve")
+                cross=max(1,min(pw,ph))
+                darkw=max(3,int(cross*.035))
+                litew=max(1,int(cross*.012))
+                dd.line(pts2,fill=(10,13,12,178),width=darkw,joint="curve")
+                dd.line([(x-2,y-2) for x,y in pts2],
+                        fill=tuple(int(v) for v in high)+(132,),width=litew,joint="curve")
+
+            if pw*ph>6500:
+                cx=(px0+px1)//2; cy=(py0+py1)//2
+                side=-1 if seed%2 else 1
+                branch=[(cx,cy),(int(cx+side*pw*.12),int(cy-ph*.08)),(int(cx+side*pw*.24),int(cy-ph*.02))]
+                dd.line(branch,fill=(12,15,14,140),width=max(2,int(min(pw,ph)*.025)),joint="curve")
+                dd.line([(x-1,y-1) for x,y in branch],
+                        fill=tuple(int(v) for v in high)+(82,),width=1,joint="curve")
+
             detail=self._clip(detail,pm)
             out.alpha_composite(detail)
         return pm
