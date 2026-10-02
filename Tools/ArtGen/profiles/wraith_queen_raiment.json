@@ -55,6 +55,16 @@
           "Wraith"
         ],
         "image_policy": "metadata_only"
+      },
+      {
+        "url": "https://www.gateworld.net/atlantis/s5/the-queen/transcript/",
+        "role": "screen_context_queen_bearing_throne_and_costume",
+        "required_terms": [
+          "Wraith Queen",
+          "Teyla",
+          "throne"
+        ],
+        "image_policy": "metadata_only"
       }
     ],
     "minimum_live_sources": 4,
@@ -1737,5 +1747,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-02-queen-costume-blueprint-v2"
+  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-source-repair"
 }
