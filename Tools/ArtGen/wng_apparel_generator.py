@@ -663,7 +663,61 @@ class SynthesisPass:
         spec=(np.clip((lum-.54)/.34,0,1)**2.4)*(0.4+0.6*bevel)
         rgb=np.clip(rgb+spec[...,None]*(np.array([28,33,30]) if not bone else np.array([20,20,21])),0,255)
         out=np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)])
-        return Image.fromarray(out,"RGBA")
+        base=Image.fromarray(out,"RGBA")
+
+        # Grown Wraith surface detail: longitudinal striation, branching grooves,
+        # pitting and rubbed ridges. These are material structure, not panel shapes.
+        detail=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        dd=ImageDraw.Draw(detail)
+        rng=random.Random(73019 + int(seed_offset)*97 + x0*3 + y0*5)
+        ridge_count=7 if bone else 5
+        for i in range(ridge_count):
+            frac=(i+1)/(ridge_count+1)
+            cx=x0+frac*w
+            amp=w*(.018 if bone else .026)
+            pts=[]
+            for j in range(15):
+                t=j/14
+                yy0=y0+t*h
+                curve=math.sin(t*math.pi*1.4 + i*.72)*amp
+                taper=(1-abs(t-.5)*1.2)
+                xx0=cx+curve*taper+rng.uniform(-1.6,1.6)
+                pts.append((int(xx0),int(yy0)))
+            # recessed groove + narrow raised lip, like cast/grown bone/chitin
+            dd.line(pts,fill=(20,22,22,105 if not bone else 80),width=max(2,int(w*.010)),joint="curve")
+            lip=[(x+max(1,int(w*.006)),y) for x,y in pts]
+            dd.line(lip,fill=(213,216,214,70 if not bone else 100),width=max(1,int(w*.0045)),joint="curve")
+
+        # Small branching growth marks, sparse enough to survive RimWorld scale.
+        branches=4 if bone else 3
+        for i in range(branches):
+            sy=y0+h*(.22+i*.16)+rng.uniform(-.025*h,.025*h)
+            side=-1 if i%2==0 else 1
+            sx=x0+w*(.50+rng.uniform(-.08,.08))
+            ex=sx+side*w*rng.uniform(.18,.32)
+            ey=sy+h*rng.uniform(.035,.085)
+            midx=(sx+ex)/2+side*w*.035
+            midy=(sy+ey)/2-h*.025
+            dd.line([(int(sx),int(sy)),(int(midx),int(midy)),(int(ex),int(ey))],
+                    fill=(29,31,31,92),width=max(2,int(w*.008)),joint="curve")
+            dd.line([(int(sx+2),int(sy-1)),(int(midx+2),int(midy-1)),(int(ex+2),int(ey-1))],
+                    fill=(196,199,198,45),width=max(1,int(w*.0035)),joint="curve")
+
+        # Pores, scars and rubbed production wear.
+        pore_count=max(3,int((w*h)/(HI*HI)*55))
+        for _ in range(pore_count):
+            px=rng.randint(x0,max(x0,x1-1)); py=rng.randint(y0,max(y0,y1-1))
+            rr=rng.choice([1,1,2,2,3])
+            dd.ellipse((px-rr,py-rr,px+rr,py+rr),fill=(18,19,20,rng.randint(25,65)))
+        for _ in range(max(2,pore_count//4)):
+            sx=rng.randint(x0,max(x0,x1-1)); sy=rng.randint(y0,max(y0,y1-1))
+            ln=rng.randint(max(5,int(w*.06)),max(7,int(w*.16)))
+            dd.line((sx,sy,min(x1-1,sx+ln),sy+rng.randint(-3,4)),
+                    fill=(226,226,224,rng.randint(35,75)),width=1)
+
+        detail=self._clip(detail,mask)
+        base.alpha_composite(detail)
+        return base
 
     def _membrane(self, mask, hist=None):
         p=self.palette
