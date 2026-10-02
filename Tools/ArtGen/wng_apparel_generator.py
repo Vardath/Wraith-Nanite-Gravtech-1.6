@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
+from PIL import Image, ImageDraw, ImageFilter, ImageEnhance, ImageChops
 from bs4 import BeautifulSoup
 import argparse, hashlib, io, json, math, random, re, subprocess
 import numpy as np
