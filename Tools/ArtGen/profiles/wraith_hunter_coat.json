@@ -162,7 +162,9 @@
       "west"
     ],
     "silhouette_rule": "vanilla_duster_alpha_authoritative",
-    "readability_rule": "must read as a long coat/vest ensemble at 192x192 and normal pawn zoom; material and construction cues must survive without changing the vanilla Duster contour"
+    "readability_rule": "must read as a long coat/vest ensemble at 192x192 and normal pawn zoom; material and construction cues must survive without changing the vanilla Duster contour",
+    "implementation_mode": "svg_family_deformed",
+    "tile_scale": 0.8
   },
   "stage_3_synthesis": {
     "wNG_quality_benchmarks": [
@@ -1598,5 +1600,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-02-hunter-costume-blueprint-v2"
+  "profile_revision": "2026-10-02-hunter-costume-blueprint-v2-duster-svg"
 }

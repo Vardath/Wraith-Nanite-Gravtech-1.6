@@ -231,10 +231,45 @@ class RimWorldImplementationPass:
         tile.paste(crop,((HI-tw)//2,(HI-th)//2))
         return {"masks":masks,"tile":tile,"metrics":metrics}
 
+    def _svg_family_run(self, fam: str) -> dict:
+        """Use a vanilla male SVG contour as the authoritative apparel family,
+        then deform that contour to the actual vanilla pawn body variants.
+
+        Some vanilla apparel families (notably Duster) are distributed in the
+        reference repository as SVG source rather than per-body PNG exports.
+        This keeps RimWorld geometry authoritative instead of inventing a fallback.
+        """
+        masks={}; metrics={}; bases={}
+        for d in ("south","north","east"):
+            p=self.vanilla_dir/f"{fam}_Male_{d}.svg"
+            if not p.exists():
+                raise FileNotFoundError(p)
+            bases[d]=self._svg_mask(p)
+
+        for body in self.cfg["body_types"]:
+            masks[body]={}
+            for d in ("south","north","east"):
+                m=self._deform_powerarmor(bases[d],body,d)
+                masks[body][d]=m
+                b=m.getbbox()
+                metrics[f"{body}_{d}"]={"bbox":list(b),"opaque":int((np.array(m)>128).sum())}
+
+        src=masks["Male"]["south"]
+        sb=src.getbbox()
+        crop=src.crop(sb)
+        scale=float(self.cfg.get("tile_scale",.78))
+        tw=max(1,int((sb[2]-sb[0])*scale)); th=max(1,int((sb[3]-sb[1])*scale))
+        crop=crop.resize((tw,th),Image.Resampling.LANCZOS)
+        tile=Image.new("L",(HI,HI),0)
+        tile.paste(crop,((HI-tw)//2,(HI-th)//2))
+        return {"masks":masks,"tile":tile,"metrics":metrics}
+
     def run(self) -> dict:
         mode=self.cfg.get("implementation_mode","png_family")
         if mode=="powerarmor_svg_deformed":
             return self._powerarmor_run()
+        if mode=="svg_family_deformed":
+            return self._svg_family_run(self.cfg["vanilla_family"])
 
         fam=self.cfg["vanilla_family"]
         masks={}
