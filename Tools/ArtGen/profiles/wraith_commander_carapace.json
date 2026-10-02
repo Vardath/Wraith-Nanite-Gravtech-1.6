@@ -8,25 +8,25 @@
       {
         "url": "https://www.stargate-fusion.com/fiches/coulisses/23-costumes-uniformes/5733-commandant-wraith-lunion-fait-la-force.html",
         "role": "screen_used_wraith_commander_costume_primary",
-        "required_terms": ["trenchcoat", "cuir", "reptile", "épaulettes", "laçage"],
+        "required_terms": ["Wraith costume", "cuir", "épaulettes"],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.stargate-fusion.com/fiches/6511-costume-commandant-wraith.html",
+        "role": "screen_used_wraith_commander_layering",
+        "required_terms": ["Wraith Costume", "cuir souple", "panneaux texturés"],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://josephmallozzi.com/2008/10/25/october-25-2008-stargate-atlantis-constume-designer-val-halverson-answers-your-questions/",
         "role": "stargate_atlantis_costume_designer_primary",
-        "required_terms": ["WRAITH", "COMMANDER", "COSTUME"],
-        "image_policy": "og_and_relevant"
-      },
-      {
-        "url": "https://www.gateworld.net/atlantis/s5/outsiders/",
-        "role": "commander_costume_on_set_context",
-        "required_terms": ["Wraith commander", "leather coats"],
+        "required_terms": ["WRAITH COSTUME", "LEATHER", "GAUNTLETS"],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://abcdocz.com/doc/68928/",
         "role": "production_wraith_carapace_material_reference",
-        "required_terms": ["Carapace torso armor", "black leather under-vest", "simulated bone silver shoulder armor"],
+        "required_terms": ["Carapace torso armor", "hard rubber silver front and back armor", "black leather under-vest"],
         "image_policy": "metadata_only"
       },
       {
@@ -36,14 +36,20 @@
         "image_policy": "og_and_relevant"
       },
       {
-        "url": "https://www.gateworld.net/news/2009/08/stitches-in-time/",
-        "role": "stargate_costume_department_context",
-        "required_terms": ["Wraith", "bone armor"],
+        "url": "https://www.stargate-fusion.com/fiches/5691-costume-wraith-teyla-la-nouvelle-reine.html",
+        "role": "reptile_leather_and_rank_material_language",
+        "required_terms": ["reptile", "cuir", "corset"],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.stargate-fusion.com/fiches/coulisses/37-accessoires-de-tournage/5938-dispositif-douverture-de-porte-wraith-2.html",
+        "role": "organic_wraith_surface_language",
+        "required_terms": ["organique", "latex", "vert"],
         "image_policy": "og_and_relevant"
       }
     ],
-    "minimum_live_sources": 4,
-    "minimum_visual_references": 1,
+    "minimum_live_sources": 5,
+    "minimum_visual_references": 2,
     "design_rules": {
       "material_priority": [
         ["green_black_leather_command_shell", 0.36],
