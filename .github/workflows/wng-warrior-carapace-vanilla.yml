@@ -37,3 +37,5 @@ jobs:
           git commit -m "Rebuild Warrior Carapace on vanilla RimWorld armor template [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
+
+# fresh run after canvas-safety correction
