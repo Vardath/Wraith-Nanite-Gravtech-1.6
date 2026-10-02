@@ -347,7 +347,7 @@ class SynthesisPass:
         ship_contrast=[x["contrast"] for x in self.benchmark_stats]
         live_contrast=[x["contrast"] for x in self.ref.image_stats if min(x.get("size",[0,0]))>=100 and 15<x["contrast"]<95]
         vals=ship_contrast+live_contrast
-        target=min(float(np.median(vals)) if vals else 28.0,28.0)
+        target=min(float(np.median(vals)) if vals else 32.0,32.0)
 
         a=np.array(out,dtype=np.float32)
         m=np.array(mask)>16
@@ -370,19 +370,19 @@ class SynthesisPass:
         catch=(dist>3)&(dist<=8)
         recess=(dist>8)&(dist<=15)
         rgb[outer]=np.clip(rgb[outer]-np.array([8,8,8]),0,255)
-        rgb[catch]=np.clip(rgb[catch]+np.array([12,13,12]),0,255)
+        rgb[catch]=np.clip(rgb[catch]+np.array([15,16,15]),0,255)
         rgb[recess]=np.clip(rgb[recess]-np.array([3,3,3]),0,255)
 
         lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
         cur=lum[m].std() if m.any() else 1
-        scale=np.clip(target/max(cur,1),1.0,1.58)
+        scale=np.clip(target/max(cur,1),1.0,1.88)
         mean=rgb[m].mean(axis=0) if m.any() else np.array([45,48,46])
         rgb=(rgb-mean)*scale+mean
         a[...,:3]=np.clip(rgb,0,255)
         a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=ImageEnhance.Contrast(out).enhance(1.09)
-        out=out.filter(ImageFilter.UnsharpMask(radius=1.10,percent=64,threshold=4))
+        out=ImageEnhance.Contrast(out).enhance(1.15)
+        out=out.filter(ImageFilter.UnsharpMask(radius=1.10,percent=76,threshold=3))
         out.putalpha(mask)
         return out
 
