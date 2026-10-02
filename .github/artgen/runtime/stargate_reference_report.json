@@ -35,7 +35,7 @@
         "LEATHER": true
       },
       "http_status": 200,
-      "sha256": "5fe5877df3c899d5c7fc96bf17c19aeaf0fbb45b5af3fc3b44c9d8db4f603c68"
+      "sha256": "e5f7c706bf2fd5cf9410ddf7eb0962241fec31ff0b73e2661a4dd2fbeccb29f6"
     },
     {
       "url": "https://buggybag.wordpress.com/2010/10/19/queen-of-the-wraith/",
@@ -46,7 +46,7 @@
         "leather": true
       },
       "http_status": 200,
-      "sha256": "407620d9960403b19fbc8e45af8529269af99a525bb477e74a01ad6eb0722236"
+      "sha256": "4167f2179621c0b0cde76f8f173bcf188d1d3c881e64842959455c733b8087e6"
     },
     {
       "url": "https://www.wormholeriders.com/blog/2009/04/19/valerie-halversons-qa/",
@@ -57,7 +57,7 @@
         "costume": true
       },
       "http_status": 200,
-      "sha256": "3d8d7bf6f5a2a6162161bbf171639cbd5802133c6b140ae8e9947b312cdb7153"
+      "sha256": "acb27d0b6d8ceb5bbe98a405812e8425bce3c14f06f964b6a2bd2520f89494c9"
     },
     {
       "url": "https://www.gateworld.net/news/2009/08/stitches-in-time/",
@@ -65,7 +65,7 @@
       "ok": false,
       "terms": {},
       "http_status": 403,
-      "sha256": "c8839127d7bc547f8cdaac37712ccede12b4d162549e2de24ab7697309fcbe60",
+      "sha256": "c277b8340cef8d3af0f7a68ffeae6c6077684ec23a675d35d14c31aee6b45510",
       "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/news/2009/08/stitches-in-time/"
     },
     {
@@ -74,7 +74,7 @@
       "ok": false,
       "terms": {},
       "http_status": 403,
-      "sha256": "eb54c39f4d53efb8db0d57d36fb6681e2211467fb9324ac35b9406e438933106",
+      "sha256": "593d647ece7e759a5cd93936ec1162ea81f24df06a08aeb5f5f54b86100b104d",
       "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/"
     },
     {
@@ -83,7 +83,7 @@
       "ok": false,
       "terms": {},
       "http_status": 403,
-      "sha256": "99ab9d0e16c533512a421ed96a54a76474aef824b42e9fe3595e526d01280290",
+      "sha256": "e492d48f6bcb917afccc25e4c20bea34c42a0cdb1386e23b6a6806f7d7754b7f",
       "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/wiki/Wraith_hive"
     }
   ],
