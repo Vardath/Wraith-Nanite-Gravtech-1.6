@@ -118,6 +118,22 @@ class StargateReferencePass:
         rep=RefReport(verified,len(self.cfg["sources"]),pages,image_stats)
         self.workdir.mkdir(parents=True,exist_ok=True)
         (self.workdir/"stargate_reference_report.json").write_text(json.dumps(rep.__dict__,indent=2))
+
+        # Carry the costume research into synthesis as an explicit design brief.
+        # ArtGen is not allowed to collapse faction identity into a colour palette.
+        design=self.cfg.get("design_rules",{})
+        brief={
+            "faction":self.profile.get("faction"),
+            "item":self.profile.get("item"),
+            "verified_sources":verified,
+            "source_roles":[p["role"] for p in pages if p.get("ok")],
+            "materials":design.get("material_priority",[]),
+            "construction":design.get("construction",[]),
+            "motifs":design.get("motifs",[]),
+            "avoid":design.get("avoid",[]),
+            "visual_reference_count":len(image_stats)
+        }
+        (self.workdir/"stargate_design_brief.json").write_text(json.dumps(brief,indent=2))
         return rep
 
 class RimWorldImplementationPass:
@@ -246,6 +262,7 @@ class SynthesisPass:
         self.palette=self.s3["palette"]
         self.rng=np.random.default_rng(int(hashlib.sha256(profile["id"].encode()).hexdigest()[:8],16))
         self.benchmark_stats=self._benchmark_stats()
+        self.garment_metrics=[]
 
     def _benchmark_stats(self):
         stats=[]
@@ -261,10 +278,18 @@ class SynthesisPass:
         return stats
 
     def _historical(self, item: str, body: str, direction: str, bb) -> Image.Image:
-        base=f"Textures/Things/Pawn/Humanlike/Apparel/Wraith/{item}_{body}_{direction}.png"
-        try: raw=subprocess.check_output(["git","show",f"{HIST_REF}:{base}"])
+        # Accept either an item stem or a full repository-relative texture stem.
+        # Historical art may inform fold/value detail only; it is never silhouette authority.
+        if "/" in item:
+            stem=item
+        else:
+            outdir=self.profile.get("output_dir","Wraith")
+            stem=f"Textures/Things/Pawn/Humanlike/Apparel/{outdir}/{item}"
+        base=f"{stem}_{body}_{direction}.png"
+        try:
+            raw=subprocess.check_output(["git","show",f"{HIST_REF}:{base}"])
         except subprocess.CalledProcessError:
-            raw=subprocess.check_output(["git","show",f"{HIST_REF}:Textures/Things/Pawn/Humanlike/Apparel/Wraith/{item}_Male_{direction}.png"])
+            raw=subprocess.check_output(["git","show",f"{HIST_REF}:{stem}_Male_{direction}.png"])
         im=Image.open(io.BytesIO(raw)).convert("RGBA")
         sb=im.getchannel("A").getbbox()
         crop=im.crop(sb).resize((bb[2]-bb[0],bb[3]-bb[1]),Image.Resampling.LANCZOS)
@@ -354,6 +379,289 @@ class SynthesisPass:
         if feather:
             m=m.filter(ImageFilter.GaussianBlur(feather))
         return m
+
+    def _smooth_path_points(self, bb, pts, passes=3):
+        """Convert normalized garment-pattern points to a smooth authored curve."""
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        q=[(x0+float(x)*w,y0+float(y)*h) for x,y in pts]
+        if len(q)<3:
+            return q
+        for _ in range(max(0,int(passes))):
+            nxt=[]
+            for i,p0 in enumerate(q):
+                p1=q[(i+1)%len(q)]
+                nxt.append((.75*p0[0]+.25*p1[0],.75*p0[1]+.25*p1[1]))
+                nxt.append((.25*p0[0]+.75*p1[0],.25*p0[1]+.75*p1[1]))
+            q=nxt
+        return q
+
+    def _garment_mask(self, bb, pts, outer_mask, feather=.65):
+        """Semantic garment-piece mask. Curves are smoothed; hard polygons are forbidden."""
+        q=self._smooth_path_points(bb,pts,3)
+        m=Image.new("L",(HI,HI),0)
+        ImageDraw.Draw(m).polygon([(int(x),int(y)) for x,y in q],fill=255)
+        if feather:
+            m=m.filter(ImageFilter.GaussianBlur(float(feather)))
+        return ImageChops.multiply(m,outer_mask)
+
+    def _material_spec(self, name):
+        mats=self.s3.get("materials",{})
+        if name not in mats:
+            raise RuntimeError(f"Costume material '{name}' is not defined in stage_3_synthesis.materials")
+        spec=mats[name]
+        for k in ("shadow","mid","high","kind"):
+            if k not in spec:
+                raise RuntimeError(f"Costume material '{name}' missing '{k}'")
+        return spec
+
+    def _garment_fold_field(self, bb, guides):
+        """Paint authored drape/folds from garment-pattern guides, never cloud-noise folds."""
+        field=np.zeros((HI,HI),dtype=np.float32)
+        if not guides:
+            return field
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        for g in guides:
+            pts=[(int(x0+float(x)*w),int(y0+float(y)*h)) for x,y in g.get("points",[])]
+            if len(pts)<2:
+                continue
+            width=max(2.0,float(g.get("width",.018))*min(w,h))
+            strength=float(g.get("strength",1.0))
+            line=Image.new("L",(HI,HI),0)
+            ImageDraw.Draw(line).line(pts,fill=255,width=max(1,int(width*.45)),joint="curve")
+            a=np.array(line,dtype=np.float32)/255.0
+            # Dark crease with a broader raised shoulder: cloth/leather drape, not panels.
+            crease=gaussian_filter(a,max(.8,width*.24))
+            shoulder=gaussian_filter(a,max(1.6,width*1.20))
+            field += strength*(shoulder*.72-crease*1.10)
+        return np.clip(field,-1.5,1.5)
+
+    def _garment_material(self, mask, material_name, hist=None, fold_guides=None, seed_offset=0):
+        """Professional costume material painter driven by semantic material profiles."""
+        spec=self._material_spec(material_name)
+        kind=str(spec["kind"]).lower()
+        lo=np.array(spec["shadow"],dtype=np.float32)
+        mi=np.array(spec["mid"],dtype=np.float32)
+        hi=np.array(spec["high"],dtype=np.float32)
+        rough=float(spec.get("roughness",.55))
+        grain=float(spec.get("grain",.18))
+        m=np.array(mask,dtype=np.float32)/255.0
+        inside=m>.08
+        if not inside.any():
+            return Image.new("RGBA",(HI,HI),(0,0,0,0))
+
+        yy,xx=np.mgrid[0:HI,0:HI]
+        bb=mask.getbbox(); x0,y0,x1,y1=bb
+        w=max(1,x1-x0); h=max(1,y1-y0)
+        lx=(xx-x0)/w; ly=(yy-y0)/h
+
+        # Broad upper-left form light supports RimWorld readability.
+        broad=.52 + .19*(1-ly) + .12*(1-lx)
+        fold=self._garment_fold_field(bb,fold_guides or [])
+
+        # Historical WNG clothing can lend fine painted relief, never outline or colour.
+        relief=np.zeros((HI,HI),dtype=np.float32)
+        if hist is not None:
+            hl=np.array(hist.convert("L"),dtype=np.float32)
+            hf=gaussian_filter(hl,1.2)-gaussian_filter(hl,8.5)
+            vals=np.abs(hf[inside])
+            if vals.size:
+                relief=np.clip(hf/max(4.0,float(np.percentile(vals,88))),-1,1)
+
+        # Material-specific surface response. Randomness is deliberately subordinate
+        # to authored folds/seams so the result reads as wardrobe, not procedural texture.
+        rng=np.random.default_rng(17117+int(seed_offset)*31)
+        n=rng.normal(0,1,(HI,HI))
+        fine=gaussian_filter(n,1.0)
+        fine=(fine-fine.mean())/(fine.std()+1e-6)
+        medium=gaussian_filter(n,7.0)
+        medium=(medium-medium.mean())/(medium.std()+1e-6)
+        surface=(fine*.35+medium*.65)*grain
+
+        if kind in ("cloth","woven","uniform_fabric"):
+            weave=(np.sin(xx*.42)+np.sin(yy*.46))*0.018
+            surface += weave
+        elif kind in ("leather","reptile_leather"):
+            surface *= .72
+        elif kind in ("silk","satin"):
+            surface *= .35
+        elif kind in ("crystalline_fabric","ancient_fabric"):
+            surface *= .28
+
+        dist=distance_transform_edt(inside)
+        edge=np.clip(1-dist/10,0,1)
+        lum=broad + fold*.22 + relief*.08 + surface*.025 - edge*.08
+        lum=np.clip(lum,0,1)
+
+        rgb=np.empty((HI,HI,3),dtype=np.float32)
+        lower=lum<.52
+        t=np.clip(lum/.52,0,1)
+        rgb[lower]=lo+(mi-lo)*t[lower,None]
+        t2=np.clip((lum-.52)/.48,0,1)
+        rgb[~lower]=mi+(hi-mi)*t2[~lower,None]
+
+        # Material-appropriate highlight response.
+        specular=(np.clip((lum-.58)/.32,0,1)**(1.7+rough*2.2))*(1-rough*.55)
+        spec_tint=np.array(spec.get("specular_tint",[30,30,30]),dtype=np.float32)
+        rgb=np.clip(rgb+specular[...,None]*spec_tint,0,255)
+
+        out=Image.fromarray(np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)]),"RGBA")
+
+        # Reptile leather gets deliberate scale arcs, but only as a surface treatment.
+        if kind=="reptile_leather":
+            tex=Image.new("RGBA",(HI,HI),(0,0,0,0))
+            d=ImageDraw.Draw(tex)
+            step_x=max(16,int(w*.065)); step_y=max(10,int(step_x*.55))
+            rr=random.Random(81011+int(seed_offset)*71)
+            row=0
+            for y in range(y0-step_y,y1+step_y,step_y):
+                off=step_x//2 if row%2 else 0
+                for x in range(x0-step_x,x1+step_x,step_x):
+                    cx=x+off+rr.randint(-1,1); cy=y+rr.randint(-1,1)
+                    rx=max(5,int(step_x*.42)); ry=max(3,int(step_y*.42))
+                    d.arc((cx-rx,cy-ry,cx+rx,cy+ry),190,350,fill=(7,8,8,145),width=max(1,int(w*.006)))
+                    d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),15,165,fill=(185,185,178,48),width=1)
+                row+=1
+            out.alpha_composite(self._clip(tex,mask))
+        return out
+
+    def _garment_seam(self, out, bb, seam):
+        pts=seam.get("points",[])
+        if len(pts)<2:
+            return
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        q=[(int(x0+float(x)*w),int(y0+float(y)*h)) for x,y in pts]
+        width=max(1,int(float(seam.get("width",.006))*min(w,h)))
+        d=ImageDraw.Draw(out)
+        d.line(q,fill=tuple(seam.get("shadow",[10,11,11]))+(int(seam.get("alpha",180)),),width=max(1,width+2),joint="curve")
+        d.line([(x-1,y-1) for x,y in q],fill=tuple(seam.get("highlight",[118,122,117]))+(110,),width=max(1,width),joint="curve")
+        if seam.get("stitch",False):
+            self._stitch(out,q,max(9,int(float(seam.get("stitch_spacing",.035))*h)),
+                         tuple(seam.get("stitch_color",[118,110,105]))+(150,))
+
+    def _garment_closure(self, out, bb, closure):
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        typ=closure.get("type","snaps")
+        if typ=="snaps":
+            a=closure["from"]; b=closure["to"]; count=max(1,int(closure.get("count",5)))
+            for i in range(count):
+                t=(i+.5)/count
+                x=int(x0+(a[0]*(1-t)+b[0]*t)*w); y=int(y0+(a[1]*(1-t)+b[1]*t)*h)
+                self._snap(out,x,y,max(2,int(min(w,h)*float(closure.get("radius",.008)))))
+        elif typ=="lacing":
+            l0,l1=closure["left"]; r0,r1=closure["right"]
+            self._lacing(
+                out,
+                [(int(x0+l0[0]*w),int(y0+l0[1]*h)),(int(x0+l1[0]*w),int(y0+l1[1]*h))],
+                [(int(x0+r0[0]*w),int(y0+r0[1]*h)),(int(x0+r1[0]*w),int(y0+r1[1]*h))],
+                int(closure.get("pairs",7))
+            )
+        elif typ=="zipper":
+            a=closure["from"]; b=closure["to"]
+            p0=(int(x0+a[0]*w),int(y0+a[1]*h)); p1=(int(x0+b[0]*w),int(y0+b[1]*h))
+            d=ImageDraw.Draw(out)
+            d.line((p0,p1),fill=(12,12,13,210),width=max(2,int(min(w,h)*.010)))
+            length=max(1,int(math.dist(p0,p1))); teeth=max(4,int(closure.get("teeth",10)))
+            for i in range(teeth):
+                t=(i+.5)/teeth
+                x=int(p0[0]*(1-t)+p1[0]*t); y=int(p0[1]*(1-t)+p1[1]*t)
+                d.line((x-2,y,x+2,y),fill=(128,126,124,155),width=1)
+        elif typ=="belt":
+            a=closure["from"]; b=closure["to"]
+            p0=(int(x0+a[0]*w),int(y0+a[1]*h)); p1=(int(x0+b[0]*w),int(y0+b[1]*h))
+            d=ImageDraw.Draw(out)
+            d.line((p0,p1),fill=(18,18,18,225),width=max(3,int(min(w,h)*float(closure.get("width",.018)))))
+            t=.5; x=int(p0[0]*(1-t)+p1[0]*t); y=int(p0[1]*(1-t)+p1[1]*t)
+            rr=max(2,int(min(w,h)*.012))
+            d.rectangle((x-rr,y-rr,x+rr,y+rr),outline=(137,133,126,190),width=max(1,rr//3))
+
+    def _garment_wear(self, out, bb, wear):
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        rng=random.Random(44531+int(wear.get("seed",0))*101)
+        count=max(0,int(wear.get("count",4)))
+        d=ImageDraw.Draw(out)
+        for _ in range(count):
+            x=int(x0+rng.uniform(*wear.get("x_range",[.18,.82]))*w)
+            y=int(y0+rng.uniform(*wear.get("y_range",[.22,.90]))*h)
+            ln=max(3,int(w*rng.uniform(.025,.075)))
+            dy=rng.randint(-3,3)
+            d.line((x,y,min(x1-1,x+ln),y+dy),fill=tuple(wear.get("highlight",[171,170,163]))+(rng.randint(35,75),),width=1)
+            d.line((x+1,y+2,min(x1-1,x+ln)+1,y+dy+2),fill=(8,9,9,rng.randint(40,85)),width=1)
+
+    def _render_costume_blueprint(self, body, direction, mask):
+        """Profile-driven Stargate wardrobe renderer.
+
+        It paints named costume pieces (lapel, yoke, vest, sash, epaulette, cuff,
+        hem, skirt/tail, belt, etc.) rather than arbitrary armour panels.
+        """
+        bp=self.s3["garment_blueprint"]
+        view=bp["views"][direction]
+        bb=mask.getbbox()
+        if not bb:
+            return Image.new("RGBA",(OUT,OUT),(0,0,0,0))
+
+        refs=self.s3.get("historical_continuity",[])
+        hist=None
+        if refs:
+            try:
+                hist=self._historical(refs[int(bp.get("historical_reference_index",0))],body,direction,bb)
+            except Exception:
+                hist=None
+
+        base_material=bp["base_material"]
+        out=self._garment_material(mask,base_material,hist,view.get("folds",[]),100)
+        semantic_union=Image.new("L",(HI,HI),0)
+        max_piece_frac=0.0
+        mask_area=max(1,int((np.array(mask)>16).sum()))
+
+        for i,piece in enumerate(view.get("pieces",[])):
+            pm=self._garment_mask(bb,piece["points"],mask,float(piece.get("feather",.65)))
+            semantic_union=ImageChops.lighter(semantic_union,pm)
+            frac=float((np.array(pm)>16).sum()/mask_area)
+            max_piece_frac=max(max_piece_frac,frac)
+            layer=self._garment_material(pm,piece["material"],hist,piece.get("folds",[]),200+i)
+            out.alpha_composite(layer)
+            if piece.get("mirror_x"):
+                mirrored=pm.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                layer2=self._garment_material(mirrored,piece["material"],hist,piece.get("folds",[]),300+i)
+                out.alpha_composite(layer2)
+                semantic_union=ImageChops.lighter(semantic_union,mirrored)
+                max_piece_frac=max(max_piece_frac,float((np.array(mirrored)>16).sum()/mask_area))
+
+        for seam in view.get("seams",[]):
+            self._garment_seam(out,bb,seam)
+        for closure in view.get("closures",[]):
+            self._garment_closure(out,bb,closure)
+        if view.get("wear"):
+            self._garment_wear(out,bb,view["wear"])
+
+        covered=float((np.array(semantic_union)>16).sum()/mask_area)
+        self.garment_metrics.append({
+            "body":body,
+            "direction":direction,
+            "design_class":bp["design_class"],
+            "piece_count":len(view.get("pieces",[])),
+            "semantic_piece_coverage":covered,
+            "base_visible_fraction":max(0.0,1.0-covered),
+            "max_piece_fraction":max_piece_frac,
+            "seam_count":len(view.get("seams",[])),
+            "closure_count":len(view.get("closures",[]))
+        })
+
+        out=self._finish(out,mask)
+        out=out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        post=float(self.s3.get("post_downsample_contrast",1.0))
+        if abs(post-1.0)>1e-6:
+            alpha=out.getchannel("A")
+            out=ImageEnhance.Contrast(out).enhance(post)
+            out.putalpha(alpha)
+        return out
+
+    def _tile_costume_blueprint(self, mask):
+        out=self._render_costume_blueprint("Male","south",mask)
+        alpha=out.getchannel("A")
+        out=ImageEnhance.Contrast(out).enhance(float(self.s3.get("tile_contrast",1.06)))
+        out.putalpha(alpha)
+        return out
 
     def _line_mask(self, pts, width, blur=1.5):
         m=Image.new("L",(HI,HI),0); d=ImageDraw.Draw(m)
@@ -1093,6 +1401,8 @@ class SynthesisPass:
 
     def _paint(self, body, direction, mask):
         renderer=self.s3.get("renderer",self.profile["id"])
+        if renderer=="costume_blueprint_v2":
+            return self._render_costume_blueprint(body,direction,mask)
         if renderer=="wraith_warrior_carapace":
             return self._paint_warrior(body,direction,mask)
         if renderer=="wraith_commander_carapace":
@@ -1103,6 +1413,8 @@ class SynthesisPass:
 
     def _tile(self, mask):
         renderer=self.s3.get("renderer",self.profile["id"])
+        if renderer=="costume_blueprint_v2":
+            return self._tile_costume_blueprint(mask)
         if renderer=="wraith_warrior_carapace":
             return self._tile_warrior(mask)
         if renderer=="wraith_commander_carapace":
@@ -1120,6 +1432,22 @@ class SynthesisPass:
     def _qa(self, generated: dict, impl: dict):
         q=self.s3["quality"]
         rows=[]
+
+        if self.s3.get("renderer")=="costume_blueprint_v2":
+            contract=self.s3.get("garment_contract",{})
+            max_piece=float(contract.get("max_single_piece_fraction",.40))
+            min_base=float(contract.get("min_base_garment_visible_fraction",.32))
+            max_pieces=int(contract.get("max_semantic_pieces_per_view",14))
+            min_seams=int(contract.get("min_seams_per_view",1))
+            for gm in self.garment_metrics:
+                if gm["max_piece_fraction"]>max_piece:
+                    raise RuntimeError(f"GarmentQA oversized semantic piece {gm['body']} {gm['direction']}: {gm['max_piece_fraction']:.3f}")
+                if gm["base_visible_fraction"]<min_base:
+                    raise RuntimeError(f"GarmentQA base clothing lost under overlays {gm['body']} {gm['direction']}: {gm['base_visible_fraction']:.3f}")
+                if gm["piece_count"]>max_pieces:
+                    raise RuntimeError(f"GarmentQA too many pieces/panel-like fragmentation {gm['body']} {gm['direction']}: {gm['piece_count']}")
+                if gm["seam_count"]<min_seams:
+                    raise RuntimeError(f"GarmentQA lacks garment construction seams {gm['body']} {gm['direction']}")
         for key,im in generated.items():
             if key=="tile":
                 vm=impl["tile"].resize((OUT,OUT),Image.Resampling.LANCZOS)
@@ -1175,6 +1503,8 @@ class SynthesisPass:
         qa=self._qa(generated,self.impl)
         workdir.mkdir(parents=True,exist_ok=True)
         (workdir/"synthesis_qa.json").write_text(json.dumps(qa,indent=2))
+        if self.garment_metrics:
+            (workdir/"garment_construction_qa.json").write_text(json.dumps(self.garment_metrics,indent=2))
         if preview:
             order=["tile","Male_south","Male_north","Male_east","Female_south","Hulk_south"]
             sh=Image.new("RGBA",(OUT*3,OUT*2),(18,16,22,255))
@@ -1188,17 +1518,86 @@ def save_clean(im: Image.Image, p: Path):
     a=np.array(im.convert("RGBA")); a[a[...,3]==0,:3]=0
     Image.fromarray(a.astype(np.uint8),"RGBA").save(p,optimize=True)
 
+def validate_profile(profile: dict, path: Path|None=None):
+    where=str(path) if path else profile.get("id","<profile>")
+    for key in ("id","item","faction","stage_1_stargate","stage_2_rimworld","stage_3_synthesis"):
+        if key not in profile:
+            raise RuntimeError(f"{where}: missing required profile key '{key}'")
+    s1=profile["stage_1_stargate"]
+    rules=s1.get("design_rules",{})
+    if not s1.get("sources"):
+        raise RuntimeError(f"{where}: StargateReferencePass requires sources")
+    if not rules.get("material_priority") or not rules.get("construction") or not rules.get("motifs") or not rules.get("avoid"):
+        raise RuntimeError(f"{where}: Stargate design brief must define materials, construction, motifs and avoid rules")
+
+    s2=profile["stage_2_rimworld"]
+    if not s2.get("vanilla_family") or not s2.get("body_types"):
+        raise RuntimeError(f"{where}: RimWorldImplementationPass requires vanilla family and body types")
+
+    s3=profile["stage_3_synthesis"]
+    renderer=s3.get("renderer",profile["id"])
+    if renderer=="costume_blueprint_v2":
+        mats=s3.get("materials",{})
+        bp=s3.get("garment_blueprint")
+        if not mats or not bp:
+            raise RuntimeError(f"{where}: costume_blueprint_v2 requires materials and garment_blueprint")
+        if bp.get("design_class") not in ("coat","uniform","robe","dress","raiment","armoured_uniform","ceremonial"):
+            raise RuntimeError(f"{where}: invalid semantic garment design_class")
+        if bp.get("base_material") not in mats:
+            raise RuntimeError(f"{where}: base_material is not defined in materials")
+        forbidden=("panel","plate","polygon","geometric_shape","armor_panel","armour_panel")
+        allowed_roles={
+            "lapel","collar","yoke","vest","inset","epaulette","shoulder_layer","cuff",
+            "sleeve_overlay","waistband","belt","sash","skirt","coat_tail","hem","placket",
+            "corset","chest_wrap","back_insert","side_insert","bib","tunic_overlay",
+            "cuirass","shoulder_guard","shin_guard","thigh_guard","gauntlet"
+        }
+        for d in ("south","north","east"):
+            if d not in bp.get("views",{}):
+                raise RuntimeError(f"{where}: garment_blueprint missing '{d}' view")
+            view=bp["views"][d]
+            for piece in view.get("pieces",[]):
+                role=str(piece.get("role","")).lower()
+                name=str(piece.get("name","")).lower()
+                if not role or role not in allowed_roles:
+                    raise RuntimeError(f"{where}: costume piece must use a semantic garment role, got '{role}'")
+                if any(x in role or x in name for x in forbidden):
+                    raise RuntimeError(f"{where}: anonymous panel/plate geometry is forbidden in costume_blueprint_v2: {piece.get('name',role)}")
+                if piece.get("material") not in mats:
+                    raise RuntimeError(f"{where}: piece material '{piece.get('material')}' is undefined")
+                if len(piece.get("points",[]))<3:
+                    raise RuntimeError(f"{where}: garment piece '{piece.get('name',role)}' needs at least three authored pattern points")
+            if len(view.get("pieces",[]))>int(s3.get("garment_contract",{}).get("max_semantic_pieces_per_view",14)):
+                raise RuntimeError(f"{where}: too many semantic pieces in {d}; likely panel fragmentation")
+        for n,spec in mats.items():
+            for k in ("shadow","mid","high","kind"):
+                if k not in spec:
+                    raise RuntimeError(f"{where}: material '{n}' missing '{k}'")
+    return profile
+
 def load_profile(path: Path):
-    return json.loads(path.read_text())
+    return validate_profile(json.loads(path.read_text()),path)
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument("profile",help="profile id, e.g. wraith_hunter_coat")
-    ap.add_argument("--vanilla-dir",type=Path,required=True)
+    ap.add_argument("profile",nargs="?",help="profile id, e.g. wraith_hunter_coat")
+    ap.add_argument("--validate-profiles-only",action="store_true")
+    ap.add_argument("--vanilla-dir",type=Path)
     ap.add_argument("--body-dir",type=Path)
     ap.add_argument("--workdir",type=Path,default=Path(".github/artgen/runtime"))
     ap.add_argument("--preview",type=Path)
     args=ap.parse_args()
+
+    if args.validate_profiles_only:
+        checked=[]
+        for p in sorted(PROFILE_ROOT.glob("*.json")):
+            load_profile(p); checked.append(p.name)
+        print(json.dumps({"status":"ok","validated_profiles":checked}))
+        return
+    if not args.profile:
+        ap.error("profile is required unless --validate-profiles-only is used")
+    if args.vanilla_dir is None:
+        ap.error("--vanilla-dir is required for generation")
 
     profile=load_profile(PROFILE_ROOT/f"{args.profile}.json")
 

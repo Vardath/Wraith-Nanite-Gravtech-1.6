@@ -10,15 +10,15 @@ on:
   workflow_dispatch:
     inputs:
       profile:
-        description: 'Tools/ArtGen/profiles profile id'
+        description: 'Exactly one Tools/ArtGen/profiles profile id to generate'
         required: true
-        default: 'wraith_commander_carapace'
+        default: 'wraith_hunter_coat'
 
 permissions:
   contents: write
 
 jobs:
-  generate:
+  apparel-artgen:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,27 +29,46 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install ArtGen dependencies
+        run: python -m pip install --disable-pip-version-check pillow numpy scipy requests beautifulsoup4 cairosvg
+
+      - name: Compile and validate permanent ArtGen
+        run: |
+          python -m py_compile Tools/ArtGen/wng_apparel_generator.py
+          python Tools/ArtGen/wng_apparel_generator.py --validate-profiles-only
+
+      - name: Select exactly one apparel profile
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PROFILE="${{ github.event.inputs.profile }}"
+            test -f "Tools/ArtGen/profiles/${PROFILE}.json"
+            echo "HAS_PROFILE=true" >> "$GITHUB_ENV"
+            echo "PROFILE=${PROFILE}" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          mapfile -t CHANGED < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^Tools/ArtGen/profiles/\(.*\)\.json$#\1#p')
+          if [ "${#CHANGED[@]}" -eq 0 ]; then
+            echo "Generator/tooling-only change: validate architecture, do not regenerate clothing."
+            echo "HAS_PROFILE=false" >> "$GITHUB_ENV"
+          elif [ "${#CHANGED[@]}" -eq 1 ]; then
+            echo "HAS_PROFILE=true" >> "$GITHUB_ENV"
+            echo "PROFILE=${CHANGED[0]}" >> "$GITHUB_ENV"
+          else
+            echo "One clothing item at a time: found ${#CHANGED[@]} changed profiles." >&2
+            printf '%s\n' "${CHANGED[@]}" >&2
+            exit 1
+          fi
+
       - name: Fetch vanilla RimWorld implementation references
+        if: env.HAS_PROFILE == 'true'
         run: |
           git clone --depth 1 https://github.com/SamuelBucher/Madness-Pawns.git /tmp/madness
           git clone --depth 1 https://github.com/DaLongZhuaZi/RWonVela.git /tmp/rwvela
 
-      - name: Install ArtGen dependencies
-        run: python -m pip install --disable-pip-version-check pillow numpy scipy requests beautifulsoup4 cairosvg
-
-      - name: Select apparel profile
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.profile }}" ]; then
-            PROFILE="${{ github.event.inputs.profile }}"
-          else
-            PROFILE="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^Tools/ArtGen/profiles/\(.*\)\.json$#\1#p' | head -n 1)"
-            [ -n "$PROFILE" ] || PROFILE="wraith_commander_carapace"
-          fi
-          echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
-          echo "Selected WNG apparel profile: $PROFILE"
-
-      - name: Run ordered WNG apparel pipeline
+      - name: Run Stargate-first apparel pipeline
+        if: env.HAS_PROFILE == 'true'
         shell: bash
         run: |
           python Tools/ArtGen/wng_apparel_generator.py "$PROFILE" \
@@ -59,9 +78,11 @@ jobs:
             --preview /tmp/wng-apparel-contact-sheet.png
 
       - name: Validate RimWorld apparel implementation
+        if: env.HAS_PROFILE == 'true'
         run: python .github/artqa/apparel_art_audit.py
 
       - name: Commit live apparel assets only
+        if: env.HAS_PROFILE == 'true'
         shell: bash
         run: |
           ITEM="$(python -c "import json; p=json.load(open('Tools/ArtGen/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
