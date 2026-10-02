@@ -211,7 +211,7 @@ class RasterStudio:
         x0,y0,x1,y1=bb; w=max(1,x1-x0); h=max(1,y1-y0)
         ly=(yy-y0)/h
         edge=np.clip(1-dist/12,0,1)
-        lum=np.clip(.24+.52*diff+.08*(1-ly)-edge*.14+low*.008+fine*.002,0,1)
+        lum=np.clip(.31+.48*diff+.10*(1-ly)-edge*.105+low*.010+fine*.003,0,1)
 
         rgb=np.empty((HI,HI,3),np.float32)
         lower=lum<.5
@@ -245,9 +245,9 @@ class RasterStudio:
                 x=rng.randint(x0,x1-1); y=rng.randint(y0,y1-1)
                 ln=max(5,round(w*rng.uniform(.025,.085)))
                 dy=rng.randint(-4,4)
-                d.line((x,y,min(x1-1,x+ln),y+dy),fill=hi+(rng.randint(12,32),),width=1)
-                if rng.random()<.5:
-                    d.line((x+1,y+2,min(x1-1,x+ln)+1,y+dy+2),fill=sh+(rng.randint(15,38),),width=1)
+                d.line((x,y,min(x1-1,x+ln),y+dy),fill=hi+(rng.randint(18,42),),width=max(1,round(w*.0025)))
+                if rng.random()<.62:
+                    d.line((x+1,y+2,min(x1-1,x+ln)+1,y+dy+2),fill=sh+(rng.randint(20,46),),width=max(1,round(w*.0028)))
 
         elif kind=="reptile":
             step=max(14,round(w*.055)); row=0
@@ -256,8 +256,8 @@ class RasterStudio:
                 for x in range(x0-step,x1+step,step):
                     cx=x+off+rng.randint(-2,2); cy=y+rng.randint(-2,2)
                     rx=max(4,round(step*.40)); ry=max(3,round(step*.25))
-                    d.arc((cx-rx,cy-ry,cx+rx,cy+ry),190,350,fill=sh+(110,),width=max(1,round(step*.08)))
-                    d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),15,165,fill=hi+(30,),width=1)
+                    d.arc((cx-rx,cy-ry,cx+rx,cy+ry),190,350,fill=sh+(125,),width=max(1,round(step*.08)))
+                    d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),15,165,fill=hi+(44,),width=1)
                 row+=1
 
         elif kind=="rubber":
@@ -290,8 +290,21 @@ class RasterStudio:
         layer=ImageChops.multiply(layer,Image.merge("RGBA",(mask,mask,mask,mask)))
         out.alpha_composite(layer)
 
+        # Hand-rubbed edge wear: sparse directional catches, never a continuous outline.
+        dist=distance_transform_edt(np.array(mask)>16)
+        ring=(dist>1)&(dist<6)
+        ys,xs=np.nonzero(ring)
+        if len(xs):
+            wear=Image.new("RGBA",(HI,HI),(0,0,0,0))
+            wd=ImageDraw.Draw(wear)
+            for _ in range(min(26,max(6,len(xs)//900))):
+                k=rng.randrange(len(xs)); x=int(xs[k]); y=int(ys[k])
+                if rng.random()<.58:
+                    wd.line((x,y,x+rng.randint(2,7),y+rng.randint(-1,2)),fill=hi+(rng.randint(14,34),),width=1)
+            out.alpha_composite(wear)
+
     def contact_shadow(self, outer, piece, strength=62, radius=7, offset=(2,3)):
-        sh=piece.filter(ImageFilter.GaussianBlur(radius))
+        sh=piece.filter(ImageFilter.GaussianBlur(radius*1.25))
         moved=Image.new("L",(HI,HI),0); moved.paste(sh,offset)
         moved=ImageChops.multiply(moved,outer)
         col=Image.new("RGBA",(HI,HI),(0,0,0,0))
@@ -404,7 +417,8 @@ class RasterStudio:
 
         for body,dirs in self.geometry["masks"].items():
             for d in ("south","north","east"):
-                im=self.paint(dirs[d],d,1000+hash(body+d)%400)
+                stable=int(hashlib.sha256((body+d).encode()).hexdigest()[:6],16)%400
+                im=self.paint(dirs[d],d,1000+stable)
                 im.save(outdir/f"{item}_{body}_{d}.png")
                 generated[f"{item}_{body}_{d}.png"]=im
                 if d=="east":
