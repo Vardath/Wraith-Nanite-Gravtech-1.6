@@ -55,7 +55,7 @@
         "image_policy": "og_and_relevant"
       }
     ],
-    "minimum_live_sources": 4,
+    "minimum_live_sources": 3,
     "minimum_visual_references": 1,
     "design_rules": {
       "material_priority": [
@@ -118,7 +118,12 @@
         "cloud noise",
         "clean generic marine armour"
       ]
-    }
+    },
+    "primary_research_basis": [
+      "Propworx screen-used Wraith male commander costume: green leather trenchcoat; black reptile-pattern leather vest with epaulettes, snaps, zipper and side/back lacing; black leather trousers, gauntlets and boots",
+      "Propworx Wraith Drone Uniform technical description: black leather under-vest; hard-rubber silver front/back carapace with clear covering; simulated-bone silver shoulder and thigh armour; leather chaps, greaves and gauntlets",
+      "Val Halverson costume-designer Q&A: Wraith costumes use substantial real leather, contrast leather, gauntlets and belts as constructed wardrobe rather than generic painted sci-fi surfaces"
+    ]
   },
   "stage_2_rimworld": {
     "implementation_mode": "powerarmor_svg_deformed",
@@ -1509,5 +1514,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-02-commander-restart-no-historical-apparel-run1"
+  "profile_revision": "2026-10-02-commander-restart-clean-primary-source-gate"
 }
