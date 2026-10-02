@@ -529,8 +529,8 @@ class SynthesisPass:
             count=max(18,int((w*h)/(HI*HI)*150))
             for _ in range(count):
                 cx=rng.randint(x0,max(x0,x1-1)); cy=rng.randint(y0,max(y0,y1-1))
-                rx=max(4,int(w*rng.uniform(.018,.045)))
-                ry=max(3,int(rx*rng.uniform(.45,.78)))
+                rx=max(6,int(w*rng.uniform(.028,.060)))
+                ry=max(4,int(rx*rng.uniform(.48,.80)))
                 d.arc((cx-rx,cy-ry,cx+rx,cy+ry),185,355,
                       fill=tuple(min(255,v+18) for v in shadow)+(rng.randint(75,125),),
                       width=max(1,int(rx*.16)))
@@ -538,7 +538,7 @@ class SynthesisPass:
                       fill=tuple(min(255,v+10) for v in high)+(rng.randint(25,52),),width=1)
         elif kind=="leather":
             # Pores, rubbed creases, and occasional stitch-like scars.
-            count=max(12,int((w*h)/(HI*HI)*120))
+            count=max(16,int((w*h)/(HI*HI)*155))
             for _ in range(count):
                 cx=rng.randint(x0,max(x0,x1-1)); cy=rng.randint(y0,max(y0,y1-1))
                 if rng.random()<.68:
@@ -550,7 +550,7 @@ class SynthesisPass:
                            fill=high+(rng.randint(25,55),),width=1)
         elif kind in ("hard_rubber","grown_rubber"):
             # Moulded organic striation plus scuffed production edges.
-            for i in range(5):
+            for i in range(6):
                 fx=(i+1)/6
                 pts=[]
                 phase=rng.uniform(-.6,.6)
@@ -559,15 +559,15 @@ class SynthesisPass:
                     xx=x0+w*(fx+math.sin(t*math.pi*1.35+phase)*.020)
                     yy=y0+h*(.10+.80*t)
                     pts.append((int(xx),int(yy)))
-                d.line(pts,fill=shadow+(72,),width=max(2,int(w*.006)),joint="curve")
-                d.line([(x-1,y-2) for x,y in pts],fill=high+(35,),width=1,joint="curve")
+                d.line(pts,fill=shadow+(96,),width=max(2,int(w*.0075)),joint="curve")
+                d.line([(x-1,y-2) for x,y in pts],fill=high+(48,),width=max(1,int(w*.0025)),joint="curve")
             for _ in range(max(4,int(w*h/(HI*HI)*35))):
                 sx=rng.randint(x0,max(x0,x1-1)); sy=rng.randint(y0,max(y0,y1-1))
                 ln=max(6,int(w*rng.uniform(.04,.10)))
                 d.line((sx,sy,min(x1-1,sx+ln),sy+rng.randint(-2,3)),fill=high+(rng.randint(18,40),),width=1)
         elif kind in ("simulated_bone","bone_chitin"):
             # Fibrous cast/grown striation.
-            for i in range(7):
+            for i in range(8):
                 fx=(i+1)/8
                 pts=[]
                 for j in range(11):
@@ -575,8 +575,8 @@ class SynthesisPass:
                     xx=x0+w*(fx+math.sin(t*math.pi*1.5+i*.7)*.016)
                     yy=y0+h*(.08+.84*t)
                     pts.append((int(xx),int(yy)))
-                d.line(pts,fill=shadow+(65,),width=max(2,int(w*.005)),joint="curve")
-                d.line([(x-1,y-1) for x,y in pts],fill=high+(38,),width=1,joint="curve")
+                d.line(pts,fill=shadow+(82,),width=max(2,int(w*.0065)),joint="curve")
+                d.line([(x-1,y-1) for x,y in pts],fill=high+(44,),width=1,joint="curve")
 
         return self._clip(layer,mask)
 
@@ -681,12 +681,39 @@ class SynthesisPass:
         base.alpha_composite(self._brush_scumble(mask,spec,seed_offset,float(spec.get("brush_density",1.0))))
         base.alpha_composite(self._material_microdetail(mask,material_name,seed_offset))
 
-        # Fine edge catch applied as paint, not a geometric outline.
-        inner=(dist>1)&(dist<5)&inside
-        edgepaint=np.zeros((HI,HI,4),dtype=np.uint8)
-        edgepaint[inner,:3]=np.clip(hi*.88,0,255).astype(np.uint8)
-        edgepaint[inner,3]=36
-        base.alpha_composite(Image.fromarray(edgepaint,"RGBA"))
+        # Directional edge modelling: recess on the lower/right, narrow catch only
+        # where an upper-left light would actually strike. Never a uniform cartoon outline.
+        edge_band=(dist>1)&(dist<7)&inside
+        ma=m.astype(np.float32)
+        my,mx=np.gradient(ma)
+        mag=np.sqrt(mx*mx+my*my)+1e-6
+        ex=-mx/mag; ey=-my/mag
+        edge_light=np.clip(ex*(-.52)+ey*(-.70),0,1)
+        edge_dark=np.clip(ex*(.52)+ey*(.70),0,1)
+        ep=np.zeros((HI,HI,4),dtype=np.uint8)
+        lit=edge_band&(edge_light>.18)
+        dark=edge_band&(edge_dark>.18)
+        ep[lit,:3]=np.clip(hi*.92,0,255).astype(np.uint8)
+        ep[lit,3]=(edge_light[lit]*42).astype(np.uint8)
+        ep[dark,:3]=np.clip(lo*.72,0,255).astype(np.uint8)
+        ep[dark,3]=(edge_dark[dark]*58).astype(np.uint8)
+        base.alpha_composite(Image.fromarray(ep,"RGBA"))
+
+        # Clear-coated screen-used rubber gets a few broad reflection strokes rather
+        # than a plastic-looking full-surface shine.
+        if kind in ("hard_rubber","grown_rubber") and float(spec.get("clearcoat",0))>0:
+            coat=float(spec.get("clearcoat",.5))
+            glaze=Image.new("RGBA",(HI,HI),(0,0,0,0))
+            gd=ImageDraw.Draw(glaze)
+            rr=random.Random(88031+int(seed_offset)*29)
+            for k in range(3):
+                yy0=int(y0+h*(.22+k*.24)+rr.uniform(-.025,.025)*h)
+                xstart=int(x0+w*(.22+rr.uniform(-.03,.03)))
+                xend=int(x0+w*(.72+rr.uniform(-.03,.03)))
+                gd.arc((xstart,yy0-int(h*.045),xend,yy0+int(h*.045)),195,340,
+                       fill=(218,226,222,int(30+coat*36)),width=max(1,int(min(w,h)*.006)))
+            base.alpha_composite(self._clip(glaze.filter(ImageFilter.GaussianBlur(.55)),mask))
+
         base.putalpha(mask)
         return base
 
@@ -988,10 +1015,16 @@ class SynthesisPass:
                 d.line((rx,ry,lx,ly+3),fill=(20,18,21,210),width=2)
 
     def _finish(self, out, mask):
-        ship_contrast=[x["contrast"] for x in self.benchmark_stats]
+        ship_contrast=[x["contrast"] for x in self.benchmark_stats if 20<x["contrast"]<100]
         live_contrast=[x["contrast"] for x in self.ref.image_stats if min(x.get("size",[0,0]))>=100 and 15<x["contrast"]<95]
-        vals=ship_contrast+live_contrast
-        target=min(float(np.median(vals)) if vals else 32.0,32.0)
+        if ship_contrast:
+            # WNG finished ships are the explicit quality benchmark. Apparel should
+            # approach their readable depth without copying their palette or geometry.
+            target=float(np.clip(np.median(ship_contrast)*.88,36.0,48.0))
+        elif live_contrast:
+            target=float(np.clip(np.median(live_contrast),34.0,44.0))
+        else:
+            target=38.0
 
         a=np.array(out,dtype=np.float32)
         m=np.array(mask)>16
@@ -1025,8 +1058,8 @@ class SynthesisPass:
         a[...,:3]=np.clip(rgb,0,255)
         a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=ImageEnhance.Contrast(out).enhance(1.15)
-        out=out.filter(ImageFilter.UnsharpMask(radius=1.10,percent=76,threshold=3))
+        out=ImageEnhance.Contrast(out).enhance(1.08)
+        out=out.filter(ImageFilter.UnsharpMask(radius=1.05,percent=92,threshold=2))
         out.putalpha(mask)
         return out
 
