@@ -1,0 +1,66 @@
+name: WNG Apparel ArtGen
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wng-artgen-apparel.yml'
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'Tools/ArtGen/profiles profile id'
+        required: true
+        default: 'wraith_commander_carapace'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch vanilla RimWorld implementation references
+        run: |
+          git clone --depth 1 https://github.com/SamuelBucher/Madness-Pawns.git /tmp/madness
+          git clone --depth 1 https://github.com/DaLongZhuaZi/RWonVela.git /tmp/rwvela
+
+      - name: Install ArtGen dependencies
+        run: python -m pip install --disable-pip-version-check pillow numpy scipy requests beautifulsoup4 cairosvg
+
+      - name: Run ordered WNG apparel pipeline
+        shell: bash
+        run: |
+          PROFILE="${{ github.event.inputs.profile || 'wraith_commander_carapace' }}"
+          python Tools/ArtGen/wng_apparel_generator.py "$PROFILE" \
+            --vanilla-dir "/tmp/madness/Raw sprites/apparel" \
+            --body-dir "/tmp/rwvela/src/common/human/bodies" \
+            --workdir /tmp/wng-artgen-runtime \
+            --preview /tmp/wng-apparel-contact-sheet.png
+
+      - name: Validate RimWorld apparel implementation
+        run: python .github/artqa/apparel_art_audit.py
+
+      - name: Commit live apparel assets only
+        shell: bash
+        run: |
+          PROFILE="${{ github.event.inputs.profile || 'wraith_commander_carapace' }}"
+          ITEM="$(python -c "import json; p=json.load(open('Tools/ArtGen/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
+          OUTDIR="$(python -c "import json; p=json.load(open('Tools/ArtGen/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
+          if git diff --cached --quiet; then
+            echo "No live apparel asset changes."
+            exit 0
+          fi
+          git commit -m "Generate ${ITEM} with Stargate-first WNG ArtGen [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
