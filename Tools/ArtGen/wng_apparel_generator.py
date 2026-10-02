@@ -793,6 +793,28 @@ class SynthesisPass:
             rr=max(2,int(min(w,h)*.012))
             d.rectangle((x-rr,y-rr,x+rr,y+rr),outline=(137,133,126,190),width=max(1,rr//3))
 
+        elif typ=="self_destruct":
+            pos=closure.get("position",[.50,.31])
+            x=int(x0+float(pos[0])*w); y=int(y0+float(pos[1])*h)
+            r=max(4,int(min(w,h)*float(closure.get("radius",.022))))
+            d=ImageDraw.Draw(out)
+            # recessed black leather/rubber mount
+            d.ellipse((x-r*1.5,y-r*1.25,x+r*1.5,y+r*1.25),
+                      fill=(7,9,9,232),outline=(45,52,50,205),width=max(1,r//4))
+            # translucent protective cover
+            cover=Image.new("RGBA",(HI,HI),(0,0,0,0))
+            cd=ImageDraw.Draw(cover)
+            cd.ellipse((x-r*1.12,y-r*.88,x+r*1.12,y+r*.88),
+                       fill=(145,165,160,36),outline=(184,198,194,88),width=max(1,r//5))
+            cd.arc((x-r*.95,y-r*.72,x+r*.95,y+r*.72),205,325,
+                   fill=(226,236,232,72),width=max(1,r//5))
+            out.alpha_composite(cover.filter(ImageFilter.GaussianBlur(max(1,r//7))))
+            # tiny restrained activation core, not a glow stripe
+            core=tuple(self.palette.get("biotech",[56,78,70]))
+            d=ImageDraw.Draw(out)
+            cr=max(2,r//3)
+            d.ellipse((x-cr,y-cr,x+cr,y+cr),fill=core+(205,),outline=(20,28,26,230),width=1)
+
     def _garment_wear(self, out, bb, wear):
         x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
         rng=random.Random(44531+int(wear.get("seed",0))*101)
@@ -1046,9 +1068,9 @@ class SynthesisPass:
         outer=(dist>0)&(dist<=3)
         catch=(dist>3)&(dist<=8)
         recess=(dist>8)&(dist<=15)
-        rgb[outer]=np.clip(rgb[outer]-np.array([8,8,8]),0,255)
-        rgb[catch]=np.clip(rgb[catch]+np.array([15,16,15]),0,255)
-        rgb[recess]=np.clip(rgb[recess]-np.array([3,3,3]),0,255)
+        rgb[outer]=np.clip(rgb[outer]-np.array([6,6,6]),0,255)
+        rgb[catch]=np.clip(rgb[catch]+np.array([6,7,6]),0,255)
+        rgb[recess]=np.clip(rgb[recess]-np.array([2,2,2]),0,255)
 
         lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
         cur=lum[m].std() if m.any() else 1
