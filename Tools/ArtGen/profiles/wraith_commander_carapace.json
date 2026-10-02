@@ -107,6 +107,7 @@
       "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace",
       "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_HunterCoat"
     ],
+    "post_downsample_contrast": 1.22,
     "palette": {
       "leather_shadow": [6, 9, 8],
       "leather_mid": [24, 35, 29],
