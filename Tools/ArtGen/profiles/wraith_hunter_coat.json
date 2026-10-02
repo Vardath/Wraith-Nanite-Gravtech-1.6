@@ -7,42 +7,79 @@
     "sources": [
       {
         "url": "https://josephmallozzi.com/2008/10/25/october-25-2008-stargate-atlantis-constume-designer-val-halverson-answers-your-questions/",
-        "role": "costume_design",
-        "required_terms": ["WRAITH COSTUME", "THREE PIECES", "COW HIDES", "CONTRAST LEATHER", "GAUNTLETS", "BELTS"],
-        "image_policy": "metadata_only"
+        "role": "costume_designer_primary",
+        "required_terms": [
+          "WRAITH COSTUME",
+          "LEATHER"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://buggybag.wordpress.com/2010/10/19/queen-of-the-wraith/",
+        "role": "wraith_queen_costume_construction",
+        "required_terms": [
+          "Wraith Queen",
+          "leather"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.wormholeriders.com/blog/2009/04/19/valerie-halversons-qa/",
+        "role": "costume_designer_secondary",
+        "required_terms": [
+          "Wraith Queen",
+          "costume"
+        ],
+        "image_policy": "og_and_relevant"
       },
       {
         "url": "https://www.gateworld.net/news/2009/08/stitches-in-time/",
         "role": "original_wraith_visual_language",
-        "required_terms": ["insect", "bat", "robes", "bone armor"],
-        "image_policy": "metadata_only"
+        "required_terms": [
+          "Wraith",
+          "bone armor"
+        ],
+        "image_policy": "og_and_relevant"
       },
       {
         "url": "https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/",
         "role": "production_costume",
-        "required_terms": ["Wraith Drone Costume", "footsoldiers"],
+        "required_terms": [
+          "Wraith Drone Costume"
+        ],
         "image_policy": "og_and_relevant"
       },
       {
         "url": "https://www.gateworld.net/wiki/Wraith_hive",
         "role": "organic_technology_lore",
-        "required_terms": ["grown organically"],
+        "required_terms": [
+          "grown organically"
+        ],
         "image_policy": "og_and_relevant"
-      },
-      {
-        "url": "https://www.gateworld.net/atlantis/s5/the-queen/",
-        "role": "rank_and_queen_visual_reference",
-        "required_terms": ["Wraith queen"],
-        "image_policy": "og_only"
       }
     ],
     "design_rules": {
       "material_priority": [
-        ["black_dark_leather", 0.58],
-        ["contrast_leather", 0.18],
-        ["silver_bone_carpiece", 0.13],
-        ["rubber_latex_organic_trim", 0.07],
-        ["luminous_biotech", 0.04]
+        [
+          "black_dark_leather",
+          0.58
+        ],
+        [
+          "contrast_leather",
+          0.18
+        ],
+        [
+          "silver_bone_carpiece",
+          0.13
+        ],
+        [
+          "rubber_latex_organic_trim",
+          0.07
+        ],
+        [
+          "luminous_biotech",
+          0.04
+        ]
       ],
       "construction": [
         "three-piece visual construction",
@@ -67,13 +104,26 @@
         "flat vector panels",
         "uniform glow piping"
       ]
-    }
+    },
+    "minimum_live_sources": 3,
+    "minimum_visual_references": 1
   },
   "stage_2_rimworld": {
     "vanilla_family": "Duster",
     "tile_family": "Duster",
-    "body_types": ["Male", "Female", "Thin", "Fat", "Hulk"],
-    "facings": ["south", "north", "east", "west"],
+    "body_types": [
+      "Male",
+      "Female",
+      "Thin",
+      "Fat",
+      "Hulk"
+    ],
+    "facings": [
+      "south",
+      "north",
+      "east",
+      "west"
+    ],
     "silhouette_rule": "vanilla_alpha_authoritative",
     "readability_rule": "details must survive at 192x192 and normal pawn zoom"
   },
@@ -88,20 +138,51 @@
       "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_QueenRaiment"
     ],
     "palette": {
-      "leather_shadow": [18, 15, 20],
-      "leather_mid": [55, 47, 58],
-      "leather_high": [126, 108, 128],
-      "bone_shadow": [48, 45, 48],
-      "bone_mid": [99, 93, 98],
-      "bone_high": [180, 173, 181],
-      "biotech": [174, 166, 242]
+      "leather_shadow": [
+        18,
+        15,
+        20
+      ],
+      "leather_mid": [
+        55,
+        47,
+        58
+      ],
+      "leather_high": [
+        126,
+        108,
+        128
+      ],
+      "bone_shadow": [
+        48,
+        45,
+        48
+      ],
+      "bone_mid": [
+        99,
+        93,
+        98
+      ],
+      "bone_high": [
+        180,
+        173,
+        181
+      ],
+      "biotech": [
+        174,
+        166,
+        242
+      ]
     },
     "quality": {
       "silhouette_iou_min": 0.985,
       "max_luminous_area_fraction": 0.018,
-      "min_local_contrast": 16.0,
+      "min_local_contrast": 16,
       "max_symmetry_score": 0.94,
-      "microdetail_scale_px": [1, 5],
+      "microdetail_scale_px": [
+        1,
+        5
+      ],
       "render_scale": 4
     }
   }
