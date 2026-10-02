@@ -366,11 +366,14 @@ class SynthesisPass:
         q=self.s3["quality"]
         rows=[]
         for key,im in generated.items():
-            if key=="tile": vm=impl["tile"].resize((OUT,OUT),Image.Resampling.LANCZOS)
+            if key=="tile":
+                vm=impl["tile"].resize((OUT,OUT),Image.Resampling.LANCZOS)
             else:
                 body,d=key.split("_",1)
-                srcd="east" if d=="west" else d
-                vm=impl["masks"][body][srcd].resize((OUT,OUT),Image.Resampling.LANCZOS)
+                if d=="west":
+                    vm=impl["masks"][body]["east"].resize((OUT,OUT),Image.Resampling.LANCZOS).transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                else:
+                    vm=impl["masks"][body][d].resize((OUT,OUT),Image.Resampling.LANCZOS)
             ga=np.array(im.getchannel("A"))>16; va=np.array(vm)>16
             inter=(ga&va).sum(); union=(ga|va).sum()
             iou=float(inter/max(1,union))
