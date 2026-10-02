@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/wng-artgen-apparel.yml'
+      - 'Tools/ArtGen/wng_apparel_generator.py'
+      - 'Tools/ArtGen/profiles/**'
   workflow_dispatch:
     inputs:
       profile:
