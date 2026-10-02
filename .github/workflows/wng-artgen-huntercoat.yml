@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/wng-artgen-huntercoat.yml'
+      - 'Tools/ArtGen/wng_apparel_generator.py'
+      - 'Tools/ArtGen/profiles/wraith_hunter_coat.json'
   workflow_dispatch:
 permissions:
   contents: write
@@ -47,3 +49,5 @@ jobs:
 # rerun after ArtGen import fix
 
 # rerun after west silhouette QA correction
+
+# production-costume Hunter Coat rerun
