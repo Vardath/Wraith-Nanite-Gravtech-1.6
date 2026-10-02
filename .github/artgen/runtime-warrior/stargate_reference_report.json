@@ -8,7 +8,7 @@
       "ok": false,
       "terms": {},
       "http_status": 403,
-      "sha256": "acb761b49ebb14716a8995ba504e8a69c24e37d716c5c47bf66236d01dbc5ca9",
+      "sha256": "a9ad8e58813a2caa0a633b14f06238651c3736c87664dc5addd8205b3f91e8e9",
       "error": "403 Client Error: Forbidden for url: https://abcdocz.com/doc/68928/"
     },
     {
@@ -17,7 +17,7 @@
       "ok": false,
       "terms": {},
       "http_status": 403,
-      "sha256": "792122545731c07f8e5b870c8b192dc63e12648ef4992c3d33a4d809dfaf4526",
+      "sha256": "b0815195a064abaf88ce9bbdbef283a938f8a6055c1b4510b02a846351931c7a",
       "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/"
     },
     {
@@ -54,7 +54,7 @@
         "GAUNTLETS": true
       },
       "http_status": 200,
-      "sha256": "c76258b6f07409d7619cd17d23f1c8041b5ae908bba1bbcc0ba0ae9b00440453"
+      "sha256": "cd6219c1e8d4c84713c73d94c9e5183774517501a9bbf51a68b2a2195bae724c"
     },
     {
       "url": "https://www.stargate-fusion.com/fiches/5691-costume-wraith-teyla-la-nouvelle-reine.html",
