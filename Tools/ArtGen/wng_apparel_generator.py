@@ -408,6 +408,16 @@ class SynthesisPass:
                 remain-=L
             pos+=spacing
 
+    def _gem(self, im, x, y, r=4):
+        col=tuple(self.palette.get("biotech",[145,140,198]))
+        glow=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        gd=ImageDraw.Draw(glow)
+        gd.ellipse((x-r*4,y-r*4,x+r*4,y+r*4),fill=col+(34,))
+        im.alpha_composite(glow.filter(ImageFilter.GaussianBlur(max(2,r*2))))
+        d=ImageDraw.Draw(im)
+        d.ellipse((x-r,y-r,x+r,y+r),fill=col+(220,),outline=(48,45,58,240),width=max(1,r//3))
+        d.ellipse((x-r*.35,y-r*.35,x+r*.35,y+r*.35),fill=(225,231,236,215))
+
     def _snap(self, im, x, y, r=3):
         col=tuple(self.palette["metal"])
         d=ImageDraw.Draw(im)
