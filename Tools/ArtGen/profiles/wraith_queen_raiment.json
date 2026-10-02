@@ -65,6 +65,26 @@
           "throne"
         ],
         "image_policy": "metadata_only"
+      },
+      {
+        "url": "https://www.gateworld.net/atlantis/s4/spoils-of-war/",
+        "role": "spoils_of_war_screen_queen_dress_and_armour_context",
+        "required_terms": [
+          "Wraith Queen",
+          "Spoils of War",
+          "Andee Frizzell"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.gateworld.net/atlantis/s4/spoils-of-war/transcript/",
+        "role": "spoils_of_war_hive_queen_screen_context",
+        "required_terms": [
+          "Wraith Hive Queen",
+          "Queen",
+          "Wraith"
+        ],
+        "image_policy": "metadata_only"
       }
     ],
     "minimum_live_sources": 4,
@@ -1747,5 +1767,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-source-repair"
+  "profile_revision": "2026-10-02-queen-costume-blueprint-v2-source-repair-2"
 }
