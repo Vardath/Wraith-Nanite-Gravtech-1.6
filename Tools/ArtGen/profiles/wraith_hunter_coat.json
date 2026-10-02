@@ -2,9 +2,29 @@
   "id": "wraith_hunter_coat",
   "item": "WNG_HunterCoat",
   "faction": "Wraith",
-  "purpose": "Predatory field coat for a Wraith hunter: mobile, regal, alien, leather-dominant rather than full carapace armour.",
+  "purpose": "Wraith hunter/commander field coat derived from Stargate production costumes: leather trenchcoat, reptile-pattern leather vest/panels, epaulettes and lacing; predatory and regal but unmistakably clothing.",
   "stage_1_stargate": {
     "sources": [
+      {
+        "url": "https://www.stargate-fusion.com/fiches/coulisses/23-costumes-uniformes/5733-commandant-wraith-lunion-fait-la-force.html",
+        "role": "primary_hunter_coat_production_costume",
+        "required_terms": [
+          "Wraith costume",
+          "trenchcoat",
+          "cuir"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.stargate-fusion.com/fiches/6511-costume-commandant-wraith.html",
+        "role": "secondary_commander_coat_production_costume",
+        "required_terms": [
+          "Wraith Costume",
+          "longue veste",
+          "cuir"
+        ],
+        "image_policy": "og_and_relevant"
+      },
       {
         "url": "https://josephmallozzi.com/2008/10/25/october-25-2008-stargate-atlantis-constume-designer-val-halverson-answers-your-questions/",
         "role": "costume_designer_primary",
@@ -61,51 +81,59 @@
     "design_rules": {
       "material_priority": [
         [
-          "black_dark_leather",
-          0.58
+          "dark_green_leather_trenchcoat",
+          0.46
         ],
         [
-          "contrast_leather",
-          0.18
+          "black_soft_leather",
+          0.2
         ],
         [
-          "silver_bone_carpiece",
-          0.13
+          "black_reptile_pattern_leather",
+          0.2
         ],
         [
-          "rubber_latex_organic_trim",
+          "layered_textured_epaulettes",
           0.07
         ],
         [
-          "luminous_biotech",
-          0.04
+          "lacing_snaps_closures",
+          0.05
+        ],
+        [
+          "subtle_biotech_or_bone_detail",
+          0.02
         ]
       ],
       "construction": [
-        "three-piece visual construction",
-        "belted or clasped waist",
-        "contrast leather detail",
-        "subtle rank differentiation",
-        "distressed lived-in surfaces",
-        "organic but wearable tailoring"
+        "long green-black leather trenchcoat",
+        "black reptile-pattern leather vest or inner panels",
+        "layered textured shoulder epaulettes",
+        "decorative reptile leather panels",
+        "side and back lacing",
+        "hidden snaps or zipper-like front closure",
+        "soft leather drape with production wear",
+        "three-piece Wraith costume logic"
       ],
       "motifs": [
-        "insect articulation",
-        "bat-wing seam rhythm",
-        "bone/carapace trim",
-        "grown-organic technology",
-        "predatory elegance"
+        "predatory tailored silhouette",
+        "reptile leather texture",
+        "layered shoulder panels",
+        "bat/insect influence through seam rhythm only",
+        "regal Wraith commander finish"
       ],
       "avoid": [
+        "bone armour as dominant material",
         "neon panel suit",
         "symmetrical superhero armour",
-        "large ship fins pasted onto shoulders",
+        "large ship fins or chitin wings on shoulders",
         "generic purple sci-fi geometry",
         "flat vector panels",
-        "uniform glow piping"
+        "uniform glow piping",
+        "fuzzy feathered panel masks"
       ]
     },
-    "minimum_live_sources": 3,
+    "minimum_live_sources": 4,
     "minimum_visual_references": 1
   },
   "stage_2_rimworld": {
@@ -139,45 +167,65 @@
     ],
     "palette": {
       "leather_shadow": [
-        18,
-        15,
-        20
+        14,
+        17,
+        16
       ],
       "leather_mid": [
-        55,
-        47,
-        58
+        39,
+        49,
+        43
       ],
       "leather_high": [
-        126,
-        108,
-        128
+        91,
+        107,
+        96
       ],
-      "bone_shadow": [
+      "contrast_shadow": [
+        11,
+        10,
+        13
+      ],
+      "contrast_mid": [
+        35,
+        31,
+        39
+      ],
+      "contrast_high": [
+        82,
+        74,
+        88
+      ],
+      "reptile_shadow": [
+        18,
+        17,
+        20
+      ],
+      "reptile_mid": [
         48,
-        45,
-        48
+        44,
+        52
       ],
-      "bone_mid": [
-        99,
-        93,
-        98
+      "reptile_high": [
+        112,
+        104,
+        118
       ],
-      "bone_high": [
-        180,
-        173,
-        181
+      "metal": [
+        132,
+        126,
+        132
       ],
       "biotech": [
-        174,
-        166,
-        242
+        153,
+        145,
+        211
       ]
     },
     "quality": {
       "silhouette_iou_min": 0.985,
-      "max_luminous_area_fraction": 0.018,
-      "min_local_contrast": 16,
+      "max_luminous_area_fraction": 0.006,
+      "min_local_contrast": 18,
       "max_symmetry_score": 0.94,
       "microdetail_scale_px": [
         1,
