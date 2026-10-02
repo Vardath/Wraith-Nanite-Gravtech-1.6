@@ -816,6 +816,32 @@ class SynthesisPass:
             rr=max(2,int(min(w,h)*.012))
             d.rectangle((x-rr,y-rr,x+rr,y+rr),outline=(137,133,126,190),width=max(1,rr//3))
 
+        elif typ=="segmented_belt":
+            a=closure.get("from",[.25,.62]); b=closure.get("to",[.75,.62])
+            count=max(3,int(closure.get("count",6)))
+            d=ImageDraw.Draw(out)
+            p0=(x0+float(a[0])*w,y0+float(a[1])*h)
+            p1=(x0+float(b[0])*w,y0+float(b[1])*h)
+            bandw=max(4,int(min(w,h)*float(closure.get("width",.022))))
+            d.line((int(p0[0]),int(p0[1]),int(p1[0]),int(p1[1])),
+                   fill=(8,10,10,230),width=bandw)
+            for i in range(count):
+                t=(i+.5)/count
+                x=int(p0[0]*(1-t)+p1[0]*t); y=int(p0[1]*(1-t)+p1[1]*t)
+                segw=max(5,int(abs(p1[0]-p0[0])/count*.62))
+                segh=max(3,int(bandw*.72))
+                d.rounded_rectangle((x-segw//2,y-segh//2,x+segw//2,y+segh//2),
+                    radius=max(1,segh//3),fill=(24,29,27,235),
+                    outline=(67,74,70,175),width=1)
+                if i%2==0:
+                    d.line((x-segw//3,y-segh//4,x+segw//3,y-segh//4),
+                           fill=(114,121,116,70),width=1)
+            # practical central buckle, subdued
+            bx=int((p0[0]+p1[0])*.5); by=int((p0[1]+p1[1])*.5)
+            rr=max(3,int(bandw*.55))
+            d.rounded_rectangle((bx-rr,by-rr,bx+rr,by+rr),radius=max(1,rr//3),
+                fill=(18,20,20,245),outline=(103,105,102,190),width=max(1,rr//3))
+
         elif typ=="self_destruct":
             pos=closure.get("position",[.50,.31])
             x=int(x0+float(pos[0])*w); y=int(y0+float(pos[1])*h)
