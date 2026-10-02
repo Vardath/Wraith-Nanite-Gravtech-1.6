@@ -34,3 +34,5 @@ jobs:
           git commit -m "Rebuild Hunter Coat from Stargate and WNG reference art [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
+
+# rerun after painted-readability correction
