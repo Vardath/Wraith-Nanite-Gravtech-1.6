@@ -110,13 +110,13 @@
     "palette": {
       "leather_shadow": [6, 9, 8],
       "leather_mid": [24, 35, 29],
-      "leather_high": [88, 108, 91],
+      "leather_high": [112, 134, 115],
       "contrast_shadow": [6, 6, 8],
       "contrast_mid": [27, 24, 30],
-      "contrast_high": [92, 84, 96],
+      "contrast_high": [118, 106, 122],
       "reptile_shadow": [7, 7, 9],
       "reptile_mid": [31, 30, 34],
-      "reptile_high": [114, 108, 118],
+      "reptile_high": [138, 130, 142],
       "metal": [126, 124, 129],
       "biotech": [90, 116, 108]
     },
