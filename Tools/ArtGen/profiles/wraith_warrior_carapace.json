@@ -1,0 +1,218 @@
+{
+  "id": "wraith_warrior_carapace",
+  "item": "WNG_WarriorCarapace",
+  "faction": "Wraith",
+  "purpose": "Full-body Wraith warrior shell: a grown combat carapace over a dark flexible understructure, visually descended from Wraith footsoldiers and commanders rather than generic sci-fi power armor.",
+  "stage_1_stargate": {
+    "sources": [
+      {
+        "url": "https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/",
+        "role": "wraith_drone_footsoldier_costume",
+        "required_terms": [
+          "Wraith Drone Costume",
+          "footsoldiers"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.stargate-fusion.com/fiches/coulisses/23-costumes-uniformes/5733-commandant-wraith-lunion-fait-la-force.html",
+        "role": "wraith_commander_material_construction",
+        "required_terms": [
+          "Wraith costume",
+          "cuir",
+          "épaulettes"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.stargate-fusion.com/fiches/6511-costume-commandant-wraith.html",
+        "role": "wraith_male_layered_shoulders",
+        "required_terms": [
+          "Wraith Costume",
+          "cuir souple",
+          "panneaux texturés"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://josephmallozzi.com/2008/10/25/october-25-2008-stargate-atlantis-constume-designer-val-halverson-answers-your-questions/",
+        "role": "costume_designer_primary",
+        "required_terms": [
+          "WRAITH COSTUME",
+          "LEATHER",
+          "GAUNTLETS"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.stargate-fusion.com/fiches/5691-costume-wraith-teyla-la-nouvelle-reine.html",
+        "role": "reptile_leather_and_armored_rank_language",
+        "required_terms": [
+          "reptile",
+          "cuir",
+          "corset"
+        ],
+        "image_policy": "og_and_relevant"
+      },
+      {
+        "url": "https://www.stargate-fusion.com/fiches/coulisses/37-accessoires-de-tournage/5938-dispositif-douverture-de-porte-wraith-2.html",
+        "role": "organic_wraith_surface_language",
+        "required_terms": [
+          "organique",
+          "latex",
+          "vert"
+        ],
+        "image_policy": "og_and_relevant"
+      }
+    ],
+    "minimum_live_sources": 4,
+    "minimum_visual_references": 2,
+    "design_rules": {
+      "material_priority": [
+        [
+          "dark_grown_chitin",
+          0.44
+        ],
+        [
+          "black_reptile_leather_underlayer",
+          0.2
+        ],
+        [
+          "regenerative_membrane",
+          0.16
+        ],
+        [
+          "bone_like_ridges",
+          0.12
+        ],
+        [
+          "aged_metallic_fasteners",
+          0.05
+        ],
+        [
+          "subtle_biotech_light",
+          0.03
+        ]
+      ],
+      "construction": [
+        "full shell coverage",
+        "layered shoulder carapace",
+        "segmented chest and abdomen plates",
+        "flexible dark membrane at joints",
+        "organic spine and flank articulation",
+        "gauntlet-like forearm treatment",
+        "grown rather than manufactured surface transitions"
+      ],
+      "motifs": [
+        "insect exoskeleton articulation",
+        "reptile leather understructure",
+        "predatory anatomical symmetry with small irregularities",
+        "bone and chitin rather than hard-surface robot panels",
+        "organic Wraith technology"
+      ],
+      "avoid": [
+        "flat vector armour panels",
+        "superhero chest plate",
+        "neon piping",
+        "generic marine armour paintover",
+        "purple geometric shapes",
+        "ship fins pasted onto a pawn",
+        "excessively bright bone"
+      ]
+    }
+  },
+  "stage_2_rimworld": {
+    "implementation_mode": "powerarmor_svg_deformed",
+    "vanilla_family": "PowerArmor",
+    "tile_family": "PowerArmor",
+    "body_types": [
+      "Male",
+      "Female",
+      "Thin",
+      "Fat",
+      "Hulk"
+    ],
+    "facings": [
+      "south",
+      "north",
+      "east",
+      "west"
+    ],
+    "silhouette_rule": "vanilla_powerarmor_contour_authoritative",
+    "readability_rule": "details must survive at 192x192 and normal pawn zoom"
+  },
+  "stage_3_synthesis": {
+    "wNG_quality_benchmarks": [
+      "Textures/Things/Building/Wraith/Shuttle/WNG_WraithDart_south.png",
+      "Textures/Things/Building/Wraith/Shuttle/WNG_WraithStrikeCraft_south.png",
+      "Textures/Things/Building/Wraith/Shuttle/WNG_WraithCruiser_south.png"
+    ],
+    "historical_continuity": [
+      "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_WarriorCarapace",
+      "Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_CommanderCarapace"
+    ],
+    "palette": {
+      "shell_shadow": [
+        13,
+        17,
+        16
+      ],
+      "shell_mid": [
+        45,
+        58,
+        52
+      ],
+      "shell_high": [
+        126,
+        145,
+        132
+      ],
+      "membrane_shadow": [
+        8,
+        8,
+        10
+      ],
+      "membrane_mid": [
+        28,
+        26,
+        31
+      ],
+      "membrane_high": [
+        76,
+        71,
+        82
+      ],
+      "bone_shadow": [
+        42,
+        41,
+        43
+      ],
+      "bone_mid": [
+        91,
+        89,
+        92
+      ],
+      "bone_high": [
+        162,
+        158,
+        164
+      ],
+      "biotech": [
+        111,
+        147,
+        157
+      ]
+    },
+    "quality": {
+      "silhouette_iou_min": 0.985,
+      "max_luminous_area_fraction": 0.008,
+      "min_local_contrast": 18,
+      "max_symmetry_score": 0.96,
+      "microdetail_scale_px": [
+        1,
+        5
+      ],
+      "render_scale": 4
+    }
+  }
+}
