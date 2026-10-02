@@ -755,86 +755,120 @@ class SynthesisPass:
         out.alpha_composite(self._chitin(pm,hist,bone,seed))
         return pm
 
+    def _warrior_plate(self, out, fullmask, bb, pts, hist, bone=False, seed=0):
+        """Production Wraith drone plate: grown, rounded and surface-authored.
+        The control points define only the internal construction zone; the vanilla
+        PowerArmor mask remains the outer silhouette authority.
+        """
+        return self._command_plate(out,fullmask,bb,pts,hist,bone,seed)
+
+    def _warrior_strap(self, out, fullmask, bb, pts, width_frac=.020):
+        x0,y0,x1,y1=bb; w=x1-x0
+        q=[(int(x0+x*w),int(y0+y*(y1-y0))) for x,y in pts]
+        lm=self._line_mask(q,max(4,w*width_frac),.8)
+        lm=ImageChops.multiply(lm,fullmask)
+        leather=self._membrane(lm)
+        out.alpha_composite(leather)
+
     def _paint_warrior(self, body, direction, mask):
         bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
         hist=self._historical("WNG_WarriorCarapace",body,direction,bb)
         cmd=self._historical("WNG_CommanderCarapace",body,direction,bb)
 
-        # Flexible black/reptile understructure remains visible between grown plates.
+        # Screen-used drone construction: black leather/flexible under-vest first,
+        # with silver hard-rubber carapace and simulated-bone armor grown over it.
         out=self._membrane(mask,hist)
 
         if direction=="south":
-            # Anatomical breast shell and clavicle plates.
-            self._plate(out,mask,bb,[(.23,.10),(.42,.05),(.49,.19),(.45,.48),(.31,.57),(.18,.39)],hist,False,1)
-            self._plate(out,mask,bb,[(.77,.10),(.58,.05),(.51,.19),(.55,.48),(.69,.57),(.82,.39)],hist,False,2)
-            # Layered shoulder carapace from Wraith warrior/commander language.
-            self._plate(out,mask,bb,[(.04,.08),(.22,.03),(.35,.10),(.30,.22),(.11,.24)],cmd,True,3)
-            self._plate(out,mask,bb,[(.96,.08),(.78,.03),(.65,.10),(.70,.22),(.89,.24)],cmd,True,4)
-            # Central sternum and segmented abdominal ribs.
-            stern=self._line_mask([(int(x0+.50*w),int(y0+.17*h)),(int(x0+.49*w),int(y0+.69*h))],max(8,.035*w),1)
-            stern=ImageChops.multiply(stern,mask); out.alpha_composite(self._chitin(stern,cmd,True,5))
-            for i,yy in enumerate((.48,.58,.68,.78)):
-                left=[(.27,yy),(.43,yy+.015),(.49,yy+.045)]
-                right=[(.73,yy),(.57,yy+.015),(.51,yy+.045)]
-                self._plate(out,mask,bb,left,hist,False,10+i)
-                self._plate(out,mask,bb,right,hist,False,20+i)
-            # Thigh/hip shell leaves membrane channels visible.
-            self._plate(out,mask,bb,[(.18,.72),(.42,.70),(.44,.95),(.25,.96),(.13,.86)],hist,False,31)
-            self._plate(out,mask,bb,[(.82,.72),(.58,.70),(.56,.95),(.75,.96),(.87,.86)],hist,False,32)
-            # Tiny biotech node only.
-            self._destruct_module(out,int(x0+.50*w),int(y0+.31*h),max(5,int(.018*w)))
+            # Upper thorax: compact overlapping shell leaves a real black central
+            # leather channel instead of reading as a superhero chest plate.
+            self._warrior_plate(out,mask,bb,[(.14,.14),(.29,.055),(.43,.10),(.465,.25),(.43,.41),(.31,.48),(.15,.42),(.085,.29)],hist,False,701)
+            self._warrior_plate(out,mask,bb,[(.86,.14),(.71,.055),(.57,.10),(.535,.25),(.57,.41),(.69,.48),(.85,.42),(.915,.29)],hist,False,702)
+
+            # Simulated-bone shoulder armor is layered, not one flat cap.
+            for i,(l,r) in enumerate([
+                ([(.025,.095),(.15,.02),(.29,.065),(.31,.15),(.17,.20),(.055,.18)],
+                 [(.975,.095),(.85,.02),(.71,.065),(.69,.15),(.83,.20),(.945,.18)]),
+                ([(.075,.17),(.19,.095),(.33,.13),(.335,.22),(.20,.265),(.09,.235)],
+                 [(.925,.17),(.81,.095),(.67,.13),(.665,.22),(.80,.265),(.91,.235)])
+            ]):
+                self._warrior_plate(out,mask,bb,l,cmd,True,710+i)
+                self._warrior_plate(out,mask,bb,r,cmd,True,720+i)
+
+            # Small clavicle bones frame the black leather throat/vest.
+            self._warrior_plate(out,mask,bb,[(.26,.13),(.39,.09),(.47,.17),(.445,.24),(.32,.22)],cmd,True,730)
+            self._warrior_plate(out,mask,bb,[(.74,.13),(.61,.09),(.53,.17),(.555,.24),(.68,.22)],cmd,True,731)
+
+            # Four articulated abdominal courses with membrane joints between them.
+            for i,yy in enumerate((.43,.545,.66,.775)):
+                self._warrior_plate(out,mask,bb,[(.18,yy),(.35,yy-.025),(.465,yy+.015),(.43,yy+.085),(.25,yy+.105),(.14,yy+.065)],hist,False,740+i)
+                self._warrior_plate(out,mask,bb,[(.82,yy),(.65,yy-.025),(.535,yy+.015),(.57,yy+.085),(.75,yy+.105),(.86,yy+.065)],hist,False,750+i)
+
+            # Separate hip/thigh guards from the abdominal shell.
+            self._warrior_plate(out,mask,bb,[(.16,.82),(.34,.79),(.445,.835),(.415,.965),(.24,.97),(.10,.91)],hist,False,760)
+            self._warrior_plate(out,mask,bb,[(.84,.82),(.66,.79),(.555,.835),(.585,.965),(.76,.97),(.90,.91)],hist,False,761)
+
+            # Production fasteners/straps survive as dark construction lines.
+            self._warrior_strap(out,mask,bb,[(.18,.35),(.19,.72)],.013)
+            self._warrior_strap(out,mask,bb,[(.82,.35),(.81,.72)],.013)
+            for i in range(4):
+                self._snap(out,int(x0+.19*w),int(y0+h*(.39+i*.09)),max(2,int(w*.006)))
+            self._destruct_module(out,int(x0+.50*w),int(y0+.30*h),max(5,int(.016*w)))
 
         elif direction=="north":
-            self._plate(out,mask,bb,[(.05,.09),(.28,.03),(.43,.12),(.36,.27),(.12,.28)],cmd,True,40)
-            self._plate(out,mask,bb,[(.95,.09),(.72,.03),(.57,.12),(.64,.27),(.88,.28)],cmd,True,41)
-            # Grown spinal chain.
-            for i,yy in enumerate((.18,.30,.42,.54,.66,.78)):
-                self._plate(out,mask,bb,[(.44,yy-.035),(.50,yy-.065),(.56,yy-.035),(.54,yy+.045),(.46,yy+.045)],cmd,False,50+i)
-            # Back ribs and lower flank plates.
-            for i,yy in enumerate((.36,.50,.64)):
-                self._plate(out,mask,bb,[(.19,yy),(.39,yy+.025),(.46,yy+.065),(.31,yy+.12)],hist,False,60+i)
-                self._plate(out,mask,bb,[(.81,yy),(.61,yy+.025),(.54,yy+.065),(.69,yy+.12)],hist,False,70+i)
-            self._plate(out,mask,bb,[(.19,.72),(.43,.70),(.44,.95),(.24,.96),(.13,.84)],hist,False,80)
-            self._plate(out,mask,bb,[(.81,.72),(.57,.70),(.56,.95),(.76,.96),(.87,.84)],hist,False,81)
+            # Layered shoulder armor + back cuirass around a visible flexible spine.
+            self._warrior_plate(out,mask,bb,[(.025,.10),(.17,.025),(.32,.075),(.32,.17),(.16,.215),(.05,.18)],cmd,True,801)
+            self._warrior_plate(out,mask,bb,[(.975,.10),(.83,.025),(.68,.075),(.68,.17),(.84,.215),(.95,.18)],cmd,True,802)
+            self._warrior_plate(out,mask,bb,[(.12,.19),(.31,.10),(.445,.17),(.425,.39),(.24,.43),(.10,.34)],hist,False,803)
+            self._warrior_plate(out,mask,bb,[(.88,.19),(.69,.10),(.555,.17),(.575,.39),(.76,.43),(.90,.34)],hist,False,804)
+
+            # Grown vertebral armor is segmented over a dark central membrane.
+            for i,yy in enumerate((.24,.355,.47,.585,.70,.815)):
+                self._warrior_plate(out,mask,bb,[(.455,yy-.03),(.50,yy-.055),(.545,yy-.03),(.535,yy+.045),(.465,yy+.045)],cmd,True,810+i)
+
+            for i,yy in enumerate((.43,.56,.69)):
+                self._warrior_plate(out,mask,bb,[(.15,yy),(.34,yy-.02),(.445,yy+.025),(.405,yy+.10),(.22,yy+.115)],hist,False,820+i)
+                self._warrior_plate(out,mask,bb,[(.85,yy),(.66,yy-.02),(.555,yy+.025),(.595,yy+.10),(.78,yy+.115)],hist,False,830+i)
+
+            self._warrior_plate(out,mask,bb,[(.15,.82),(.35,.79),(.44,.84),(.41,.965),(.23,.97),(.10,.90)],hist,False,840)
+            self._warrior_plate(out,mask,bb,[(.85,.82),(.65,.79),(.56,.84),(.59,.965),(.77,.97),(.90,.90)],hist,False,841)
+
+            # One practical side-lacing line breaks perfect bilateral symmetry.
+            self._lacing(
+                out,
+                [(int(x0+.72*w),int(y0+.39*h)),(int(x0+.715*w),int(y0+.72*h))],
+                [(int(x0+.77*w),int(y0+.39*h)),(int(x0+.765*w),int(y0+.72*h))],
+                6
+            )
 
         else:
-            # Side-facing shoulder crown and overlapping flank carapace.
-            self._plate(out,mask,bb,[(.22,.07),(.58,.03),(.83,.15),(.78,.29),(.48,.31),(.30,.22)],cmd,True,90)
-            self._plate(out,mask,bb,[(.34,.24),(.72,.25),(.75,.48),(.61,.58),(.38,.50)],hist,False,91)
-            for i,yy in enumerate((.50,.62,.74)):
-                self._plate(out,mask,bb,[(.34,yy),(.62,yy+.01),(.72,yy+.06),(.58,yy+.12),(.36,yy+.10)],hist,False,100+i)
-            self._plate(out,mask,bb,[(.31,.72),(.64,.70),(.68,.94),(.43,.97),(.27,.86)],hist,False,110)
-            # Organic seam/ridge.
-            ridge=self._line_mask([(int(x0+.59*w),int(y0+.23*h)),(int(x0+.62*w),int(y0+.67*h))],max(6,.020*w),1)
-            ridge=ImageChops.multiply(ridge,mask)
-            out.alpha_composite(self._chitin(ridge,cmd,True,111))
+            # Side view keeps the vanilla profile while showing the real layering:
+            # bone shoulder, hard-rubber thorax, flexible flank, then lower shell.
+            self._warrior_plate(out,mask,bb,[(.16,.095),(.46,.025),(.74,.09),(.82,.17),(.69,.24),(.38,.255)],cmd,True,901)
+            self._warrior_plate(out,mask,bb,[(.24,.22),(.50,.15),(.75,.26),(.71,.43),(.51,.47),(.27,.39)],hist,False,902)
+            for i,yy in enumerate((.48,.60,.72)):
+                self._warrior_plate(out,mask,bb,[(.27,yy),(.50,yy-.025),(.70,yy+.02),(.67,yy+.095),(.37,yy+.11)],hist,False,910+i)
+            self._warrior_plate(out,mask,bb,[(.27,.82),(.52,.79),(.69,.84),(.64,.96),(.39,.97),(.20,.90)],hist,False,920)
+            self._warrior_strap(out,mask,bb,[(.29,.38),(.30,.72)],.013)
+            self._stitch(out,[(int(x0+.68*w),int(y0+.32*h)),(int(x0+.70*w),int(y0+.74*h))],max(11,.045*h))
 
         out=self._finish(out,mask)
-        out.putalpha(mask)
-        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        out=out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        post=float(self.s3.get("post_downsample_contrast",1.0))
+        if abs(post-1.0)>1e-6:
+            alpha=out.getchannel("A")
+            out=ImageEnhance.Contrast(out).enhance(post)
+            out.putalpha(alpha)
+        return out
 
     def _tile_warrior(self, mask):
-        bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
-        hist=self._historical("WNG_WarriorCarapace","Male","south",bb)
-        cmd=self._historical("WNG_CommanderCarapace","Male","south",bb)
-        out=self._membrane(mask,hist)
-        for pts,bone,seed in [
-            ([(.23,.10),(.42,.05),(.49,.19),(.45,.48),(.31,.57),(.18,.39)],False,201),
-            ([(.77,.10),(.58,.05),(.51,.19),(.55,.48),(.69,.57),(.82,.39)],False,202),
-            ([(.04,.08),(.22,.03),(.35,.10),(.30,.22),(.11,.24)],True,203),
-            ([(.96,.08),(.78,.03),(.65,.10),(.70,.22),(.89,.24)],True,204),
-            ([(.18,.72),(.42,.70),(.44,.95),(.25,.96),(.13,.86)],False,205),
-            ([(.82,.72),(.58,.70),(.56,.95),(.75,.96),(.87,.86)],False,206)
-        ]:
-            self._plate(out,mask,bb,pts,cmd if bone else hist,bone,seed)
-        for i,yy in enumerate((.48,.59,.70)):
-            self._plate(out,mask,bb,[(.27,yy),(.43,yy+.015),(.49,yy+.045)],hist,False,210+i)
-            self._plate(out,mask,bb,[(.73,yy),(.57,yy+.015),(.51,yy+.045)],hist,False,220+i)
-        self._destruct_module(out,int(x0+.50*w),int(y0+.31*h),max(5,int(.018*w)))
-        out=self._finish(out,mask)
-        out=ImageEnhance.Contrast(out).enhance(1.12)
-        out.putalpha(mask)
-        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        # Inventory/tile art uses the same authored south-facing shell composition,
+        # scaled by the vanilla PowerArmor tile mask.
+        out=self._paint_warrior("Male","south",mask)
+        alpha=out.getchannel("A")
+        out=ImageEnhance.Contrast(out).enhance(1.06)
+        out.putalpha(alpha)
+        return out
 
     def _command_plate(self, out, fullmask, bb, pts, hist, bone=False, seed=0):
         """Hand-authored Wraith command plate with crisp grown edges and ridges.

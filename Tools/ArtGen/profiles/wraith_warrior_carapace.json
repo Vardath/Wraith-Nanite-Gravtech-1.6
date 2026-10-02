@@ -2,7 +2,7 @@
   "id": "wraith_warrior_carapace",
   "item": "WNG_WarriorCarapace",
   "faction": "Wraith",
-  "purpose": "Full-body Wraith warrior shell: a grown combat carapace over a dark flexible understructure, visually descended from Wraith footsoldiers and commanders rather than generic sci-fi power armor.",
+  "purpose": "Screen-used Stargate Atlantis Wraith drone/footsoldier carapace translated onto vanilla RimWorld PowerArmor geometry: silver hard-rubber torso shell, simulated-bone shoulder/limb armor, black leather under-vest, practical fasteners and a restrained chest self-destruct unit.",
   "stage_1_stargate": {
     "sources": [
       {
@@ -171,66 +171,78 @@
     ],
     "palette": {
       "shell_shadow": [
-        42,
-        46,
-        46
+        24,
+        29,
+        29
       ],
       "shell_mid": [
-        92,
-        98,
-        97
+        64,
+        72,
+        70
       ],
       "shell_high": [
-        174,
-        181,
-        179
+        148,
+        158,
+        154
       ],
       "membrane_shadow": [
-        6,
-        7,
-        8
+        4,
+        5,
+        6
       ],
       "membrane_mid": [
-        22,
-        24,
-        25
+        17,
+        20,
+        20
       ],
       "membrane_high": [
-        58,
-        62,
-        64
+        50,
+        55,
+        54
       ],
       "bone_shadow": [
-        62,
-        63,
-        66
+        48,
+        50,
+        53
       ],
       "bone_mid": [
-        122,
-        124,
-        128
+        104,
+        108,
+        110
       ],
       "bone_high": [
-        207,
-        208,
-        212
+        188,
+        192,
+        193
       ],
       "biotech": [
-        72,
-        155,
-        150
+        65,
+        120,
+        116
       ]
     },
     "quality": {
       "silhouette_iou_min": 0.985,
-      "max_luminous_area_fraction": 0.008,
+      "max_luminous_area_fraction": 0.005,
       "min_local_contrast": 18,
-      "max_symmetry_score": 0.96,
+      "max_symmetry_score": 0.94,
       "microdetail_scale_px": [
         1,
         5
       ],
       "render_scale": 4
+    },
+    "renderer": "wraith_warrior_carapace",
+    "post_downsample_contrast": 1.12,
+    "detail_rules": {
+      "plate_outline": "rounded grown carapace zones clipped to the vanilla PowerArmor contour; no vector-hard polygon read",
+      "material_read": "silver hard-rubber/chitin shell must remain distinct from black leather/flexible under-vest at 192px",
+      "shoulders": "layered simulated-bone shoulder armor based on production Wraith drone construction",
+      "articulation": "abdominal and back armor broken into overlapping courses with visible dark membrane joints",
+      "surface": "directional grown ridges, subtle historical high-frequency relief, pits, rubbed edges and sparse scars",
+      "fasteners": "small dark straps/snaps/lacing only where they read as costume construction, never glowing piping",
+      "asymmetry": "minor functional lacing/fastener asymmetry; no superhero-perfect mirrored ornament",
+      "glow": "only the tiny chest biotech/self-destruct unit may carry restrained blue-green luminance"
     }
   }
 }
