@@ -584,7 +584,17 @@ class SynthesisPass:
             self._stitch(out,[(int(x0+.31*w),int(y0+.28*h)),(int(x0+.34*w),int(y0+.78*h))],max(13,.055*h))
 
         out=self._finish(out,mask)
-        return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        out=out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        # Profile-controlled final-scale separation. Fine production-costume
+        # material cues can lose value separation during the 4x RimWorld
+        # downsample; restore it at the actual live 192px scale without
+        # altering the vanilla implementation alpha.
+        post=float(self.s3.get("post_downsample_contrast",1.0))
+        if abs(post-1.0)>1e-6:
+            alpha=out.getchannel("A")
+            out=ImageEnhance.Contrast(out).enhance(post)
+            out.putalpha(alpha)
+        return out
 
     def _tile_hunter(self, mask):
         bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
