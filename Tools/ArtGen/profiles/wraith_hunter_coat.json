@@ -345,21 +345,21 @@
           18
         ],
         "mid": [
-          18,
-          29,
-          52
+          15,
+          25,
+          46
         ],
         "high": [
+          48,
           63,
-          80,
-          112
+          88
         ],
-        "roughness": 0.24,
+        "roughness": 0.34,
         "grain": 0.03,
         "specular_tint": [
-          40,
-          48,
-          65
+          18,
+          23,
+          31
         ]
       }
     },
@@ -1600,5 +1600,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-02-hunter-costume-blueprint-v2-duster-svg"
+  "profile_revision": "2026-10-02-hunter-costume-blueprint-v2-satin-qa"
 }
