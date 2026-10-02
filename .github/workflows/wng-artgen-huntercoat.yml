@@ -41,3 +41,5 @@ jobs:
           git commit -m "Generate Hunter Coat with Stargate-first WNG ArtGen [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
+
+# rerun after Stargate reference gate hardening
