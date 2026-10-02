@@ -769,11 +769,9 @@ class SynthesisPass:
             rgb=np.array(im)[...,:3].astype(np.float32)
             lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
             contrast=float(lum[ga].std()) if ga.any() else 0
-            bio=np.array(self.palette.get("biotech",[150,145,200]),dtype=np.float32)
-            bio_dist=np.linalg.norm(rgb-bio[None,None,:],axis=2)
-            # Distinguish intentional luminous biotech from ordinary shell highlights.
-            # Wraith cyan nodes are blue/teal-biased; grown shell is green/grey-biased.
-            biotech=(bio_dist<48)&(rgb[...,2]>=rgb[...,1]-3)&(lum>105)&ga
+            # Count only intentional cyan-biotech chroma. Wraith shell highlights
+            # are green/grey; actual biotech nodes are blue > green > red.
+            biotech=(rgb[...,2]>rgb[...,1]+4)&(rgb[...,1]>rgb[...,0]+14)&(lum>105)&ga
             lumfrac=float(biotech.sum()/max(1,ga.sum()))
             sym=self._symmetry(im)
             rows.append({"key":key,"iou":iou,"contrast":contrast,"luminous_fraction":lumfrac,"symmetry":sym})
