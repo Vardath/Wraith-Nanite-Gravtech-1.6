@@ -418,6 +418,26 @@ class SynthesisPass:
         d.ellipse((x-r,y-r,x+r,y+r),fill=col+(220,),outline=(48,45,58,240),width=max(1,r//3))
         d.ellipse((x-r*.35,y-r*.35,x+r*.35,y+r*.35),fill=(225,231,236,215))
 
+    def _destruct_module(self, im, x, y, r=7):
+        """Wraith warrior chest self-destruct under a clear/translucent cover."""
+        d=ImageDraw.Draw(im)
+        # black leather/rubber mounting recess
+        d.ellipse((x-r*1.55,y-r*1.35,x+r*1.55,y+r*1.35),fill=(10,11,12,235),outline=(64,66,68,220),width=max(1,r//3))
+        # clear plastic cover catches a cool silver highlight
+        cover=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        cd=ImageDraw.Draw(cover)
+        cd.ellipse((x-r*1.2,y-r,x+r*1.2,y+r),fill=(155,170,172,48),outline=(188,198,200,120),width=max(1,r//4))
+        im.alpha_composite(cover.filter(ImageFilter.GaussianBlur(max(1,r//5))))
+        # restrained biotech core beneath the cover
+        col=tuple(self.palette.get("biotech",[72,155,150]))
+        glow=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        gd=ImageDraw.Draw(glow)
+        gd.ellipse((x-r*.62,y-r*.62,x+r*.62,y+r*.62),fill=col+(52,))
+        im.alpha_composite(glow.filter(ImageFilter.GaussianBlur(max(2,r))))
+        d=ImageDraw.Draw(im)
+        d.ellipse((x-r*.34,y-r*.34,x+r*.34,y+r*.34),fill=col+(220,),outline=(28,40,40,240),width=max(1,r//4))
+        d.ellipse((x-r*.12,y-r*.12,x+r*.12,y+r*.12),fill=(210,226,224,210))
+
     def _snap(self, im, x, y, r=3):
         col=tuple(self.palette["metal"])
         d=ImageDraw.Draw(im)
@@ -681,7 +701,7 @@ class SynthesisPass:
             self._plate(out,mask,bb,[(.18,.72),(.42,.70),(.44,.95),(.25,.96),(.13,.86)],hist,False,31)
             self._plate(out,mask,bb,[(.82,.72),(.58,.70),(.56,.95),(.75,.96),(.87,.86)],hist,False,32)
             # Tiny biotech node only.
-            self._gem(out,int(x0+.50*w),int(y0+.31*h),max(3,int(.010*w)))
+            self._destruct_module(out,int(x0+.50*w),int(y0+.31*h),max(5,int(.018*w)))
 
         elif direction=="north":
             self._plate(out,mask,bb,[(.05,.09),(.28,.03),(.43,.12),(.36,.27),(.12,.28)],cmd,True,40)
@@ -729,7 +749,7 @@ class SynthesisPass:
         for i,yy in enumerate((.48,.59,.70)):
             self._plate(out,mask,bb,[(.27,yy),(.43,yy+.015),(.49,yy+.045)],hist,False,210+i)
             self._plate(out,mask,bb,[(.73,yy),(.57,yy+.015),(.51,yy+.045)],hist,False,220+i)
-        self._gem(out,int(x0+.50*w),int(y0+.31*h),max(3,int(.010*w)))
+        self._destruct_module(out,int(x0+.50*w),int(y0+.31*h),max(5,int(.018*w)))
         out=self._finish(out,mask)
         out=ImageEnhance.Contrast(out).enhance(1.12)
         out.putalpha(mask)
