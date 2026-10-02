@@ -1,0 +1,178 @@
+{
+  "verified": 3,
+  "total": 6,
+  "pages": [
+    {
+      "url": "https://josephmallozzi.com/2008/10/25/october-25-2008-stargate-atlantis-constume-designer-val-halverson-answers-your-questions/",
+      "role": "costume_designer_primary",
+      "ok": true,
+      "terms": {
+        "WRAITH COSTUME": true,
+        "LEATHER": true
+      },
+      "http_status": 200,
+      "sha256": "5fe5877df3c899d5c7fc96bf17c19aeaf0fbb45b5af3fc3b44c9d8db4f603c68"
+    },
+    {
+      "url": "https://buggybag.wordpress.com/2010/10/19/queen-of-the-wraith/",
+      "role": "wraith_queen_costume_construction",
+      "ok": true,
+      "terms": {
+        "Wraith Queen": true,
+        "leather": true
+      },
+      "http_status": 200,
+      "sha256": "407620d9960403b19fbc8e45af8529269af99a525bb477e74a01ad6eb0722236"
+    },
+    {
+      "url": "https://www.wormholeriders.com/blog/2009/04/19/valerie-halversons-qa/",
+      "role": "costume_designer_secondary",
+      "ok": true,
+      "terms": {
+        "Wraith Queen": true,
+        "costume": true
+      },
+      "http_status": 200,
+      "sha256": "bdc0a1bbc744d7564f69b7070b943fdd1bede34556c5ac7eb7e61c2d44dd4d5c"
+    },
+    {
+      "url": "https://www.gateworld.net/news/2009/08/stitches-in-time/",
+      "role": "original_wraith_visual_language",
+      "ok": false,
+      "terms": {},
+      "http_status": 403,
+      "sha256": "d53dea4c8de7478cefe6beb643f06eb0cf99bcef4640a94a2761f9208079aa85",
+      "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/news/2009/08/stitches-in-time/"
+    },
+    {
+      "url": "https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/",
+      "role": "production_costume",
+      "ok": false,
+      "terms": {},
+      "http_status": 403,
+      "sha256": "89a27489d092002a9e9802b6420a5eb0d368b081dbeab2fd6ec916a8a2965f98",
+      "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/news/2010/07/propworx-stargate-auctions-week-23/"
+    },
+    {
+      "url": "https://www.gateworld.net/wiki/Wraith_hive",
+      "role": "organic_technology_lore",
+      "ok": false,
+      "terms": {},
+      "http_status": 403,
+      "sha256": "a6051a87af20d3792248357184c6cd679d57f97d6e53718eab0fdb6a6b1b4286",
+      "error": "403 Client Error: Forbidden for url: https://www.gateworld.net/wiki/Wraith_hive"
+    }
+  ],
+  "image_stats": [
+    {
+      "url": "https://secure.gravatar.com/avatar/80477b46c3ea9d33b791e5d42988da6232aa1fbe1e0b913aa89161d9b7330672?s=50&d=wavatar&r=g",
+      "sha256": "4491269103036fac4f96a9cf106700e8967aafc434428784535c76ba6d3f1537",
+      "mean_luminance": 203.3992919921875,
+      "contrast": 40.70025634765625,
+      "mean_saturation": 43.99800109863281,
+      "size": [
+        50,
+        50
+      ]
+    },
+    {
+      "url": "https://secure.gravatar.com/avatar/f6bce08d8773c38294fb948176f2cb0f607a58147514aad3b2eb536def5fdcbf?s=50&d=wavatar&r=g",
+      "sha256": "b8def9227593711eb0e5bb2c6917e31b4925a676497356b89d908d14afe3bbbb",
+      "mean_luminance": 165.79234313964844,
+      "contrast": 72.53811645507812,
+      "mean_saturation": 39.534400939941406,
+      "size": [
+        50,
+        50
+      ]
+    },
+    {
+      "url": "https://buggybag.wordpress.com/wp-content/uploads/2010/10/sga-srs2-wraithqueen.jpeg?w=73",
+      "sha256": "896f17554bdcaf57f460be252e017b31c909ed5515dfb80e4fd4dff9db476870",
+      "mean_luminance": 223.19622802734375,
+      "contrast": 49.60515213012695,
+      "mean_saturation": 10.067011833190918,
+      "size": [
+        73,
+        148
+      ]
+    },
+    {
+      "url": "https://buggybag.wordpress.com/wp-content/uploads/2010/10/sga-srs2-wraithqueen.jpeg?w=144",
+      "sha256": "dcd94d0b67834158ab3bfa338fb974d62b7c16936f91c73c708f6696226e42da",
+      "mean_luminance": 223.39566040039062,
+      "contrast": 50.63798141479492,
+      "mean_saturation": 10.218809127807617,
+      "size": [
+        144,
+        293
+      ]
+    },
+    {
+      "url": "https://buggybag.wordpress.com/wp-content/uploads/2010/10/sga-srs2-wraithqueen.jpeg?w=73&h=150",
+      "sha256": "896f17554bdcaf57f460be252e017b31c909ed5515dfb80e4fd4dff9db476870",
+      "mean_luminance": 223.19622802734375,
+      "contrast": 49.60515213012695,
+      "mean_saturation": 10.067011833190918,
+      "size": [
+        73,
+        148
+      ]
+    },
+    {
+      "url": "https://buggybag.wordpress.com/wp-content/uploads/2010/10/whitewraithqueen.jpg?w=84&h=150",
+      "sha256": "14c625a0bd006955193e494bdcde3c9eae9b3eafe284d1517d297a22c4be1f1d",
+      "mean_luminance": 141.2084197998047,
+      "contrast": 27.92611312866211,
+      "mean_saturation": 29.735458374023438,
+      "size": [
+        84,
+        149
+      ]
+    },
+    {
+      "url": "https://i155.photobucket.com/albums/s308/PlayItGrand/IMG_1605-1.jpg",
+      "sha256": "ea7ed7265ee77a5723c80589a696602ddb644873e6a9166ad7721a16799fb712",
+      "mean_luminance": 84.21446990966797,
+      "contrast": 80.64669036865234,
+      "mean_saturation": 32.38386535644531,
+      "size": [
+        327,
+        347
+      ]
+    },
+    {
+      "url": "https://wormholeriders.com/blog/wp-content/uploads/Stargate-banner-240.jpg",
+      "sha256": "46a5dfbebe37725f12ba26842bb3cfcce17c299375f5809a0cc0570f3626c4ee",
+      "mean_luminance": 150.8958282470703,
+      "contrast": 45.254554748535156,
+      "mean_saturation": 67.38127136230469,
+      "size": [
+        240,
+        103
+      ]
+    },
+    {
+      "url": "https://wormholeriders.com/blog/wp-content/uploads/2025/10/Treadstone-Poster-2019-240.jpg",
+      "sha256": "dec223e76ddeeb489ab61b7a06483ac5c3317ae11db45bf1658d7113915984c8",
+      "mean_luminance": 86.76455688476562,
+      "contrast": 43.967411041259766,
+      "mean_saturation": 37.817012786865234,
+      "size": [
+        240,
+        156
+      ]
+    },
+    {
+      "url": "https://wormholeriders.com/blog/wp-content/uploads/2026/05/Button2012Conventions240.jpg",
+      "sha256": "2457f539c39ae78cfa5c2e57c3e11cf91cced992214e91c999c2cfaf259b7f32",
+      "mean_luminance": 35.52903747558594,
+      "contrast": 59.87409973144531,
+      "mean_saturation": 30.379417419433594,
+      "size": [
+        240,
+        100
+      ]
+    }
+  ]
+}
