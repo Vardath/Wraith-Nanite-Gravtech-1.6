@@ -819,15 +819,161 @@ class SynthesisPass:
         out.putalpha(mask)
         return out.resize((OUT,OUT),Image.Resampling.LANCZOS)
 
+    def _paint_commander(self, body, direction, mask):
+        """Wraith command carapace: production-costume leather/reptile construction
+        reinforced with grown shell and simulated-bone command shoulders.
+
+        The vanilla PowerArmor mask remains authoritative.  The art language comes
+        from Stargate Wraith commander costumes first, then Wraith drone carapace
+        construction, rather than from generic hard-surface sci-fi armour.
+        """
+        bb=mask.getbbox(); x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        cmd=self._historical("WNG_CommanderCarapace",body,direction,bb)
+        coat=self._historical("WNG_HunterCoat",body,direction,bb)
+
+        # Green-black command leather is the flexible grown-understructure.
+        out=self._leather(mask,coat,False)
+
+        if direction=="south":
+            # Black reptile-pattern command vest remains visible down the sternum.
+            vest=self._poly_mask(bb,[(.35,.055),(.65,.055),(.61,.25),(.585,.68),(.53,.84),(.47,.84),(.415,.68),(.39,.25)],1)
+            vest=ImageChops.multiply(vest,mask)
+            out.alpha_composite(self._reptile(vest,cmd,310))
+
+            # Two grown thoracic masses: broad enough to read as armour, shaped
+            # anatomically so they do not become flat superhero panels.
+            self._plate(out,mask,bb,[(.15,.12),(.31,.055),(.445,.14),(.455,.37),(.39,.52),(.27,.58),(.14,.43)],cmd,False,311)
+            self._plate(out,mask,bb,[(.85,.12),(.69,.055),(.555,.14),(.545,.37),(.61,.52),(.73,.58),(.86,.43)],cmd,False,312)
+
+            # Layered command epaulettes: simulated bone over darker grown shell.
+            for side,flip in ((1,False),(-1,True)):
+                outer=[(.035,.085),(.17,.025),(.325,.075),(.29,.19),(.09,.225)]
+                inner=[(.10,.17),(.25,.095),(.39,.15),(.34,.265),(.16,.285)]
+                if flip:
+                    outer=[(1-x,y) for x,y in outer]
+                    inner=[(1-x,y) for x,y in inner]
+                self._plate(out,mask,bb,outer,cmd,True,313+(0 if side==1 else 2))
+                self._plate(out,mask,bb,inner,cmd,False,314+(0 if side==1 else 2))
+
+            # Clavicle/breastbone ridges break up the neck opening and make the
+            # shell feel grown around the wearer rather than laid on top.
+            self._plate(out,mask,bb,[(.31,.105),(.43,.075),(.485,.16),(.455,.24),(.345,.22)],cmd,True,318)
+            self._plate(out,mask,bb,[(.69,.105),(.57,.075),(.515,.16),(.545,.24),(.655,.22)],cmd,True,319)
+
+            # Overlapping abdominal/rib reinforcements with leather channels.
+            for i,yy in enumerate((.48,.585,.69)):
+                self._plate(out,mask,bb,[(.19,yy),(.35,yy-.015),(.455,yy+.035),(.405,yy+.105),(.245,yy+.12)],cmd,False,320+i)
+                self._plate(out,mask,bb,[(.81,yy),(.65,yy-.015),(.545,yy+.035),(.595,yy+.105),(.755,yy+.12)],cmd,False,330+i)
+
+            # Lower command shell / thigh protection.
+            self._plate(out,mask,bb,[(.16,.73),(.39,.71),(.445,.78),(.42,.955),(.235,.965),(.11,.86)],cmd,False,340)
+            self._plate(out,mask,bb,[(.84,.73),(.61,.71),(.555,.78),(.58,.955),(.765,.965),(.89,.86)],cmd,False,341)
+
+            # Real costume construction cues: one side laced, the other snapped;
+            # deliberate asymmetry keeps it from reading as superhero armour.
+            self._lacing(
+                out,
+                [(int(x0+.175*w),int(y0+.39*h)),(int(x0+.195*w),int(y0+.69*h))],
+                [(int(x0+.235*w),int(y0+.39*h)),(int(x0+.255*w),int(y0+.69*h))],
+                6
+            )
+            for i in range(4):
+                self._snap(out,int(x0+.755*w),int(y0+h*(.43+i*.075)),2)
+
+            # Sparse rubbed scratches/wear on the dominant right breast plate.
+            d=ImageDraw.Draw(out)
+            for j in range(3):
+                sx=int(x0+w*(.69+j*.025)); sy=int(y0+h*(.25+j*.055))
+                d.line((sx,sy,sx+max(4,int(.055*w)),sy-max(2,int(.012*h))),
+                       fill=(178,184,178,72),width=max(1,int(w*.004)))
+
+        elif direction=="north":
+            spine=self._poly_mask(bb,[(.425,.11),(.575,.11),(.565,.83),(.50,.91),(.435,.83)],1)
+            spine=ImageChops.multiply(spine,mask)
+            out.alpha_composite(self._reptile(spine,cmd,350))
+
+            # Bone shoulder crowns with a grown green-black back yoke.
+            self._plate(out,mask,bb,[(.035,.09),(.20,.025),(.36,.09),(.325,.21),(.10,.245)],cmd,True,351)
+            self._plate(out,mask,bb,[(.965,.09),(.80,.025),(.64,.09),(.675,.21),(.90,.245)],cmd,True,352)
+            self._plate(out,mask,bb,[(.11,.17),(.36,.11),(.47,.23),(.42,.38),(.20,.35)],cmd,False,353)
+            self._plate(out,mask,bb,[(.89,.17),(.64,.11),(.53,.23),(.58,.38),(.80,.35)],cmd,False,354)
+
+            # Command-grade grown vertebrae and back ribs.
+            for i,yy in enumerate((.24,.36,.48,.60,.72)):
+                self._plate(out,mask,bb,[(.445,yy-.025),(.50,yy-.055),(.555,yy-.025),(.545,yy+.045),(.455,yy+.045)],cmd,True,360+i)
+            for i,yy in enumerate((.40,.54,.68)):
+                self._plate(out,mask,bb,[(.18,yy),(.37,yy+.005),(.45,yy+.055),(.36,yy+.115),(.20,yy+.10)],cmd,False,370+i)
+                self._plate(out,mask,bb,[(.82,yy),(.63,yy+.005),(.55,yy+.055),(.64,yy+.115),(.80,yy+.10)],cmd,False,380+i)
+
+            self._plate(out,mask,bb,[(.17,.74),(.42,.715),(.455,.80),(.42,.955),(.23,.965),(.11,.855)],cmd,False,390)
+            self._plate(out,mask,bb,[(.83,.74),(.58,.715),(.545,.80),(.58,.955),(.77,.965),(.89,.855)],cmd,False,391)
+
+            self._lacing(
+                out,
+                [(int(x0+.70*w),int(y0+.38*h)),(int(x0+.69*w),int(y0+.70*h))],
+                [(int(x0+.755*w),int(y0+.38*h)),(int(x0+.745*w),int(y0+.70*h))],
+                7
+            )
+            self._stitch(out,[(int(x0+.24*w),int(y0+.37*h)),(int(x0+.22*w),int(y0+.76*h))],max(12,.048*h))
+
+        else:
+            # True side view: layered shoulder crown, reptile inset and overlapping
+            # flank carapace, all constrained to the vanilla side silhouette.
+            inset=self._poly_mask(bb,[(.47,.10),(.66,.10),(.69,.69),(.58,.83),(.47,.72)],1)
+            inset=ImageChops.multiply(inset,mask)
+            out.alpha_composite(self._reptile(inset,cmd,400))
+
+            self._plate(out,mask,bb,[(.19,.09),(.48,.025),(.75,.10),(.84,.19),(.70,.28),(.38,.27)],cmd,True,401)
+            self._plate(out,mask,bb,[(.26,.20),(.57,.15),(.78,.28),(.73,.46),(.51,.54),(.28,.43)],cmd,False,402)
+            for i,yy in enumerate((.48,.60,.72)):
+                self._plate(out,mask,bb,[(.29,yy),(.53,yy-.015),(.72,yy+.035),(.68,yy+.12),(.39,yy+.135)],cmd,False,410+i)
+            self._plate(out,mask,bb,[(.27,.74),(.58,.71),(.70,.79),(.65,.95),(.39,.97),(.22,.87)],cmd,False,420)
+
+            self._lacing(
+                out,
+                [(int(x0+.31*w),int(y0+.39*h)),(int(x0+.325*w),int(y0+.69*h))],
+                [(int(x0+.375*w),int(y0+.39*h)),(int(x0+.39*w),int(y0+.69*h))],
+                6
+            )
+            self._stitch(out,[(int(x0+.70*w),int(y0+.31*h)),(int(x0+.72*w),int(y0+.75*h))],max(12,.05*h))
+
+        out=self._finish(out,mask)
+        out=out.resize((OUT,OUT),Image.Resampling.LANCZOS)
+        post=float(self.s3.get("post_downsample_contrast",1.0))
+        if abs(post-1.0)>1e-6:
+            alpha=out.getchannel("A")
+            out=ImageEnhance.Contrast(out).enhance(post)
+            out.putalpha(alpha)
+        return out
+
+    def _tile_commander(self, mask):
+        # Inventory art is the same authored command shell, composed into the
+        # vanilla PowerArmor tile mask and given a restrained final readability lift.
+        out=self._paint_commander("Male","south",mask)
+        alpha=out.getchannel("A")
+        out=ImageEnhance.Contrast(out).enhance(1.06)
+        out.putalpha(alpha)
+        return out
+
     def _paint(self, body, direction, mask):
-        if self.profile["id"]=="wraith_warrior_carapace":
+        renderer=self.s3.get("renderer",self.profile["id"])
+        if renderer=="wraith_warrior_carapace":
             return self._paint_warrior(body,direction,mask)
-        return self._paint_hunter(body,direction,mask)
+        if renderer=="wraith_commander_carapace":
+            return self._paint_commander(body,direction,mask)
+        if renderer=="wraith_hunter_coat":
+            return self._paint_hunter(body,direction,mask)
+        raise RuntimeError(f"Unknown WNG apparel renderer: {renderer}")
 
     def _tile(self, mask):
-        if self.profile["id"]=="wraith_warrior_carapace":
+        renderer=self.s3.get("renderer",self.profile["id"])
+        if renderer=="wraith_warrior_carapace":
             return self._tile_warrior(mask)
-        return self._tile_hunter(mask)
+        if renderer=="wraith_commander_carapace":
+            return self._tile_commander(mask)
+        if renderer=="wraith_hunter_coat":
+            return self._tile_hunter(mask)
+        raise RuntimeError(f"Unknown WNG apparel renderer: {renderer}")
 
     def _symmetry(self, im):
         a=np.array(im.convert("L"),dtype=np.float32)
