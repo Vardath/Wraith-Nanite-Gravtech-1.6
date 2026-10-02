@@ -154,7 +154,7 @@
     ],
     "historical_continuity": [],
     "renderer": "costume_blueprint_v2",
-    "post_downsample_contrast": 1.12,
+    "post_downsample_contrast": 1.08,
     "tile_contrast": 1.08,
     "palette": {
       "leather_shadow": [
@@ -237,7 +237,9 @@
           25,
           29,
           26
-        ]
+        ],
+        "normal_strength": 1.35,
+        "brush_density": 1.25
       },
       "black_reptile": {
         "kind": "reptile_leather",
@@ -262,7 +264,9 @@
           29,
           29,
           28
-        ]
+        ],
+        "normal_strength": 1.45,
+        "brush_density": 1.15
       },
       "black_leather": {
         "kind": "leather",
@@ -287,7 +291,8 @@
           23,
           24,
           23
-        ]
+        ],
+        "normal_strength": 1.25
       },
       "silver_hard_rubber": {
         "kind": "hard_rubber",
@@ -312,7 +317,9 @@
           28,
           32,
           30
-        ]
+        ],
+        "normal_strength": 2.45,
+        "brush_density": 1.35
       },
       "simulated_bone": {
         "kind": "simulated_bone",
@@ -337,7 +344,9 @@
           18,
           19,
           18
-        ]
+        ],
+        "normal_strength": 2.65,
+        "brush_density": 1.15
       }
     },
     "garment_contract": {
@@ -445,7 +454,9 @@
                   0.33,
                   0.3
                 ]
-              ]
+              ],
+              "contact_shadow": 50,
+              "shadow_radius": 5
             },
             {
               "name": "screen-derived silver front cuirass",
@@ -593,8 +604,46 @@
                   ],
                   "width": 0.008,
                   "alpha": 105
+                },
+                {
+                  "points": [
+                    [
+                      0.37,
+                      0.23
+                    ],
+                    [
+                      0.42,
+                      0.31
+                    ],
+                    [
+                      0.44,
+                      0.44
+                    ]
+                  ],
+                  "width": 0.01,
+                  "height": 0.62
+                },
+                {
+                  "points": [
+                    [
+                      0.63,
+                      0.23
+                    ],
+                    [
+                      0.58,
+                      0.31
+                    ],
+                    [
+                      0.56,
+                      0.44
+                    ]
+                  ],
+                  "width": 0.01,
+                  "height": 0.62
                 }
-              ]
+              ],
+              "contact_shadow": 74,
+              "shadow_radius": 8
             },
             {
               "name": "left crescent simulated-bone shoulder guard",
@@ -678,7 +727,9 @@
                   "alpha": 115
                 }
               ],
-              "mirror_x": true
+              "mirror_x": true,
+              "contact_shadow": 82,
+              "shadow_radius": 7
             },
             {
               "name": "left narrow simulated-bone thigh guard",
@@ -766,7 +817,9 @@
                   "alpha": 105
                 }
               ],
-              "mirror_x": true
+              "mirror_x": true,
+              "contact_shadow": 82,
+              "shadow_radius": 7
             },
             {
               "name": "black leather cummerbund",
@@ -979,7 +1032,63 @@
               140,
               134
             ]
-          }
+          },
+          "base_relief": [
+            {
+              "points": [
+                [
+                  0.18,
+                  0.2
+                ],
+                [
+                  0.16,
+                  0.48
+                ],
+                [
+                  0.18,
+                  0.86
+                ]
+              ],
+              "width": 0.022,
+              "height": 0.34
+            },
+            {
+              "points": [
+                [
+                  0.82,
+                  0.2
+                ],
+                [
+                  0.84,
+                  0.48
+                ],
+                [
+                  0.82,
+                  0.86
+                ]
+              ],
+              "width": 0.022,
+              "height": 0.32
+            },
+            {
+              "points": [
+                [
+                  0.28,
+                  0.31
+                ],
+                [
+                  0.25,
+                  0.56
+                ],
+                [
+                  0.28,
+                  0.82
+                ]
+              ],
+              "width": 0.014,
+              "height": 0.22
+            }
+          ]
         },
         "north": {
           "folds": [
@@ -1054,7 +1163,9 @@
                   0.22,
                   0.19
                 ]
-              ]
+              ],
+              "contact_shadow": 50,
+              "shadow_radius": 5
             },
             {
               "name": "screen-derived silver back cuirass",
@@ -1150,8 +1261,46 @@
                   ],
                   "width": 0.008,
                   "alpha": 110
+                },
+                {
+                  "points": [
+                    [
+                      0.37,
+                      0.23
+                    ],
+                    [
+                      0.42,
+                      0.31
+                    ],
+                    [
+                      0.44,
+                      0.44
+                    ]
+                  ],
+                  "width": 0.01,
+                  "height": 0.62
+                },
+                {
+                  "points": [
+                    [
+                      0.63,
+                      0.23
+                    ],
+                    [
+                      0.58,
+                      0.31
+                    ],
+                    [
+                      0.56,
+                      0.44
+                    ]
+                  ],
+                  "width": 0.01,
+                  "height": 0.62
                 }
-              ]
+              ],
+              "contact_shadow": 74,
+              "shadow_radius": 8
             },
             {
               "name": "left rear crescent simulated-bone shoulder guard",
@@ -1235,7 +1384,9 @@
                   "alpha": 115
                 }
               ],
-              "mirror_x": true
+              "mirror_x": true,
+              "contact_shadow": 82,
+              "shadow_radius": 7
             },
             {
               "name": "left rear narrow simulated-bone thigh guard",
@@ -1303,7 +1454,9 @@
                   ]
                 ]
               ],
-              "mirror_x": true
+              "mirror_x": true,
+              "contact_shadow": 82,
+              "shadow_radius": 7
             },
             {
               "name": "central black leather spine channel",
@@ -1483,7 +1636,63 @@
               136,
               131
             ]
-          }
+          },
+          "base_relief": [
+            {
+              "points": [
+                [
+                  0.18,
+                  0.22
+                ],
+                [
+                  0.16,
+                  0.51
+                ],
+                [
+                  0.18,
+                  0.87
+                ]
+              ],
+              "width": 0.02,
+              "height": 0.31
+            },
+            {
+              "points": [
+                [
+                  0.82,
+                  0.22
+                ],
+                [
+                  0.84,
+                  0.51
+                ],
+                [
+                  0.82,
+                  0.87
+                ]
+              ],
+              "width": 0.02,
+              "height": 0.3
+            },
+            {
+              "points": [
+                [
+                  0.5,
+                  0.28
+                ],
+                [
+                  0.5,
+                  0.56
+                ],
+                [
+                  0.5,
+                  0.84
+                ]
+              ],
+              "width": 0.012,
+              "height": 0.18
+            }
+          ]
         },
         "east": {
           "folds": [
@@ -1550,7 +1759,9 @@
                   0.47,
                   0.57
                 ]
-              ]
+              ],
+              "contact_shadow": 50,
+              "shadow_radius": 5
             },
             {
               "name": "screen-derived side silver cuirass",
@@ -1618,8 +1829,46 @@
                   ],
                   "width": 0.008,
                   "alpha": 105
+                },
+                {
+                  "points": [
+                    [
+                      0.38,
+                      0.22
+                    ],
+                    [
+                      0.43,
+                      0.32
+                    ],
+                    [
+                      0.44,
+                      0.46
+                    ]
+                  ],
+                  "width": 0.01,
+                  "height": 0.62
+                },
+                {
+                  "points": [
+                    [
+                      0.61,
+                      0.22
+                    ],
+                    [
+                      0.58,
+                      0.32
+                    ],
+                    [
+                      0.56,
+                      0.46
+                    ]
+                  ],
+                  "width": 0.009,
+                  "height": 0.52
                 }
-              ]
+              ],
+              "contact_shadow": 74,
+              "shadow_radius": 8
             },
             {
               "name": "side crescent simulated-bone shoulder guard",
@@ -1702,7 +1951,9 @@
                   "width": 0.008,
                   "alpha": 110
                 }
-              ]
+              ],
+              "contact_shadow": 82,
+              "shadow_radius": 7
             },
             {
               "name": "side narrow simulated-bone thigh guard",
@@ -1769,7 +2020,9 @@
                     0.83
                   ]
                 ]
-              ]
+              ],
+              "contact_shadow": 82,
+              "shadow_radius": 7
             },
             {
               "name": "side black leather cummerbund",
@@ -1970,7 +2223,45 @@
               137,
               132
             ]
-          }
+          },
+          "base_relief": [
+            {
+              "points": [
+                [
+                  0.24,
+                  0.21
+                ],
+                [
+                  0.22,
+                  0.51
+                ],
+                [
+                  0.25,
+                  0.87
+                ]
+              ],
+              "width": 0.02,
+              "height": 0.31
+            },
+            {
+              "points": [
+                [
+                  0.7,
+                  0.25
+                ],
+                [
+                  0.73,
+                  0.54
+                ],
+                [
+                  0.69,
+                  0.84
+                ]
+              ],
+              "width": 0.014,
+              "height": 0.2
+            }
+          ]
         }
       }
     },
@@ -1984,7 +2275,8 @@
         5
       ],
       "render_scale": 4
-    }
+    },
+    "painting_mode": "raster_brush_v3"
   },
-  "profile_revision": "2026-10-02-commander-restart-clean-visual-pass2"
+  "profile_revision": "2026-10-02-commander-restart-raster-brush-v3"
 }

@@ -449,113 +449,246 @@ class SynthesisPass:
             field += strength*(shoulder*.72-crease*1.10)
         return np.clip(field,-1.5,1.5)
 
-    def _garment_material(self, mask, material_name, hist=None, fold_guides=None, seed_offset=0):
-        """Professional costume material painter driven by semantic material profiles."""
+    def _authored_height_field(self, bb, fold_guides=None, relief_guides=None):
+        """Build a sculpting field only from authored costume guides.
+
+        This is the form layer of Raster Painter v3. Randomness is never allowed to
+        define garment construction; only the profile's folds/relief paths do that.
+        """
+        field=self._garment_fold_field(bb,fold_guides or []).astype(np.float32)
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        for g in relief_guides or []:
+            pts=[(int(x0+float(x)*w),int(y0+float(y)*h)) for x,y in g.get("points",[])]
+            if len(pts)<2:
+                continue
+            width=max(2.0,float(g.get("width",.012))*min(w,h))
+            strength=float(g.get("height",g.get("strength",.55)))
+            line=Image.new("L",(HI,HI),0)
+            ImageDraw.Draw(line).line(pts,fill=255,width=max(1,int(width*.42)),joint="curve")
+            a=np.array(line,dtype=np.float32)/255.0
+            core=gaussian_filter(a,max(.8,width*.22))
+            shoulder=gaussian_filter(a,max(1.4,width*.95))
+            field += strength*(shoulder*.95-core*.48)
+        return np.clip(field,-2.0,2.0)
+
+    def _brush_scumble(self, mask, spec, seed_offset, density=1.0):
+        """Low-opacity irregular brushwork used as hand-painted material breakup.
+
+        Dabs are sparse, directional and material-aware. They never create panel
+        boundaries and remain subordinate to the authored form/lighting.
+        """
+        bb=mask.getbbox()
+        if not bb:
+            return Image.new("RGBA",(HI,HI),(0,0,0,0))
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        kind=str(spec["kind"]).lower()
+        rng=random.Random(61001+int(seed_offset)*131+x0*7+y0*11)
+        layer=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        d=ImageDraw.Draw(layer)
+        shadow=np.array(spec["shadow"],dtype=int)
+        high=np.array(spec["high"],dtype=int)
+
+        base=max(9,int((w*h)/(HI*HI)*95*density))
+        if kind in ("leather","reptile_leather"):
+            count=base
+        elif kind in ("hard_rubber","grown_rubber","simulated_bone","bone_chitin"):
+            count=max(7,int(base*.72))
+        else:
+            count=max(6,int(base*.55))
+
+        for i in range(count):
+            cx=rng.randint(x0,max(x0,x1-1)); cy=rng.randint(y0,max(y0,y1-1))
+            rw=max(3,int(w*rng.uniform(.025,.085)))
+            rh=max(2,int(h*rng.uniform(.008,.035)))
+            if kind in ("hard_rubber","grown_rubber","simulated_bone","bone_chitin"):
+                rh=max(2,int(rw*rng.uniform(.12,.32)))
+            dark=tuple(np.clip(shadow*rng.uniform(.72,.98),0,255).astype(int))+(rng.randint(16,38),)
+            light=tuple(np.clip(high*rng.uniform(.82,1.04),0,255).astype(int))+(rng.randint(10,30),)
+            d.ellipse((cx-rw,cy-rh,cx+rw,cy+rh),fill=dark)
+            if i%3==0:
+                d.arc((cx-rw,cy-rh,cx+rw,cy+rh),205,335,fill=light,width=max(1,int(rh*.28)))
+
+        layer=layer.filter(ImageFilter.GaussianBlur(.45))
+        return self._clip(layer,mask)
+
+    def _material_microdetail(self, mask, material_name, seed_offset):
+        """Material-specific hand-painted microdetail for final RimWorld scale."""
+        spec=self._material_spec(material_name)
+        kind=str(spec["kind"]).lower()
+        bb=mask.getbbox()
+        if not bb:
+            return Image.new("RGBA",(HI,HI),(0,0,0,0))
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        rng=random.Random(72017+int(seed_offset)*173+x0+y0*3)
+        layer=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        d=ImageDraw.Draw(layer)
+
+        shadow=tuple(spec["shadow"]); high=tuple(spec["high"])
+        if kind=="reptile_leather":
+            # Irregular overlapping pebbled scales, not a tiled grid.
+            count=max(18,int((w*h)/(HI*HI)*150))
+            for _ in range(count):
+                cx=rng.randint(x0,max(x0,x1-1)); cy=rng.randint(y0,max(y0,y1-1))
+                rx=max(4,int(w*rng.uniform(.018,.045)))
+                ry=max(3,int(rx*rng.uniform(.45,.78)))
+                d.arc((cx-rx,cy-ry,cx+rx,cy+ry),185,355,
+                      fill=tuple(min(255,v+18) for v in shadow)+(rng.randint(75,125),),
+                      width=max(1,int(rx*.16)))
+                d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),10,165,
+                      fill=tuple(min(255,v+10) for v in high)+(rng.randint(25,52),),width=1)
+        elif kind=="leather":
+            # Pores, rubbed creases, and occasional stitch-like scars.
+            count=max(12,int((w*h)/(HI*HI)*120))
+            for _ in range(count):
+                cx=rng.randint(x0,max(x0,x1-1)); cy=rng.randint(y0,max(y0,y1-1))
+                if rng.random()<.68:
+                    r=rng.choice([1,1,2,2,3])
+                    d.ellipse((cx-r,cy-r,cx+r,cy+r),fill=shadow+(rng.randint(28,62),))
+                else:
+                    ln=max(5,int(w*rng.uniform(.025,.07)))
+                    d.line((cx,cy,min(x1-1,cx+ln),cy+rng.randint(-3,3)),
+                           fill=high+(rng.randint(25,55),),width=1)
+        elif kind in ("hard_rubber","grown_rubber"):
+            # Moulded organic striation plus scuffed production edges.
+            for i in range(5):
+                fx=(i+1)/6
+                pts=[]
+                phase=rng.uniform(-.6,.6)
+                for j in range(13):
+                    t=j/12
+                    xx=x0+w*(fx+math.sin(t*math.pi*1.35+phase)*.020)
+                    yy=y0+h*(.10+.80*t)
+                    pts.append((int(xx),int(yy)))
+                d.line(pts,fill=shadow+(72,),width=max(2,int(w*.006)),joint="curve")
+                d.line([(x-1,y-2) for x,y in pts],fill=high+(35,),width=1,joint="curve")
+            for _ in range(max(4,int(w*h/(HI*HI)*35))):
+                sx=rng.randint(x0,max(x0,x1-1)); sy=rng.randint(y0,max(y0,y1-1))
+                ln=max(6,int(w*rng.uniform(.04,.10)))
+                d.line((sx,sy,min(x1-1,sx+ln),sy+rng.randint(-2,3)),fill=high+(rng.randint(18,40),),width=1)
+        elif kind in ("simulated_bone","bone_chitin"):
+            # Fibrous cast/grown striation.
+            for i in range(7):
+                fx=(i+1)/8
+                pts=[]
+                for j in range(11):
+                    t=j/10
+                    xx=x0+w*(fx+math.sin(t*math.pi*1.5+i*.7)*.016)
+                    yy=y0+h*(.08+.84*t)
+                    pts.append((int(xx),int(yy)))
+                d.line(pts,fill=shadow+(65,),width=max(2,int(w*.005)),joint="curve")
+                d.line([(x-1,y-1) for x,y in pts],fill=high+(38,),width=1,joint="curve")
+
+        return self._clip(layer,mask)
+
+    def _contact_shadow(self, outer_mask, piece_mask, strength=70, radius=7, offset=(2,3)):
+        """Paint overlap depth before a semantic piece is composited."""
+        a=np.array(piece_mask,dtype=np.uint8)
+        sh=Image.fromarray(a,"L").filter(ImageFilter.GaussianBlur(radius))
+        shifted=Image.new("L",(HI,HI),0)
+        shifted.paste(sh,offset)
+        shifted=ImageChops.multiply(shifted,outer_mask)
+        col=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        col.putalpha(shifted.point(lambda v:int(v*strength/255)))
+        return col
+
+    def _garment_material(self, mask, material_name, hist=None, fold_guides=None, seed_offset=0, relief_guides=None):
+        """Raster Painter v3 material pass.
+
+        Semantic masks only bound the paint. Visible form comes from sculpted height,
+        authored folds/relief, directional lighting, contact depth and hand-painted
+        material breakup. Historical WNG apparel is never sampled.
+        """
+        if hist is not None:
+            raise RuntimeError("Historical apparel input is forbidden in Raster Painter v3")
         spec=self._material_spec(material_name)
         kind=str(spec["kind"]).lower()
         lo=np.array(spec["shadow"],dtype=np.float32)
         mi=np.array(spec["mid"],dtype=np.float32)
         hi=np.array(spec["high"],dtype=np.float32)
         rough=float(spec.get("roughness",.55))
-        grain=float(spec.get("grain",.18))
         m=np.array(mask,dtype=np.float32)/255.0
-        inside=m>.08
+        inside=m>.07
         if not inside.any():
             return Image.new("RGBA",(HI,HI),(0,0,0,0))
 
+        bb=mask.getbbox(); x0,y0,x1,y1=bb; w=max(1,x1-x0); h=max(1,y1-y0)
         yy,xx=np.mgrid[0:HI,0:HI]
-        bb=mask.getbbox(); x0,y0,x1,y1=bb
-        w=max(1,x1-x0); h=max(1,y1-y0)
         lx=(xx-x0)/w; ly=(yy-y0)/h
 
-        # Broad upper-left form light supports RimWorld readability.
-        broad=.52 + .19*(1-ly) + .12*(1-lx)
-        fold=self._garment_fold_field(bb,fold_guides or [])
+        # Sculpted height: convex material body + authored folds/ridges.
+        dist=distance_transform_edt(inside).astype(np.float32)
+        dmax=max(1.0,float(np.percentile(dist[inside],96)))
+        convex=np.sqrt(np.clip(dist/dmax,0,1))
+        authored=self._authored_height_field(bb,fold_guides,relief_guides)
 
-        if hist is not None:
-            raise RuntimeError("Historical apparel relief is forbidden in costume_blueprint_v2")
-        relief=np.zeros((HI,HI),dtype=np.float32)
+        # Material body curvature. Hard surfaces bulge more; cloth/leather remain softer.
+        body_amp=.50
+        if kind in ("hard_rubber","grown_rubber"): body_amp=.78
+        elif kind in ("simulated_bone","bone_chitin"): body_amp=.88
+        elif kind in ("leather","reptile_leather"): body_amp=.58
+        elif kind in ("cloth","woven","uniform_fabric","wool","velvet"): body_amp=.38
 
-        # Material-specific surface response. Randomness is deliberately subordinate
-        # to authored folds/seams so the result reads as wardrobe, not procedural texture.
-        rng=np.random.default_rng(17117+int(seed_offset)*31)
+        height=convex*body_amp + authored*.30
+
+        # Gentle whole-piece form prevents flat cut-out appearance.
+        form=(1-((lx-.43)/.78)**2)*.08 + (1-((ly-.38)/.95)**2)*.05
+        height += form.astype(np.float32)
+
+        gy,gx=np.gradient(height)
+        normal_strength=float(spec.get("normal_strength",2.1 if kind in ("hard_rubber","grown_rubber","simulated_bone","bone_chitin") else 1.35))
+        nx=-gx*normal_strength; ny=-gy*normal_strength; nz=np.ones_like(nx)
+        nlen=np.sqrt(nx*nx+ny*ny+nz*nz)+1e-6
+        nx/=nlen; ny/=nlen; nz/=nlen
+
+        # Painterly upper-left/key + soft frontal fill.
+        L=np.array([-0.46,-0.64,0.61],dtype=np.float32); L/=np.linalg.norm(L)
+        diffuse=np.clip(nx*L[0]+ny*L[1]+nz*L[2],0,1)
+        broad=.36+.48*diffuse+.10*(1-ly)+.06*(1-lx)
+
+        # Edge recess/contact occlusion is material-dependent.
+        edge=np.clip(1-dist/(8 if kind in ("cloth","woven","velvet") else 12),0,1)
+        lum=np.clip(broad-edge*(.12 if kind in ("hard_rubber","simulated_bone") else .085),0,1)
+
+        # Hand-painted scumble influences tone only slightly; it cannot define form.
+        rng=np.random.default_rng(47017+int(seed_offset)*37)
         n=rng.normal(0,1,(HI,HI))
-        fine=gaussian_filter(n,1.0)
-        fine=(fine-fine.mean())/(fine.std()+1e-6)
-        medium=gaussian_filter(n,7.0)
-        medium=(medium-medium.mean())/(medium.std()+1e-6)
-        surface=(fine*.35+medium*.65)*grain
-
-        if kind in ("cloth","woven","uniform_fabric","wool"):
-            weave=(np.sin(xx*.42)+np.sin(yy*.46))*0.018
-            surface += weave
-        elif kind=="velvet":
-            # Velvet reads through dark directional nap and soft fold catches,
-            # not hard highlights or geometric texture.
-            nap=(np.sin((xx*.12)+(yy*.035))*0.5+0.5)
-            surface=surface*.18 + (nap-.5)*.055
-        elif kind in ("leather","reptile_leather"):
-            surface *= .72
-        elif kind in ("hard_rubber","grown_rubber"):
-            surface *= .10
-            surface += np.sin((xx*.030)+(yy*.014))*.007
-            surface += np.sin((xx*.012)-(yy*.021))*.004
-        elif kind in ("simulated_bone","bone_chitin"):
-            surface *= .18
-            surface += (np.sin(xx*.044+yy*.010)+np.sin(yy*.036))*.010
-        elif kind in ("silk","satin"):
-            surface *= .35
-        elif kind in ("spandex","stretch_fabric"):
-            # Smooth fitted fabric with restrained directional sheen.
-            surface *= .20
-            surface += np.sin(yy*.095)*.012
-        elif kind in ("crystalline_fabric","ancient_fabric"):
-            surface *= .28
-
-        dist=distance_transform_edt(inside)
-        edge=np.clip(1-dist/10,0,1)
-        lum=broad + fold*.22 + relief*.08 + surface*.025 - edge*.08
-        lum=np.clip(lum,0,1)
+        low=gaussian_filter(n,18.0)
+        low=(low-low.mean())/(low.std()+1e-6)
+        lum=np.clip(lum+low*.012,0,1)
 
         rgb=np.empty((HI,HI,3),dtype=np.float32)
-        lower=lum<.52
-        t=np.clip(lum/.52,0,1)
+        lower=lum<.50
+        t=np.clip(lum/.50,0,1)
         rgb[lower]=lo+(mi-lo)*t[lower,None]
-        t2=np.clip((lum-.52)/.48,0,1)
+        t2=np.clip((lum-.50)/.50,0,1)
         rgb[~lower]=mi+(hi-mi)*t2[~lower,None]
 
-        # Material-appropriate highlight response.
-        specular=(np.clip((lum-.58)/.32,0,1)**(1.7+rough*2.2))*(1-rough*.55)
-        if kind=="velvet":
-            specular*=.28
-        elif kind in ("spandex","stretch_fabric"):
-            specular*=.72
-        elif kind in ("hard_rubber","grown_rubber"):
-            specular*=.58
-        elif kind in ("simulated_bone","bone_chitin"):
-            specular*=.42
-        spec_tint=np.array(spec.get("specular_tint",[30,30,30]),dtype=np.float32)
+        # Physically different highlight responses keep leather/rubber/bone distinct.
+        specpow=3.2+rough*7.0
+        halfz=np.clip((nz+.15*nx-.10*ny),0,1)
+        specular=(halfz**specpow)*(1-rough*.64)
+        if kind=="velvet": specular*=.18
+        elif kind in ("cloth","woven","uniform_fabric","wool"): specular*=.24
+        elif kind in ("leather","reptile_leather"): specular*=.72
+        elif kind in ("hard_rubber","grown_rubber"): specular*=.56
+        elif kind in ("simulated_bone","bone_chitin"): specular*=.36
+        elif kind in ("spandex","stretch_fabric","satin","silk"): specular*=.90
+
+        spec_tint=np.array(spec.get("specular_tint",[28,28,28]),dtype=np.float32)
         rgb=np.clip(rgb+specular[...,None]*spec_tint,0,255)
 
-        out=Image.fromarray(np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)]),"RGBA")
+        base=Image.fromarray(np.dstack([rgb.astype(np.uint8),(m*255).astype(np.uint8)]),"RGBA")
+        base.alpha_composite(self._brush_scumble(mask,spec,seed_offset,float(spec.get("brush_density",1.0))))
+        base.alpha_composite(self._material_microdetail(mask,material_name,seed_offset))
 
-        # Reptile leather gets deliberate scale arcs, but only as a surface treatment.
-        if kind=="reptile_leather":
-            tex=Image.new("RGBA",(HI,HI),(0,0,0,0))
-            d=ImageDraw.Draw(tex)
-            step_x=max(16,int(w*.065)); step_y=max(10,int(step_x*.55))
-            rr=random.Random(81011+int(seed_offset)*71)
-            row=0
-            for y in range(y0-step_y,y1+step_y,step_y):
-                off=step_x//2 if row%2 else 0
-                for x in range(x0-step_x,x1+step_x,step_x):
-                    cx=x+off+rr.randint(-1,1); cy=y+rr.randint(-1,1)
-                    rx=max(5,int(step_x*.42)); ry=max(3,int(step_y*.42))
-                    d.arc((cx-rx,cy-ry,cx+rx,cy+ry),190,350,fill=(7,8,8,145),width=max(1,int(w*.006)))
-                    d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),15,165,fill=(185,185,178,48),width=1)
-                row+=1
-            out.alpha_composite(self._clip(tex,mask))
-        return out
+        # Fine edge catch applied as paint, not a geometric outline.
+        inner=(dist>1)&(dist<5)&inside
+        edgepaint=np.zeros((HI,HI,4),dtype=np.uint8)
+        edgepaint[inner,:3]=np.clip(hi*.88,0,255).astype(np.uint8)
+        edgepaint[inner,3]=36
+        base.alpha_composite(Image.fromarray(edgepaint,"RGBA"))
+        base.putalpha(mask)
+        return base
 
     def _garment_relief(self, out, bb, piece_mask, guides, material_name):
         """Profile-authored organic grooves/ridges inside a semantic costume piece.
@@ -661,7 +794,7 @@ class SynthesisPass:
         hist=None
 
         base_material=bp["base_material"]
-        out=self._garment_material(mask,base_material,hist,view.get("folds",[]),100)
+        out=self._garment_material(mask,base_material,hist,view.get("folds",[]),100,view.get("base_relief",[]))
         semantic_union=Image.new("L",(HI,HI),0)
         max_piece_frac=0.0
         mask_area=max(1,int((np.array(mask)>16).sum()))
@@ -676,19 +809,23 @@ class SynthesisPass:
             semantic_union=ImageChops.lighter(semantic_union,pm)
             frac=float((np.array(pm)>16).sum()/mask_area)
             max_piece_frac=max(max_piece_frac,frac)
-            layer=self._garment_material(pm,piece["material"],hist,piece.get("folds",[]),200+i)
+            out.alpha_composite(self._contact_shadow(mask,pm,
+                int(piece.get("contact_shadow",58)),int(piece.get("shadow_radius",6)),
+                tuple(piece.get("shadow_offset",[2,3]))))
+            layer=self._garment_material(pm,piece["material"],hist,piece.get("folds",[]),200+i,piece.get("relief",[]))
             out.alpha_composite(layer)
-            self._garment_relief(out,bb,pm,piece.get("relief",[]),piece["material"])
             if piece.get("mirror_x"):
                 mirrored=pm.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-                layer2=self._garment_material(mirrored,piece["material"],hist,piece.get("folds",[]),300+i)
-                out.alpha_composite(layer2)
                 mirrored_relief=[]
                 for g in piece.get("relief",[]):
                     mg=dict(g)
                     mg["points"]=[[1-float(x),float(y)] for x,y in g.get("points",[])]
                     mirrored_relief.append(mg)
-                self._garment_relief(out,bb,mirrored,mirrored_relief,piece["material"])
+                out.alpha_composite(self._contact_shadow(mask,mirrored,
+                    int(piece.get("contact_shadow",58)),int(piece.get("shadow_radius",6)),
+                    tuple(piece.get("shadow_offset",[-2,3]))))
+                layer2=self._garment_material(mirrored,piece["material"],hist,piece.get("folds",[]),300+i,mirrored_relief)
+                out.alpha_composite(layer2)
                 semantic_union=ImageChops.lighter(semantic_union,mirrored)
                 max_piece_frac=max(max_piece_frac,float((np.array(mirrored)>16).sum()/mask_area))
 
@@ -1607,6 +1744,8 @@ def validate_profile(profile: dict, path: Path|None=None):
         )
     renderer=s3.get("renderer",profile["id"])
     if renderer=="costume_blueprint_v2":
+        if s3.get("painting_mode")!="raster_brush_v3":
+            raise RuntimeError(f"{where}: costume_blueprint_v2 requires painting_mode='raster_brush_v3'; flat-fill synthesis is retired")
         mats=s3.get("materials",{})
         bp=s3.get("garment_blueprint")
         if not mats or not bp:

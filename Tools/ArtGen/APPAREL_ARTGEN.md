@@ -13,7 +13,7 @@ The permanent apparel generator is **not** a generic armour-panel compositor.
 4. Visual and RimWorld QA
 5. Live mod PNGs
 
-## Costume Blueprint v2
+## Costume Blueprint v2 + Raster Painter v3
 
 New clothing and uniform work should use:
 
@@ -62,3 +62,7 @@ Costume Blueprint v2 rejects:
 
 Automated QA is still only a gate. The 192 px contact sheet must be visually
 inspected before an item is accepted.
+
+### Professional raster rule
+
+All costume_blueprint_v2 profiles now require `painting_mode: raster_brush_v3`. Semantic masks only locate materials. Visible art must come from sculpted raster light/form, hand-painted material breakup, contact depth, authored relief, seams and wear. A flat mask + colour fill is invalid.
