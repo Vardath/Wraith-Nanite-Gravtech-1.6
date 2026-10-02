@@ -167,59 +167,59 @@
     ],
     "palette": {
       "leather_shadow": [
-        10,
-        14,
-        12
-      ],
-      "leather_mid": [
-        31,
-        44,
-        36
-      ],
-      "leather_high": [
-        110,
-        130,
-        116
-      ],
-      "contrast_shadow": [
-        8,
-        8,
+        9,
+        11,
         10
       ],
-      "contrast_mid": [
-        30,
+      "leather_mid": [
         27,
-        33
+        33,
+        29
+      ],
+      "leather_high": [
+        83,
+        96,
+        87
+      ],
+      "contrast_shadow": [
+        7,
+        7,
+        9
+      ],
+      "contrast_mid": [
+        25,
+        23,
+        28
       ],
       "contrast_high": [
-        98,
-        90,
-        104
+        76,
+        70,
+        81
       ],
       "reptile_shadow": [
-        12,
-        11,
-        14
+        10,
+        9,
+        12
       ],
       "reptile_mid": [
-        44,
-        40,
-        48
+        36,
+        33,
+        40
       ],
       "reptile_high": [
-        134,
-        124,
-        140
+        103,
+        96,
+        108
       ],
       "metal": [
-        150,
-        145,
-        151
+        143,
+        138,
+        145
       ],
       "biotech": [
-        153,
-        145,
-        211
+        147,
+        139,
+        198
       ]
     },
     "quality": {
