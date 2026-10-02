@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import argparse, hashlib, io, json, math, random, re, subprocess
 import numpy as np
 import requests
+import cairosvg
 from scipy.ndimage import gaussian_filter, distance_transform_edt
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -120,10 +121,11 @@ class StargateReferencePass:
         return rep
 
 class RimWorldImplementationPass:
-    def __init__(self, profile: dict, vanilla_dir: Path):
+    def __init__(self, profile: dict, vanilla_dir: Path, body_dir: Path|None=None):
         self.profile=profile
         self.cfg=profile["stage_2_rimworld"]
         self.vanilla_dir=vanilla_dir
+        self.body_dir=body_dir
 
     def _visible_mask(self, path: Path) -> Image.Image:
         im=Image.open(path).convert("RGBA").resize((HI,HI),Image.Resampling.LANCZOS)
@@ -132,7 +134,92 @@ class RimWorldImplementationPass:
         m=((a>8)&(rgb.max(axis=2)>28)).astype(np.uint8)*255
         return Image.fromarray(m,"L").filter(ImageFilter.GaussianBlur(.45))
 
+    def _svg_mask(self, path: Path) -> Image.Image:
+        raw=cairosvg.svg2png(url=str(path),output_width=HI,output_height=HI)
+        im=Image.open(io.BytesIO(raw)).convert("RGBA")
+        a=np.array(im.getchannel("A"),dtype=np.uint8)
+        return Image.fromarray(a,"L")
+
+    def _body_alpha(self, body: str, direction: str) -> Image.Image:
+        if self.body_dir is None:
+            raise RuntimeError("body_dir is required for powerarmor_svg_deformed")
+        p=self.body_dir/f"Naked_{body}_{direction}.png"
+        if not p.exists():
+            raise FileNotFoundError(p)
+        im=Image.open(p).convert("RGBA").resize((HI,HI),Image.Resampling.LANCZOS)
+        return im.getchannel("A")
+
+    @staticmethod
+    def _bbox_arr(mask: Image.Image):
+        a=np.array(mask)>8
+        ys,xs=np.nonzero(a)
+        if not len(xs): raise RuntimeError("empty implementation mask")
+        return xs.min(),ys.min(),xs.max()+1,ys.max()+1
+
+    def _deform_powerarmor(self, base: Image.Image, body: str, direction: str) -> Image.Image:
+        male=self._body_alpha("Male",direction)
+        targ=self._body_alpha(body,direction)
+        mb=self._bbox_arr(male); tb=self._bbox_arr(targ); ab=self._bbox_arr(base)
+        mw,mh=mb[2]-mb[0],mb[3]-mb[1]
+        tw,th=tb[2]-tb[0],tb[3]-tb[1]
+        sx=tw/max(1,mw); sy=th/max(1,mh)
+        acx=(ab[0]+ab[2])/2; acy=(ab[1]+ab[3])/2
+        mcx=(mb[0]+mb[2])/2; mcy=(mb[1]+mb[3])/2
+        tcx=(tb[0]+tb[2])/2; tcy=(tb[1]+tb[3])/2
+
+        crop=base.crop(ab)
+        nw=max(1,int(round(crop.width*sx))); nh=max(1,int(round(crop.height*sy)))
+        crop=crop.resize((nw,nh),Image.Resampling.LANCZOS)
+        out=Image.new("L",(HI,HI),0)
+        px=int(round(acx+(tcx-mcx)-nw/2)); py=int(round(acy+(tcy-mcy)-nh/2))
+        out.paste(crop,(px,py))
+
+        # keep vanilla contour safely within canvas without distorting it
+        b=out.getbbox()
+        if b:
+            pad=16
+            dx=0; dy=0
+            if b[0]<pad: dx=pad-b[0]
+            elif b[2]>HI-pad: dx=(HI-pad)-b[2]
+            if b[1]<pad: dy=pad-b[1]
+            elif b[3]>HI-pad: dy=(HI-pad)-b[3]
+            if dx or dy:
+                shifted=Image.new("L",(HI,HI),0)
+                shifted.paste(out,(dx,dy))
+                out=shifted
+        return out
+
+    def _powerarmor_run(self) -> dict:
+        masks={}; metrics={}
+        bases={}
+        for d in ("south","north","east"):
+            p=self.vanilla_dir/f"PowerArmor_Male_{d}.svg"
+            if not p.exists(): raise FileNotFoundError(p)
+            bases[d]=self._svg_mask(p)
+
+        for body in self.cfg["body_types"]:
+            masks[body]={}
+            for d in ("south","north","east"):
+                m=self._deform_powerarmor(bases[d],body,d)
+                masks[body][d]=m
+                b=m.getbbox()
+                metrics[f"{body}_{d}"]={"bbox":list(b),"opaque":int((np.array(m)>128).sum())}
+
+        # Ground tile derives from the vanilla PowerArmor front contour, centered smaller.
+        src=masks["Male"]["south"]
+        sb=src.getbbox()
+        crop=src.crop(sb)
+        tw=int((sb[2]-sb[0])*.78); th=int((sb[3]-sb[1])*.78)
+        crop=crop.resize((tw,th),Image.Resampling.LANCZOS)
+        tile=Image.new("L",(HI,HI),0)
+        tile.paste(crop,((HI-tw)//2,(HI-th)//2))
+        return {"masks":masks,"tile":tile,"metrics":metrics}
+
     def run(self) -> dict:
+        mode=self.cfg.get("implementation_mode","png_family")
+        if mode=="powerarmor_svg_deformed":
+            return self._powerarmor_run()
+
         fam=self.cfg["vanilla_family"]
         masks={}
         metrics={}
