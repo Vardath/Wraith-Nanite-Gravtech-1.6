@@ -140,8 +140,18 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
         base_masks[d]=svg_mask(p)
 
     masks={}
+    cover_body=bool(profile["rimworld"].get("cover_body",False))
     for body in profile["rimworld"]["body_types"]:
-        masks[body]={d:deform_mask(base_masks[d],body_dir,body,d) for d in ("south","north","east")}
+        masks[body]={}
+        for d in ("south","north","east"):
+            m=deform_mask(base_masks[d],body_dir,body,d)
+            # Some vanilla outerwear sprites deliberately leave the torso open.
+            # For full-body garments, preserve the vanilla outer contour while
+            # unioning the matching vanilla naked-body alpha so the apparel
+            # actually covers the pawn instead of exposing a large center hole.
+            if cover_body:
+                m=ImageChops.lighter(m,body_alpha(body_dir,body,d))
+            masks[body][d]=m
 
     outdir=LIVE_ROOT/profile.get("output_dir","Wraith")
     outdir.mkdir(parents=True,exist_ok=True)

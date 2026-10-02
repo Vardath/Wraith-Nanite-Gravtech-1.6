@@ -48,7 +48,8 @@
       "Fat",
       "Hulk"
     ],
-    "tile_scale": 0.8
+    "tile_scale": 0.8,
+    "cover_body": true
   },
   "masters": {
     "south": "master_south.png",
@@ -69,7 +70,7 @@
     ],
     "background": "transparent",
     "instruction": "finished professional painted RimWorld apparel master",
-    "silhouette": "vanilla RimWorld Duster worn silhouette is authoritative so the coat covers the pawn body correctly",
+    "silhouette": "vanilla RimWorld Duster outer silhouette with matching vanilla body coverage union; coat must cover the pawn torso while preserving Duster length and proportions",
     "source_priority": "Stargate production Wraith leather wardrobe first"
   }
 }
