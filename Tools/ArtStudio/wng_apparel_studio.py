@@ -211,7 +211,7 @@ class RasterStudio:
         x0,y0,x1,y1=bb; w=max(1,x1-x0); h=max(1,y1-y0)
         ly=(yy-y0)/h
         edge=np.clip(1-dist/12,0,1)
-        lum=np.clip(.31+.48*diff+.10*(1-ly)-edge*.105+low*.010+fine*.003,0,1)
+        lum=np.clip(.34+.49*diff+.11*(1-ly)-edge*.10+low*.012+fine*.004,0,1)
 
         rgb=np.empty((HI,HI,3),np.float32)
         lower=lum<.5
@@ -250,14 +250,14 @@ class RasterStudio:
                     d.line((x+1,y+2,min(x1-1,x+ln)+1,y+dy+2),fill=sh+(rng.randint(20,46),),width=max(1,round(w*.0028)))
 
         elif kind=="reptile":
-            step=max(14,round(w*.055)); row=0
+            step=max(18,round(w*.072)); row=0
             for y in range(y0-step,y1+step,round(step*.58)):
                 off=step//2 if row%2 else 0
                 for x in range(x0-step,x1+step,step):
                     cx=x+off+rng.randint(-2,2); cy=y+rng.randint(-2,2)
                     rx=max(4,round(step*.40)); ry=max(3,round(step*.25))
-                    d.arc((cx-rx,cy-ry,cx+rx,cy+ry),190,350,fill=sh+(125,),width=max(1,round(step*.08)))
-                    d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),15,165,fill=hi+(44,),width=1)
+                    d.arc((cx-rx,cy-ry,cx+rx,cy+ry),190,350,fill=sh+(145,),width=max(2,round(step*.09)))
+                    d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),15,165,fill=hi+(62,),width=max(1,round(step*.035)))
                 row+=1
 
         elif kind=="rubber":
@@ -269,7 +269,8 @@ class RasterStudio:
                     x=x0+w*(fx+math.sin(t*math.pi*1.3+i*.5)*.018)
                     y=y0+h*(.12+.76*t)
                     pts.append((round(x),round(y)))
-                d.line(pts,fill=sh+(48,),width=max(2,round(w*.006)),joint="curve")
+                d.line(pts,fill=sh+(78,),width=max(2,round(w*.007)),joint="curve")
+                d.line([(x-1,y-2) for x,y in pts],fill=hi+(34,),width=max(1,round(w*.0025)),joint="curve")
             for _ in range(3):
                 y=rng.randint(round(y0+h*.20),round(y0+h*.70))
                 d.arc((round(x0+w*.18),y-round(h*.03),round(x0+w*.78),y+round(h*.03)),
@@ -284,8 +285,8 @@ class RasterStudio:
                     x=x0+w*(fx+math.sin(t*math.pi*1.5+i*.8)*.013)
                     y=y0+h*(.08+.84*t)
                     pts.append((round(x),round(y)))
-                d.line(pts,fill=sh+(52,),width=max(1,round(w*.004)),joint="curve")
-                d.line([(x-1,y-1) for x,y in pts],fill=hi+(25,),width=1,joint="curve")
+                d.line(pts,fill=sh+(76,),width=max(2,round(w*.005)),joint="curve")
+                d.line([(x-1,y-1) for x,y in pts],fill=hi+(40,),width=max(1,round(w*.0025)),joint="curve")
 
         layer=ImageChops.multiply(layer,Image.merge("RGBA",(mask,mask,mask,mask)))
         out.alpha_composite(layer)
