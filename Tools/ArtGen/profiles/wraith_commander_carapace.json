@@ -351,7 +351,7 @@
       }
     },
     "garment_contract": {
-      "max_single_piece_fraction": 0.28,
+      "max_single_piece_fraction": 0.285,
       "min_base_garment_visible_fraction": 0.43,
       "max_semantic_pieces_per_view": 8,
       "min_seams_per_view": 3
@@ -2319,5 +2319,5 @@
     "finish_unsharp_radius": 0.85,
     "finish_unsharp_threshold": 3
   },
-  "profile_revision": "2026-10-02-commander-stage1-prop-material-pass"
+  "profile_revision": "2026-10-02-commander-stage1-prop-material-pass-qa"
 }
