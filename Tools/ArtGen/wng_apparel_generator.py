@@ -693,10 +693,18 @@ class SynthesisPass:
         ep=np.zeros((HI,HI,4),dtype=np.uint8)
         lit=edge_band&(edge_light>.18)
         dark=edge_band&(edge_dark>.18)
-        ep[lit,:3]=np.clip(hi*.92,0,255).astype(np.uint8)
-        ep[lit,3]=(edge_light[lit]*42).astype(np.uint8)
-        ep[dark,:3]=np.clip(lo*.72,0,255).astype(np.uint8)
-        ep[dark,3]=(edge_dark[dark]*58).astype(np.uint8)
+        if kind in ("hard_rubber","grown_rubber","simulated_bone","bone_chitin"):
+            # Screen-used Wraith rubber/bone reads by recessed edge depth and rubbed
+            # high points, not a bright ring around the whole piece.
+            ep[lit,:3]=np.clip(mi*.88,0,255).astype(np.uint8)
+            ep[lit,3]=(edge_light[lit]*9).astype(np.uint8)
+            ep[dark,:3]=np.clip(lo*.58,0,255).astype(np.uint8)
+            ep[dark,3]=(edge_dark[dark]*72).astype(np.uint8)
+        else:
+            ep[lit,:3]=np.clip(hi*.82,0,255).astype(np.uint8)
+            ep[lit,3]=(edge_light[lit]*18).astype(np.uint8)
+            ep[dark,:3]=np.clip(lo*.68,0,255).astype(np.uint8)
+            ep[dark,3]=(edge_dark[dark]*42).astype(np.uint8)
         base.alpha_composite(Image.fromarray(ep,"RGBA"))
 
         # Clear-coated screen-used rubber gets a few broad reflection strokes rather
@@ -1039,14 +1047,15 @@ class SynthesisPass:
     def _finish(self, out, mask):
         ship_contrast=[x["contrast"] for x in self.benchmark_stats if 20<x["contrast"]<100]
         live_contrast=[x["contrast"] for x in self.ref.image_stats if min(x.get("size",[0,0]))>=100 and 15<x["contrast"]<95]
-        if ship_contrast:
-            # WNG finished ships are the explicit quality benchmark. Apparel should
-            # approach their readable depth without copying their palette or geometry.
-            target=float(np.clip(np.median(ship_contrast)*.88,36.0,48.0))
+        if "finish_contrast_target" in self.s3:
+            target=float(self.s3["finish_contrast_target"])
+        elif ship_contrast:
+            # Ships benchmark readable depth, but apparel remains materially darker.
+            target=float(np.clip(np.median(ship_contrast)*.72,31.0,40.0))
         elif live_contrast:
-            target=float(np.clip(np.median(live_contrast),34.0,44.0))
+            target=float(np.clip(np.median(live_contrast),30.0,39.0))
         else:
-            target=38.0
+            target=34.0
 
         a=np.array(out,dtype=np.float32)
         m=np.array(mask)>16
@@ -1080,8 +1089,12 @@ class SynthesisPass:
         a[...,:3]=np.clip(rgb,0,255)
         a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=ImageEnhance.Contrast(out).enhance(1.08)
-        out=out.filter(ImageFilter.UnsharpMask(radius=1.05,percent=92,threshold=2))
+        out=ImageEnhance.Contrast(out).enhance(float(self.s3.get("finish_contrast_enhance",1.04)))
+        out=out.filter(ImageFilter.UnsharpMask(
+            radius=float(self.s3.get("finish_unsharp_radius",.95)),
+            percent=int(self.s3.get("finish_unsharp_percent",62)),
+            threshold=int(self.s3.get("finish_unsharp_threshold",3))
+        ))
         out.putalpha(mask)
         return out
 

@@ -154,8 +154,8 @@
     ],
     "historical_continuity": [],
     "renderer": "costume_blueprint_v2",
-    "post_downsample_contrast": 1.03,
-    "tile_contrast": 1.04,
+    "post_downsample_contrast": 1,
+    "tile_contrast": 1.02,
     "palette": {
       "leather_shadow": [
         4,
@@ -217,19 +217,19 @@
       "green_black_leather": {
         "kind": "leather",
         "shadow": [
-          3,
-          5,
-          4
+          2,
+          4,
+          3
         ],
         "mid": [
-          14,
-          21,
-          17
+          11,
+          17,
+          13
         ],
         "high": [
-          50,
-          62,
-          53
+          39,
+          49,
+          41
         ],
         "roughness": 0.6,
         "grain": 0.1,
@@ -254,9 +254,9 @@
           15
         ],
         "high": [
-          48,
-          54,
-          50
+          39,
+          44,
+          41
         ],
         "roughness": 0.54,
         "grain": 0.08,
@@ -297,53 +297,54 @@
       "silver_hard_rubber": {
         "kind": "hard_rubber",
         "shadow": [
-          14,
-          17,
-          17
+          10,
+          13,
+          13
         ],
         "mid": [
+          31,
           38,
-          45,
-          43
+          36
         ],
         "high": [
-          84,
-          94,
-          90
+          73,
+          83,
+          79
         ],
         "roughness": 0.61,
         "grain": 0.02,
         "specular_tint": [
-          24,
-          28,
-          27
+          21,
+          25,
+          24
         ],
         "normal_strength": 2.7,
-        "brush_density": 1.55
+        "brush_density": 1.55,
+        "clearcoat": 0.42
       },
       "simulated_bone": {
         "kind": "simulated_bone",
         "shadow": [
-          28,
-          31,
-          30
+          22,
+          25,
+          24
         ],
         "mid": [
-          61,
-          67,
-          65
+          52,
+          58,
+          56
         ],
         "high": [
-          111,
-          118,
-          113
+          96,
+          103,
+          99
         ],
         "roughness": 0.7,
         "grain": 0.035,
         "specular_tint": [
-          15,
-          16,
-          15
+          12,
+          13,
+          12
         ],
         "normal_strength": 2.9,
         "brush_density": 1.4
@@ -2311,7 +2312,12 @@
       ],
       "render_scale": 4
     },
-    "painting_mode": "raster_brush_v3"
+    "painting_mode": "raster_brush_v3",
+    "finish_contrast_target": 31.5,
+    "finish_contrast_enhance": 1.015,
+    "finish_unsharp_percent": 48,
+    "finish_unsharp_radius": 0.85,
+    "finish_unsharp_threshold": 3
   },
-  "profile_revision": "2026-10-02-commander-stage1-professional-pass-aligned-run"
+  "profile_revision": "2026-10-02-commander-stage1-prop-material-pass"
 }
