@@ -323,14 +323,14 @@ class SynthesisPass:
         rgb=a[...,:3]
         lum=.2126*rgb[...,0]+.7152*rgb[...,1]+.0722*rgb[...,2]
         cur=lum[m].std() if m.any() else 1
-        scale=np.clip(target/max(cur,1),.94,1.18)
+        scale=np.clip(target/max(cur,1),.96,1.72)
         mean=rgb[m].mean(axis=0) if m.any() else np.array([45,48,46])
         rgb=(rgb-mean)*scale+mean
         a[...,:3]=np.clip(rgb,0,255)
         a[...,3]=np.array(mask)
         out=Image.fromarray(a.astype(np.uint8),"RGBA")
-        out=ImageEnhance.Contrast(out).enhance(1.05)
-        out=out.filter(ImageFilter.UnsharpMask(radius=2.0,percent=78,threshold=4))
+        out=ImageEnhance.Contrast(out).enhance(1.13)
+        out=out.filter(ImageFilter.UnsharpMask(radius=2.0,percent=96,threshold=3))
         out.putalpha(mask)
         return out
 
