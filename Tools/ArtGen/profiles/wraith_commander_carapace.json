@@ -153,7 +153,7 @@
       "Textures/Things/Building/Wraith/Shuttle/WNG_WraithCruiser_south.png"
     ],
     "historical_continuity": [],
-    "renderer": "costume_blueprint_v2",
+    "renderer": "stargate_costume_illustration_v3",
     "post_downsample_contrast": 1,
     "tile_contrast": 1.02,
     "palette": {
@@ -318,7 +318,7 @@
           31,
           29
         ],
-        "normal_strength": 2.7,
+        "normal_strength": 3.25,
         "brush_density": 1.85,
         "clearcoat": 0.36
       },
@@ -346,7 +346,7 @@
           13,
           12
         ],
-        "normal_strength": 2.9,
+        "normal_strength": 3.3,
         "brush_density": 1.7
       }
     },
@@ -501,7 +501,8 @@
                 }
               ],
               "contact_shadow": 44,
-              "shadow_radius": 5
+              "shadow_radius": 5,
+              "feather": 1.15
             },
             {
               "name": "layered dark silver Wraith torso shell",
@@ -697,7 +698,10 @@
                 }
               ],
               "contact_shadow": 74,
-              "shadow_radius": 8
+              "shadow_radius": 8,
+              "feather": 2.1,
+              "clear_cover": true,
+              "clear_cover_strength": 0.46
             },
             {
               "name": "left ridged simulated-bone command shoulder",
@@ -817,7 +821,8 @@
                 }
               ],
               "contact_shadow": 76,
-              "shadow_radius": 7
+              "shadow_radius": 7,
+              "feather": 2.1
             },
             {
               "name": "right ridged simulated-bone command shoulder",
@@ -937,7 +942,8 @@
                 }
               ],
               "contact_shadow": 72,
-              "shadow_radius": 7
+              "shadow_radius": 7,
+              "feather": 2.1
             },
             {
               "name": "left ridged Wraith thigh bone",
@@ -1057,7 +1063,8 @@
                 }
               ],
               "contact_shadow": 62,
-              "shadow_radius": 6
+              "shadow_radius": 6,
+              "feather": 2.1
             },
             {
               "name": "right ridged Wraith thigh bone",
@@ -1177,7 +1184,8 @@
                 }
               ],
               "contact_shadow": 60,
-              "shadow_radius": 6
+              "shadow_radius": 6,
+              "feather": 2.1
             },
             {
               "name": "black leather flexible waist",
@@ -1202,7 +1210,8 @@
                 ]
               ],
               "contact_shadow": 48,
-              "shadow_radius": 5
+              "shadow_radius": 5,
+              "feather": 1.15
             },
             {
               "name": "narrow commander collar",
@@ -1235,7 +1244,8 @@
                 ]
               ],
               "contact_shadow": 36,
-              "shadow_radius": 4
+              "shadow_radius": 4,
+              "feather": 1.15
             }
           ],
           "seams": [
@@ -1548,7 +1558,8 @@
                 ]
               ],
               "contact_shadow": 44,
-              "shadow_radius": 5
+              "shadow_radius": 5,
+              "feather": 1.15
             },
             {
               "name": "layered dark silver Wraith back shell",
@@ -1691,7 +1702,10 @@
                 }
               ],
               "contact_shadow": 72,
-              "shadow_radius": 8
+              "shadow_radius": 8,
+              "feather": 2.1,
+              "clear_cover": true,
+              "clear_cover_strength": 0.46
             },
             {
               "name": "left rear ridged command shoulder",
@@ -1792,7 +1806,8 @@
                 }
               ],
               "contact_shadow": 74,
-              "shadow_radius": 7
+              "shadow_radius": 7,
+              "feather": 2.1
             },
             {
               "name": "right rear ridged command shoulder",
@@ -1893,7 +1908,8 @@
                 }
               ],
               "contact_shadow": 70,
-              "shadow_radius": 7
+              "shadow_radius": 7,
+              "feather": 2.1
             },
             {
               "name": "left rear ridged thigh bone",
@@ -1994,7 +2010,8 @@
                 }
               ],
               "contact_shadow": 60,
-              "shadow_radius": 6
+              "shadow_radius": 6,
+              "feather": 2.1
             },
             {
               "name": "right rear ridged thigh bone",
@@ -2095,7 +2112,8 @@
                 }
               ],
               "contact_shadow": 58,
-              "shadow_radius": 6
+              "shadow_radius": 6,
+              "feather": 2.1
             },
             {
               "name": "central leather spine channel",
@@ -2120,7 +2138,8 @@
                 ]
               ],
               "contact_shadow": 38,
-              "shadow_radius": 4
+              "shadow_radius": 4,
+              "feather": 1.15
             },
             {
               "name": "rear flexible waist",
@@ -2145,7 +2164,8 @@
                 ]
               ],
               "contact_shadow": 46,
-              "shadow_radius": 5
+              "shadow_radius": 5,
+              "feather": 1.15
             }
           ],
           "seams": [
@@ -2417,7 +2437,8 @@
                 ]
               ],
               "contact_shadow": 42,
-              "shadow_radius": 5
+              "shadow_radius": 5,
+              "feather": 1.15
             },
             {
               "name": "layered dark silver side Wraith shell",
@@ -2533,7 +2554,10 @@
                 }
               ],
               "contact_shadow": 68,
-              "shadow_radius": 8
+              "shadow_radius": 8,
+              "feather": 2.1,
+              "clear_cover": true,
+              "clear_cover_strength": 0.46
             },
             {
               "name": "side solid ridged command shoulder",
@@ -2634,7 +2658,8 @@
                 }
               ],
               "contact_shadow": 72,
-              "shadow_radius": 7
+              "shadow_radius": 7,
+              "feather": 2.1
             },
             {
               "name": "side ridged thigh bone",
@@ -2754,7 +2779,8 @@
                 }
               ],
               "contact_shadow": 60,
-              "shadow_radius": 6
+              "shadow_radius": 6,
+              "feather": 2.1
             },
             {
               "name": "side flexible waist",
@@ -2779,7 +2805,8 @@
                 ]
               ],
               "contact_shadow": 44,
-              "shadow_radius": 5
+              "shadow_radius": 5,
+              "feather": 1.15
             },
             {
               "name": "side commander collar",
@@ -2808,7 +2835,8 @@
                 ]
               ],
               "contact_shadow": 35,
-              "shadow_radius": 4
+              "shadow_radius": 4,
+              "feather": 1.15
             }
           ],
           "seams": [
@@ -3021,11 +3049,11 @@
       "render_scale": 4
     },
     "painting_mode": "raster_brush_v3",
-    "finish_contrast_target": 31.5,
+    "finish_contrast_target": 30.5,
     "finish_contrast_enhance": 1.015,
-    "finish_unsharp_percent": 48,
+    "finish_unsharp_percent": 38,
     "finish_unsharp_radius": 0.85,
     "finish_unsharp_threshold": 3
   },
-  "profile_revision": "2026-10-02-commander-stage1-ridged-prop-pass-rerun-clean-main"
+  "profile_revision": "2026-10-02-commander-stage1-v3-sculpted-not-drawn"
 }

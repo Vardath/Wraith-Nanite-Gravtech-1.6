@@ -726,44 +726,81 @@ class SynthesisPass:
         return base
 
     def _garment_relief(self, out, bb, piece_mask, guides, material_name):
-        """Hand-painted authored relief for Raster Painter v3.
-
-        Each path becomes a broad recessed shadow, a narrow crease and an offset
-        rubbed catch. This is the same kind of depth hierarchy used by finished WNG
-        vehicle art, but constrained to Stargate costume construction.
-        """
-        if not guides:
+        """Legacy surface accent. V3 sculpts relief in the height field only."""
+        if not guides or self.s3.get("renderer")=="stargate_costume_illustration_v3":
             return
         spec=self._material_spec(material_name)
-        kind=str(spec["kind"]).lower()
-        shadow=np.array(spec["shadow"],dtype=float)
-        mid=np.array(spec["mid"],dtype=float)
-        high=np.array(spec["high"],dtype=float)
+        shadow=np.array(spec["shadow"],dtype=int)
+        high=np.array(spec["high"],dtype=int)
         x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
-
         layer=Image.new("RGBA",(HI,HI),(0,0,0,0))
         d=ImageDraw.Draw(layer)
         for g in guides:
             pts=[(int(x0+float(x)*w),int(y0+float(y)*h)) for x,y in g.get("points",[])]
             if len(pts)<2:
                 continue
-            width=max(3,int(float(g.get("width",.010))*min(w,h)))
-            height=float(g.get("height",g.get("strength",.5)))
-            alpha=int(g.get("alpha",70))
+            width=max(2,int(float(g.get("width",.010))*min(w,h)))
+            alpha=min(72,int(g.get("alpha",90)))
+            d.line(pts,fill=tuple(np.clip(shadow*.76,0,255).astype(int))+(alpha,),
+                   width=max(2,width+1),joint="curve")
+            d.line([(x-1,y-1) for x,y in pts],
+                   fill=tuple(np.clip(high*.96,0,255).astype(int))+(max(14,int(alpha*.28)),),
+                   width=max(1,width//3),joint="curve")
+        out.alpha_composite(self._clip(layer,piece_mask))
 
-            broad=max(width+5,int(width*(2.1 if kind in ("hard_rubber","grown_rubber","simulated_bone","bone_chitin") else 1.6)))
-            recess=tuple(np.clip(shadow*.55,0,255).astype(int))+(min(150,int(alpha*(1.10+height*.55))),)
-            crease=tuple(np.clip(shadow*.30,0,255).astype(int))+(min(190,int(alpha*(1.30+height*.65))),)
-            catch=tuple(np.clip(mid+(high-mid)*.68,0,255).astype(int))+(min(120,int(alpha*(.55+height*.55))),)
+    def _clear_prop_cover(self, out, piece_mask, seed_offset=0, strength=.5):
+        bb=piece_mask.getbbox()
+        if not bb:
+            return
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        rng=random.Random(94031+int(seed_offset)*53+x0+y0)
+        glaze=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        wash=Image.new("L",(HI,HI),0)
+        wd=ImageDraw.Draw(wash)
+        wd.ellipse((int(x0-w*.10),int(y0-h*.18),int(x0+w*.78),int(y0+h*.78)),fill=int(25*strength))
+        wash=ImageChops.multiply(wash.filter(ImageFilter.GaussianBlur(max(3,int(min(w,h)*.055)))),piece_mask)
+        tint=Image.new("RGBA",(HI,HI),(158,176,170,0)); tint.putalpha(wash)
+        glaze.alpha_composite(tint)
+        gd=ImageDraw.Draw(glaze)
+        for i in range(3):
+            yy0=int(y0+h*(.18+i*.22)+rng.uniform(-.022,.022)*h)
+            xa=int(x0+w*(.18+rng.uniform(-.02,.03)))
+            xb=int(x0+w*(.66+rng.uniform(-.03,.04)))
+            gd.arc((xa,yy0-int(h*.045),xb,yy0+int(h*.045)),200,338,
+                   fill=(218,228,224,int(18+26*strength)),width=max(1,int(min(w,h)*.006)))
+        out.alpha_composite(self._clip(glaze.filter(ImageFilter.GaussianBlur(.45)),piece_mask))
 
-            # broad hand-painted recess
-            d.line([(x+2,y+3) for x,y in pts],fill=recess,width=broad,joint="curve")
-            # central structural groove
-            d.line(pts,fill=crease,width=max(2,width),joint="curve")
-            # rubbed upper-left edge catch
-            d.line([(x-2,y-2) for x,y in pts],fill=catch,width=max(1,int(width*.36)),joint="curve")
-
-        layer=layer.filter(ImageFilter.GaussianBlur(.32))
+    def _hard_surface_edge_wear(self, out, piece_mask, material_name, seed_offset=0):
+        spec=self._material_spec(material_name)
+        kind=str(spec["kind"]).lower()
+        if kind not in ("hard_rubber","grown_rubber","simulated_bone","bone_chitin"):
+            return
+        bb=piece_mask.getbbox()
+        if not bb:
+            return
+        x0,y0,x1,y1=bb; w=x1-x0; h=y1-y0
+        inside=np.array(piece_mask)>24
+        dist=distance_transform_edt(inside)
+        edge=(dist>1)&(dist<8)
+        ys,xs=np.where(edge)
+        if len(xs)==0:
+            return
+        rng=random.Random(95017+int(seed_offset)*83+x0*2+y0*3)
+        hi=tuple(int(v) for v in spec["high"])
+        lo=tuple(int(v) for v in spec["shadow"])
+        layer=Image.new("RGBA",(HI,HI),(0,0,0,0))
+        d=ImageDraw.Draw(layer)
+        count=max(6,min(26,int((w+h)/30)))
+        for i in range(count):
+            idx=rng.randrange(len(xs)); x=int(xs[idx]); y=int(ys[idx])
+            ln=rng.randint(2,max(3,int(min(w,h)*.016)))
+            ang=rng.uniform(-.9,.9)
+            dx=int(math.cos(ang)*ln); dy=int(math.sin(ang)*ln)
+            if i%3:
+                d.line((x,y,x+dx,y+dy),fill=hi+(rng.randint(14,38),),width=1)
+            else:
+                rr=rng.choice([1,1,2])
+                d.ellipse((x-rr,y-rr,x+rr,y+rr),fill=lo+(rng.randint(30,65),))
         out.alpha_composite(self._clip(layer,piece_mask))
 
     def _garment_seam(self, out, bb, seam):
@@ -913,6 +950,10 @@ class SynthesisPass:
             layer=self._garment_material(pm,piece["material"],hist,piece.get("folds",[]),200+i,piece.get("relief",[]))
             out.alpha_composite(layer)
             self._garment_relief(out,bb,pm,piece.get("relief",[]),piece["material"])
+            if self.s3.get("renderer")=="stargate_costume_illustration_v3":
+                if piece.get("clear_cover"):
+                    self._clear_prop_cover(out,pm,200+i,float(piece.get("clear_cover_strength",.5)))
+                self._hard_surface_edge_wear(out,pm,piece["material"],200+i)
             if piece.get("mirror_x"):
                 mirrored=pm.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                 mirrored_relief=[]
@@ -926,6 +967,10 @@ class SynthesisPass:
                 layer2=self._garment_material(mirrored,piece["material"],hist,piece.get("folds",[]),300+i,mirrored_relief)
                 out.alpha_composite(layer2)
                 self._garment_relief(out,bb,mirrored,mirrored_relief,piece["material"])
+                if self.s3.get("renderer")=="stargate_costume_illustration_v3":
+                    if piece.get("clear_cover"):
+                        self._clear_prop_cover(out,mirrored,300+i,float(piece.get("clear_cover_strength",.5)))
+                    self._hard_surface_edge_wear(out,mirrored,piece["material"],300+i)
                 semantic_union=ImageChops.lighter(semantic_union,mirrored)
                 max_piece_frac=max(max_piece_frac,float((np.array(mirrored)>16).sum()/mask_area))
 
@@ -1714,7 +1759,7 @@ class SynthesisPass:
 
     def _paint(self, body, direction, mask):
         renderer=self.s3.get("renderer",self.profile["id"])
-        if renderer=="costume_blueprint_v2":
+        if renderer in ("costume_blueprint_v2","stargate_costume_illustration_v3"):
             return self._render_costume_blueprint(body,direction,mask)
         if renderer=="wraith_warrior_carapace":
             return self._paint_warrior(body,direction,mask)
@@ -1726,7 +1771,7 @@ class SynthesisPass:
 
     def _tile(self, mask):
         renderer=self.s3.get("renderer",self.profile["id"])
-        if renderer=="costume_blueprint_v2":
+        if renderer in ("costume_blueprint_v2","stargate_costume_illustration_v3"):
             return self._tile_costume_blueprint(mask)
         if renderer=="wraith_warrior_carapace":
             return self._tile_warrior(mask)
@@ -1854,7 +1899,7 @@ def validate_profile(profile: dict, path: Path|None=None):
             "use Stargate references, vanilla RimWorld geometry and non-apparel WNG quality benchmarks only"
         )
     renderer=s3.get("renderer",profile["id"])
-    if renderer=="costume_blueprint_v2":
+    if renderer in ("costume_blueprint_v2","stargate_costume_illustration_v3"):
         if s3.get("painting_mode")!="raster_brush_v3":
             raise RuntimeError(f"{where}: costume_blueprint_v2 requires painting_mode='raster_brush_v3'; flat-fill synthesis is retired")
         mats=s3.get("materials",{})
