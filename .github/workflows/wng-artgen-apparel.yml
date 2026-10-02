@@ -1,104 +1,78 @@
-name: WNG Apparel Studio
+name: WNG ApparelForge
 
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/wng-artgen-apparel.yml'
-      - 'Tools/ArtStudio/wng_apparel_studio.py'
-      - 'Tools/ArtStudio/profiles/**'
+      - 'Tools/ApparelForge/**'
+      - 'ArtSource/Apparel/**'
   workflow_dispatch:
     inputs:
       profile:
-        description: 'Exactly one Tools/ArtStudio profile id'
+        description: 'One ApparelForge profile'
         required: true
         default: 'wraith_commander_carapace'
 
 permissions:
   contents: write
 
-concurrency:
-  group: wng-apparel-studio
-  cancel-in-progress: false
-
 jobs:
-  apparel-studio:
+  forge:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install studio dependencies
-        run: python -m pip install --disable-pip-version-check pillow numpy scipy requests beautifulsoup4 cairosvg
-
-      - name: Compile and validate studio
+      - name: Install projection dependencies
+        run: python -m pip install --disable-pip-version-check pillow numpy scipy cairosvg
+      - name: Validate ApparelForge
         run: |
-          python -m py_compile Tools/ArtStudio/wng_apparel_studio.py
-          python Tools/ArtStudio/wng_apparel_studio.py --validate-profiles-only
-
-      - name: Select one profile
+          python -m py_compile Tools/ApparelForge/apparel_forge.py
+          python Tools/ApparelForge/apparel_forge.py --validate-profiles-only
+      - name: Select profile
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            PROFILE="${{ github.event.inputs.profile }}"
-            test -f "Tools/ArtStudio/profiles/${PROFILE}.json"
-            echo "HAS_PROFILE=true" >> "$GITHUB_ENV"
-            echo "PROFILE=${PROFILE}" >> "$GITHUB_ENV"
-            exit 0
+          PROFILE="${{ github.event.inputs.profile }}"
+          if [ -z "$PROFILE" ]; then
+            mapfile -t CHANGED < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^ArtSource/Apparel/\([^/]*\)/.*#\1#p' | sort -u)
+            if [ "${#CHANGED[@]}" -ne 1 ]; then
+              echo "A single item's finished master art must change before forging." >&2
+              exit 1
+            fi
+            PROFILE="${CHANGED[0]}"
           fi
-          mapfile -t CHANGED < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | sed -n 's#^Tools/ArtStudio/profiles/\(.*\)\.json$#\1#p')
-          if [ "${#CHANGED[@]}" -eq 0 ]; then
-            echo "HAS_PROFILE=false" >> "$GITHUB_ENV"
-          elif [ "${#CHANGED[@]}" -eq 1 ]; then
-            echo "HAS_PROFILE=true" >> "$GITHUB_ENV"
-            echo "PROFILE=${CHANGED[0]}" >> "$GITHUB_ENV"
-          else
-            echo "One item at a time." >&2
-            exit 1
-          fi
-
+          test -f "Tools/ApparelForge/profiles/${PROFILE}.json"
+          echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
+      - name: Require finished external masters
+        run: |
+          test -f "ArtSource/Apparel/$PROFILE/master_south.png"
+          test -f "ArtSource/Apparel/$PROFILE/master_north.png"
+          test -f "ArtSource/Apparel/$PROFILE/master_east.png"
       - name: Fetch vanilla RimWorld geometry
-        if: env.HAS_PROFILE == 'true'
         run: |
           git clone --depth 1 https://github.com/SamuelBucher/Madness-Pawns.git /tmp/madness
           git clone --depth 1 https://github.com/DaLongZhuaZi/RWonVela.git /tmp/rwvela
-
-      - name: Paint one apparel item
-        if: env.HAS_PROFILE == 'true'
+      - name: Forge RimWorld variants from finished masters
         run: |
-          python Tools/ArtStudio/wng_apparel_studio.py "$PROFILE" \
+          python Tools/ApparelForge/apparel_forge.py "$PROFILE" \
             --vanilla-dir "/tmp/madness/Raw sprites/apparel" \
             --body-dir "/tmp/rwvela/src/common/human/bodies" \
-            --workdir /tmp/wng-artstudio
-
-      - name: Validate live RimWorld apparel
-        if: env.HAS_PROFILE == 'true'
+            --workdir /tmp/wng-apparel-forge
+      - name: Validate live apparel contract
         run: python .github/artqa/apparel_art_audit.py
-
-      - name: Commit live apparel only
-        if: env.HAS_PROFILE == 'true'
+      - name: Commit live PNGs only
         shell: bash
         run: |
-          ITEM="$(python -c "import json; p=json.load(open('Tools/ArtStudio/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
-          OUTDIR="$(python -c "import json; p=json.load(open('Tools/ArtStudio/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
-          TARGET="Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR"
-          TMP="/tmp/wng-studio-final"
-          mkdir -p "$TMP"
-          cp "$TARGET/${ITEM}"*.png "$TMP/"
-          git fetch origin main
-          git reset --hard origin/main
-          cp "$TMP/${ITEM}"*.png "$TARGET/"
+          ITEM="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
+          OUTDIR="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$TARGET/${ITEM}"*.png
-          if git diff --cached --quiet; then
-            echo "No live art changes."
-            exit 0
-          fi
-          git commit -m "Paint ${ITEM} with WNG Apparel Studio [skip ci]"
+          git add "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
+          git diff --cached --quiet && exit 0
+          git commit -m "Forge ${ITEM} from finished external master art [skip ci]"
+          git pull --rebase origin main
           git push origin HEAD:main

@@ -1,0 +1,63 @@
+{
+  "id": "wraith_commander_carapace",
+  "item": "WNG_CommanderCarapace",
+  "faction": "Wraith",
+  "output_dir": "Wraith",
+  "research": {
+    "rule": "Stargate production costume and prop references first; no historical WNG apparel",
+    "sources": [
+      "screen-used Wraith commander leather costume / Propworx",
+      "screen-used Wraith commander costume / Propstore",
+      "Val Halverson Wraith costume construction interview",
+      "screen-used Wraith drone carapace / Propworx"
+    ],
+    "required_visual_language": [
+      "dark green-black cowhide leather",
+      "black reptile-pattern leather",
+      "cast silver hard-rubber torso carapace",
+      "simulated-bone shoulder/thigh protection",
+      "lacing, snaps, zipper and worn hand-built construction"
+    ]
+  },
+  "rimworld": {
+    "family": "PowerArmor",
+    "body_types": [
+      "Male",
+      "Female",
+      "Thin",
+      "Fat",
+      "Hulk"
+    ],
+    "tile_scale": 0.78
+  },
+  "masters": {
+    "south": "master_south.png",
+    "north": "master_north.png",
+    "east": "master_east.png"
+  },
+  "qa": {
+    "min_contrast": 14,
+    "max_white_fraction": 0.015,
+    "max_edge_lift": 22
+  },
+  "external_art_spec": {
+    "minimum_master_resolution": 1024,
+    "orthographic_views": [
+      "south/front",
+      "north/back",
+      "east/side"
+    ],
+    "background": "transparent",
+    "instruction": "finished professional painted RimWorld apparel master, not a concept sketch",
+    "silhouette": "match vanilla RimWorld PowerArmor proportions; do not invent a human anatomy silhouette",
+    "source_priority": "Stargate production wardrobe and prop references only",
+    "banned": [
+      "historical WNG clothing",
+      "procedural panels",
+      "flat vector shapes",
+      "generic sci-fi armour",
+      "neon piping",
+      "ship parts on clothing"
+    ]
+  }
+}
