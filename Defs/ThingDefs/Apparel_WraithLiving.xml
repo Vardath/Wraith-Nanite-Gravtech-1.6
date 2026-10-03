@@ -88,4 +88,32 @@
     </apparel>
   </ThingDef>
 
+  <ThingDef ParentName="ApparelBase">
+    <defName>WNG_WraithCommandArmor</defName>
+    <recipeMaker IsNull="True" />
+    <label>wraith command armor</label>
+    <thingCategories Inherit="False"><li>ApparelArmor</li></thingCategories>
+    <description>A command-grade Wraith living combat shell grown from layered dark chitin, flexible hive membrane and reinforced spinal plates. Violet-biotic conductor seams mark command status while the shell remains mobile enough for field leadership.</description>
+    <techLevel>Spacer</techLevel>
+    <graphicData>
+      <texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WraithCommandArmor</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <statBases>
+      <MaxHitPoints>350</MaxHitPoints><WorkToMake>42000</WorkToMake><Mass>9</Mass><EquipDelay>3.8</EquipDelay>
+      <ArmorRating_Sharp>1.58</ArmorRating_Sharp><ArmorRating_Blunt>0.72</ArmorRating_Blunt><ArmorRating_Heat>0.86</ArmorRating_Heat><Beauty>4</Beauty>
+    </statBases>
+    <costList><WNG_Biomass>75</WNG_Biomass><ComponentIndustrial>2</ComponentIndustrial></costList>
+    <apparel>
+      <bodyPartGroups><li>Torso</li><li>Neck</li><li>Shoulders</li><li>Arms</li><li>Legs</li></bodyPartGroups>
+      <layers><li>Shell</li></layers>
+      <wornGraphicPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WraithCommandArmor</wornGraphicPath>
+      <tags><li>WraithArmor</li><li>WraithCommandArmor</li></tags>
+      <defaultOutfitTags><li>Soldier</li></defaultOutfitTags>
+    </apparel>
+    <comps>
+      <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
+    </comps>
+  </ThingDef>
+
 </Defs>
