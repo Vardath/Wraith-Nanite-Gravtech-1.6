@@ -94,7 +94,7 @@
     "vanilla_family": "ShirtButton",
     "tile_family": "ShirtButton",
     "tile_scale": 0.82,
-    "cover_body": true,
+    "cover_body": false,
     "body_types": [
       "Male",
       "Female",
@@ -109,7 +109,7 @@
       "west"
     ],
     "legacy_bare_directions": true,
-    "silhouette_rule": "vanilla_shirtbutton_plus_pawn_body_alpha_authoritative",
+    "silhouette_rule": "vanilla_shirtbutton_alpha_authoritative",
     "readability_rule": "must read as a fitted sewn Asuran uniform at normal RimWorld zoom; no separately drawn humanoid limbs; the final inventory tile is derived from the fitted worn sprite"
   },
   "stage_3_synthesis": {
@@ -184,132 +184,132 @@
       "silver_woven": {
         "kind": "uniform_fabric",
         "shadow": [
-          31,
-          38,
-          42
+          18,
+          24,
+          28
         ],
         "mid": [
-          112,
-          124,
-          129
+          78,
+          91,
+          98
         ],
         "high": [
-          196,
-          205,
-          207
+          142,
+          155,
+          160
         ],
-        "roughness": 0.76,
-        "grain": 0.11,
+        "roughness": 0.82,
+        "grain": 0.14,
         "specular_tint": [
+          15,
           18,
-          22,
-          23
+          19
         ]
       },
       "bluegrey_woven": {
         "kind": "uniform_fabric",
         "shadow": [
-          20,
-          28,
-          34
+          12,
+          18,
+          23
         ],
         "mid": [
-          71,
-          86,
-          94
+          50,
+          64,
+          72
         ],
         "high": [
-          138,
-          152,
-          158
+          104,
+          119,
+          126
         ],
-        "roughness": 0.78,
-        "grain": 0.12,
+        "roughness": 0.84,
+        "grain": 0.15,
         "specular_tint": [
-          16,
-          21,
-          23
+          13,
+          17,
+          19
         ]
       },
       "charcoal_weave": {
         "kind": "uniform_fabric",
         "shadow": [
-          4,
-          7,
-          10
+          3,
+          5,
+          7
         ],
         "mid": [
-          22,
-          30,
-          35
+          18,
+          25,
+          30
         ],
         "high": [
-          66,
-          78,
-          84
+          50,
+          61,
+          67
         ],
-        "roughness": 0.84,
-        "grain": 0.13,
+        "roughness": 0.88,
+        "grain": 0.16,
         "specular_tint": [
-          12,
-          16,
-          18
+          10,
+          13,
+          15
         ]
       },
       "gunmetal": {
         "kind": "leather",
         "shadow": [
-          15,
-          19,
-          21
+          10,
+          13,
+          15
         ],
         "mid": [
-          55,
-          64,
-          67
+          42,
+          49,
+          52
         ],
         "high": [
-          123,
-          132,
-          134
+          88,
+          96,
+          98
         ],
-        "roughness": 0.6,
-        "grain": 0.05,
+        "roughness": 0.68,
+        "grain": 0.07,
         "specular_tint": [
-          24,
-          27,
-          28
+          17,
+          19,
+          20
         ]
       },
       "cyan_thread": {
         "kind": "satin",
         "shadow": [
-          10,
-          35,
-          40
+          7,
+          22,
+          26
         ],
         "mid": [
-          31,
-          79,
-          86
+          20,
+          55,
+          61
         ],
         "high": [
-          82,
-          136,
-          142
+          54,
+          98,
+          104
         ],
-        "roughness": 0.48,
+        "roughness": 0.56,
         "grain": 0.03,
         "specular_tint": [
-          16,
-          28,
-          30
+          12,
+          20,
+          22
         ]
       }
     },
     "garment_contract": {
-      "max_single_piece_fraction": 0.3,
-      "min_base_garment_visible_fraction": 0.38,
+      "max_single_piece_fraction": 0.36,
+      "min_base_garment_visible_fraction": 0.52,
       "max_semantic_pieces_per_view": 10,
       "min_seams_per_view": 5
     },
@@ -653,52 +653,6 @@
                 [
                   0.295,
                   0.812
-                ]
-              ]
-            },
-            {
-              "name": "restrained left cyan thread",
-              "role": "inset",
-              "material": "cyan_thread",
-              "points": [
-                [
-                  0.327,
-                  0.32
-                ],
-                [
-                  0.348,
-                  0.33
-                ],
-                [
-                  0.34,
-                  0.68
-                ],
-                [
-                  0.321,
-                  0.67
-                ]
-              ]
-            },
-            {
-              "name": "restrained right cyan thread",
-              "role": "inset",
-              "material": "cyan_thread",
-              "points": [
-                [
-                  0.673,
-                  0.32
-                ],
-                [
-                  0.652,
-                  0.33
-                ],
-                [
-                  0.66,
-                  0.68
-                ],
-                [
-                  0.679,
-                  0.67
                 ]
               ]
             }
@@ -1537,29 +1491,6 @@
                   0.812
                 ]
               ]
-            },
-            {
-              "name": "restrained side cyan thread",
-              "role": "inset",
-              "material": "cyan_thread",
-              "points": [
-                [
-                  0.385,
-                  0.35
-                ],
-                [
-                  0.404,
-                  0.36
-                ],
-                [
-                  0.398,
-                  0.68
-                ],
-                [
-                  0.38,
-                  0.67
-                ]
-              ]
             }
           ],
           "seams": [
@@ -1732,7 +1663,7 @@
     },
     "quality": {
       "silhouette_iou_min": 0.985,
-      "max_luminous_area_fraction": 0.34,
+      "max_luminous_area_fraction": 0.12,
       "min_local_contrast": 17,
       "max_symmetry_score": 0.985,
       "microdetail_scale_px": [
@@ -1742,5 +1673,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-03-human-form-uniform-raster-brush-v3-silver-qa"
+  "profile_revision": "2026-10-03-human-form-uniform-raster-v3-continuous-garment"
 }
