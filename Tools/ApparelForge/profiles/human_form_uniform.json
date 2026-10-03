@@ -65,7 +65,7 @@
     "preserve_master_ratio": false,
     "mapping_mode": "vanilla_clip",
     "inventory_source": "fitted_male_south",
-    "fit_revision": "professional-master-pawn-fit-tile-from-fitted-art"
+    "fit_revision": "professional-master-pawn-fit-tile-from-fitted-art-v2"
   },
   "masters": {
     "south": "master_south.png",
