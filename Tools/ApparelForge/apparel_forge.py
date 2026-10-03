@@ -194,6 +194,7 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
     outdir.mkdir(parents=True,exist_ok=True)
     item=profile["item"]
     result={}
+    tile_source_hi=None
 
     # Finished external master -> body/facing variants. No repainting occurs here.
     mapping_mode=profile["rimworld"].get("mapping_mode","vanilla_clip")
@@ -205,6 +206,8 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
                 hi=fit_master_silhouette(src,masks[body][d],mapping_cfg.get(d,{}))
             else:
                 hi=fit_master(src,masks[body][d],bool(profile["rimworld"].get("preserve_master_ratio",False)))
+            if body=="Male" and d=="south":
+                tile_source_hi=hi.copy()
             im=hi.resize((OUT,OUT),Image.Resampling.LANCZOS)
             name=f"{item}_{body}_{d}.png"; im.save(outdir/name); result[name]=im
             if d=="east":
@@ -217,12 +220,14 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
         alias=result[f"{item}_Male_{d}.png"].copy()
         alias.save(outdir/f"{item}_{d}.png"); result[f"{item}_{d}.png"]=alias
 
-    # Inventory derives separately from the finished south master and is never
-    # used as a worn tile.
-    src=masters["south"].resize((HI,HI),Image.Resampling.LANCZOS)
-    sb=src.getchannel("A").getbbox()
-    if not sb: raise RuntimeError("empty south master for inventory")
-    crop=src.crop(sb)
+    # Inventory/tile is built from the already-fitted Male/South worn art so
+    # the world tile matches the actual garment shape seen on the pawn.
+    # It is never used as a worn tile.
+    if tile_source_hi is None:
+        raise RuntimeError("missing fitted Male/South art for inventory")
+    sb=tile_source_hi.getchannel("A").getbbox()
+    if not sb: raise RuntimeError("empty fitted art for inventory")
+    crop=tile_source_hi.crop(sb)
     scale=float(profile["rimworld"].get("tile_scale",.78))
     maxw=round(HI*scale); maxh=round(HI*scale)
     r=min(maxw/max(1,crop.width),maxh/max(1,crop.height))
