@@ -1,0 +1,65 @@
+name: WNG Step 7 Wraith Command Armour Import
+
+on:
+  push:
+    paths:
+      - 'Tools/ApparelForge/wraith-command-armour-runtime.zip'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wng-step7-wraith-command-armour-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install and force-track Step 7 art
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp=/tmp/wraith-command-armour
+          rm -rf "$tmp"
+          mkdir -p "$tmp"
+          unzip -q Tools/ApparelForge/wraith-command-armour-runtime.zip -d "$tmp"
+          dest="Textures/Things/Pawn/Humanlike/Apparel/Wraith"
+          mkdir -p "$dest"
+          install -m 0644 "$tmp"/WNG_WraithCommandArmor*.png "$dest"/
+          python - <<'PY'
+          from pathlib import Path
+          import struct
+          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Wraith")
+          bodies=["Male","Female","Thin","Fat","Hulk"]
+          dirs=["north","south","east","west"]
+          expected=[root/"WNG_WraithCommandArmor.png"]
+          for b in bodies:
+              expected.append(root/f"WNG_WraithCommandArmor_{b}.png")
+              expected.extend(root/f"WNG_WraithCommandArmor_{b}_{d}.png" for d in dirs)
+          assert len(expected)==26
+          for p in expected:
+              assert p.exists(), p
+              data=p.read_bytes()
+              assert data[:8]==b"\x89PNG\r\n\x1a\n", p
+              w,h=struct.unpack(">II",data[16:24])
+              assert (w,h)==(192,192), (p,w,h)
+          print("validated",len(expected),"Wraith Command Armour textures")
+          PY
+          git add -f Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_WraithCommandArmor*.png
+          git status --short
+
+      - name: Commit Step 7 directly to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f Tools/ApparelForge/wraith-command-armour-runtime.zip
+          git rm -f .github/workflows/wng-step7-wraith-command-armour-import.yml
+          git commit -m "Finish Step 7 Wraith command armour art and RimWorld fit [skip ci]"
+          git push
