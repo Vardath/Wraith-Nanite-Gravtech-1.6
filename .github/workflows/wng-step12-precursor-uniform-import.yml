@@ -3,7 +3,7 @@ name: WNG Step 12 Precursor Uniform Import
 on:
   push:
     paths:
-      - 'Tools/ApparelForge/wng-step12-precursor-uniform-runtime.zip'
+      - 'Tools/ApparelForge/step12_payload/READY'
 
 permissions:
   contents: write
@@ -20,24 +20,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install finished Precursor Uniform art
+      - name: Reconstruct and install finished Precursor Uniform art
         shell: bash
         run: |
           set -euo pipefail
           tmp=/tmp/wng-step12
           rm -rf "$tmp"
           mkdir -p "$tmp"
-          unzip -q Tools/ApparelForge/wng-step12-precursor-uniform-runtime.zip -d "$tmp"
+          cat Tools/ApparelForge/step12_payload/part*.txt | base64 -d > "$tmp/step12.zip"
+          unzip -q "$tmp/step12.zip" -d "$tmp/unpacked"
 
           dest="Textures/Things/Pawn/Humanlike/Apparel/Precursor"
           srcdest="Tools/ApparelForge/source_art/final"
           mkdir -p "$dest" "$srcdest"
 
-          install -m 0644 "$tmp"/WNG_PrecursorUniform*.png "$dest"/
-          install -m 0644 "$tmp/source/PrecursorUniform_Master.png" "$srcdest/PrecursorUniform_Master.png"
-          install -m 0644 "$tmp/source/PrecursorUniform_Master_Front.png" "$srcdest/PrecursorUniform_Master_Front.png"
-          install -m 0644 "$tmp/source/PrecursorUniform_Master_Back.png" "$srcdest/PrecursorUniform_Master_Back.png"
-          install -m 0644 "$tmp/source/PrecursorUniform_Master_Side.png" "$srcdest/PrecursorUniform_Master_Side.png"
+          install -m 0644 "$tmp/unpacked"/WNG_PrecursorUniform*.png "$dest"/
+          install -m 0644 "$tmp/unpacked/source/PrecursorUniform_Master.png" "$srcdest/PrecursorUniform_Master.png"
+          install -m 0644 "$tmp/unpacked/source/PrecursorUniform_Master_Front.png" "$srcdest/PrecursorUniform_Master_Front.png"
+          install -m 0644 "$tmp/unpacked/source/PrecursorUniform_Master_Back.png" "$srcdest/PrecursorUniform_Master_Back.png"
+          install -m 0644 "$tmp/unpacked/source/PrecursorUniform_Master_Side.png" "$srcdest/PrecursorUniform_Master_Side.png"
 
           python - <<'PY'
           from pathlib import Path
@@ -68,7 +69,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm -f Tools/ApparelForge/wng-step12-precursor-uniform-runtime.zip
+          git rm -rf Tools/ApparelForge/step12_payload
           git rm -f .github/workflows/wng-step12-precursor-uniform-import.yml
           git commit -m "Finish Step 12 Precursor Uniform art and RimWorld fit [skip ci]"
           git pull --rebase origin main
