@@ -23,6 +23,7 @@
   <ThingDef ParentName="BaseBullet">
     <defName>WNG_AncientDroneProjectile</defName>
     <label>guided Ancient drone</label>
+    <thingClass>WraithNaniteGravtech.Projectile_AncientDrone</thingClass>
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Item/Weapon/Precursor/WNG_AncientDrone</texPath>

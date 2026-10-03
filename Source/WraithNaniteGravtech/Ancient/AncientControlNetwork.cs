@@ -360,6 +360,17 @@ namespace WraithNaniteGravtech
         }
     }
 
+
+    // Ancient drone source art faces left in its inventory/UI presentation.
+    // RimWorld projectile meshes treat local +Z (texture-up) as flight-forward,
+    // so add a fixed +90 degree yaw: the drone's pointed nose then leads the
+    // ExactRotation vector from the chair/Jumper to its target.
+    public sealed class Projectile_AncientDrone : Bullet
+    {
+        public override Quaternion ExactRotation =>
+            base.ExactRotation * Quaternion.AngleAxis(90f, Vector3.up);
+    }
+
     public sealed class JobDriver_OperateAncientControlChair : JobDriver
     {
         public override bool TryMakePreToilReservations(bool errorOnFailed)
