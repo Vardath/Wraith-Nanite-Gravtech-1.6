@@ -12,7 +12,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 S = 1536
 SEEDS = {"south": 12101, "north": 12102, "east": 12103}
-# Step 12 trigger: Stargate-first finished masters v2
+# Step 12 trigger: Stargate-first finished masters v3
 
 # Stargate-first design brief embodied here:
 # Lantean/Ancient clothing reads as refined, pale, practical and technologically
@@ -273,10 +273,10 @@ def _render(view: str) -> Image.Image:
     im=_wear(im,mask,seed+400)
 
     # Soft worn edge only; no bright perimeter.
-    inner=mask.filter(ImageFilter.GaussianBlur(16))
+    inner=mask.filter(ImageFilter.GaussianBlur(22))
     edge=ImageChops.subtract(mask,inner)
-    sh=Image.new("RGBA",(S,S),(15,19,20,0))
-    sh.putalpha(edge.point(lambda p:min(62,int(p*.25))))
+    sh=Image.new("RGBA",(S,S),(10,13,14,0))
+    sh.putalpha(edge.point(lambda p:min(105,int(p*.44))))
     im.alpha_composite(sh)
 
     im=ImageEnhance.Contrast(im).enhance(1.045)
