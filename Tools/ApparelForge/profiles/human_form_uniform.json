@@ -51,7 +51,7 @@
     ]
   },
   "rimworld": {
-    "family": "Duster",
+    "family": "RoyalRobe",
     "body_types": [
       "Male",
       "Female",
@@ -59,9 +59,9 @@
       "Fat",
       "Hulk"
     ],
-    "tile_scale": 0.72,
+    "tile_scale": 0.78,
     "cover_body": true,
-    "preserve_master_ratio": false,
+    "preserve_master_ratio": true,
     "mapping_mode": "master_silhouette",
     "master_silhouette_mapping": {
       "south": {
@@ -103,7 +103,7 @@
     ],
     "background": "transparent",
     "instruction": "finished professional painted RimWorld apparel master",
-    "silhouette": "Finished Precursor master art defines the worn tile silhouette. Vanilla RimWorld geometry supplies only pawn envelope, anchor, facing and body-variant scale.",
+    "silhouette": "Use the broad vanilla RoyalRobe/body envelope as a placement boundary so the finished Precursor Human-Form artwork remains visually dominant and covers the RimWorld pawn torso, arms and legs.",
     "source_priority": "screen-used Stargate Atlantis Asuran human-form uniform reference family",
     "banned": [
       "historical WNG clothing",
@@ -111,6 +111,6 @@
       "neon piping",
       "ship parts on clothing"
     ],
-    "mapping_rule": "South, north and east masters remain separate source views; west mirrors east; worn textures preserve the master silhouette instead of clipping it into a vanilla clothing alpha."
+    "mapping_rule": "The south/north/east finished masters are the source art. Vanilla geometry supplies pawn scale and facing coverage; inventory remains separate."
   }
 }
