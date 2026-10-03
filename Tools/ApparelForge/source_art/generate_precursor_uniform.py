@@ -12,7 +12,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 S = 1536
 SEEDS = {"south": 12101, "north": 12102, "east": 12103}
-# Step 12 trigger: Stargate-first finished masters
+# Step 12 trigger: Stargate-first finished masters v2
 
 # Stargate-first design brief embodied here:
 # Lantean/Ancient clothing reads as refined, pale, practical and technologically
