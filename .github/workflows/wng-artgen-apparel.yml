@@ -57,7 +57,7 @@ jobs:
             exit 0
           fi
 
-          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^Tools/ApparelForge/(profiles/precursor_uniform\.json|source_art/generate_precursor_uniform\.py)$'; then
+          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^Tools/ApparelForge/profiles/precursor_uniform\.json$'; then
             echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
             echo "PROFILE=precursor_uniform" >> "$GITHUB_ENV"
             exit 0
@@ -121,10 +121,6 @@ jobs:
       - name: Generate Human Form Uniform masters
         if: env.HAS_MASTERS == 'true' && env.PROFILE == 'human_form_uniform'
         run: python Tools/ApparelForge/source_art/generate_human_form_uniform.py
-
-      - name: Generate Step 12 Precursor Uniform masters
-        if: env.HAS_MASTERS == 'true' && env.PROFILE == 'precursor_uniform'
-        run: python Tools/ApparelForge/source_art/generate_precursor_uniform.py
 
       - name: Require finished masters
         if: env.HAS_MASTERS == 'true'
