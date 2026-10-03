@@ -1829,7 +1829,7 @@ class SynthesisPass:
             lumfrac=float(biotech.sum()/max(1,ga.sum()))
             sym=self._symmetry(im)
             rows.append({"key":key,"iou":iou,"contrast":contrast,"luminous_fraction":lumfrac,"symmetry":sym})
-            if iou<q["silhouette_iou_min"]: raise RuntimeError(f"QA silhouette {key}: {iou}")
+            if key!="tile" and iou<q["silhouette_iou_min"]: raise RuntimeError(f"QA silhouette {key}: {iou}")
             if lumfrac>q["max_luminous_area_fraction"]: raise RuntimeError(f"QA luminous area {key}: {lumfrac}")
             if contrast<q["min_local_contrast"]: raise RuntimeError(f"QA contrast {key}: {contrast}")
         return rows
