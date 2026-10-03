@@ -159,8 +159,8 @@ jobs:
                   failures.append(f'Asuran pattern catalogue missing {specimen} -> {recipe}')
               if f'<defName>{recipe}</defName>' not in pattern_recipes:
                   failures.append(f'Asuran pattern reconstruction recipe missing: {recipe}')
-          if pattern_recipes.count('<workerClass>WraithNaniteGravtech.RecipeWorker_AsuranPatternLocked</workerClass>') < len(required_patterns):
-              failures.append('Expanded Asuran pattern recipes are not consistently archive-gated')
+          if 'RecipeWorker_AsuranPatternLocked' in pattern_recipes:
+              failures.append('Obsolete custom Asuran pattern RecipeWorker returned after native bill migration')
 
           # Quest-driven Wraith subfaction politics must alter native NPC-to-NPC goodwill,
           # exclude permanent-enemy Sable Brood, and require a real biomass commitment.
@@ -1652,8 +1652,8 @@ jobs:
                   failures.append(f'Player Wraith Feeding Niche crossed current local-feeding ownership boundary: {forbidden}')
 
           # Retained Replicator salvage disposal: hazardous loose Blocks and optional Core Fragments
-          # must have an explicit physical destruction route. These are ordinary smelter bills only;
-          # they do not analyze samples, create Replicators, reset containment state or preserve fragments.
+          # must have an explicit physical destruction route on WNG's own production chain.
+          # They do not analyze samples, create Replicators, reset containment state or preserve fragments.
           rep_salvage = Path('Defs/RecipeDefs/Recipes_ReplicatorSalvage.xml').read_text(encoding='utf-8')
           rep_salvage_root = ET.fromstring(rep_salvage)
           rep_salvage_defs = {n.findtext('defName'): n for n in list(rep_salvage_root) if n.findtext('defName')}
@@ -1667,8 +1667,8 @@ jobs:
                   ('Core-fragment destruction', fragment_recipe, 'WNG_ReplicatorCoreFragment', '1', '8'),
               ):
                   users = [x.text for x in node.findall('./recipeUsers/li')]
-                  if users != ['ElectricSmelter']:
-                      failures.append(f'{label} is no longer an ElectricSmelter-only disposal bill')
+                  if users != ['WNG_PrecursorFabricator']:
+                      failures.append(f'{label} is no longer routed exclusively through the WNG Precursor Fabricator')
                   ingredients = node.findall('./ingredients/li')
                   if len(ingredients) != 1 or ingredients[0].findtext('count') != count or ingredients[0].findtext('./filter/thingDefs/li') != ingredient:
                       failures.append(f'{label} ingredient contract regressed')
@@ -1720,17 +1720,27 @@ jobs:
           human_form_apparel = Path('Defs/ThingDefs/Apparel_HumanFormCore.xml').read_text(encoding='utf-8')
           human_form_root = ET.fromstring(human_form_apparel)
           human_form_defs = {n.findtext('defName'): n for n in list(human_form_root) if n.findtext('defName')}
+          wng_item_recipe_text = Path('Defs/RecipeDefs/Recipes_WNGItemCrafting.xml').read_text(encoding='utf-8')
+          wng_item_recipe_root = ET.fromstring(wng_item_recipe_text)
+          wng_item_recipes = {n.findtext('defName'): n for n in list(wng_item_recipe_root) if n.findtext('defName')}
           uniform = human_form_defs.get('WNG_HumanFormUniform')
+          uniform_recipe = wng_item_recipes.get('WNG_Make_HumanFormUniform')
           combat_armor = human_form_defs.get('WNG_HumanFormCombatArmor')
           if uniform is None:
               failures.append('Retained human-form Replicator uniform is missing')
           else:
-              if uniform.findtext('./recipeMaker/researchPrerequisite') != 'WNG_PrecursorFabrication':
-                  failures.append('Human-form uniform lost its Asuran fabrication research gate')
-              if uniform.findtext('./recipeMaker/recipeUsers/li') != 'WNG_PrecursorFabricator':
-                  failures.append('Human-form uniform is no longer fabricated at the Asuran fabricator')
-              if uniform.findtext('./recipeMaker/skillRequirements/Crafting') != '5':
-                  failures.append('Human-form uniform Crafting requirement regressed')
+              recipe_maker = uniform.find('./recipeMaker')
+              if recipe_maker is None or recipe_maker.get('IsNull') != 'True':
+                  failures.append('Human-form uniform regained an inherited recipeMaker instead of using the explicit WNG recipe')
+              if uniform_recipe is None:
+                  failures.append('Human-form uniform explicit WNG recipe is missing')
+              else:
+                  if uniform_recipe.findtext('./researchPrerequisite') != 'WNG_PrecursorFabrication':
+                      failures.append('Human-form uniform lost its Asuran fabrication research gate')
+                  if uniform_recipe.findtext('./recipeUsers/li') != 'WNG_PrecursorFabricator':
+                      failures.append('Human-form uniform is no longer fabricated at the Asuran fabricator')
+                  if uniform_recipe.findtext('./skillRequirements/Crafting') != '5':
+                      failures.append('Human-form uniform Crafting requirement regressed')
               expected_uniform_cost = {'Synthread': '45', 'Plasteel': '10', 'WNG_ReplicatorMatter': '8'}
               actual_uniform_cost = {child.tag: child.text for child in list(uniform.find('costList') or [])}
               if actual_uniform_cost != expected_uniform_cost:
@@ -1888,10 +1898,17 @@ jobs:
           else:
               if dose.findtext('./graphicData/texPath') != 'Things/Item/WraithMedical/WNG_VitalResistanceDose':
                   failures.append('Vital Resistance dose lost its dedicated WNG presentation')
-              if dose.findtext('./recipeMaker/researchPrerequisite') != 'WNG_FeedingResistance':
-                  failures.append('Vital Resistance dose lost its dedicated research gate')
-              if dose.findtext('./recipeMaker/recipeUsers/li') != 'DrugLab':
-                  failures.append('Vital Resistance dose is no longer made at the Drug Lab')
+              dose_recipe = wng_item_recipes.get('WNG_Make_VitalResistanceDose')
+              recipe_maker = dose.find('./recipeMaker')
+              if recipe_maker is None or recipe_maker.get('IsNull') != 'True':
+                  failures.append('Vital Resistance dose regained an inherited recipeMaker instead of using the explicit WNG recipe')
+              if dose_recipe is None:
+                  failures.append('Vital Resistance explicit WNG recipe is missing')
+              else:
+                  if dose_recipe.findtext('./researchPrerequisite') != 'WNG_FeedingResistance':
+                      failures.append('Vital Resistance dose lost its dedicated research gate')
+                  if dose_recipe.findtext('./recipeUsers/li') != 'WNG_LivingForge':
+                      failures.append('Vital Resistance dose is no longer routed through the WNG Living Forge')
               if dose.findtext('./costList/Neutroamine') != '5' or dose.findtext('./costList/MedicineIndustrial') != '1':
                   failures.append('Vital Resistance material cost regressed')
               outcomes = [x.findtext('hediffDef') for x in dose.findall('./ingestible/outcomeDoers/li')]
