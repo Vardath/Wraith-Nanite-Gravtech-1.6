@@ -139,10 +139,10 @@ jobs:
               if block is None or "<alwaysHaulable>false</alwaysHaulable>" not in block.group(0):
                   failures.append(f"intentional hidden research token changed haulability: {name}")
 
-          # Replicator blocks must be both stockpilable and usable by the smelter disposal bill.
+          # Replicator blocks must be both stockpilable and usable by the current WNG disposal bill.
           salvage=Path("Defs/RecipeDefs/Recipes_ReplicatorSalvage.xml").read_text(encoding="utf-8")
-          if "<li>WNG_ReplicatorMatter</li>" not in salvage or "<li>ElectricSmelter</li>" not in salvage:
-              failures.append("Replicator-block smelter disposal recipe lost its exact block ingredient or smelter user")
+          if "<li>WNG_ReplicatorMatter</li>" not in salvage or "<li>WNG_PrecursorFabricator</li>" not in salvage:
+              failures.append("Replicator-block disposal recipe lost its exact block ingredient or WNG fabricator user")
 
           # Genuine pawn death (including explosive/projectile kills) must own the 2:1 split.
           hierarchy=Path("Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs").read_text(encoding="utf-8")

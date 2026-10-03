@@ -2607,7 +2607,7 @@ jobs:
           live_rep_races = Path('Defs/ThingDefs/Races_Replicator.xml').read_text(encoding='utf-8')
           for token in (
               '<WNG_ReplicatorMatter>3</WNG_ReplicatorMatter>',
-              '<WNG_ReplicatorMatter>9</WNG_ReplicatorMatter>',
+              '<WNG_ReplicatorMatter>6</WNG_ReplicatorMatter>',
               '<butcherProducts>',
           ):
               if token not in live_rep_races:

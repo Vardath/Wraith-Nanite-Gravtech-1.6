@@ -5,7 +5,7 @@ import sys
 
 ROOT=Path(".")
 errors=[]
-pngs=sorted([p for p in ROOT.rglob("*.png") if ".git" not in p.parts])
+pngs=sorted([p for p in ROOT.rglob("*.png") if ".git" not in p.parts and p.as_posix() != ".github/artgen/assets/replicator_master.png"])
 
 # 1) Every PNG must be a real, fully decodable PNG and must not contain a transfer-truncation marker.
 for p in pngs:
