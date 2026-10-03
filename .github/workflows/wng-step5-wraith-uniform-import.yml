@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: wng-step5-wraith-uniform-import
+  cancel-in-progress: true
+
 jobs:
   import:
     runs-on: ubuntu-latest
