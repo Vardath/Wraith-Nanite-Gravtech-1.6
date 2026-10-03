@@ -43,7 +43,7 @@ def deform_mask(base: Image.Image, body_dir: Path, body: str, direction: str) ->
     out.paste(crop,(round(acx+(tcx-mcx)-crop.width/2),round(acy+(tcy-mcy)-crop.height/2)))
     return out
 
-def fit_master(master: Image.Image, target_mask: Image.Image) -> Image.Image:
+def fit_master(master: Image.Image, target_mask: Image.Image, preserve_ratio: bool=False) -> Image.Image:
     """Content-preserving projection only.
 
     This function never invents or paints costume detail. It rescales a finished
@@ -56,11 +56,18 @@ def fit_master(master: Image.Image, target_mask: Image.Image) -> Image.Image:
     if not sb or not tb: raise RuntimeError("empty source or target")
     crop=src.crop(sb)
     tw,th = tb[2]-tb[0], tb[3]-tb[1]
-    # preserve painted proportions as much as possible; small controlled anisotropy
-    # is allowed solely to adapt the master to RimWorld body variants.
-    fitted=crop.resize((tw,th),Image.Resampling.LANCZOS)
+    if preserve_ratio:
+        # Keep the finished master's proportions intact. Scale to cover the vanilla
+        # silhouette, center it, then clip to the authoritative mask.
+        scale=max(tw/max(1,crop.width),th/max(1,crop.height))
+        nw=max(1,round(crop.width*scale)); nh=max(1,round(crop.height*scale))
+        fitted=crop.resize((nw,nh),Image.Resampling.LANCZOS)
+        x=tb[0]+(tw-nw)//2; y=tb[1]+(th-nh)//2
+    else:
+        fitted=crop.resize((tw,th),Image.Resampling.LANCZOS)
+        x,y=tb[0],tb[1]
     out=Image.new("RGBA",(HI,HI),(0,0,0,0))
-    out.alpha_composite(fitted,(tb[0],tb[1]))
+    out.alpha_composite(fitted,(x,y))
     out.putalpha(ImageChops.multiply(out.getchannel("A"),target_mask))
     return out
 
@@ -161,7 +168,7 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
     # Finished external master -> body/facing variants. No repainting occurs here.
     for body in profile["rimworld"]["body_types"]:
         for d in ("south","north","east"):
-            hi=fit_master(masters[d].resize((HI,HI),Image.Resampling.LANCZOS),masks[body][d])
+            hi=fit_master(masters[d].resize((HI,HI),Image.Resampling.LANCZOS),masks[body][d],bool(profile["rimworld"].get("preserve_master_ratio",False)))
             im=hi.resize((OUT,OUT),Image.Resampling.LANCZOS)
             name=f"{item}_{body}_{d}.png"; im.save(outdir/name); result[name]=im
             if d=="east":
@@ -177,7 +184,7 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
     # Inventory derives only from the finished south master, never generated shading.
     tile_mask=masks["Male"]["south"]
     tb=tile_mask.getbbox()
-    crop=fit_master(masters["south"].resize((HI,HI),Image.Resampling.LANCZOS),tile_mask).crop(tb)
+    crop=fit_master(masters["south"].resize((HI,HI),Image.Resampling.LANCZOS),tile_mask,bool(profile["rimworld"].get("preserve_master_ratio",False))).crop(tb)
     scale=float(profile["rimworld"].get("tile_scale",.78))
     crop=crop.resize((round(crop.width*scale),round(crop.height*scale)),Image.Resampling.LANCZOS)
     tile=Image.new("RGBA",(HI,HI),(0,0,0,0))

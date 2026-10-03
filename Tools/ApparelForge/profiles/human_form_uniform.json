@@ -59,8 +59,9 @@
       "Fat",
       "Hulk"
     ],
-    "tile_scale": 0.76,
-    "cover_body": true
+    "tile_scale": 0.82,
+    "cover_body": true,
+    "preserve_master_ratio": true
   },
   "masters": {
     "south": "master_south.png",
@@ -81,13 +82,14 @@
     ],
     "background": "transparent",
     "instruction": "finished professional painted RimWorld apparel master",
-    "silhouette": "vanilla RimWorld Duster outer silhouette plus matching pawn body coverage; worn art must cover torso and legs correctly",
+    "silhouette": "Use the vanilla RimWorld Duster outer contour plus matching naked-body alpha for full pawn coverage. Preserve the Precursor master artwork aspect ratio; clip the art to the tile rather than stretching the art to fit.",
     "source_priority": "screen-used Stargate Atlantis Asuran human-form uniform reference family",
     "banned": [
       "historical WNG clothing",
       "generic sci-fi armour",
       "neon piping",
       "ship parts on clothing"
-    ]
+    ],
+    "mapping_rule": "south/north/east masters are distinct source views; west mirrors east; body variants deform the vanilla silhouette, not the source art."
   }
 }
