@@ -57,7 +57,11 @@ jobs:
           test -f "Tools/ApparelForge/profiles/${PROFILE}.json"
           echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
           echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
-      - name: Require finished external masters
+      - name: Generate Step 5 Human Form Uniform source art
+        if: env.HAS_MASTERS == 'true' && env.PROFILE == 'human_form_uniform'
+        run: python Tools/ApparelForge/source_art/generate_human_form_uniform.py
+
+      - name: Require finished masters
         if: env.HAS_MASTERS == 'true'
         run: |
           test -f "ArtSource/Apparel/$PROFILE/master_south.png"
@@ -78,7 +82,7 @@ jobs:
       - name: Validate live apparel contract
         if: env.HAS_MASTERS == 'true'
         run: python .github/artqa/apparel_art_audit.py
-      - name: Commit live PNGs only
+      - name: Commit masters and live PNGs
         if: env.HAS_MASTERS == 'true'
         shell: bash
         run: |
@@ -86,8 +90,11 @@ jobs:
           OUTDIR="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
+          git add "ArtSource/Apparel/$PROFILE/master_south.png" \
+                  "ArtSource/Apparel/$PROFILE/master_north.png" \
+                  "ArtSource/Apparel/$PROFILE/master_east.png" \
+                  "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
           git diff --cached --quiet && exit 0
-          git commit -m "Forge ${ITEM} from finished external master art [skip ci]"
+          git commit -m "Forge ${ITEM} from Step 5 source art [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
