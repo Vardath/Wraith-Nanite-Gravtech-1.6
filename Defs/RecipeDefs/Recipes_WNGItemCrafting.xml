@@ -777,4 +777,23 @@
     <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
   </RecipeDef>
 
+  <RecipeDef>
+    <defName>WNG_Make_HumanFormCommandArmor</defName>
+    <label>make human-form replicator command armour</label>
+    <description>Manufacture human-form replicator command armour using WNG's precursor fabrication chain.</description>
+    <jobString>Making human-form replicator command armour.</jobString>
+    <workAmount>62000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
+    <skillRequirements><Crafting>9</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>90</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>4</count></li>
+      <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>18</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_HumanFormCommandArmor>1</WNG_HumanFormCommandArmor></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+
 </Defs>
