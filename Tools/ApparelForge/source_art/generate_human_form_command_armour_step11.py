@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageEnhance, ImageChops, ImageOp
 from pathlib import Path
 import numpy as np, hashlib
 
-ROOT=Path(__file__).resolve().parents[3]
+ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/"Textures/Things/Pawn/Humanlike/Apparel/Precursor"
 PREFIX="WNG_HumanFormCommandArmor"
 S=6
