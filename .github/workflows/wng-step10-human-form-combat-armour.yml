@@ -56,4 +56,5 @@ jobs:
           git rm -f Tools/ApparelForge/step10-human-form-combat-armour.trigger
           git rm -f .github/workflows/wng-step10-human-form-combat-armour.yml
           git commit -m "Finish Step 10 Human Form Combat Armour art and RimWorld fit [skip ci]"
+          git pull --rebase origin main
           git push
