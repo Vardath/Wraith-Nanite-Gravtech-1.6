@@ -37,8 +37,8 @@
       "dark graphite technical underlayer",
       "clean high collar and restrained angular Ancient/Asuran seam language",
       "tailored uniform construction rather than battlefield armour",
-      "subtle aged metallic edging and practical fastenings",
-      "RimWorld torso-only apparel silhouette with no separately drawn human arms or legs"
+      "subtle aged metallic edging and practical waist fastenings",
+      "RimWorld pawn-shaped fitted uniform with no separately drawn humanoid limbs"
     ],
     "avoid": [
       "historical WNG apparel",
@@ -48,12 +48,11 @@
       "bulky power armour plates",
       "ship parts on clothing",
       "superhero breastplate",
-      "humanoid mannequin arms",
-      "humanoid mannequin legs"
+      "procedural replacement art"
     ]
   },
   "rimworld": {
-    "family": "ShirtButton",
+    "family": "Duster",
     "body_types": [
       "Male",
       "Female",
@@ -61,10 +60,11 @@
       "Fat",
       "Hulk"
     ],
-    "tile_scale": 0.78,
+    "tile_scale": 0.76,
     "cover_body": true,
     "preserve_master_ratio": false,
-    "mapping_mode": "vanilla_clip"
+    "mapping_mode": "vanilla_clip",
+    "inventory_source": "fitted_male_south"
   },
   "masters": {
     "south": "master_south.png",
@@ -85,15 +85,14 @@
     ],
     "background": "transparent",
     "instruction": "finished professional painted RimWorld apparel master",
-    "silhouette": "Use the vanilla RimWorld ShirtButton torso/body envelope. The pawn has no separately drawn human arms or legs; artwork must read as fitted apparel wrapped around the vanilla body silhouette.",
+    "silhouette": "vanilla RimWorld Duster outer silhouette plus matching pawn body coverage; fit the finished art to the pawn silhouette, then derive inventory from that fitted art",
     "source_priority": "screen-used Stargate Atlantis Asuran human-form uniform reference family",
     "banned": [
       "historical WNG clothing",
       "generic sci-fi armour",
       "neon piping",
       "ship parts on clothing",
-      "human mannequin limbs"
-    ],
-    "mapping_rule": "South/north/east master art is projected into the authoritative vanilla ShirtButton/body silhouette; west mirrors east; inventory is generated separately."
+      "procedural replacement art"
+    ]
   }
 }
