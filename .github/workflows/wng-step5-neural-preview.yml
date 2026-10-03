@@ -1,0 +1,31 @@
+name: WNG Step 5 Neural Preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wng-step5-neural-preview.yml'
+      - 'Tools/ApparelForge/source_art/generate_human_form_uniform_neural.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install painter dependencies
+        run: python -m pip install --disable-pip-version-check pillow numpy scipy torch torchvision
+      - name: Generate Step 5 professional preview
+        run: python Tools/ApparelForge/source_art/generate_human_form_uniform_neural.py
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: step5-neural-preview
+          path: /tmp/wng-step5-neural
+          if-no-files-found: error
