@@ -40,6 +40,7 @@ jobs:
       - name: Select profile
         shell: bash
         run: |
+          set -euo pipefail
           PROFILE="${{ github.event.inputs.profile }}"
           if [ -n "$PROFILE" ]; then
             test -f "Tools/ApparelForge/profiles/${PROFILE}.json"
@@ -50,221 +51,13 @@ jobs:
 
           CHANGED_FILES="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
 
-          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^Tools/ApparelForge/(profiles/human_form_uniform\.json|source_art/generate_human_form_uniform\.py)
-
-          mapfile -t CHANGED < <(printf '%s\n' "$CHANGED_FILES" | sed -n 's#^ArtSource/Apparel/\([^/]*\)/.*#\1#p' | sort -u)
-
-          if [ "${#CHANGED[@]}" -eq 0 ]; then
-            echo "Tooling/profile-only change: validate pipeline, do not forge art."
-            echo "HAS_MASTERS=false" >> "$GITHUB_ENV"
-            exit 0
-          fi
-
-          if [ "${#CHANGED[@]}" -ne 1 ]; then
-            echo "One clothing item at a time." >&2
-            exit 1
-          fi
-
-          PROFILE="${CHANGED[0]}"
-          test -f "Tools/ApparelForge/profiles/${PROFILE}.json"
-          echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
-          echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
-
-      - name: Build Step 11 Human Form Command Armour
-        shell: bash
-        run: |
-          set -euo pipefail
-          CHANGED_FILES="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
-          if ! printf '%s\n' "$CHANGED_FILES" | grep -qx 'Tools/ApparelForge/step11-human-form-command-armour.trigger'; then
-            exit 0
-          fi
-          python Tools/ApparelForge/source_art/generate_human_form_command_armour_step11.py
-          python - <<'PY'
-          from pathlib import Path
-          import struct
-          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Precursor")
-          bodies=["Male","Female","Thin","Fat","Hulk"]
-          dirs=["north","south","east","west"]
-          expected=[root/"WNG_HumanFormCommandArmor.png"]
-          for b in bodies:
-              expected.append(root/f"WNG_HumanFormCommandArmor_{b}.png")
-              expected.extend(root/f"WNG_HumanFormCommandArmor_{b}_{d}.png" for d in dirs)
-          assert len(expected)==26
-          for p in expected:
-              assert p.exists(), p
-              data=p.read_bytes()
-              assert data[:8]==b"\\x89PNG\\r\\n\\x1a\\n", p
-              w,h=struct.unpack(">II",data[16:24])
-              assert (w,h)==(192,192), (p,w,h)
-          print("validated",len(expected),"Human Form Command Armour textures")
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCommandArmor*.png
-          git rm -f Tools/ApparelForge/step11-human-form-command-armour.trigger
-          git rm -f .github/workflows/wng-step11-human-form-command-armour.yml || true
-          git commit -m "Finish Step 11 Human Form Command Armour art and RimWorld fit [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
-
-      - name: Generate fresh Step 5 Human Form Uniform masters
-        if: env.HAS_MASTERS == 'true' && env.PROFILE == 'human_form_uniform'
-        run: python Tools/ApparelForge/source_art/generate_human_form_uniform.py
-
-      - name: Generate fresh Step 12 Precursor Uniform masters
-        if: env.HAS_MASTERS == 'true' && env.PROFILE == 'precursor_uniform'
-        run: python Tools/ApparelForge/source_art/generate_precursor_uniform.py
-
-      - name: Require finished masters
-        if: env.HAS_MASTERS == 'true'
-        run: |
-          test -f "ArtSource/Apparel/$PROFILE/master_south.png"
-          test -f "ArtSource/Apparel/$PROFILE/master_north.png"
-          test -f "ArtSource/Apparel/$PROFILE/master_east.png"
-
-      - name: Fetch vanilla RimWorld geometry
-        if: env.HAS_MASTERS == 'true'
-        run: |
-          git clone --depth 1 https://github.com/SamuelBucher/Madness-Pawns.git /tmp/madness
-          git clone --depth 1 https://github.com/DaLongZhuaZi/RWonVela.git /tmp/rwvela
-
-      - name: Forge RimWorld variants from finished masters
-        if: env.HAS_MASTERS == 'true'
-        run: |
-          python Tools/ApparelForge/apparel_forge.py "$PROFILE" \
-            --vanilla-dir "/tmp/madness/Raw sprites/apparel" \
-            --body-dir "/tmp/rwvela/src/common/human/bodies" \
-            --workdir /tmp/wng-apparel-forge
-
-      - name: Validate live apparel contract
-        if: env.HAS_MASTERS == 'true'
-        run: python .github/artqa/apparel_art_audit.py
-
-      - name: Commit Step 5 masters and live PNGs
-        if: env.HAS_MASTERS == 'true'
-        shell: bash
-        run: |
-          ITEM="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
-          OUTDIR="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "ArtSource/Apparel/$PROFILE/master_south.png" \
-                  "ArtSource/Apparel/$PROFILE/master_north.png" \
-                  "ArtSource/Apparel/$PROFILE/master_east.png" \
-                  "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
-          git diff --cached --quiet && exit 0
-          git commit -m "Forge ${ITEM} from fresh generated Step 5 art [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
-; then
+          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^Tools/ApparelForge/(profiles/human_form_uniform\.json|source_art/generate_human_form_uniform\.py)$'; then
             echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
             echo "PROFILE=human_form_uniform" >> "$GITHUB_ENV"
             exit 0
           fi
 
-          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^Tools/ApparelForge/(profiles/precursor_uniform\.json|source_art/generate_precursor_uniform\.py)
-
-          mapfile -t CHANGED < <(printf '%s\n' "$CHANGED_FILES" | sed -n 's#^ArtSource/Apparel/\([^/]*\)/.*#\1#p' | sort -u)
-
-          if [ "${#CHANGED[@]}" -eq 0 ]; then
-            echo "Tooling/profile-only change: validate pipeline, do not forge art."
-            echo "HAS_MASTERS=false" >> "$GITHUB_ENV"
-            exit 0
-          fi
-
-          if [ "${#CHANGED[@]}" -ne 1 ]; then
-            echo "One clothing item at a time." >&2
-            exit 1
-          fi
-
-          PROFILE="${CHANGED[0]}"
-          test -f "Tools/ApparelForge/profiles/${PROFILE}.json"
-          echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
-          echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
-
-      - name: Build Step 11 Human Form Command Armour
-        shell: bash
-        run: |
-          set -euo pipefail
-          CHANGED_FILES="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
-          if ! printf '%s\n' "$CHANGED_FILES" | grep -qx 'Tools/ApparelForge/step11-human-form-command-armour.trigger'; then
-            exit 0
-          fi
-          python Tools/ApparelForge/source_art/generate_human_form_command_armour_step11.py
-          python - <<'PY'
-          from pathlib import Path
-          import struct
-          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Precursor")
-          bodies=["Male","Female","Thin","Fat","Hulk"]
-          dirs=["north","south","east","west"]
-          expected=[root/"WNG_HumanFormCommandArmor.png"]
-          for b in bodies:
-              expected.append(root/f"WNG_HumanFormCommandArmor_{b}.png")
-              expected.extend(root/f"WNG_HumanFormCommandArmor_{b}_{d}.png" for d in dirs)
-          assert len(expected)==26
-          for p in expected:
-              assert p.exists(), p
-              data=p.read_bytes()
-              assert data[:8]==b"\\x89PNG\\r\\n\\x1a\\n", p
-              w,h=struct.unpack(">II",data[16:24])
-              assert (w,h)==(192,192), (p,w,h)
-          print("validated",len(expected),"Human Form Command Armour textures")
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCommandArmor*.png
-          git rm -f Tools/ApparelForge/step11-human-form-command-armour.trigger
-          git rm -f .github/workflows/wng-step11-human-form-command-armour.yml || true
-          git commit -m "Finish Step 11 Human Form Command Armour art and RimWorld fit [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
-
-      - name: Generate fresh Step 5 Human Form Uniform masters
-        if: env.HAS_MASTERS == 'true' && env.PROFILE == 'human_form_uniform'
-        run: python Tools/ApparelForge/source_art/generate_human_form_uniform.py
-
-      - name: Require finished masters
-        if: env.HAS_MASTERS == 'true'
-        run: |
-          test -f "ArtSource/Apparel/$PROFILE/master_south.png"
-          test -f "ArtSource/Apparel/$PROFILE/master_north.png"
-          test -f "ArtSource/Apparel/$PROFILE/master_east.png"
-
-      - name: Fetch vanilla RimWorld geometry
-        if: env.HAS_MASTERS == 'true'
-        run: |
-          git clone --depth 1 https://github.com/SamuelBucher/Madness-Pawns.git /tmp/madness
-          git clone --depth 1 https://github.com/DaLongZhuaZi/RWonVela.git /tmp/rwvela
-
-      - name: Forge RimWorld variants from finished masters
-        if: env.HAS_MASTERS == 'true'
-        run: |
-          python Tools/ApparelForge/apparel_forge.py "$PROFILE" \
-            --vanilla-dir "/tmp/madness/Raw sprites/apparel" \
-            --body-dir "/tmp/rwvela/src/common/human/bodies" \
-            --workdir /tmp/wng-apparel-forge
-
-      - name: Validate live apparel contract
-        if: env.HAS_MASTERS == 'true'
-        run: python .github/artqa/apparel_art_audit.py
-
-      - name: Commit Step 5 masters and live PNGs
-        if: env.HAS_MASTERS == 'true'
-        shell: bash
-        run: |
-          ITEM="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
-          OUTDIR="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "ArtSource/Apparel/$PROFILE/master_south.png" \
-                  "ArtSource/Apparel/$PROFILE/master_north.png" \
-                  "ArtSource/Apparel/$PROFILE/master_east.png" \
-                  "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
-          git diff --cached --quiet && exit 0
-          git commit -m "Forge ${ITEM} from fresh generated Step 5 art [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
-; then
+          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^Tools/ApparelForge/(profiles/precursor_uniform\.json|source_art/generate_precursor_uniform\.py)$'; then
             echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
             echo "PROFILE=precursor_uniform" >> "$GITHUB_ENV"
             exit 0
@@ -311,7 +104,7 @@ jobs:
           for p in expected:
               assert p.exists(), p
               data=p.read_bytes()
-              assert data[:8]==b"\\x89PNG\\r\\n\\x1a\\n", p
+              assert data[:8]==b"\x89PNG\r\n\x1a\n", p
               w,h=struct.unpack(">II",data[16:24])
               assert (w,h)==(192,192), (p,w,h)
           print("validated",len(expected),"Human Form Command Armour textures")
@@ -325,9 +118,13 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-      - name: Generate fresh Step 5 Human Form Uniform masters
+      - name: Generate Human Form Uniform masters
         if: env.HAS_MASTERS == 'true' && env.PROFILE == 'human_form_uniform'
         run: python Tools/ApparelForge/source_art/generate_human_form_uniform.py
+
+      - name: Generate Step 12 Precursor Uniform masters
+        if: env.HAS_MASTERS == 'true' && env.PROFILE == 'precursor_uniform'
+        run: python Tools/ApparelForge/source_art/generate_precursor_uniform.py
 
       - name: Require finished masters
         if: env.HAS_MASTERS == 'true'
@@ -354,19 +151,20 @@ jobs:
         if: env.HAS_MASTERS == 'true'
         run: python .github/artqa/apparel_art_audit.py
 
-      - name: Commit Step 5 masters and live PNGs
+      - name: Commit masters and live PNGs
         if: env.HAS_MASTERS == 'true'
         shell: bash
         run: |
+          set -euo pipefail
           ITEM="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p['item'])")"
           OUTDIR="$(python -c "import json; p=json.load(open('Tools/ApparelForge/profiles/'+'$PROFILE'+'.json')); print(p.get('output_dir','Wraith'))")"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "ArtSource/Apparel/$PROFILE/master_south.png" \
-                  "ArtSource/Apparel/$PROFILE/master_north.png" \
-                  "ArtSource/Apparel/$PROFILE/master_east.png" \
-                  "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
+          git add -f "ArtSource/Apparel/$PROFILE/master_south.png" \
+                     "ArtSource/Apparel/$PROFILE/master_north.png" \
+                     "ArtSource/Apparel/$PROFILE/master_east.png" \
+                     "Textures/Things/Pawn/Humanlike/Apparel/$OUTDIR/${ITEM}"*.png
           git diff --cached --quiet && exit 0
-          git commit -m "Forge ${ITEM} from fresh generated Step 5 art [skip ci]"
+          git commit -m "Forge ${ITEM} from finished Stargate-based art [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
