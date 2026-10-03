@@ -122,6 +122,10 @@ jobs:
         if: env.HAS_MASTERS == 'true' && env.PROFILE == 'human_form_uniform'
         run: python Tools/ApparelForge/source_art/generate_human_form_uniform.py
 
+      - name: Generate Step 12 Precursor Uniform masters
+        if: env.HAS_MASTERS == 'true' && env.PROFILE == 'precursor_uniform'
+        run: python Tools/ApparelForge/source_art/generate_precursor_uniform.py
+
       - name: Require finished masters
         if: env.HAS_MASTERS == 'true'
         run: |
