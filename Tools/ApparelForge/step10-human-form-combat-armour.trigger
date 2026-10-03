@@ -1,1 +1,1 @@
-step10-human-form-combat-armour
+step10-human-form-combat-armour-retry
