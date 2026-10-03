@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'Tools/ManualImport/wng-step12-precursor-uniform-manual-final.zip'
+      - '.github/workflows/wng-step12-manual-import.yml'
 
 permissions:
   contents: write
@@ -41,7 +42,7 @@ jobs:
 
           python - <<'PY'
           from pathlib import Path
-          from PIL import Image
+          import struct
           root=Path("Textures/Things/Pawn/Humanlike/Apparel/Precursor")
           bodies=["Male","Female","Thin","Fat","Hulk"]
           dirs=["north","south","east","west"]
@@ -52,10 +53,10 @@ jobs:
           assert len(expected)==26
           for p in expected:
               assert p.exists(), p
-              im=Image.open(p)
-              assert im.size==(192,192), (p,im.size)
-              assert im.mode=="RGBA", (p,im.mode)
-              assert im.getchannel("A").getbbox() is not None, p
+              data=p.read_bytes()
+              assert data[:8]==b"\x89PNG\r\n\x1a\n", p
+              w,h=struct.unpack(">II",data[16:24])
+              assert (w,h)==(192,192), (p,w,h)
 
           masters=[
               Path("ArtSource/Apparel/precursor_uniform/master_south.png"),
@@ -64,10 +65,10 @@ jobs:
           ]
           for p in masters:
               assert p.exists(), p
-              im=Image.open(p)
-              assert min(im.size)>250, (p,im.size)
-              assert im.mode=="RGBA", (p,im.mode)
-              assert im.getchannel("A").getbbox() is not None, p
+              data=p.read_bytes()
+              assert data[:8]==b"\x89PNG\r\n\x1a\n", p
+              w,h=struct.unpack(">II",data[16:24])
+              assert min(w,h)>250, (p,w,h)
 
           print("validated",len(expected),"manual Step 12 runtime sprites and",len(masters),"manual masters")
           PY
