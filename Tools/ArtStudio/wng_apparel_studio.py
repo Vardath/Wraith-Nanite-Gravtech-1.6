@@ -122,7 +122,10 @@ class RimWorldGeometry:
         for body in self.cfg["body_types"]:
             masks[body]={}
             for d in ("south","north","east"):
-                masks[body][d]=self.deform(bases[d],body,d)
+                m=self.deform(bases[d],body,d)
+                if bool(self.cfg.get("cover_body",False)):
+                    m=ImageChops.lighter(m,self.body_alpha(body,d))
+                masks[body][d]=m
         src=masks["Male"]["south"]
         b=src.getbbox(); crop=src.crop(b)
         scale=float(self.cfg.get("tile_scale",.78))
@@ -273,6 +276,20 @@ class RasterStudio:
                     d.arc((cx-rx,cy-ry,cx+rx,cy+ry),190,350,fill=sh+(145,),width=max(2,round(step*.09)))
                     d.arc((cx-rx+2,cy-ry+2,cx+rx-2,cy+ry-2),15,165,fill=hi+(62,),width=max(1,round(step*.035)))
                 row+=1
+
+        elif kind=="fabric":
+            # Engineered woven cloth: fine cross-weave, subtle directional nap,
+            # soft compression marks. No hard panel fill or luminous outline.
+            step=max(8,round(w*.026))
+            for y in range(y0,y1,step):
+                d.line((x0,y,x1,y),fill=hi+(rng.randint(12,28),),width=1)
+            for x in range(x0,x1,step):
+                d.line((x,y0,x,y1),fill=sh+(rng.randint(10,24),),width=1)
+            for _ in range(max(12,round(w*h/(HI*HI)*95))):
+                x=rng.randint(x0,x1-1); y=rng.randint(y0,y1-1)
+                ln=max(5,round(w*rng.uniform(.018,.055)))
+                dy=rng.randint(-2,2)
+                d.line((x,y,min(x1-1,x+ln),y+dy),fill=hi+(rng.randint(10,24),),width=1)
 
         elif kind=="rubber":
             for i in range(5):
@@ -502,14 +519,14 @@ class RasterStudio:
         outdir.mkdir(parents=True,exist_ok=True)
         item=self.p["item"]
         generated={}
-        tile=self.paint(self.geometry["tile"],"south",900)
-        tile.save(outdir/f"{item}.png")
-        generated[f"{item}.png"]=tile
+        tile_source=None
 
         for body,dirs in self.geometry["masks"].items():
             for d in ("south","north","east"):
                 stable=int(hashlib.sha256((body+d).encode()).hexdigest()[:6],16)%400
                 im=self.paint(dirs[d],d,1000+stable)
+                if body=="Male" and d=="south":
+                    tile_source=im.copy()
                 im.save(outdir/f"{item}_{body}_{d}.png")
                 generated[f"{item}_{body}_{d}.png"]=im
                 if d=="east":
@@ -524,6 +541,22 @@ class RasterStudio:
             src=generated[f"{item}_Male_{d}.png"].copy()
             src.save(outdir/f"{item}_{d}.png")
             generated[f"{item}_{d}.png"]=src
+
+        if tile_source is None:
+            raise RuntimeError("missing fitted Male/South sprite for inventory tile")
+        alpha=tile_source.getchannel("A")
+        bb=alpha.getbbox()
+        if not bb:
+            raise RuntimeError("empty fitted Male/South sprite for inventory tile")
+        crop=tile_source.crop(bb)
+        scale=float(self.p["rimworld"].get("tile_scale",.78))
+        max_side=max(1,round(OUT*scale))
+        ratio=min(max_side/max(1,crop.width),max_side/max(1,crop.height))
+        crop=crop.resize((max(1,round(crop.width*ratio)),max(1,round(crop.height*ratio))),Image.Resampling.LANCZOS)
+        tile=Image.new("RGBA",(OUT,OUT),(0,0,0,0))
+        tile.alpha_composite(crop,((OUT-crop.width)//2,(OUT-crop.height)//2))
+        tile.save(outdir/f"{item}.png")
+        generated[f"{item}.png"]=tile
 
         self.qa(generated)
         self.contact_sheet(generated,workdir/"contact-sheet.png")
