@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageEnhance, ImageChops, ImageOp
 import numpy as np
 from scipy.ndimage import gaussian_filter
 import random, hashlib
+from functools import lru_cache
 
 ROOT=Path(__file__).resolve().parents[3]
 OUT=ROOT/"ArtSource/Apparel/precursor_uniform"
@@ -20,6 +21,7 @@ STYLE_DIRS=[
 def _alpha_bbox(im):
     return im.getchannel("A").getbbox()
 
+@lru_cache(maxsize=3)
 def _style_field(view:str):
     rows=[]
     for d in STYLE_DIRS:
