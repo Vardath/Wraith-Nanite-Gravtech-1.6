@@ -217,6 +217,8 @@ class RimWorldImplementationPass:
             masks[body]={}
             for d in ("south","north","east"):
                 m=self._deform_powerarmor(bases[d],body,d)
+                if bool(self.cfg.get("cover_body",False)):
+                    m=ImageChops.lighter(m,self._body_alpha(body,d))
                 masks[body][d]=m
                 b=m.getbbox()
                 metrics[f"{body}_{d}"]={"bbox":list(b),"opaque":int((np.array(m)>128).sum())}
@@ -1837,12 +1839,12 @@ class SynthesisPass:
         outdir=APPAREL_ROOT/self.profile.get("output_dir","Wraith")
         item=self.profile["item"]
         generated={}
-        tile=self._tile(self.impl["tile"])
-        generated["tile"]=tile
-        save_clean(tile,outdir/f"{item}.png")
+        tile_source=None
         for body in cfg["body_types"]:
             for d in ("south","north","east"):
                 im=self._paint(body,d,self.impl["masks"][body][d])
+                if body=="Male" and d=="south":
+                    tile_source=im.copy()
                 generated[f"{body}_{d}"]=im
                 if d=="south":
                     save_clean(im,outdir/f"{item}_{body}.png")
@@ -1851,6 +1853,22 @@ class SynthesisPass:
                     west=im.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                     generated[f"{body}_west"]=west
                     save_clean(west,outdir/f"{item}_{body}_west.png")
+
+        if tile_source is None:
+            raise RuntimeError("missing fitted Male/South sprite for inventory tile")
+        alpha=tile_source.getchannel("A")
+        bb=alpha.getbbox()
+        if not bb:
+            raise RuntimeError("empty fitted Male/South sprite for inventory tile")
+        crop=tile_source.crop(bb)
+        scale=float(cfg.get("tile_scale",.82))
+        max_side=max(1,round(OUT*scale))
+        ratio=min(max_side/max(1,crop.width),max_side/max(1,crop.height))
+        crop=crop.resize((max(1,round(crop.width*ratio)),max(1,round(crop.height*ratio))),Image.Resampling.LANCZOS)
+        tile=Image.new("RGBA",(OUT,OUT),(0,0,0,0))
+        tile.alpha_composite(crop,((OUT-crop.width)//2,(OUT-crop.height)//2))
+        generated["tile"]=tile
+        save_clean(tile,outdir/f"{item}.png")
 
         if cfg.get("legacy_bare_directions"):
             save_clean(generated["Male_south"],outdir/f"{item}_south.png")
