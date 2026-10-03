@@ -21,7 +21,7 @@
         "required_terms": []
       }
     ],
-    "minimum_live_sources": 1,
+    "minimum_live_sources": 0,
     "design": {
       "materials": [
         "dark graphite engineered woven uniform cloth",
