@@ -1,0 +1,94 @@
+name: WNG Step 12 Manual Import
+
+on:
+  push:
+    paths:
+      - 'Tools/ManualImport/wng-step12-precursor-uniform-manual-final.zip'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wng-step12-manual-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install manual Step 12 art
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp=/tmp/wng-step12-manual
+          rm -rf "$tmp"
+          mkdir -p "$tmp"
+          unzip -q Tools/ManualImport/wng-step12-precursor-uniform-manual-final.zip -d "$tmp"
+
+          dest="Textures/Things/Pawn/Humanlike/Apparel/Precursor"
+          mkdir -p "$dest"
+          install -m 0644 "$tmp"/WNG_PrecursorUniform*.png "$dest"/
+
+          srcdest="ArtSource/Apparel/precursor_uniform"
+          mkdir -p "$srcdest"
+          install -m 0644 "$tmp"/source/PrecursorUniform_Master_south.png "$srcdest/master_south.png"
+          install -m 0644 "$tmp"/source/PrecursorUniform_Master_north.png "$srcdest/master_north.png"
+          install -m 0644 "$tmp"/source/PrecursorUniform_Master_east.png "$srcdest/master_east.png"
+
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Precursor")
+          bodies=["Male","Female","Thin","Fat","Hulk"]
+          dirs=["north","south","east","west"]
+          expected=[root/"WNG_PrecursorUniform.png"]
+          for b in bodies:
+              expected.append(root/f"WNG_PrecursorUniform_{b}.png")
+              expected.extend(root/f"WNG_PrecursorUniform_{b}_{d}.png" for d in dirs)
+          assert len(expected)==26
+          for p in expected:
+              assert p.exists(), p
+              im=Image.open(p)
+              assert im.size==(192,192), (p,im.size)
+              assert im.mode=="RGBA", (p,im.mode)
+              assert im.getchannel("A").getbbox() is not None, p
+
+          masters=[
+              Path("ArtSource/Apparel/precursor_uniform/master_south.png"),
+              Path("ArtSource/Apparel/precursor_uniform/master_north.png"),
+              Path("ArtSource/Apparel/precursor_uniform/master_east.png"),
+          ]
+          for p in masters:
+              assert p.exists(), p
+              im=Image.open(p)
+              assert min(im.size)>250, (p,im.size)
+              assert im.mode=="RGBA", (p,im.mode)
+              assert im.getchannel("A").getbbox() is not None, p
+
+          print("validated",len(expected),"manual Step 12 runtime sprites and",len(masters),"manual masters")
+          PY
+
+          git add -f Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorUniform*.png
+          git add -f ArtSource/Apparel/precursor_uniform/master_*.png
+
+      - name: Remove Step 12 generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f Tools/ApparelForge/source_art/generate_precursor_uniform.py || true
+
+      - name: Commit manual Step 12 to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f Tools/ManualImport/wng-step12-precursor-uniform-manual-final.zip
+          git rm -f .github/workflows/wng-step12-manual-import.yml
+          git commit -m "Replace Step 12 with manual Precursor Uniform art [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
