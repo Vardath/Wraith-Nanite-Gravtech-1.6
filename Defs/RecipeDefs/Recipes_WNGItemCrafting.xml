@@ -738,4 +738,23 @@
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1880</displayPriority>
   </RecipeDef>
+
+  <RecipeDef>
+    <defName>WNG_Make_WraithCommandArmor</defName>
+    <label>make wraith command armor</label>
+    <description>Grow a command-grade Wraith living combat shell in the dedicated Wraith production chain.</description>
+    <jobString>Growing wraith command armor.</jobString>
+    <workAmount>42000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <researchPrerequisite>WNG_AdvancedCarapace</researchPrerequisite>
+    <skillRequirements><Crafting>9</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>WNG_Biomass</li></thingDefs></filter><count>75</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>2</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>WNG_Biomass</li><li>ComponentIndustrial</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_WraithCommandArmor>1</WNG_WraithCommandArmor></products>
+    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+  </RecipeDef>
+
 </Defs>
