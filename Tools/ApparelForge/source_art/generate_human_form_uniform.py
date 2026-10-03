@@ -178,4 +178,4 @@ for v in ("south","north","east"):
     im.save(p,optimize=True)
     print(v,p,os.path.getsize(p))
 
-print("fresh Step 5 masters generated")
+print("fresh Step 5 masters generated: art-first pawn-fit build")
