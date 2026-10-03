@@ -74,6 +74,43 @@ jobs:
           echo "HAS_MASTERS=true" >> "$GITHUB_ENV"
           echo "PROFILE=$PROFILE" >> "$GITHUB_ENV"
 
+      - name: Build Step 11 Human Form Command Armour
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHANGED_FILES="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          if ! printf '%s\n' "$CHANGED_FILES" | grep -qx 'Tools/ApparelForge/step11-human-form-command-armour.trigger'; then
+            exit 0
+          fi
+          python Tools/ApparelForge/source_art/generate_human_form_command_armour_step11.py
+          python - <<'PY'
+          from pathlib import Path
+          import struct
+          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Precursor")
+          bodies=["Male","Female","Thin","Fat","Hulk"]
+          dirs=["north","south","east","west"]
+          expected=[root/"WNG_HumanFormCommandArmor.png"]
+          for b in bodies:
+              expected.append(root/f"WNG_HumanFormCommandArmor_{b}.png")
+              expected.extend(root/f"WNG_HumanFormCommandArmor_{b}_{d}.png" for d in dirs)
+          assert len(expected)==26
+          for p in expected:
+              assert p.exists(), p
+              data=p.read_bytes()
+              assert data[:8]==b"\\x89PNG\\r\\n\\x1a\\n", p
+              w,h=struct.unpack(">II",data[16:24])
+              assert (w,h)==(192,192), (p,w,h)
+          print("validated",len(expected),"Human Form Command Armour textures")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCommandArmor*.png
+          git rm -f Tools/ApparelForge/step11-human-form-command-armour.trigger
+          git rm -f .github/workflows/wng-step11-human-form-command-armour.yml || true
+          git commit -m "Finish Step 11 Human Form Command Armour art and RimWorld fit [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
       - name: Generate fresh Step 5 Human Form Uniform masters
         if: env.HAS_MASTERS == 'true' && env.PROFILE == 'human_form_uniform'
         run: python Tools/ApparelForge/source_art/generate_human_form_uniform.py
