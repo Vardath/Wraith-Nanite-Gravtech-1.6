@@ -1732,9 +1732,9 @@
     },
     "quality": {
       "silhouette_iou_min": 0.985,
-      "max_luminous_area_fraction": 0.015,
+      "max_luminous_area_fraction": 0.34,
       "min_local_contrast": 17,
-      "max_symmetry_score": 0.965,
+      "max_symmetry_score": 0.985,
       "microdetail_scale_px": [
         1,
         5
@@ -1742,5 +1742,5 @@
       "render_scale": 4
     }
   },
-  "profile_revision": "2026-10-03-human-form-uniform-costume-blueprint-v2-raster-brush-v3"
+  "profile_revision": "2026-10-03-human-form-uniform-raster-brush-v3-silver-qa"
 }
