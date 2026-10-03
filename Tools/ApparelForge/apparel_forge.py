@@ -71,6 +71,36 @@ def fit_master(master: Image.Image, target_mask: Image.Image, preserve_ratio: bo
     out.putalpha(ImageChops.multiply(out.getchannel("A"),target_mask))
     return out
 
+
+def fit_master_silhouette(master: Image.Image, target_mask: Image.Image, cfg: dict) -> Image.Image:
+    """Remake the RimWorld tile around the finished master-art silhouette.
+
+    Vanilla geometry is used only as the pawn-sized envelope/anchor. The finished
+    master keeps its own alpha silhouette and is never clipped into a vanilla
+    clothing mask. This is for garments whose art itself defines the live tile.
+    """
+    src=master.convert("RGBA")
+    sb=src.getchannel("A").getbbox()
+    tb=target_mask.getbbox()
+    if not sb or not tb:
+        raise RuntimeError("empty source or target")
+    crop=src.crop(sb)
+    tw,th=tb[2]-tb[0],tb[3]-tb[1]
+    sx=float(cfg.get("width_scale",1.0))
+    sy=float(cfg.get("height_scale",1.0))
+    nw=max(1,round(tw*sx)); nh=max(1,round(th*sy))
+    fitted=crop.resize((nw,nh),Image.Resampling.LANCZOS)
+
+    ox=round(float(cfg.get("x_offset",0.0))*tw)
+    oy=round(float(cfg.get("y_offset",0.0))*th)
+    cx=(tb[0]+tb[2])//2 + ox
+    cy=(tb[1]+tb[3])//2 + oy
+    x=cx-nw//2; y=cy-nh//2
+
+    out=Image.new("RGBA",(HI,HI),(0,0,0,0))
+    out.alpha_composite(fitted,(x,y))
+    return out
+
 def validate_master(path: Path, direction: str, min_size: int):
     if not path.exists(): raise FileNotFoundError(path)
     im=Image.open(path).convert("RGBA")
@@ -166,9 +196,15 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
     result={}
 
     # Finished external master -> body/facing variants. No repainting occurs here.
+    mapping_mode=profile["rimworld"].get("mapping_mode","vanilla_clip")
+    mapping_cfg=profile["rimworld"].get("master_silhouette_mapping",{})
     for body in profile["rimworld"]["body_types"]:
         for d in ("south","north","east"):
-            hi=fit_master(masters[d].resize((HI,HI),Image.Resampling.LANCZOS),masks[body][d],bool(profile["rimworld"].get("preserve_master_ratio",False)))
+            src=masters[d].resize((HI,HI),Image.Resampling.LANCZOS)
+            if mapping_mode=="master_silhouette":
+                hi=fit_master_silhouette(src,masks[body][d],mapping_cfg.get(d,{}))
+            else:
+                hi=fit_master(src,masks[body][d],bool(profile["rimworld"].get("preserve_master_ratio",False)))
             im=hi.resize((OUT,OUT),Image.Resampling.LANCZOS)
             name=f"{item}_{body}_{d}.png"; im.save(outdir/name); result[name]=im
             if d=="east":
@@ -181,12 +217,16 @@ def run(profile: dict, vanilla_dir: Path, body_dir: Path, workdir: Path):
         alias=result[f"{item}_Male_{d}.png"].copy()
         alias.save(outdir/f"{item}_{d}.png"); result[f"{item}_{d}.png"]=alias
 
-    # Inventory derives only from the finished south master, never generated shading.
-    tile_mask=masks["Male"]["south"]
-    tb=tile_mask.getbbox()
-    crop=fit_master(masters["south"].resize((HI,HI),Image.Resampling.LANCZOS),tile_mask,bool(profile["rimworld"].get("preserve_master_ratio",False))).crop(tb)
+    # Inventory derives separately from the finished south master and is never
+    # used as a worn tile.
+    src=masters["south"].resize((HI,HI),Image.Resampling.LANCZOS)
+    sb=src.getchannel("A").getbbox()
+    if not sb: raise RuntimeError("empty south master for inventory")
+    crop=src.crop(sb)
     scale=float(profile["rimworld"].get("tile_scale",.78))
-    crop=crop.resize((round(crop.width*scale),round(crop.height*scale)),Image.Resampling.LANCZOS)
+    maxw=round(HI*scale); maxh=round(HI*scale)
+    r=min(maxw/max(1,crop.width),maxh/max(1,crop.height))
+    crop=crop.resize((max(1,round(crop.width*r)),max(1,round(crop.height*r))),Image.Resampling.LANCZOS)
     tile=Image.new("RGBA",(HI,HI),(0,0,0,0))
     tile.alpha_composite(crop,((HI-crop.width)//2,(HI-crop.height)//2))
     tile=tile.resize((OUT,OUT),Image.Resampling.LANCZOS)

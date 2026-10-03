@@ -59,9 +59,30 @@
       "Fat",
       "Hulk"
     ],
-    "tile_scale": 0.82,
+    "tile_scale": 0.72,
     "cover_body": true,
-    "preserve_master_ratio": true
+    "preserve_master_ratio": false,
+    "mapping_mode": "master_silhouette",
+    "master_silhouette_mapping": {
+      "south": {
+        "width_scale": 1,
+        "height_scale": 1,
+        "x_offset": 0,
+        "y_offset": 0
+      },
+      "north": {
+        "width_scale": 1,
+        "height_scale": 1,
+        "x_offset": 0,
+        "y_offset": 0
+      },
+      "east": {
+        "width_scale": 0.98,
+        "height_scale": 1,
+        "x_offset": 0,
+        "y_offset": 0
+      }
+    }
   },
   "masters": {
     "south": "master_south.png",
@@ -82,7 +103,7 @@
     ],
     "background": "transparent",
     "instruction": "finished professional painted RimWorld apparel master",
-    "silhouette": "Use the vanilla RimWorld Duster outer contour plus matching naked-body alpha for full pawn coverage. Preserve the Precursor master artwork aspect ratio; clip the art to the tile rather than stretching the art to fit.",
+    "silhouette": "The finished Precursor Human-Form master artwork defines each worn tile silhouette. Vanilla RimWorld Duster/body geometry supplies only pawn-sized envelope, anchor, facing and body-variant proportions; never clip the artwork into the vanilla Duster alpha.",
     "source_priority": "screen-used Stargate Atlantis Asuran human-form uniform reference family",
     "banned": [
       "historical WNG clothing",
@@ -90,6 +111,6 @@
       "neon piping",
       "ship parts on clothing"
     ],
-    "mapping_rule": "south/north/east masters are distinct source views; west mirrors east; body variants deform the vanilla silhouette, not the source art."
+    "mapping_rule": "south/north/east masters remain distinct painted views; each is resized into the matching vanilla pawn envelope without alpha clipping; west mirrors east; inventory derives separately from the south master."
   }
 }
