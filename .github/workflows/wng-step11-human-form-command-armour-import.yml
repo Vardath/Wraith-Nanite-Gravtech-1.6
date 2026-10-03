@@ -1,0 +1,65 @@
+name: WNG Step 11 Human Form Command Armour Import
+
+on:
+  push:
+    paths:
+      - 'Tools/ApparelForge/wng-step11-human-form-command-armour-final.zip'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wng-step11-human-form-command-armour-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install finished Step 11 art
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp=/tmp/wng-step11
+          rm -rf "$tmp"
+          mkdir -p "$tmp"
+          unzip -q Tools/ApparelForge/wng-step11-human-form-command-armour-final.zip -d "$tmp"
+          dest="Textures/Things/Pawn/Humanlike/Apparel/Precursor"
+          mkdir -p "$dest"
+          install -m 0644 "$tmp"/WNG_HumanFormCommandArmor*.png "$dest"/
+          python - <<'PY'
+          from pathlib import Path
+          import struct
+          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Precursor")
+          bodies=["Male","Female","Thin","Fat","Hulk"]
+          dirs=["north","south","east","west"]
+          expected=[root/"WNG_HumanFormCommandArmor.png"]
+          for b in bodies:
+              expected.append(root/f"WNG_HumanFormCommandArmor_{b}.png")
+              expected.extend(root/f"WNG_HumanFormCommandArmor_{b}_{d}.png" for d in dirs)
+          assert len(expected)==26
+          for p in expected:
+              assert p.exists(), p
+              data=p.read_bytes()
+              assert data[:8]==b"\x89PNG\r\n\x1a\n", p
+              w,h=struct.unpack(">II",data[16:24])
+              assert (w,h)==(192,192), (p,w,h)
+          print("validated",len(expected),"Human Form Command Armour textures")
+          PY
+          git add -f Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_HumanFormCommandArmor*.png
+
+      - name: Commit Step 11 directly to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f Tools/ApparelForge/wng-step11-human-form-command-armour-final.zip
+          git rm -f .github/workflows/wng-step11-human-form-command-armour-import.yml
+          git commit -m "Replace Step 11 with finished Human Form Command Armour art [skip ci]"
+          git pull --rebase origin main
+          git push origin main
