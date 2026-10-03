@@ -757,4 +757,24 @@
     <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
   </RecipeDef>
 
+  <RecipeDef>
+    <defName>WNG_Make_HumanFormFieldArmor</defName>
+    <label>make human-form replicator field armour</label>
+    <description>Manufacture human-form replicator field armour using WNG's precursor fabrication chain.</description>
+    <jobString>Making human-form replicator field armour.</jobString>
+    <workAmount>36000</workAmount>
+    <workSkill>Crafting</workSkill>
+    <researchPrerequisite>WNG_PrecursorFabrication</researchPrerequisite>
+    <skillRequirements><Crafting>7</Crafting></skillRequirements>
+    <ingredients>
+      <li><filter><thingDefs><li>Synthread</li></thingDefs></filter><count>30</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>45</count></li>
+      <li><filter><thingDefs><li>ComponentSpacer</li></thingDefs></filter><count>2</count></li>
+      <li><filter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></filter><count>12</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
+    <products><WNG_HumanFormFieldArmor>1</WNG_HumanFormFieldArmor></products>
+    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+  </RecipeDef>
+
 </Defs>
