@@ -37,8 +37,8 @@
       "dark graphite technical underlayer",
       "clean high collar and restrained angular Ancient/Asuran seam language",
       "tailored uniform construction rather than battlefield armour",
-      "subtle aged metallic edging and practical waist fastenings",
-      "full-body fitted uniform silhouette appropriate to human-form Replicators"
+      "subtle aged metallic edging and practical fastenings",
+      "RimWorld torso-only apparel silhouette with no separately drawn human arms or legs"
     ],
     "avoid": [
       "historical WNG apparel",
@@ -47,11 +47,13 @@
       "cyan glow lines",
       "bulky power armour plates",
       "ship parts on clothing",
-      "superhero breastplate"
+      "superhero breastplate",
+      "humanoid mannequin arms",
+      "humanoid mannequin legs"
     ]
   },
   "rimworld": {
-    "family": "RoyalRobe",
+    "family": "ShirtButton",
     "body_types": [
       "Male",
       "Female",
@@ -61,28 +63,8 @@
     ],
     "tile_scale": 0.78,
     "cover_body": true,
-    "preserve_master_ratio": true,
-    "mapping_mode": "master_silhouette",
-    "master_silhouette_mapping": {
-      "south": {
-        "width_scale": 1,
-        "height_scale": 1,
-        "x_offset": 0,
-        "y_offset": 0
-      },
-      "north": {
-        "width_scale": 1,
-        "height_scale": 1,
-        "x_offset": 0,
-        "y_offset": 0
-      },
-      "east": {
-        "width_scale": 0.98,
-        "height_scale": 1,
-        "x_offset": 0,
-        "y_offset": 0
-      }
-    }
+    "preserve_master_ratio": false,
+    "mapping_mode": "vanilla_clip"
   },
   "masters": {
     "south": "master_south.png",
@@ -103,14 +85,15 @@
     ],
     "background": "transparent",
     "instruction": "finished professional painted RimWorld apparel master",
-    "silhouette": "Use the broad vanilla RoyalRobe/body envelope as a placement boundary so the finished Precursor Human-Form artwork remains visually dominant and covers the RimWorld pawn torso, arms and legs.",
+    "silhouette": "Use the vanilla RimWorld ShirtButton torso/body envelope. The pawn has no separately drawn human arms or legs; artwork must read as fitted apparel wrapped around the vanilla body silhouette.",
     "source_priority": "screen-used Stargate Atlantis Asuran human-form uniform reference family",
     "banned": [
       "historical WNG clothing",
       "generic sci-fi armour",
       "neon piping",
-      "ship parts on clothing"
+      "ship parts on clothing",
+      "human mannequin limbs"
     ],
-    "mapping_rule": "The south/north/east finished masters are the source art. Vanilla geometry supplies pawn scale and facing coverage; inventory remains separate."
+    "mapping_rule": "South/north/east master art is projected into the authoritative vanilla ShirtButton/body silhouette; west mirrors east; inventory is generated separately."
   }
 }
