@@ -1,6 +1,7 @@
 from pathlib import Path
 import torch
 from diffusers import StableDiffusionPipeline, LCMScheduler
+from huggingface_hub import hf_hub_download
 from PIL import Image
 from rembg import remove
 
@@ -8,9 +9,13 @@ ROOT=Path(__file__).resolve().parents[3]
 OUT=ROOT/"ArtSource"/"Apparel"/"human_form_uniform"/"candidates"
 OUT.mkdir(parents=True,exist_ok=True)
 
-MODEL_URL="https://huggingface.co/Lykon/dreamshaper-8-lcm/resolve/main/DreamShaper8_LCM.safetensors"
+MODEL_FILE=hf_hub_download(
+    repo_id="Lykon/dreamshaper-8-lcm",
+    filename="DreamShaper8_LCM.safetensors",
+)
 pipe=StableDiffusionPipeline.from_single_file(
-    MODEL_URL,
+    MODEL_FILE,
+    config="runwayml/stable-diffusion-v1-5",
     torch_dtype=torch.bfloat16,
     safety_checker=None,
     requires_safety_checker=False,
