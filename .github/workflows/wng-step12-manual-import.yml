@@ -1,0 +1,68 @@
+name: WNG Step 12 Manual Art Import
+
+on:
+  push:
+    paths:
+      - 'Tools/ApparelForge/manual/wng-step12-precursor-uniform-manual-final.zip'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wng-step12-manual-art-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install manually painted Step 12 art
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp=/tmp/wng-step12-manual
+          rm -rf "$tmp"
+          mkdir -p "$tmp"
+          unzip -q Tools/ApparelForge/manual/wng-step12-precursor-uniform-manual-final.zip -d "$tmp"
+
+          dest="Textures/Things/Pawn/Humanlike/Apparel/Precursor"
+          mkdir -p "$dest"
+          install -m 0644 "$tmp"/WNG_PrecursorUniform*.png "$dest"/
+
+          python - <<'PY'
+          from pathlib import Path
+          import struct
+          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Precursor")
+          bodies=["Male","Female","Thin","Fat","Hulk"]
+          dirs=["north","south","east","west"]
+          expected=[root/"WNG_PrecursorUniform.png"]
+          for b in bodies:
+              expected.append(root/f"WNG_PrecursorUniform_{b}.png")
+              expected.extend(root/f"WNG_PrecursorUniform_{b}_{d}.png" for d in dirs)
+          assert len(expected)==26
+          for p in expected:
+              assert p.exists(), p
+              data=p.read_bytes()
+              assert data[:8]==b"\x89PNG\r\n\x1a\n", p
+              w,h=struct.unpack(">II",data[16:24])
+              assert (w,h)==(192,192), (p,w,h)
+          print("validated",len(expected),"manual Step 12 PNGs")
+          PY
+
+          git add -f Textures/Things/Pawn/Humanlike/Apparel/Precursor/WNG_PrecursorUniform*.png
+
+      - name: Commit manual Step 12 art
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f Tools/ApparelForge/manual/wng-step12-precursor-uniform-manual-final.zip
+          git rm -f .github/workflows/wng-step12-manual-import.yml
+          git commit -m "Replace Step 12 with manually painted Precursor Uniform art [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
