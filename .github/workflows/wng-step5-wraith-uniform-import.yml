@@ -1,0 +1,64 @@
+name: WNG Step 5 Wraith Uniform Import
+
+on:
+  push:
+    paths:
+      - 'Tools/ApparelForge/step5-wraith-uniform-assets.part*'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Decode finished Step 5 art
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat Tools/ApparelForge/step5-wraith-uniform-assets.part* | base64 -d > /tmp/wraith-uniform.zip
+          echo "863ca5ca4234d69096037de7e4a6deac803f49076852ea64c38fac6c4bb31389  /tmp/wraith-uniform.zip" | sha256sum -c -
+          rm -rf /tmp/wraith-uniform
+          mkdir -p /tmp/wraith-uniform
+          unzip -q /tmp/wraith-uniform.zip -d /tmp/wraith-uniform
+          dest="Textures/Things/Pawn/Humanlike/Apparel/Wraith"
+          mkdir -p "$dest"
+          install -m 0644 /tmp/wraith-uniform/WNG_WraithUniform*.png "$dest"/
+
+      - name: Validate RimWorld sprites
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import struct
+          root=Path("Textures/Things/Pawn/Humanlike/Apparel/Wraith")
+          bodies=["Male","Female","Thin","Fat","Hulk"]
+          dirs=["north","south","east","west"]
+          expected=[root/"WNG_WraithUniform.png"]
+          for b in bodies:
+              expected.append(root/f"WNG_WraithUniform_{b}.png")
+              expected.extend(root/f"WNG_WraithUniform_{b}_{d}.png" for d in dirs)
+          assert len(expected)==26
+          for p in expected:
+              assert p.exists(), p
+              data=p.read_bytes()
+              assert data[:8]==b"\x89PNG\r\n\x1a\n", p
+              w,h=struct.unpack(">II",data[16:24])
+              assert (w,h)==(192,192), (p,w,h)
+          print("validated",len(expected),"Wraith Uniform textures")
+          PY
+
+      - name: Commit finished art into WNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Textures/Things/Pawn/Humanlike/Apparel/Wraith/WNG_WraithUniform*.png
+          git rm -f Tools/ApparelForge/step5-wraith-uniform-assets.part* .github/workflows/wng-step5-wraith-uniform-import.yml
+          git commit -m "Finish Step 5 Wraith Uniform art and RimWorld fit [skip ci]"
+          git push
