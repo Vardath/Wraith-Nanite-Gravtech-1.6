@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / "ArtSource" / "Apparel" / "human_form_uniform"
 OUT.mkdir(parents=True, exist_ok=True)
 
-S = 1536  # Step 5 master resolution
+S = 1536  # Step 5 master resolution; torso-only pawn art
 PALE = np.array([156, 166, 170], dtype=np.float32)
 MID = np.array([112, 124, 129], dtype=np.float32)
 GRAPH = (27, 33, 37, 255)
