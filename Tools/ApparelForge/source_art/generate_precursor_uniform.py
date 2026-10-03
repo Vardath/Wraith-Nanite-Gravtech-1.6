@@ -94,3 +94,5 @@ for view in ("south","north","east"):
     out=recolor(Image.open(p),view)
     out.save(OUT/f"master_{view}.png",optimize=True)
     print("painted",view,out.size)
+
+# production repaint trigger v2
