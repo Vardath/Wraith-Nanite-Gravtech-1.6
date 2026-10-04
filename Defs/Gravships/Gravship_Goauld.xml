@@ -69,7 +69,7 @@
     <placeWorkers Inherit="False"><li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li></placeWorkers>
     <comps Inherit="False">
       <li Class="CompProperties_Breakdownable"/>
-      <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole"><family>Goauld</family><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>200</maxDistance></li></linkableBuildings></li>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole"><family>Goauld</family><componentTypeDef>Controls</componentTypeDef><requiresLOS>false</requiresLOS><showMaxSimultaneous>false</showMaxSimultaneous><maxSimultaneous>1</maxSimultaneous><maxDistance>200</maxDistance></li>
       
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode"><family>Goauld</family><role>Consumer</role><demandWatts>500</demandWatts></li>
     </comps>
