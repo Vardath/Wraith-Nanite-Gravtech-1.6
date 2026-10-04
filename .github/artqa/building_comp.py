@@ -136,15 +136,23 @@ for name,cls,n,path in duplicate_comp_defs:
     failures.append(f"{name}: duplicate effective comp class {cls} x{n} ({path})")
 
 # ---------- Specific high-risk comp-family contracts ----------
-# Gravship pilot consoles need both pilot-console and affected-by-facilities plumbing.
+# Gravship pilot consoles use Odyssey's native CompPilotConsole facility contract.
+# The grav engine owns CompAffectedByFacilities and reverse-registers the console.
 for path,node,name in buildings:
     if "PilotConsole" not in name:
         continue
-    classes=[comp_class(li) for li in effective_comps(node) if comp_class(li)]
-    if not any(c.endswith("CompProperties_WNGPilotConsole") for c in classes):
-        failures.append(f"{name}: pilot console missing WNGPilotConsole comp ({path})")
-    if "CompProperties_AffectedByFacilities" not in classes:
-        failures.append(f"{name}: pilot console missing CompProperties_AffectedByFacilities ({path})")
+    comps_list=effective_comps(node)
+    native_pilot=any(
+        comp_class(li)=="CompProperties_GravshipFacility"
+        and (li.findtext("compClass") or "").strip()=="CompPilotConsole"
+        for li in comps_list
+    )
+    legacy_wrapper=any(
+        comp_class(li).endswith("CompProperties_WNGPilotConsole")
+        for li in comps_list
+    )
+    if not (native_pilot or legacy_wrapper):
+        failures.append(f"{name}: pilot console missing native CompPilotConsole facility comp ({path})")
 
 # Grav engines should expose the matching family facility endpoint.
 for path,node,name in buildings:
