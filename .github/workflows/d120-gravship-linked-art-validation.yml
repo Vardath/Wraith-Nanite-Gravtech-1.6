@@ -416,8 +416,8 @@ jobs:
 
           pilot_contracts = {
               "WNG_OrganicPilotNode": ("Wraith", "WNG_WraithGravEngine", "native"),
-              "WNG_PrecursorPilotConsole": ("Asuran", "WNG_AsuranGravEngine", "safe-wrapper"),
-              "WNG_GoauldPeltac": ("Goauld", "WNG_GoauldGravEngine", "safe-wrapper"),
+              "WNG_PrecursorPilotConsole": ("Asuran", "WNG_AsuranGravEngine", "native"),
+              "WNG_GoauldPeltac": ("Goauld", "WNG_GoauldGravEngine", "native"),
           }
 
           discovered_pilots = set()
