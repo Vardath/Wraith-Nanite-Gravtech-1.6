@@ -125,8 +125,7 @@
         {
           "path": "Defs/Gravships/Gravship_FamilySystems.xml",
           "contains": [
-            "CompProperties_GravshipFacility",
-            "CompPilotConsole",
+            "CompProperties_WNGPilotConsole",
             "WNG_AsuranGravEngine",
             "WNG_PrecursorPilotConsole"
           ]
@@ -134,8 +133,7 @@
         {
           "path": "Defs/Gravships/Gravship_Goauld.xml",
           "contains": [
-            "CompProperties_GravshipFacility",
-            "CompPilotConsole",
+            "CompProperties_WNGPilotConsole",
             "WNG_GoauldGravEngine",
             "WNG_GoauldPeltac"
           ]

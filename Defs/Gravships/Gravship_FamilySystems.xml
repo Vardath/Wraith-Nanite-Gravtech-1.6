@@ -941,13 +941,17 @@
     </placeWorkers>
     <comps Inherit="False">
       <li Class="CompProperties_Breakdownable"/>
-      <li Class="CompProperties_GravshipFacility">
-        <compClass>CompPilotConsole</compClass>
+      <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole">
+        <family>Asuran</family>
+        <requiresFamilyPower>true</requiresFamilyPower>
         <componentTypeDef>Controls</componentTypeDef>
         <requiresLOS>false</requiresLOS>
         <showMaxSimultaneous>false</showMaxSimultaneous>
         <maxSimultaneous>1</maxSimultaneous>
-        <maxDistance>200</maxDistance>
+        <maxDistance>500</maxDistance>
+        <linkableBuildings>
+          <li>WNG_AsuranGravEngine</li>
+        </linkableBuildings>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
         <family>Asuran</family>

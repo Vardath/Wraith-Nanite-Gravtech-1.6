@@ -406,18 +406,18 @@ jobs:
                   if signs["northeast"] == signs["northwest"]:
                       failures.append(f"{root.name}/{prefix} all corner directions collapsed onto one diagonal")
 
-          # Every WNG pilot console must use Odyssey's native PilotConsole contract.
-          # CompProperties_Facility.ResolveReferences derives linkableBuildings from the
-          # matching engine's reverse linkableFacilities list, exactly like vanilla
-          # PilotConsole <-> GravEngine. No WNG runtime relink shim is allowed here.
+          # All WNG pilot consoles retain Odyssey's CompPilotConsole launch contract.
+          # Wraith remains on the known-good native reverse-resolved link. Asuran and Goa'uld
+          # use the exact-family CompPilotConsole wrapper because live construction/load tests
+          # showed their native reverse link can drop; the wrapper only pins/rebuilds that link.
           all_gravship_defs = {}
           for defs in (family, goauld, wraith_engine_defs):
               all_gravship_defs.update(defs)
 
           pilot_contracts = {
               "WNG_OrganicPilotNode": ("Wraith", "WNG_WraithGravEngine", "native"),
-              "WNG_PrecursorPilotConsole": ("Asuran", "WNG_AsuranGravEngine", "native"),
-              "WNG_GoauldPeltac": ("Goauld", "WNG_GoauldGravEngine", "native"),
+              "WNG_PrecursorPilotConsole": ("Asuran", "WNG_AsuranGravEngine", "safe-wrapper"),
+              "WNG_GoauldPeltac": ("Goauld", "WNG_GoauldGravEngine", "safe-wrapper"),
           }
 
           discovered_pilots = set()
