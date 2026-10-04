@@ -406,28 +406,22 @@ jobs:
                   if signs["northeast"] == signs["northwest"]:
                       failures.append(f"{root.name}/{prefix} all corner directions collapsed onto one diagonal")
 
-          # All WNG pilot consoles retain Odyssey's CompPilotConsole launch contract.
-          # Wraith remains on the known-good native reverse-resolved link. Asuran and Goa'uld
-          # use the exact-family CompPilotConsole wrapper because live construction/load tests
-          # showed their native reverse link can drop; the wrapper only pins/rebuilds that link.
+          # Every WNG pilot definition resolves to exactly one same-family engine, but instantiates
+          # RimWorld's native CompPilotConsole. WNG does not replace Odyssey pilot/ritual/launch code.
           all_gravship_defs = {}
           for defs in (family, goauld, wraith_engine_defs):
               all_gravship_defs.update(defs)
 
           pilot_contracts = {
-              "WNG_OrganicPilotNode": ("Wraith", "WNG_WraithGravEngine", "native"),
-              "WNG_PrecursorPilotConsole": ("Asuran", "WNG_AsuranGravEngine", "safe-wrapper"),
-              "WNG_GoauldPeltac": ("Goauld", "WNG_GoauldGravEngine", "safe-wrapper"),
+              "WNG_OrganicPilotNode": ("Wraith", "WNG_WraithGravEngine"),
+              "WNG_PrecursorPilotConsole": ("Asuran", "WNG_AsuranGravEngine"),
+              "WNG_GoauldPeltac": ("Goauld", "WNG_GoauldGravEngine"),
           }
 
           discovered_pilots = set()
           for def_name, node in all_gravship_defs.items():
               for comp in node.findall("./comps/li"):
-                  cls = comp.attrib.get("Class")
-                  if (
-                      (cls == "CompProperties_GravshipFacility" and comp.findtext("compClass") == "CompPilotConsole")
-                      or cls == "WraithNaniteGravtech.CompProperties_WNGPilotConsole"
-                  ):
+                  if comp.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole":
                       discovered_pilots.add(def_name)
 
           if discovered_pilots != set(pilot_contracts):
@@ -438,7 +432,7 @@ jobs:
                   + ", ".join(sorted(pilot_contracts))
               )
 
-          for pilot_name, (family_name, engine_name, mode) in pilot_contracts.items():
+          for pilot_name, (family_name, engine_name) in pilot_contracts.items():
               pilot = all_gravship_defs.get(pilot_name)
               engine = all_gravship_defs.get(engine_name)
               if pilot is None:
@@ -456,42 +450,24 @@ jobs:
                       f"{pilot_name} is missing native CompPilotConsole breakdown support"
                   )
 
-              if mode == "native":
-                  pilot_comp = next(
-                      (
-                          comp for comp in pilot.findall("./comps/li")
-                          if comp.attrib.get("Class") == "CompProperties_GravshipFacility"
-                          and comp.findtext("compClass") == "CompPilotConsole"
-                      ),
-                      None,
-                  )
-                  if pilot_comp is None:
-                      failures.append(f"{pilot_name} lost native Odyssey CompPilotConsole")
-                      continue
-                  if pilot_comp.findtext("maxDistance") != "200":
-                      failures.append(f"{pilot_name} native PilotConsole range must remain vanilla 200")
-                  if pilot_comp.find("linkableBuildings") is not None:
-                      failures.append(f"{pilot_name} should keep native reverse-resolved linking")
-              else:
-                  pilot_comp = next(
-                      (
-                          comp for comp in pilot.findall("./comps/li")
-                          if comp.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole"
-                      ),
-                      None,
-                  )
-                  if pilot_comp is None:
-                      failures.append(f"{pilot_name} lost safe exact-family pilot wrapper")
-                      continue
-                  if pilot_comp.findtext("family") != family_name:
-                      failures.append(f"{pilot_name} family is {pilot_comp.findtext('family')}, expected {family_name}")
-                  if pilot_comp.findtext("requiresFamilyPower") != "true":
-                      failures.append(f"{pilot_name} no longer requires its family power grid")
-                  if pilot_comp.findtext("maxDistance") != "500":
-                      failures.append(f"{pilot_name} safe wrapper range must remain full-ship 500")
-                  links = [li.text for li in pilot_comp.findall("./linkableBuildings/li") if li.text]
-                  if links != [engine_name]:
-                      failures.append(f"{pilot_name} must explicitly target only {engine_name}; found {links}")
+              pilot_comp = next(
+                  (
+                      comp for comp in pilot.findall("./comps/li")
+                      if comp.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole"
+                  ),
+                  None,
+              )
+              if pilot_comp is None:
+                  failures.append(f"{pilot_name} lost exact-family native pilot properties")
+                  continue
+              if pilot_comp.findtext("family") != family_name:
+                  failures.append(f"{pilot_name} family is {pilot_comp.findtext('family')}, expected {family_name}")
+              if pilot_comp.findtext("maxDistance") != "200":
+                  failures.append(f"{pilot_name} PilotConsole range must remain vanilla 200")
+              if pilot_comp.find("requiresFamilyPower") is not None:
+                  failures.append(f"{pilot_name} pilot comp reintroduced non-vanilla power gating")
+              if pilot_comp.find("linkableBuildings") is not None:
+                  failures.append(f"{pilot_name} contains ineffective XML linkableBuildings instead of ResolveReferences pinning")
 
               if pilot_comp.findtext("componentTypeDef") != "Controls":
                   failures.append(f"{pilot_name} is no longer an Odyssey Controls component")
@@ -533,20 +509,38 @@ jobs:
               if forbidden in family_systems_src:
                   failures.append(f"unsafe pilot/substructure relink path present: {forbidden}")
 
+          for forbidden in (
+              "public sealed class CompPilotConsole_WNGFamily",
+              "class CompPilotConsole_WNGFamily",
+          ):
+              if forbidden in family_systems_src:
+                  failures.append(f"WNG pilot console stopped using the native Odyssey CompPilotConsole: {forbidden}")
+
           for required in (
               "public sealed class Building_WNGGravEngine : Building_GravEngine",
               "public override Graphic Graphic => DefaultGraphic",
               "public sealed class CompProperties_WNGPilotConsole",
-              "public sealed class CompPilotConsole_WNGFamily : CompPilotConsole",
-              "EnsureExactEngineTarget(this, WNGProps.family)",
-              "Notify_ThingChanged()",
-              "facility.LinkedBuildings.Contains(engine)",
+              "compClass = typeof(CompPilotConsole);",
+              "public override void ResolveReferences(ThingDef parentDef)",
+              "linkableBuildings = new List<ThingDef> { exactEngine };",
               "SilhouetteUtility.DrawGraphicSilhouette(this, drawLoc)",
               "Comps_DrawAt(drawLoc, flip)",
               "Comps_PostDraw()",
           ):
               if required not in family_systems_src:
                   failures.append(f"WNG grav-engine/pilot safety contract missing: {required}")
+
+          launch_parity_src = Path(
+              "Source/WraithNaniteGravtech/Gravships/GravshipLaunchParity.cs"
+          ).read_text(encoding="utf-8")
+          for required in (
+              "GameComponent_WNGGravshipLaunchParity",
+              "PreceptDefOf.GravshipLaunch",
+              "PreceptMaker.MakePrecept(launchDef)",
+              "ideo.AddPrecept(precept, init: true, fillWith: launchDef.ritualPatternBase)",
+          ):
+              if required not in launch_parity_src:
+                  failures.append(f"WNG vanilla launch-ritual parity contract missing: {required}")
 
           if failures:
               print("GRAVSHIP LINKED-ART / DOOR VALIDATION FAILURES:")
