@@ -25,8 +25,9 @@ for p in src_files:
         if mm:
             pairings[prop]=mm.group(1)
 
+native_runtime_comps={"CompPilotConsole"}
 for prop,comp in sorted(pairings.items()):
-    if comp not in class_names:
+    if comp not in class_names and comp not in native_runtime_comps:
         failures.append(f"{prop} assigns missing ThingComp class {comp}")
 
 # ---------- XML def / inheritance index ----------
