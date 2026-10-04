@@ -235,8 +235,11 @@ jobs:
                   if facility.findtext("requiresLOS", "true").lower() != "false":
                       failures.append(f"{name} grav-engine link incorrectly requires line of sight")
                   is_native_pilot = (
-                      facility.attrib.get("Class") == "CompProperties_GravshipFacility"
-                      and facility.findtext("compClass") == "CompPilotConsole"
+                      (
+                          facility.attrib.get("Class") == "CompProperties_GravshipFacility"
+                          and facility.findtext("compClass") == "CompPilotConsole"
+                      )
+                      or facility.attrib.get("Class") == "WraithNaniteGravtech.CompProperties_WNGPilotConsole"
                   )
                   try:
                       distance = float(facility.findtext("maxDistance", "8"))
