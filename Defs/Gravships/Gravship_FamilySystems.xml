@@ -941,9 +941,8 @@
     </placeWorkers>
     <comps Inherit="False">
       <li Class="CompProperties_Breakdownable"/>
-      <li Class="WraithNaniteGravtech.CompProperties_WNGPilotConsole">
-        <family>Asuran</family>
-        <requiresFamilyPower>true</requiresFamilyPower>
+      <li Class="CompProperties_GravshipFacility">
+        <compClass>CompPilotConsole</compClass>
         <componentTypeDef>Controls</componentTypeDef>
         <requiresLOS>false</requiresLOS>
         <showMaxSimultaneous>false</showMaxSimultaneous>
