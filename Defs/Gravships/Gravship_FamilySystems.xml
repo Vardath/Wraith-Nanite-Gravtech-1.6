@@ -947,10 +947,7 @@
         <requiresLOS>false</requiresLOS>
         <showMaxSimultaneous>false</showMaxSimultaneous>
         <maxSimultaneous>1</maxSimultaneous>
-        <maxDistance>500</maxDistance>
-        <linkableBuildings>
-          <li>WNG_AsuranGravEngine</li>
-        </linkableBuildings>
+        <maxDistance>200</maxDistance>
       </li>
       <li Class="WraithNaniteGravtech.CompProperties_WNGFamilyPowerNode">
         <family>Asuran</family>
