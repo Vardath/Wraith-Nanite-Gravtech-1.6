@@ -64,8 +64,16 @@
   <ThingDef ParentName="LampBase">
     <defName>WNG_WraithWallLumen</defName><thingClass>Building</thingClass><label>wraith wall lumen</label><description>A flat luminous membrane grown against a wall and supplied by ordinary colony power.</description><rotatable>true</rotatable>
     <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_WallLumen</texPath><graphicClass>Graphic_Multi</graphicClass><drawOffsetNorth>(0,0,0.9)</drawOffsetNorth><drawOffsetSouth>(0,0,-0.9)</drawOffsetSouth><drawOffsetWest>(-0.9,0,0)</drawOffsetWest><drawOffsetEast>(0.9,0,0)</drawOffsetEast><damageData><enabled>false</enabled></damageData></graphicData>
+    <altitudeLayer>BuildingOnTop</altitudeLayer>
     <designationCategory>Furniture</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <costList><WNG_Biomass>8</WNG_Biomass></costList><statBases><MaxHitPoints>80</MaxHitPoints><Mass>1.5</Mass><Flammability>0.35</Flammability><Beauty>3</Beauty></statBases>
-    <comps Inherit="False"><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>12</basePowerConsumption></li><li Class="CompProperties_Glower"><glowRadius>10</glowRadius><glowColor>(118,166,124,0)</glowColor></li></comps>
+    <passability>Standable</passability>
+    <terrainAffordanceNeeded IsNull="True" />
+    <pathCost>0</pathCost>
+    <overrideMinifiedRot>North</overrideMinifiedRot>
+    <minifiedDrawOffset>(0, 0, 0.2)</minifiedDrawOffset>
+    <building><isEdifice>false</isEdifice><isAttachment>true</isAttachment></building>
+    <placeWorkers><li>Placeworker_AttachedToWall</li></placeWorkers>
+    <comps><li Class="CompProperties_Power"><compClass>CompPowerTrader</compClass><basePowerConsumption>12</basePowerConsumption></li><li Class="CompProperties_Glower"><glowRadius>10</glowRadius><glowColor>(118,166,124,0)</glowColor></li></comps>
   </ThingDef>
 </Defs>
