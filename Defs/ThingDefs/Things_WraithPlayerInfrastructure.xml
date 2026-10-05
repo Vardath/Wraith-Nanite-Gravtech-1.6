@@ -11,7 +11,7 @@
     <designationCategory>Structure</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <tickerType>Rare</tickerType>
     <comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingStructureRegeneration"><repairIntervalTicks>500</repairIntervalTicks><hitPointsPerPulse>1</hitPointsPerPulse></li></comps>
-    <building><paintable>false</paintable></building>
+    <building><isPlaceOverableWall>true</isPlaceOverableWall><paintable>false</paintable></building>
   </ThingDef>
 
   <ThingDef ParentName="DoorBase">
