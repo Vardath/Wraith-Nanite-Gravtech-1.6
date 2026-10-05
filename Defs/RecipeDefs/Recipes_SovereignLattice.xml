@@ -17,8 +17,8 @@
       <thingDefs><li>Mechlink</li><li>WNG_ReplicatorMatter</li><li>WNG_ReplicatorCoreFragment</li></thingDefs>
     </fixedIngredientFilter>
     <products><WNG_SovereignNeuralLattice>1</WNG_SovereignNeuralLattice></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li>
-      <li>FabricationBench</li>
+    <recipeUsers>
+      <li>WNG_PrecursorFabricator</li>
     </recipeUsers>
     <researchPrerequisite>WNG_SovereignLatticeControl</researchPrerequisite>
   </RecipeDef>
