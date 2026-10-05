@@ -34,6 +34,8 @@ for path in files:
     windows += len(re.findall(r"\boverride\s+void\s+DoWindowContents\s*\(",text))
     floatmenus += len(re.findall(r"new\s+FloatMenuOption\s*\(",text))
     inspect_strings += len(re.findall(r"\b(?:CompInspectStringExtra|GetInspectString)\s*\(",text))
+    if "new FloatMenu(" in text:
+        failures.append(f"{path}: WNG action opens a transient FloatMenu; use an explicit dialog/reply box instead")
 
     for m in command_re.finditer(text):
         body=block(text,m.end()-1)
