@@ -47,6 +47,7 @@
     <description>Take a limited portion of any living biological target's vitality, including an active hostile pawn. The feeding is a melee attack that causes light torso damage; the victim ages about ten biological years and is temporarily weakened, while the Wraith restores roughly one third of its Life Force and becomes about one year younger, with the same age-eighteen floor.</description>
     <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <hostile>true</hostile>
+    <aiCanUse>true</aiCanUse>
     <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
@@ -60,8 +61,11 @@
       <targetParams>
         <canTargetSelf>false</canTargetSelf>
         <canTargetPawns>true</canTargetPawns>
+        <canTargetAnimals>true</canTargetAnimals>
+        <canTargetHumans>true</canTargetHumans>
         <canTargetBuildings>false</canTargetBuildings>
         <canTargetMechs>false</canTargetMechs>
+        <neverTargetHostileFaction>false</neverTargetHostileFaction>
       </targetParams>
       <soundCast>WNG_WraithPartialFeed</soundCast>
     </verbProperties>
