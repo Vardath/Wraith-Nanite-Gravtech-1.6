@@ -57,9 +57,62 @@ for base in (ROOT/"Patches", ROOT/"Compatibility"):
                     failures.append(f"{path}: destructive external recipe patch forbidden: {xpath}")
 
 # 3) WNG RecipeDefs may only add themselves to a bounded allow-list of external benches.
-allowed_external={
+allowed_external_users={
     "Human"
 }
+
+approved_external_routes={
+    "WNG_MakeChildsToy": {"MechGestator"},
+    "WNG_Make_KassaConcentrate": {"DrugLab"},
+    "WNG_Make_KassaDistillate": {"DrugLab"},
+    "WNG_Make_Roshna": {"DrugLab"},
+    "WNG_Make_IratusParalytic": {"DrugLab"},
+    "WNG_Make_IratusQueenRestorative": {"DrugLab"},
+    "WNG_Make_HybridStabiliserDose": {"DrugLab"},
+    "WNG_Make_HoffanSerum": {"DrugLab"},
+    "WNG_Make_WraithRetrovirusDose": {"DrugLab"},
+    "WNG_Make_WraithSuppressionDose": {"DrugLab"},
+    "WNG_Make_FeedingIndependenceVector": {"DrugLab"},
+    "WNG_Make_VitalResistanceDose": {"DrugLab"},
+    "WNG_Make_RefinedWraithEnzyme": {"DrugLab"},
+    "WNG_Make_WraithEnzymeWeaningSerum": {"DrugLab"},
+    "WNG_Make_NishtaCanister": {"DrugLab"},
+    "WNG_Make_WhispersAcousticNode": {"DrugLab"},
+    "WNG_Make_WhispersMistGland": {"DrugLab"},
+    "WNG_RenderWraithEnzymeFromCorpse": {"DrugLab"},
+    "WNG_CE_Make_ReplicatorPulseCell": {"AmmoBench"},
+    "WNG_CE_Make_ReplicatorDisruptorCell": {"AmmoBench"},
+    "WNG_CE_Make_ReplicatorArtilleryCell": {"AmmoBench"},
+    "WNG_FabricateAncientNeuralInterface": {"FabricationBench"},
+    "WNG_ReconstructAncientDrone": {"FabricationBench"},
+    "WNG_ReconstructVacuumEnergyModule": {"FabricationBench"},
+    "WNG_FabricateSovereignNeuralLattice": {"FabricationBench"},
+    "WNG_FabricateNaniteMotorLattice": {"FabricationBench"},
+    "WNG_FabricateAutonomicEfficiencyLattice": {"FabricationBench"},
+    "WNG_FabricateAdaptiveSensorMesh": {"FabricationBench"},
+    "WNG_FabricateReconstructionMicroforge": {"FabricationBench"},
+    "WNG_FabricateEMPShuntLattice": {"FabricationBench"},
+    "WNG_StabilizeRecoveredPrecursorPulseRifle": {"FabricationBench"},
+    "WNG_Make_HumanFormCombatArmor": {"FabricationBench"},
+    "WNG_Make_AsuranPhaseBlade": {"FabricationBench"},
+    "WNG_Make_AsuranFieldLance": {"FabricationBench"},
+    "WNG_Make_PrecursorCommandArmor": {"FabricationBench"},
+    "WNG_Make_PrecursorPulseRifle": {"FabricationBench"},
+    "WNG_Make_PrecursorFieldArmor": {"FabricationBench"},
+    "WNG_Make_PrecursorPersonalShield": {"FabricationBench"},
+    "WNG_Make_HumanFormFieldArmor": {"FabricationBench"},
+    "WNG_Make_HumanFormCommandArmor": {"FabricationBench"},
+    "WNG_Make_HumanFormUniform": {"ElectricTailoringBench"},
+    "WNG_Make_PrecursorUniform": {"ElectricTailoringBench"},
+    "WNG_ReprocessReplicatorMatter": {"ElectricSmelter"},
+    "WNG_DestroyReplicatorCoreFragment": {"ElectricSmelter"},
+    "Make_WNG_AsuranSleeperStatue": {"TableSculpting"},
+    "Make_WNG_AsuranFeederStatue": {"TableSculpting"},
+    "Make_WNG_AsuranReplicatorReliquary": {"TableSculpting"},
+}
+
+def external_route_allowed(recipe,user):
+    return user in allowed_external_users or user in approved_external_routes.get(recipe,set())
 external_routes={}
 for base in (ROOT/"Defs", ROOT/"Compatibility"):
     if not base.exists():
@@ -74,7 +127,7 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
             continue
         for node in list(root):
             name=(node.findtext("defName") or "").strip()
-            if not name.startswith("WNG_"):
+            if "WNG" not in name:
                 continue
             blocks=[]
             if node.tag=="RecipeDef":
@@ -93,8 +146,15 @@ for base in (ROOT/"Defs", ROOT/"Compatibility"):
                     if u.startswith("WNG_"):
                         continue
                     external_routes.setdefault(u,[]).append(name)
-                    if u not in allowed_external:
-                        failures.append(f"{path}: {name} targets unexpected third-party/vanilla bench {u}")
+                    if not external_route_allowed(name,u):
+                        failures.append(f"{path}: {name} targets unapproved third-party/vanilla bench {u}")
+
+# Approved routes are positive regression requirements as well as permissions.
+seen_external={(name,user) for user,names in external_routes.items() for name in names if user!="Human"}
+for recipe,users in approved_external_routes.items():
+    for user in users:
+        if (recipe,user) not in seen_external:
+            failures.append(f"Missing approved external recipe route: {recipe} -> {user}")
 
 # 4) Historical regression guard: WNG itself must never mention Nanotech Overpower's
 # Nanofabricator in production source/Defs/Patches. The live diagnostic separately checks it.
