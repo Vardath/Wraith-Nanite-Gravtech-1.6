@@ -56,7 +56,14 @@
     <statBases><MaxHitPoints>720</MaxHitPoints><WorkToBuild>700</WorkToBuild><Flammability>0</Flammability></statBases>
     <costList Inherit="False"><Uranium>6</Uranium><Plasteel>12</Plasteel></costList><researchPrerequisites Inherit="False"><li>WNG_GoauldGravships</li></researchPrerequisites>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
-    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded><building><isAirtight>true</isAirtight><paintable>false</paintable></building>
+    <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
+    <building>
+      <isAirtight>true</isAirtight>
+      <isSupportDoor>true</isSupportDoor>
+      <canPlaceOverWall>true</canPlaceOverWall>
+      <blueprintClass>Blueprint_Door</blueprintClass>
+      <paintable>false</paintable>
+    </building>
     <placeWorkers Inherit="False">
       <li>PlaceWorker_DoorLearnOpeningSpeed</li>
       <li>WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure</li>
