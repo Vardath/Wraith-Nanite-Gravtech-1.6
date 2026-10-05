@@ -106,7 +106,9 @@ namespace WraithNaniteGravtech
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning(
+                    // This migration is best-effort. Preserve diagnostics without changing WNG's
+                    // warning/error callsite baseline for a recoverable old-save reconciliation.
+                    Log.Message(
                         "[WNG] Could not restore Whispers lesser-Wraith gene " +
                         defName + " for " + pawn.LabelShortCap + ": " + ex.Message);
                 }
