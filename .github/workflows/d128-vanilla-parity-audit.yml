@@ -1,5 +1,9 @@
 name: D128 Vanilla Parity Audit
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ main ]
