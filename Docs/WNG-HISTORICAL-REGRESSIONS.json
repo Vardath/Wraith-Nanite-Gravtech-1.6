@@ -21,7 +21,7 @@
         {
           "path": "Defs/RecipeDefs/Recipes_WNGItemCrafting.xml",
           "contains": [
-            "Explicit WNG-only item crafting recipes",
+            "Explicit WNG item crafting recipes",
             "<recipeUsers>"
           ]
         },
@@ -52,7 +52,38 @@
         {
           "path": ".github/artqa/third_party_recipe_preservation.py",
           "contains": [
-            "global recipe collections"
+            "global recipe collections",
+            "approved_external_routes",
+            "Missing approved external recipe route"
+          ]
+        },
+        {
+          "path": ".github/artqa/production_routing.py",
+          "contains": [
+            "approved_external_routes",
+            "Missing approved vanilla workstation route"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H027_childs_toy_vanilla_mech_gestation",
+      "title": "Child's Toy lost the vanilla Mechanitor gestation path",
+      "tests": [
+        ".github/artqa/bill_recipe_regression.py",
+        ".github/artqa/production_routing.py",
+        ".github/artqa/third_party_recipe_preservation.py"
+      ],
+      "guards": [
+        {
+          "path": "Defs/RecipeDefs/Recipes_ChildsToy.xml",
+          "contains": [
+            "ParentName=\"LightMechanoidRecipe\"",
+            "<li>MechGestator</li>",
+            "<researchPrerequisite>WNG_ReplicatorGestation</researchPrerequisite>"
+          ],
+          "not_contains": [
+            "<li>WNG_PrecursorFabricator</li>"
           ]
         }
       ]
