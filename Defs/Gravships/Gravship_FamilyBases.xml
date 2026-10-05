@@ -4,7 +4,7 @@
   <ThingDef Name="WNG_GravshipHullBase" ParentName="Wall" Abstract="True">
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <useStuffTerrainAffordance>false</useStuffTerrainAffordance>
-    <building><isAirtight>true</isAirtight></building>
+    <building><isAirtight>true</isAirtight><isPlaceOverableWall>true</isPlaceOverableWall></building>
     <stuffCategories Inherit="False"><li>Metallic</li></stuffCategories>
     <comps Inherit="False"/>
   </ThingDef>
