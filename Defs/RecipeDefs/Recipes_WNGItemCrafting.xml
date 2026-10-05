@@ -225,6 +225,8 @@
     <products><WNG_WhispersAcousticNode>1</WNG_WhispersAcousticNode></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
+    
+      <li>DrugLab</li>
     </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
@@ -251,6 +253,8 @@
     <products><WNG_WhispersMistGland>1</WNG_WhispersMistGland></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
+    
+      <li>DrugLab</li>
     </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
