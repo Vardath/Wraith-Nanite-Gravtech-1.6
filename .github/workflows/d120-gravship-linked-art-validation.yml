@@ -35,6 +35,16 @@ jobs:
           wraith_settlement = defs_from("Defs/ThingDefs/Things_WraithPlayerInfrastructure.xml")
           precursor_settlement = defs_from("Defs/ThingDefs/Things_PrecursorStructures.xml")
 
+          family_bases_root = ET.parse("Defs/Gravships/Gravship_FamilyBases.xml").getroot()
+          gravship_hull_base = next(
+              (n for n in list(family_bases_root) if n.attrib.get("Name") == "WNG_GravshipHullBase"),
+              None,
+          )
+          if gravship_hull_base is None:
+              failures.append("WNG_GravshipHullBase missing")
+          elif gravship_hull_base.findtext("./building/isPlaceOverableWall") != "true":
+              failures.append("WNG gravship hull base is no longer explicitly replaceable by doors")
+
           door_sets = [
               ("WNG_WraithGravshipDoor", family),
               ("WNG_AsuranGravshipDoor", family),
