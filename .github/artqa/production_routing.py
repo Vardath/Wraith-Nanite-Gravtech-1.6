@@ -30,12 +30,61 @@ allowed_external_users={
     "Human"
 }
 
+# Intentional additive vanilla workbench routes. These are the only external
+# production users WNG is permitted to add; every other external route fails QA.
+approved_external_routes={
+    "WNG_MakeChildsToy": {"MechGestator"},
+    "WNG_Make_KassaConcentrate": {"DrugLab"},
+    "WNG_Make_KassaDistillate": {"DrugLab"},
+    "WNG_Make_Roshna": {"DrugLab"},
+    "WNG_Make_IratusParalytic": {"DrugLab"},
+    "WNG_Make_IratusQueenRestorative": {"DrugLab"},
+    "WNG_Make_HybridStabiliserDose": {"DrugLab"},
+    "WNG_Make_HoffanSerum": {"DrugLab"},
+    "WNG_Make_WraithRetrovirusDose": {"DrugLab"},
+    "WNG_Make_WraithSuppressionDose": {"DrugLab"},
+    "WNG_Make_FeedingIndependenceVector": {"DrugLab"},
+    "WNG_Make_VitalResistanceDose": {"DrugLab"},
+    "WNG_Make_RefinedWraithEnzyme": {"DrugLab"},
+    "WNG_Make_WraithEnzymeWeaningSerum": {"DrugLab"},
+    "WNG_Make_NishtaCanister": {"DrugLab"},
+    "WNG_FabricateAncientNeuralInterface": {"FabricationBench"},
+    "WNG_ReconstructAncientDrone": {"FabricationBench"},
+    "WNG_ReconstructVacuumEnergyModule": {"FabricationBench"},
+    "WNG_FabricateSovereignNeuralLattice": {"FabricationBench"},
+    "WNG_FabricateNaniteMotorLattice": {"FabricationBench"},
+    "WNG_FabricateAutonomicEfficiencyLattice": {"FabricationBench"},
+    "WNG_FabricateAdaptiveSensorMesh": {"FabricationBench"},
+    "WNG_FabricateReconstructionMicroforge": {"FabricationBench"},
+    "WNG_FabricateEMPShuntLattice": {"FabricationBench"},
+    "WNG_StabilizeRecoveredPrecursorPulseRifle": {"FabricationBench"},
+    "WNG_Make_HumanFormCombatArmor": {"FabricationBench"},
+    "WNG_Make_AsuranPhaseBlade": {"FabricationBench"},
+    "WNG_Make_AsuranFieldLance": {"FabricationBench"},
+    "WNG_Make_PrecursorCommandArmor": {"FabricationBench"},
+    "WNG_Make_PrecursorPulseRifle": {"FabricationBench"},
+    "WNG_Make_PrecursorFieldArmor": {"FabricationBench"},
+    "WNG_Make_PrecursorPersonalShield": {"FabricationBench"},
+    "WNG_Make_HumanFormFieldArmor": {"FabricationBench"},
+    "WNG_Make_HumanFormCommandArmor": {"FabricationBench"},
+    "WNG_Make_HumanFormUniform": {"ElectricTailoringBench"},
+    "WNG_Make_PrecursorUniform": {"ElectricTailoringBench"},
+    "WNG_ReprocessReplicatorMatter": {"ElectricSmelter"},
+    "WNG_DestroyReplicatorCoreFragment": {"ElectricSmelter"},
+    "Make_WNG_AsuranSleeperStatue": {"TableSculpting"},
+    "Make_WNG_AsuranFeederStatue": {"TableSculpting"},
+    "Make_WNG_AsuranReplicatorReliquary": {"TableSculpting"},
+}
+
+def external_route_allowed(recipe,user):
+    return user in allowed_external_users or user in approved_external_routes.get(recipe,set())
+
 external_usage=collections.defaultdict(list)
 wng_usage=collections.defaultdict(list)
 
 # RecipeDefs: validate every production route.
 for name,(path,node) in recipes.items():
-    if not name.startswith("WNG_"):
+    if "WNG" not in name:
         continue
     users=[(x.text or "").strip() for x in node.findall("./recipeUsers/li") if (x.text or "").strip()]
     products=node.find("./products")
@@ -51,8 +100,8 @@ for name,(path,node) in recipes.items():
                 failures.append(f"{name}: missing WNG recipe user ThingDef {user} ({path})")
         else:
             external_usage[user].append((name,path))
-            if user not in allowed_external_users:
-                failures.append(f"{name}: unexpected external recipe user {user} ({path})")
+            if not external_route_allowed(name,user):
+                failures.append(f"{name}: unapproved external recipe user {user} ({path})")
 
     # Inherit=False is dangerous on external/vanilla routing because it can erase inherited users.
     ru=node.find("./recipeUsers")
@@ -83,8 +132,8 @@ for name,(path,node) in thingdefs.items():
                 failures.append(f"{name}: recipeMaker targets missing WNG ThingDef {user} ({path})")
         else:
             external_usage[user].append((name+" [recipeMaker]",path))
-            if user not in allowed_external_users:
-                failures.append(f"{name}: recipeMaker targets unexpected external user {user} ({path})")
+            if not external_route_allowed(name+" [recipeMaker]",user):
+                failures.append(f"{name}: recipeMaker targets unapproved external user {user} ({path})")
     ru=maker.find("./recipeUsers")
     if ru is not None and (ru.get("Inherit") or "").lower()=="false":
         ext=[u for u in users if not u.startswith("WNG_")]
@@ -101,15 +150,20 @@ for user,refs in wng_usage.items():
     if not buildingish:
         failures.append(f"{user}: used as recipe workstation but does not look building/worktable-like ({path})")
 
-# Representative vanilla benches must not be replaced by WNG defs and additive routes stay bounded.
-for bench in ("ElectricStove","FueledStove","HandTailoringBench","ElectricTailoringBench"):
-    if external_usage.get(bench):
-        failures.append(f"{bench}: WNG unexpectedly injects {len(external_usage[bench])} recipe(s)")
+# Vanilla workbench integration must remain additive and exactly bounded by the allowlist.
+seen_external_routes=set()
+for user,refs in external_usage.items():
+    for recipe,path in refs:
+        if user=="Human":
+            continue
+        seen_external_routes.add((recipe,user))
+        if not external_route_allowed(recipe,user):
+            failures.append(f"{recipe}: unapproved external workstation route {user} ({path})")
 
-# WNG must not inject production recipes into vanilla/third-party workbenches.
-for user, refs in external_usage.items():
-    if user != "Human":
-        failures.append(f"{user}: WNG external workstation routing is forbidden: {refs}")
+for recipe,users in approved_external_routes.items():
+    for user in users:
+        if (recipe,user) not in seen_external_routes:
+            failures.append(f"Missing approved vanilla workstation route: {recipe} -> {user}")
 
 notes.append(f"Parsed {len(recipes)} RecipeDefs and {len(thingdefs)} ThingDefs")
 notes.append(f"WNG workstations referenced: {len(wng_usage)}")
@@ -125,4 +179,4 @@ if failures:
     print("\nFAILURES:")
     for f in failures: print(" -",f)
     raise SystemExit(1)
-print("PASS: production routing is additive, bounded, and all WNG workstations resolve.")
+print("PASS: production routing is additive, explicitly bounded, and all WNG/approved vanilla workstations resolve.")
