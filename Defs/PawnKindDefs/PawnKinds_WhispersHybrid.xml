@@ -3,7 +3,7 @@
   <PawnKindDef>
     <defName>WNG_WhispersHybrid</defName>
     <label>Whispers hybrid</label>
-    <description>An uncontrollable early Michael hybrid. It is permanently blind, tracks prey through heightened hearing and vibration, and continuously exudes fog from neck gills as a predatory screen.</description>
+    <description>An uncontrollable early Michael hybrid and lesser Wraith. It is permanently blind, tracks prey through heightened hearing and vibration, continuously exudes fog from neck gills, maintains an unstable Life Force reserve through partial feeding, and retains only attenuated Wraith telepathy.</description>
     <race>Human</race>
     <useFactionXenotypes>false</useFactionXenotypes>
     <xenotypeSet>
