@@ -165,6 +165,57 @@ for base in (ROOT / "Defs", ROOT / "Compatibility"):
 allowed_external_users = {
     "Human",
 }
+
+# Intentional additive WNG integration with vanilla workbenches.
+# These routes are allowed only for the named WNG recipes; all other external
+# recipe-user additions remain regression failures.
+approved_external_routes = {
+    "WNG_MakeChildsToy": {"MechGestator"},
+    "WNG_Make_KassaConcentrate": {"DrugLab"},
+    "WNG_Make_KassaDistillate": {"DrugLab"},
+    "WNG_Make_Roshna": {"DrugLab"},
+    "WNG_Make_IratusParalytic": {"DrugLab"},
+    "WNG_Make_IratusQueenRestorative": {"DrugLab"},
+    "WNG_Make_HybridStabiliserDose": {"DrugLab"},
+    "WNG_Make_HoffanSerum": {"DrugLab"},
+    "WNG_Make_WraithRetrovirusDose": {"DrugLab"},
+    "WNG_Make_WraithSuppressionDose": {"DrugLab"},
+    "WNG_Make_FeedingIndependenceVector": {"DrugLab"},
+    "WNG_Make_VitalResistanceDose": {"DrugLab"},
+    "WNG_Make_RefinedWraithEnzyme": {"DrugLab"},
+    "WNG_Make_WraithEnzymeWeaningSerum": {"DrugLab"},
+    "WNG_Make_NishtaCanister": {"DrugLab"},
+    "WNG_FabricateAncientNeuralInterface": {"FabricationBench"},
+    "WNG_ReconstructAncientDrone": {"FabricationBench"},
+    "WNG_ReconstructVacuumEnergyModule": {"FabricationBench"},
+    "WNG_FabricateSovereignNeuralLattice": {"FabricationBench"},
+    "WNG_FabricateNaniteMotorLattice": {"FabricationBench"},
+    "WNG_FabricateAutonomicEfficiencyLattice": {"FabricationBench"},
+    "WNG_FabricateAdaptiveSensorMesh": {"FabricationBench"},
+    "WNG_FabricateReconstructionMicroforge": {"FabricationBench"},
+    "WNG_FabricateEMPShuntLattice": {"FabricationBench"},
+    "WNG_StabilizeRecoveredPrecursorPulseRifle": {"FabricationBench"},
+    "WNG_Make_HumanFormCombatArmor": {"FabricationBench"},
+    "WNG_Make_AsuranPhaseBlade": {"FabricationBench"},
+    "WNG_Make_AsuranFieldLance": {"FabricationBench"},
+    "WNG_Make_PrecursorCommandArmor": {"FabricationBench"},
+    "WNG_Make_PrecursorPulseRifle": {"FabricationBench"},
+    "WNG_Make_PrecursorFieldArmor": {"FabricationBench"},
+    "WNG_Make_PrecursorPersonalShield": {"FabricationBench"},
+    "WNG_Make_HumanFormFieldArmor": {"FabricationBench"},
+    "WNG_Make_HumanFormCommandArmor": {"FabricationBench"},
+    "WNG_Make_HumanFormUniform": {"ElectricTailoringBench"},
+    "WNG_Make_PrecursorUniform": {"ElectricTailoringBench"},
+    "WNG_ReprocessReplicatorMatter": {"ElectricSmelter"},
+    "WNG_DestroyReplicatorCoreFragment": {"ElectricSmelter"},
+    "Make_WNG_AsuranSleeperStatue": {"TableSculpting"},
+    "Make_WNG_AsuranFeederStatue": {"TableSculpting"},
+    "Make_WNG_AsuranReplicatorReliquary": {"TableSculpting"},
+}
+
+def external_route_allowed(recipe, user):
+    return user in allowed_external_users or user in approved_external_routes.get(recipe, set())
+
 bench_additions = {b: [] for b in representative}
 custom_worker_refs = []
 
@@ -179,8 +230,8 @@ for path, root in def_roots:
                 user = (li.text or "").strip()
                 if user in bench_additions:
                     bench_additions[user].append((defname, path))
-                if user and not user.startswith("WNG_") and user not in allowed_external_users:
-                    fail(f"WNG RecipeDef {defname} targets unexpected external recipe user {user} ({path})")
+                if user and not user.startswith("WNG_") and not external_route_allowed(defname, user):
+                    fail(f"WNG RecipeDef {defname} targets unapproved external recipe user {user} ({path})")
 
         if node.tag == "ThingDef":
             maker = node.find("./recipeMaker")
@@ -189,16 +240,22 @@ for path, root in def_roots:
                     user = (li.text or "").strip()
                     if user in bench_additions:
                         bench_additions[user].append((defname + " [recipeMaker]", path))
-                    if user and not user.startswith("WNG_") and user not in allowed_external_users:
-                        fail(f"WNG ThingDef {defname} recipeMaker targets unexpected external recipe user {user} ({path})")
+                    if user and not user.startswith("WNG_") and not external_route_allowed(defname + " [recipeMaker]", user):
+                        fail(f"WNG ThingDef {defname} recipeMaker targets unapproved external recipe user {user} ({path})")
 
-# All external production benches must remain completely untouched by WNG.
+# Vanilla workbench integration is additive and bounded by the explicit allowlist.
+seen_external_routes = set()
 for bench in sorted(representative):
-    if bench_additions[bench]:
-        fail(f"WNG unexpectedly injects recipes into external bench {bench}: {bench_additions[bench]}")
+    for recipe, path in bench_additions[bench]:
+        seen_external_routes.add((recipe, bench))
+        if not external_route_allowed(recipe, bench):
+            fail(f"WNG recipe {recipe} has unapproved additive route to {bench} ({path})")
+    note(f"{bench}: {len(bench_additions[bench])} approved additive WNG recipe(s)")
 
-for bench in sorted(representative):
-    note(f"{bench}: {len(bench_additions[bench])} additive WNG recipe(s)")
+for recipe, users in approved_external_routes.items():
+    for user in users:
+        if user in representative and (recipe, user) not in seen_external_routes:
+            fail(f"Missing approved vanilla workbench route: {recipe} -> {user}")
 
 # Every WNG custom worker referenced by a RecipeDef must resolve to source.
 class_names = set(classes)
@@ -301,7 +358,7 @@ for path, cls, base, body in availability_methods:
 print("=== WNG BILL / RECIPE REGRESSION AUDIT ===")
 print("Checks:")
 print("  1. Enumerate all WNG AvailableOnNow overrides and null/non-pawn guards")
-print("  2. Preserve vanilla bench recipe ownership (no broad recipe patches)")
+print("  2. Preserve vanilla recipe ownership while allowing bounded additive WNG bench routes")
 print("  3. Preserve third-party bench enumeration (no global bill/recipe hooks)")
 print("  4. Custom worker failure paths cannot reach vanilla availability before target validation")
 print("  5. Representative bench routing audit")
