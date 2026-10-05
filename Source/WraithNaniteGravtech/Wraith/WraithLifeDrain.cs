@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using RimWorld;
 using Verse;
 using Verse.Sound;
@@ -14,6 +15,7 @@ namespace WraithNaniteGravtech
         public bool killIfAlreadyDrained = true;
         public bool addLifeDrainedHediff = true;
         public bool addFedRecentlyHediff = true;
+        public float torsoDamage = 0f;
 
         public CompProperties_AbilityLifeDrain()
         {
@@ -117,6 +119,8 @@ namespace WraithNaniteGravtech
             if (Props.addLifeDrainedHediff)
                 AddOrRefreshHediff(victim, LifeDrainedDefName);
 
+            ApplyFeedingTorsoDamage(caster, victim, Props.torsoDamage);
+
             if (casterRejuvenationYears != 0L)
                 AdjustBiologicalAge(caster, -casterRejuvenationYears, Props.minimumCasterAgeYears);
             if (Props.addFedRecentlyHediff)
@@ -172,6 +176,28 @@ namespace WraithNaniteGravtech
                    victim.RaceProps != null &&
                    victim.RaceProps.IsFlesh &&
                    !victim.RaceProps.IsMechanoid;
+        }
+
+        private static void ApplyFeedingTorsoDamage(Pawn caster, Pawn victim, float amount)
+        {
+            if (caster == null || victim == null || victim.Dead || amount <= 0f || victim.health?.hediffSet == null)
+                return;
+
+            BodyPartRecord torso = victim.health.hediffSet
+                .GetNotMissingParts()
+                .FirstOrDefault(part => part?.def == BodyPartDefOf.Torso);
+
+            if (torso == null)
+                torso = victim.RaceProps?.body?.corePart;
+            if (torso == null)
+                return;
+
+            victim.TakeDamage(new DamageInfo(
+                DamageDefOf.Cut,
+                amount,
+                armorPenetration: 0f,
+                instigator: caster,
+                hitPart: torso));
         }
 
         private static bool HasHediff(Pawn pawn, string defName)
