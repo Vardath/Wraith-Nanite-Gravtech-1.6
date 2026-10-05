@@ -1667,8 +1667,8 @@ jobs:
                   ('Core-fragment destruction', fragment_recipe, 'WNG_ReplicatorCoreFragment', '1', '8'),
               ):
                   users = [x.text for x in node.findall('./recipeUsers/li')]
-                  if users != ['WNG_PrecursorFabricator']:
-                      failures.append(f'{label} is no longer routed exclusively through the WNG Precursor Fabricator')
+                  if users != ['ElectricSmelter']:
+                      failures.append(f'{label} is no longer routed through the vanilla Electric Smelter')
                   ingredients = node.findall('./ingredients/li')
                   if len(ingredients) != 1 or ingredients[0].findtext('count') != count or ingredients[0].findtext('./filter/thingDefs/li') != ingredient:
                       failures.append(f'{label} ingredient contract regressed')
@@ -1907,8 +1907,8 @@ jobs:
               else:
                   if dose_recipe.findtext('./researchPrerequisite') != 'WNG_FeedingResistance':
                       failures.append('Vital Resistance dose lost its dedicated research gate')
-                  if dose_recipe.findtext('./recipeUsers/li') != 'WNG_LivingForge':
-                      failures.append('Vital Resistance dose is no longer routed through the WNG Living Forge')
+                  if dose_recipe.findtext('./recipeUsers/li') != 'DrugLab':
+                      failures.append('Vital Resistance dose is no longer routed through the vanilla Drug Lab')
               if dose.findtext('./costList/Neutroamine') != '5' or dose.findtext('./costList/MedicineIndustrial') != '1':
                   failures.append('Vital Resistance material cost regressed')
               outcomes = [x.findtext('hediffDef') for x in dose.findall('./ingestible/outcomeDoers/li')]
