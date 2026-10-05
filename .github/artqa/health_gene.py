@@ -119,6 +119,8 @@ targeted={
         "EnsureSensoryState();",
         "public override void PostRemove()",
         "RemoveSensoryState();",
+        "FogRadius = 10f",
+        "GenRadial.RadialCellsAround(origin, FogRadius, true)",
     ],
 }
 for cls,tokens in targeted.items():
