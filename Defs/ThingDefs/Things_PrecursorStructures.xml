@@ -50,6 +50,9 @@
     <designationCategory>Structure</designationCategory>
     <researchPrerequisites><li>WNG_PrecursorFabrication</li><li>Autodoors</li></researchPrerequisites>
     <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <placeWorkers Inherit="False">
+      <li>PlaceWorker_DoorLearnOpeningSpeed</li>
+    </placeWorkers>
     <building>
       <canPlaceOverWall>true</canPlaceOverWall>
       <blueprintClass>Blueprint_Door</blueprintClass>
