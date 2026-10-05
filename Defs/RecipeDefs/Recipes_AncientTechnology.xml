@@ -14,8 +14,8 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AncientDrone>1</WNG_AncientDrone></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li>
-      <li>FabricationBench</li>
+    <recipeUsers>
+      <li>WNG_PrecursorFabricator</li>
     </recipeUsers>
   </RecipeDef>
 
@@ -34,8 +34,8 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li><li>Gold</li></thingDefs></fixedIngredientFilter>
     <products><WNG_VacuumEnergyModule>1</WNG_VacuumEnergyModule></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li>
-      <li>FabricationBench</li>
+    <recipeUsers>
+      <li>WNG_PrecursorFabricator</li>
     </recipeUsers>
   </RecipeDef>
 </Defs>
