@@ -56,10 +56,28 @@ def compvals(name):
     if li is None:return {}
     return {c.tag:(c.text or "").strip() for c in list(li)}
 full=compvals("WNG_LifeDrain"); partial=compvals("WNG_PartialFeed")
-for key,val in {"lifeForceGain":"1","victimAgeYears":"50","casterRejuvenationYears":"5","killIfAlreadyDrained":"true"}.items():
+for key,val in {"lifeForceGain":"1","victimAgeYears":"50","casterRejuvenationYears":"5","killIfAlreadyDrained":"true","torsoDamage":"4"}.items():
     if full.get(key)!=val: fail.append(f"full feeding {key}={full.get(key)} expected {val}")
-for key,val in {"lifeForceGain":"0.34","victimAgeYears":"10","casterRejuvenationYears":"1","killIfAlreadyDrained":"false"}.items():
+for key,val in {"lifeForceGain":"0.34","victimAgeYears":"10","casterRejuvenationYears":"1","killIfAlreadyDrained":"false","torsoDamage":"2"}.items():
     if partial.get(key)!=val: fail.append(f"partial feeding {key}={partial.get(key)} expected {val}")
+
+# Feeding is an offensive touch attack and must remain usable against hostile biological pawns.
+for name in ("WNG_LifeDrain","WNG_PartialFeed"):
+    node=adefs.get(name)
+    if node is None: continue
+    if (node.findtext("hostile") or "").strip().lower()!="true":
+        fail.append(name+" is no longer a hostile attack")
+    if (node.findtext("aiCanUse") or "").strip().lower()!="true":
+        fail.append(name+" is no longer AI-usable as a combat feeding action")
+    target=node.find("./verbProperties/targetParams")
+    if target is None or (target.findtext("neverTargetHostileFaction") or "").strip().lower()!="false":
+        fail.append(name+" no longer explicitly permits hostile-faction targets")
+    if target is None or (target.findtext("canTargetHumans") or "").strip().lower()!="true":
+        fail.append(name+" no longer explicitly permits human targets")
+
+for token in ("ApplyFeedingTorsoDamage(", "BodyPartDefOf.Torso", "DamageDefOf.Cut"):
+    if token not in life:
+        fail.append("feeding torso-damage contract missing: "+token)
 
 # Ordinary feeding transaction must remain local and must not invoke strategic request UI/state.
 for token in (
