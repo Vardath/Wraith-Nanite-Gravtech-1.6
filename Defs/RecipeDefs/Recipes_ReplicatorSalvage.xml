@@ -8,8 +8,6 @@
     <workAmount>900</workAmount>
     <workSkill>Crafting</workSkill>
     <recipeUsers>
-      <li>WNG_PrecursorFabricator</li>
-    
       <li>ElectricSmelter</li>
     </recipeUsers>
     <ingredients>
@@ -40,8 +38,6 @@
     <workAmount>1200</workAmount>
     <workSkill>Crafting</workSkill>
     <recipeUsers>
-      <li>WNG_PrecursorFabricator</li>
-    
       <li>ElectricSmelter</li>
     </recipeUsers>
     <ingredients>
