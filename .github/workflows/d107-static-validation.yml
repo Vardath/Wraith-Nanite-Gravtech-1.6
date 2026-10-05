@@ -1259,6 +1259,24 @@ jobs:
               if forbidden in gene_ability_reconciler:
                   failures.append(f'WNG gene-ability reconciler crossed its add-only gene boundary: {forbidden}')
 
+          whispers_xenotype = Path('Defs/XenotypeDefs/Xenotypes_WhispersHybrid.xml').read_text(encoding='utf-8')
+          for needle in (
+              '<li>WNG_WhispersPredatorBiology</li>',
+              '<li>WNG_HybridLifeForce</li>',
+              '<li>WNG_HybridTelepathy</li>',
+          ):
+              if needle not in whispers_xenotype:
+                  failures.append(f'Whispers lesser-Wraith xenotype contract missing: {needle}')
+
+          for label, needle in (
+              ('Whispers exact xenotype gate', 'pawn?.genes?.Xenotype?.defName != "WNG_WhispersHybrid"'),
+              ('Whispers hybrid Life Force backfill', '"WNG_HybridLifeForce"'),
+              ('Whispers attenuated telepathy backfill', '"WNG_HybridTelepathy"'),
+              ('Whispers add-only gene migration', 'pawn.genes.AddGene(def, xenogene: true)'),
+          ):
+              if needle not in gene_ability_reconciler:
+                  failures.append(f'Whispers existing-save continuity contract missing: {label}')
+
           expected_gene_abilities = {
               'WNG_LifeForceMetabolism': {'WNG_LifeDrain', 'WNG_PartialFeed'},
               'WNG_HostCultivator': {'WNG_HostSeedGestation'},
