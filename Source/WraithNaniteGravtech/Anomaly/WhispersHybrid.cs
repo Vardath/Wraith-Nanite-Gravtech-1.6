@@ -16,6 +16,7 @@ namespace WraithNaniteGravtech.Anomaly
     {
         private const string SensoryHediffDefName = "WNG_WhispersBlindHunter";
         private const int FogIntervalTicks = 120;
+        private const float FogRadius = 10f;
 
         public override void PostAdd()
         {
@@ -68,13 +69,11 @@ namespace WraithNaniteGravtech.Anomaly
                 return;
 
             IntVec3 origin = pawn.Position;
-            IntVec3[] cells = GenAdj.AdjacentCellsAndInside;
-            for (int i = 0; i < cells.Length; i++)
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(origin, FogRadius, true))
             {
-                IntVec3 cell = origin + cells[i];
                 if (!cell.InBounds(map))
                     continue;
-                map.gasGrid.AddGas(cell, GasType.BlindSmoke, i == cells.Length - 1 ? 30 : 16);
+                map.gasGrid.AddGas(cell, GasType.BlindSmoke, cell == origin ? 30 : 16);
             }
         }
     }
