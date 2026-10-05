@@ -61,7 +61,7 @@ namespace WraithNaniteGravtech
                 defaultLabel = "Activate transport rings",
                 defaultDesc = "Transport the exact loaded people, animals, mechs and cargo to another compatible powered ring platform on a currently loaded map. The activation commits only if the whole manifest can rematerialize.",
                 icon = ContentFinder<Texture2D>.Get("Things/Building/Goauld/WNG_GoauldTransportRings", false),
-                action = OpenDestinationMenu
+                action = OpenDestinationDialog
             };
 
             if (transporter == null)
@@ -82,7 +82,7 @@ namespace WraithNaniteGravtech
             yield return activate;
         }
 
-        private void OpenDestinationMenu()
+        private void OpenDestinationDialog()
         {
             List<CompGoauldTransportRings> destinations = FindDestinations();
             if (destinations.Count == 0)
@@ -91,13 +91,19 @@ namespace WraithNaniteGravtech
                 return;
             }
 
-            List<FloatMenuOption> options = new List<FloatMenuOption>();
+            List<Dialog_WNGChoiceList.Choice> choices = new List<Dialog_WNGChoiceList.Choice>();
             foreach (CompGoauldTransportRings destination in destinations)
             {
                 CompGoauldTransportRings captured = destination;
-                options.Add(new FloatMenuOption(DestinationLabel(captured), delegate { TryTransportTo(captured); }));
+                choices.Add(new Dialog_WNGChoiceList.Choice(
+                    DestinationLabel(captured),
+                    delegate { TryTransportTo(captured); }));
             }
-            Find.WindowStack.Add(new FloatMenu(options));
+
+            Find.WindowStack.Add(new Dialog_WNGChoiceList(
+                "Transport rings destination",
+                "Choose the compatible powered ring platform that will receive the exact loaded manifest.",
+                choices));
         }
 
         private List<CompGoauldTransportRings> FindDestinations()
