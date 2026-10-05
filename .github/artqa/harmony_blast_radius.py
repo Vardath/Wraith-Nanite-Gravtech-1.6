@@ -26,7 +26,7 @@ required_contracts = (
     'VanillaGravshipExpanded.RitualBehaviorWorker_GravshipLaunch_TryExecuteOn_Patch',
     'VanillaGravshipExpanded.RitualOutcomeEffectWorker_GravshipLaunch_Apply_Patch',
     'return engine is Building_WNGGravEngine;',
-    '[HarmonyPatch(typeof(RitualObligationTargetWorker_GravshipLaunch),
+    '[HarmonyPatch(typeof(RitualObligationTargetWorker_GravshipLaunch),',
     'nameof(RitualObligationTargetWorker_GravshipLaunch.GetTargets))]',
     'internal static class WNGRitualObligationTargetWorkerGravshipLaunchPatch',
     '[HarmonyPatch(typeof(Gravship), "AddThing")]',
