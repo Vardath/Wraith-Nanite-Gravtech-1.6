@@ -60,8 +60,9 @@ if "WNG_AsuranFabrication" in worktypes:
 if "WNG_DoAsuranFabrication" in workgivers:
     path,node=workgivers["WNG_DoAsuranFabrication"]
     users=[(x.text or "").strip() for x in node.findall("./fixedBillGiverDefs/li") if (x.text or "").strip()]
-    if users!=["WNG_PrecursorFabricator"]:
-        failures.append(f"WNG_DoAsuranFabrication fixedBillGiverDefs must be exactly ['WNG_PrecursorFabricator'], found {users}")
+    expected_users=["TableSculpting","WNG_PrecursorFabricator"]
+    if users!=expected_users:
+        failures.append(f"WNG_DoAsuranFabrication fixedBillGiverDefs must be exactly {expected_users}, found {users}")
     if (node.findtext("workType") or "").strip()!="WNG_AsuranFabrication":
         failures.append("WNG_DoAsuranFabrication must use WNG_AsuranFabrication work type")
 
@@ -106,10 +107,11 @@ for path in (ROOT/"Defs/RecipeDefs").rglob("*.xml"):
         users=[(x.text or "").strip() for x in node.findall("./recipeUsers/li") if (x.text or "").strip()]
         if required=="WNG_AsuranFabrication":
             required_worktype_recipes.append((name,path,users))
-            if "WNG_PrecursorFabricator" not in users:
-                failures.append(f"{name}: requires WNG_AsuranFabrication but is not routed to WNG_PrecursorFabricator")
+            for expected_user in ("TableSculpting","WNG_PrecursorFabricator"):
+                if expected_user not in users:
+                    failures.append(f"{name}: requires WNG_AsuranFabrication but is not routed to {expected_user}")
         elif "TableSculpting" in users:
-            failures.append(f"{name}: vanilla TableSculpting routing is forbidden")
+            failures.append(f"{name}: unexpected ungated WNG recipe on vanilla TableSculpting")
 
 # Only the two hostile-trap statue recipes should use the Asuran-only work type.
 expected_gated={"Make_WNG_AsuranSleeperStatue","Make_WNG_AsuranFeederStatue","Make_WNG_AsuranReplicatorReliquary"}
