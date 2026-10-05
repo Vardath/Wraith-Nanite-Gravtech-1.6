@@ -3,9 +3,10 @@
   <AbilityDef ParentName="AbilityTouchBase">
     <defName>WNG_LifeDrain</defName>
     <label>feed deeply</label>
-    <description>Make full feeding contact with a living biological target. The victim loses about fifty biological years of vitality and receives the life-drained state; the Wraith restores its Life Force and becomes about five biological years younger, never below age eighteen. A second full feeding on a target that has not recovered is lethal.</description>
+    <description>Make full feeding contact with any living biological target, including an active hostile pawn. The feeding is a melee attack: the victim takes mild torso damage, loses about fifty biological years of vitality and receives the life-drained state; the Wraith restores its Life Force and becomes about five biological years younger, never below age eighteen. A second full feeding on a target that has not recovered is lethal.</description>
     <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <hostile>true</hostile>
+    <aiCanUse>true</aiCanUse>
     <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
@@ -19,8 +20,11 @@
       <targetParams>
         <canTargetSelf>false</canTargetSelf>
         <canTargetPawns>true</canTargetPawns>
+        <canTargetAnimals>true</canTargetAnimals>
+        <canTargetHumans>true</canTargetHumans>
         <canTargetBuildings>false</canTargetBuildings>
         <canTargetMechs>false</canTargetMechs>
+        <neverTargetHostileFaction>false</neverTargetHostileFaction>
       </targetParams>
       <soundCast>WNG_WraithLifeDrain</soundCast>
     </verbProperties>
@@ -33,13 +37,14 @@
         <killIfAlreadyDrained>true</killIfAlreadyDrained>
         <addLifeDrainedHediff>true</addLifeDrainedHediff>
         <addFedRecentlyHediff>true</addFedRecentlyHediff>
+        <torsoDamage>4</torsoDamage>
       </li>
     </comps>
   </AbilityDef>
   <AbilityDef ParentName="AbilityTouchBase">
     <defName>WNG_PartialFeed</defName>
     <label>take a partial feeding</label>
-    <description>Take a limited portion of a biological target's vitality instead of a full feeding. The victim ages about ten biological years and is temporarily weakened, while the Wraith restores roughly one third of its Life Force and becomes about one year younger, with the same age-eighteen floor.</description>
+    <description>Take a limited portion of any living biological target's vitality, including an active hostile pawn. The feeding is a melee attack that causes light torso damage; the victim ages about ten biological years and is temporarily weakened, while the Wraith restores roughly one third of its Life Force and becomes about one year younger, with the same age-eighteen floor.</description>
     <iconPath>UI/WNG/Genes/WraithLifeForce</iconPath>
     <hostile>true</hostile>
     <casterMustBeCapableOfViolence>true</casterMustBeCapableOfViolence>
@@ -65,6 +70,7 @@
         <lifeForceGain>0.34</lifeForceGain>
         <victimAgeYears>10</victimAgeYears>
         <casterRejuvenationYears>1</casterRejuvenationYears>
+        <torsoDamage>2</torsoDamage>
         <minimumCasterAgeYears>18</minimumCasterAgeYears>
         <killIfAlreadyDrained>false</killIfAlreadyDrained>
         <addLifeDrainedHediff>true</addLifeDrainedHediff>
