@@ -23,7 +23,7 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>1200</repairIntervalTicks><healPerPulse>2</healPerPulse><archiveRadius>45</archiveRadius></li>
     </comps>
-    <building><paintable>false</paintable></building>
+    <building><isPlaceOverableWall>true</isPlaceOverableWall><paintable>false</paintable></building>
   </ThingDef>
 
   <ThingDef ParentName="DoorBase">
