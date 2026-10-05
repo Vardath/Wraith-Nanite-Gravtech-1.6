@@ -35,7 +35,9 @@
     <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
     <workSkill>Medicine</workSkill>
     <researchPrerequisite>WNG_WraithEnzymePharmacology</researchPrerequisite>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <ingredients>
       <li>
         <filter><categories><li>CorpsesHumanlike</li></categories></filter>
