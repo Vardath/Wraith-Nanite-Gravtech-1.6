@@ -53,6 +53,17 @@ jobs:
               "WNG_GoauldVacBarrier": "WraithNaniteGravtech.PlaceWorker_RequireGoauldGravshipSubstructure",
           }
 
+          normal_gravship_doors = {
+              "WNG_WraithGravshipDoor",
+              "WNG_AsuranGravshipDoor",
+              "WNG_GoauldGravshipDoor",
+          }
+          vac_barriers = {
+              "WNG_WraithVacuumMembrane",
+              "WNG_AsuranVacBarrier",
+              "WNG_GoauldVacBarrier",
+          }
+
           for name, defs in door_sets:
               node = defs.get(name)
               if node is None:
@@ -66,9 +77,42 @@ jobs:
                   failures.append(f"{name} still inherits stuff terrain affordance")
               if node.findtext("terrainAffordanceNeeded") != "Substructure":
                   failures.append(f"{name} no longer explicitly requires Odyssey Substructure")
+              if node.findtext("rotatable") != "false":
+                  failures.append(f"{name} must use vanilla automatic door orientation, not manual rotation")
+              if node.findtext("./building/canPlaceOverWall") != "true":
+                  failures.append(f"{name} can no longer replace a gravship hull wall tile")
+              if node.findtext("./building/blueprintClass") != "Blueprint_Door":
+                  failures.append(f"{name} lost vanilla Blueprint_Door wall snapping")
               workers = [x.text for x in node.findall("./placeWorkers/li")]
+              if "PlaceWorker_DoorLearnOpeningSpeed" not in workers:
+                  failures.append(f"{name} lost the vanilla door placement worker")
               if door_workers[name] not in workers:
                   failures.append(f"{name} lost its same-family gravship-substructure placement worker")
+
+              if name in normal_gravship_doors:
+                  if node.findtext("./graphicData/graphicClass") != "Graphic_Single":
+                      failures.append(f"{name} must use Building_Door's vanilla Graphic_Single rotation path")
+                  if node.findtext("./building/isSupportDoor") != "true":
+                      failures.append(f"{name} no longer identifies as a gravship support door")
+
+              if name in vac_barriers:
+                  if node.attrib.get("ParentName") != "DoorBase":
+                      failures.append(f"{name} must inherit native DoorBase like Odyssey VacBarrier")
+                  if node.findtext("thingClass") != "Building_VacBarrier":
+                      failures.append(f"{name} lost native Odyssey Building_VacBarrier behavior")
+                  if node.findtext("./graphicData/graphicClass") != "Graphic_Multi":
+                      failures.append(f"{name} must use native VacBarrier directional Graphic_Multi")
+                  if node.findtext("./graphicData/drawSize") != "(1.5,1.5)":
+                      failures.append(f"{name} no longer matches native VacBarrier draw size")
+                  if node.findtext("useBlueprintGraphicAsGhost") != "true":
+                      failures.append(f"{name} lost native directional blueprint ghost behavior")
+                  if node.findtext("./building/isSupportDoor") != "true":
+                      failures.append(f"{name} lost native VacBarrier support-door semantics")
+                  if node.findtext("./building/blueprintGraphicData/graphicClass") != "Graphic_Multi":
+                      failures.append(f"{name} lost native directional Blueprint_Door graphic data")
+                  flags = {x.text for x in node.findall("./graphicData/linkFlags/li")}
+                  if not {"Wall", "Rock"}.issubset(flags):
+                      failures.append(f"{name} no longer advertises Wall/Rock adjacency to gravship hulls")
 
           
           linked_defs = [
