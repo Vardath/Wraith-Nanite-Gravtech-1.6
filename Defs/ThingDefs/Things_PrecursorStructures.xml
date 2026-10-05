@@ -30,9 +30,10 @@
     <defName>WNG_PrecursorDoor</defName>
     <label>precursor iris door</label>
     <description>A fast powered Asuran composite iris partition using the same field-bearing architecture as precursor settlement walls.</description>
+    <rotatable>false</rotatable>
     <graphicData>
       <texPath>Things/Building/Precursor/Structure/WNG_PrecursorDoor</texPath>
-      <graphicClass>Graphic_Multi</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <damageData><enabled>false</enabled></damageData>
           <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
@@ -49,6 +50,10 @@
     <designationCategory>Structure</designationCategory>
     <researchPrerequisites><li>WNG_PrecursorFabrication</li><li>Autodoors</li></researchPrerequisites>
     <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
-    <building><paintable>false</paintable></building>
+    <building>
+      <canPlaceOverWall>true</canPlaceOverWall>
+      <blueprintClass>Blueprint_Door</blueprintClass>
+      <paintable>false</paintable>
+    </building>
   </ThingDef>
 </Defs>
