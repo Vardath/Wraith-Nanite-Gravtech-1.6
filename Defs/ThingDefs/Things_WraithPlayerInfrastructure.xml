@@ -24,6 +24,9 @@
     <costList><WNG_Biomass>18</WNG_Biomass></costList>
     <statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.25</Flammability></statBases>
     <designationCategory>Structure</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
+    <placeWorkers Inherit="False">
+      <li>PlaceWorker_DoorLearnOpeningSpeed</li>
+    </placeWorkers>
     <comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingStructureRegeneration"><repairIntervalTicks>500</repairIntervalTicks><hitPointsPerPulse>1</hitPointsPerPulse></li></comps>
     <building>
       <canPlaceOverWall>true</canPlaceOverWall>
