@@ -819,8 +819,12 @@ namespace WraithNaniteGravtech
             if (__args == null || __args.Length == 0 || !(__args[0] is Dialog_BeginRitual dialog))
                 return true;
 
+            var targetField = AccessTools.Field(typeof(Dialog_BeginRitual), "target");
+            if (targetField?.GetValue(dialog) is not TargetInfo target)
+                return true;
+
             Building_GravEngine engine =
-                dialog.target.Thing?.TryGetComp<CompPilotConsole>()?.engine;
+                target.Thing?.TryGetComp<CompPilotConsole>()?.engine;
             return !IsWNGEngine(engine);
         }
 
