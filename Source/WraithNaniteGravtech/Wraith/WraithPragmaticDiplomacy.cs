@@ -234,7 +234,7 @@ namespace WraithNaniteGravtech
             Action negotiate = () =>
             {
                 offerWindowOpen = false;
-                OpenTermsMenu(faction, home, tuning);
+                OpenTermsDialog(faction, home, tuning);
             };
             Action decline = () =>
             {
@@ -284,7 +284,7 @@ namespace WraithNaniteGravtech
             }
         }
 
-        private void OpenTermsMenu(
+        private void OpenTermsDialog(
             Faction faction,
             Map home,
             WraithPragmaticDiplomacyTuningDef tuning)
@@ -303,51 +303,60 @@ namespace WraithNaniteGravtech
                 return;
             }
 
-            List<FloatMenuOption> options = new List<FloatMenuOption>();
+            List<Dialog_WNGChoiceList.Choice> choices = new List<Dialog_WNGChoiceList.Choice>();
 
             int biomassAvailable = ResourceCount(home, "WNG_Biomass");
+            bool biomassEnabled =
+                biomassAvailable >= terms.biomassCost &&
+                CanGainGoodwill(faction, terms.biomassGoodwill);
             string biomassLabel =
                 "Offer " + terms.biomassCost +
                 " cultured biomass (" + biomassAvailable +
                 " available) — goodwill +" + terms.biomassGoodwill;
-            options.Add(new FloatMenuOption(
+            choices.Add(new Dialog_WNGChoiceList.Choice(
                 biomassLabel,
-                biomassAvailable >= terms.biomassCost &&
-                CanGainGoodwill(faction, terms.biomassGoodwill)
+                biomassEnabled
                     ? (Action)(() => ResolveBiomassDeal(faction, home, terms, tuning))
-                    : null));
+                    : null,
+                biomassEnabled ? null : "Insufficient biomass or goodwill cannot increase further."));
 
             if (terms.medicineCost > 0 || terms.neutroamineCost > 0)
             {
                 int medicineAvailable = ResourceCount(home, "MedicineIndustrial");
                 int neutroamineAvailable = ResourceCount(home, "Neutroamine");
+                bool medicalEnabled =
+                    medicineAvailable >= terms.medicineCost &&
+                    neutroamineAvailable >= terms.neutroamineCost &&
+                    CanGainGoodwill(faction, terms.medicalGoodwill);
                 string medicalLabel =
                     "Offer culture supplies: " +
                     terms.medicineCost + " industrial medicine + " +
                     terms.neutroamineCost + " neutroamine — goodwill +" +
                     terms.medicalGoodwill +
                     " (have " + medicineAvailable + "/" + neutroamineAvailable + ")";
-                options.Add(new FloatMenuOption(
+                choices.Add(new Dialog_WNGChoiceList.Choice(
                     medicalLabel,
-                    medicineAvailable >= terms.medicineCost &&
-                    neutroamineAvailable >= terms.neutroamineCost &&
-                    CanGainGoodwill(faction, terms.medicalGoodwill)
+                    medicalEnabled
                         ? (Action)(() => ResolveMedicalDeal(faction, home, terms, tuning))
-                        : null));
+                        : null,
+                    medicalEnabled ? null : "Insufficient supplies or goodwill cannot increase further."));
             }
 
             // Deliberately no prisoner/feeding option here. Strategic Hunger exclusively owns it.
-            options.Add(new FloatMenuOption(
+            choices.Add(new Dialog_WNGChoiceList.Choice(
                 "End negotiations",
                 () => ScheduleAfterOffer(faction, tuning)));
 
             try
             {
-                Find.WindowStack.Add(new FloatMenu(options));
+                Find.WindowStack.Add(new Dialog_WNGChoiceList(
+                    faction.Name + " — Wraith terms",
+                    "Choose a material reply to the Hive. Feeding access is handled separately by Strategic Hunger.",
+                    choices));
             }
             catch (Exception ex)
             {
-                Log.Error("[WNG] Failed to open pragmatic Wraith terms menu: " + ex);
+                Log.Error("[WNG] Failed to open pragmatic Wraith terms dialog: " + ex);
                 ScheduleAfterOffer(faction, tuning);
             }
         }
