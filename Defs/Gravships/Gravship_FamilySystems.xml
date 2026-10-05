@@ -55,10 +55,11 @@
     <defName>WNG_WraithGravshipDoor</defName>
     <label>wraith gravship sphincter</label>
     <description>A living airtight aperture grown into a Wraith gravship hull.</description>
+    <rotatable>false</rotatable>
     <designationCategory>Structure</designationCategory>
     <uiOrder>1811</uiOrder>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_WraithGravshipDoor</texPath>
       <drawSize>(1,1)</drawSize>
           <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
@@ -78,8 +79,12 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <building>
       <isAirtight>true</isAirtight>
+      <isSupportDoor>true</isSupportDoor>
+      <canPlaceOverWall>true</canPlaceOverWall>
+      <blueprintClass>Blueprint_Door</blueprintClass>
     </building>
     <placeWorkers Inherit="False">
+      <li>PlaceWorker_DoorLearnOpeningSpeed</li>
       <li>WraithNaniteGravtech.PlaceWorker_RequireWraithGravshipSubstructure</li>
     </placeWorkers>
   </ThingDef>
@@ -831,10 +836,11 @@
     <defName>WNG_AsuranGravshipDoor</defName>
     <label>Asuran gravship door</label>
     <description>A seamless airtight aperture in an Asuran nanite-composite hull.</description>
+    <rotatable>false</rotatable>
     <designationCategory>Structure</designationCategory>
     <uiOrder>1813</uiOrder>
     <graphicData>
-      <graphicClass>Graphic_Multi</graphicClass>
+      <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_AsuranGravshipDoor</texPath>
       <drawSize>(1,1)</drawSize>
           <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
@@ -855,8 +861,12 @@
     <terrainAffordanceNeeded>Substructure</terrainAffordanceNeeded>
     <building>
       <isAirtight>true</isAirtight>
+      <isSupportDoor>true</isSupportDoor>
+      <canPlaceOverWall>true</canPlaceOverWall>
+      <blueprintClass>Blueprint_Door</blueprintClass>
     </building>
     <placeWorkers Inherit="False">
+      <li>PlaceWorker_DoorLearnOpeningSpeed</li>
       <li>WraithNaniteGravtech.PlaceWorker_RequireAsuranGravshipSubstructure</li>
     </placeWorkers>
   </ThingDef>
