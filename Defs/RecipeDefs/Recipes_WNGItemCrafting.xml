@@ -92,7 +92,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormCombatArmor>1</WNG_HumanFormCombatArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -111,7 +113,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormUniform>1</WNG_HumanFormUniform></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>ElectricTailoringBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -128,7 +132,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranPhaseBlade>1</WNG_AsuranPhaseBlade></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -145,7 +151,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranFieldLance>1</WNG_AsuranFieldLance></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -165,7 +173,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_IratusGlandExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_WraithRetrovirusDose>1</WNG_WraithRetrovirusDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1840</displayPriority>
@@ -187,7 +197,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_WraithSuppressionDose>4</WNG_WraithSuppressionDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1830</displayPriority>
@@ -278,7 +290,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorCommandArmor>1</WNG_PrecursorCommandArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -299,7 +313,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_WhispersHybridTissue</li><li>WNG_IratusGlandExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HybridStabiliserDose>1</WNG_HybridStabiliserDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1820</displayPriority>
@@ -449,7 +465,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorPulseRifle>1</WNG_PrecursorPulseRifle></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -469,7 +487,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Steel</li><li>Neutroamine</li><li>MedicineIndustrial</li><li>ComponentIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_NishtaCanister>1</WNG_NishtaCanister></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>DrugLab</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -488,7 +508,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RawWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HoffanSerum>2</WNG_HoffanSerum></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1870</displayPriority>
@@ -509,7 +531,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorUniform>1</WNG_PrecursorUniform></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>ElectricTailoringBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -527,7 +551,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorFieldArmor>1</WNG_PrecursorFieldArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -546,7 +572,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_PrecursorPersonalShield>1</WNG_PrecursorPersonalShield></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -567,7 +595,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_WraithRetrovirusDose</li><li>WNG_IratusQueenExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>ComponentSpacer</li></thingDefs></fixedIngredientFilter>
     <products><WNG_FeedingIndependenceVector>1</WNG_FeedingIndependenceVector></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1930</displayPriority>
@@ -588,7 +618,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_VitalResistanceDose>1</WNG_VitalResistanceDose></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1810</displayPriority>
@@ -611,7 +643,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_IratusQueenExtract</li><li>WNG_RefinedWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_IratusQueenRestorative>1</WNG_IratusQueenRestorative></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1890</displayPriority>
@@ -632,7 +666,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RawWraithEnzyme</li><li>Neutroamine</li></thingDefs></fixedIngredientFilter>
     <products><WNG_RefinedWraithEnzyme>2</WNG_RefinedWraithEnzyme></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <displayPriority>2300</displayPriority>
   </RecipeDef>
 
@@ -652,7 +688,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_RawWraithEnzyme</li><li>Neutroamine</li><li>MedicineIndustrial</li></thingDefs></fixedIngredientFilter>
     <products><WNG_WraithEnzymeWeaningSerum>2</WNG_WraithEnzymeWeaningSerum></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <displayPriority>2320</displayPriority>
   </RecipeDef>
 
@@ -718,6 +756,8 @@
     <products><WNG_Roshna>4</WNG_Roshna></products>
     <recipeUsers>
     <li>WNG_PrecursorFabricator</li>
+    
+      <li>DrugLab</li>
     </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
@@ -739,7 +779,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_IratusGlandExtract</li><li>Neutroamine</li></thingDefs></fixedIngredientFilter>
     <products><WNG_IratusParalytic>2</WNG_IratusParalytic></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers><li>WNG_LivingForge</li>
+      <li>DrugLab</li>
+    </recipeUsers>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1880</displayPriority>
@@ -780,7 +822,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Synthread</li><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormFieldArmor>1</WNG_HumanFormFieldArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef>
@@ -799,7 +843,9 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_ReplicatorMatter</li></thingDefs></fixedIngredientFilter>
     <products><WNG_HumanFormCommandArmor>1</WNG_HumanFormCommandArmor></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
 </Defs>
