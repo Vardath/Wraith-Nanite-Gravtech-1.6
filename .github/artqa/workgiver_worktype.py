@@ -60,7 +60,7 @@ if "WNG_AsuranFabrication" in worktypes:
 if "WNG_DoAsuranFabrication" in workgivers:
     path,node=workgivers["WNG_DoAsuranFabrication"]
     users=[(x.text or "").strip() for x in node.findall("./fixedBillGiverDefs/li") if (x.text or "").strip()]
-    expected_users=["TableSculpting","WNG_PrecursorFabricator"]
+    expected_users=["TableSculpting"]
     if users!=expected_users:
         failures.append(f"WNG_DoAsuranFabrication fixedBillGiverDefs must be exactly {expected_users}, found {users}")
     if (node.findtext("workType") or "").strip()!="WNG_AsuranFabrication":
@@ -107,13 +107,12 @@ for path in (ROOT/"Defs/RecipeDefs").rglob("*.xml"):
         users=[(x.text or "").strip() for x in node.findall("./recipeUsers/li") if (x.text or "").strip()]
         if required=="WNG_AsuranFabrication":
             required_worktype_recipes.append((name,path,users))
-            for expected_user in ("TableSculpting","WNG_PrecursorFabricator"):
-                if expected_user not in users:
-                    failures.append(f"{name}: requires WNG_AsuranFabrication but is not routed to {expected_user}")
+            if users!=["TableSculpting"]:
+                failures.append(f"{name}: Asuran-gated sculpting recipe must route exactly to TableSculpting, found {users}")
         elif "TableSculpting" in users:
             failures.append(f"{name}: unexpected ungated WNG recipe on vanilla TableSculpting")
 
-# Only the two hostile-trap statue recipes should use the Asuran-only work type.
+# Only the three Asuran trap/reliquary sculpture recipes should use the Asuran-only work type.
 expected_gated={"Make_WNG_AsuranSleeperStatue","Make_WNG_AsuranFeederStatue","Make_WNG_AsuranReplicatorReliquary"}
 actual_gated={name for name,_,_ in required_worktype_recipes}
 if actual_gated!=expected_gated:
