@@ -125,7 +125,7 @@ for label, pat in forbidden_source.items():
 # ---------- XML/patch non-interference ----------
 representative = {
     "ElectricStove", "FueledStove", "HandTailoringBench", "ElectricTailoringBench",
-    "FabricationBench", "DrugLab", "ElectricSmelter", "TableSculpting", "MechGestator", "AmmoBench"
+    "FabricationBench", "DrugLab", "ElectricSmelter", "TableSculpting", "TableMachining", "MechGestator", "AmmoBench"
 }
 
 patch_files = []
@@ -184,39 +184,18 @@ approved_external_routes = {
     "WNG_Make_VitalResistanceDose": {"DrugLab"},
     "WNG_Make_RefinedWraithEnzyme": {"DrugLab"},
     "WNG_Make_WraithEnzymeWeaningSerum": {"DrugLab"},
-    "WNG_Make_NishtaCanister": {"DrugLab"},
     "WNG_Make_WhispersAcousticNode": {"DrugLab"},
     "WNG_Make_WhispersMistGland": {"DrugLab"},
     "WNG_RenderWraithEnzymeFromCorpse": {"DrugLab"},
-    "WNG_CE_Make_ReplicatorPulseCell": {"AmmoBench"},
-    "WNG_CE_Make_ReplicatorDisruptorCell": {"AmmoBench"},
-    "WNG_CE_Make_ReplicatorArtilleryCell": {"AmmoBench"},
-    "WNG_FabricateAncientNeuralInterface": {"FabricationBench"},
-    "WNG_ReconstructAncientDrone": {"FabricationBench"},
-    "WNG_ReconstructVacuumEnergyModule": {"FabricationBench"},
-    "WNG_FabricateSovereignNeuralLattice": {"FabricationBench"},
-    "WNG_FabricateNaniteMotorLattice": {"FabricationBench"},
-    "WNG_FabricateAutonomicEfficiencyLattice": {"FabricationBench"},
-    "WNG_FabricateAdaptiveSensorMesh": {"FabricationBench"},
-    "WNG_FabricateReconstructionMicroforge": {"FabricationBench"},
-    "WNG_FabricateEMPShuntLattice": {"FabricationBench"},
-    "WNG_StabilizeRecoveredPrecursorPulseRifle": {"FabricationBench"},
-    "WNG_Make_HumanFormCombatArmor": {"FabricationBench"},
-    "WNG_Make_AsuranPhaseBlade": {"FabricationBench"},
-    "WNG_Make_AsuranFieldLance": {"FabricationBench"},
-    "WNG_Make_PrecursorCommandArmor": {"FabricationBench"},
-    "WNG_Make_PrecursorPulseRifle": {"FabricationBench"},
-    "WNG_Make_PrecursorFieldArmor": {"FabricationBench"},
-    "WNG_Make_PrecursorPersonalShield": {"FabricationBench"},
-    "WNG_Make_HumanFormFieldArmor": {"FabricationBench"},
-    "WNG_Make_HumanFormCommandArmor": {"FabricationBench"},
-    "WNG_Make_HumanFormUniform": {"ElectricTailoringBench"},
-    "WNG_Make_PrecursorUniform": {"ElectricTailoringBench"},
+    "WNG_Make_NishtaCanister": {"TableMachining"},
     "WNG_ReprocessReplicatorMatter": {"ElectricSmelter"},
     "WNG_DestroyReplicatorCoreFragment": {"ElectricSmelter"},
     "Make_WNG_AsuranSleeperStatue": {"TableSculpting"},
     "Make_WNG_AsuranFeederStatue": {"TableSculpting"},
     "Make_WNG_AsuranReplicatorReliquary": {"TableSculpting"},
+    "WNG_CE_Make_ReplicatorPulseCell": {"AmmoBench"},
+    "WNG_CE_Make_ReplicatorDisruptorCell": {"AmmoBench"},
+    "WNG_CE_Make_ReplicatorArtilleryCell": {"AmmoBench"},
 }
 
 def external_route_allowed(recipe, user):
