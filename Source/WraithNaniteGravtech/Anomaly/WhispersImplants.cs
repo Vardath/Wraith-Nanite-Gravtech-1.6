@@ -31,7 +31,7 @@ namespace WraithNaniteGravtech.Anomaly
 
     public sealed class CompProperties_AbilityWhispersMist : CompProperties_AbilityEffect
     {
-        public float radius = 4.2f;
+        public float radius = 10f;
         public int gasPerCell = 44;
         public CompProperties_AbilityWhispersMist() { compClass = typeof(CompAbilityEffect_WhispersMist); }
     }
