@@ -670,7 +670,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_Kassa</li></thingDefs></fixedIngredientFilter>
     <products><WNG_KassaConcentrate>2</WNG_KassaConcentrate></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers>
+      <li>DrugLab</li>
+      <li>WNG_LivingForge</li>
+    </recipeUsers>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1800</displayPriority>
   </RecipeDef>
@@ -690,7 +693,10 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>WNG_Kassa</li><li>Neutroamine</li></thingDefs></fixedIngredientFilter>
     <products><WNG_KassaDistillate>2</WNG_KassaDistillate></products>
-    <recipeUsers><li>WNG_LivingForge</li></recipeUsers>
+    <recipeUsers>
+      <li>DrugLab</li>
+      <li>WNG_LivingForge</li>
+    </recipeUsers>
     <soundWorking>Recipe_Drug</soundWorking>
     <displayPriority>1810</displayPriority>
   </RecipeDef>
