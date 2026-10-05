@@ -662,8 +662,184 @@ namespace WraithNaniteGravtech
     {
         static WNGGravshipVanillaBridgeBootstrap()
         {
-            new Harmony("vardath.wraithnanitegravtech.gravship-native-bridge")
-                .PatchAll(typeof(WNGGravshipVanillaBridgeBootstrap).Assembly);
+            Harmony harmony = new Harmony("vardath.wraithnanitegravtech.gravship-native-bridge");
+            harmony.PatchAll(typeof(WNGGravshipVanillaBridgeBootstrap).Assembly);
+
+            // WNG gravships are deliberately Odyssey-native. If Vanilla Gravship Expanded is
+            // present, its global launch patches must not replace the launch sequence for WNG's
+            // Wraith, Asuran or Goa'uld engines. Install a late, optional guard around the VGE
+            // patch methods themselves; no VGE assembly reference or VGE behavior is required.
+            WNGVGEVanillaLaunchIsolation.TryInstall(harmony);
+            LongEventHandler.ExecuteWhenFinished(
+                () => WNGVGEVanillaLaunchIsolation.TryInstall(harmony));
+        }
+    }
+
+    /// <summary>
+    /// Keeps every WNG gravship family on Odyssey's vanilla launch sequence even when another
+    /// active mod globally patches that sequence.
+    ///
+    /// Player.log proved Vanilla Gravship Expanded was replacing PreLaunchConfirmation and then
+    /// throwing from its Building_GravEngine.ConsumeFuel postfix after Odyssey had already applied
+    /// fuel/cooldown. These guards skip only those VGE patch methods when the launch belongs to a
+    /// Building_WNGGravEngine or CompPilotConsole_WNGFamily. Vanilla engines and VGE ships are
+    /// untouched.
+    ///
+    /// This is intentionally reflection-only and optional: WNG has no compile-time dependency on
+    /// VGE and does not adopt any VGE launch behavior.
+    /// </summary>
+    internal static class WNGVGEVanillaLaunchIsolation
+    {
+        private static bool installed;
+
+        internal static void TryInstall(Harmony harmony)
+        {
+            if (installed || harmony == null)
+                return;
+
+            Type showRitual = AccessTools.TypeByName(
+                "VanillaGravshipExpanded.Dialog_BeginRitual_ShowRitualBeginWindow_Patch");
+            Type preLaunch = AccessTools.TypeByName(
+                "VanillaGravshipExpanded.GravshipUtility_PreLaunchConfirmation_Patch");
+            Type settle = AccessTools.TypeByName(
+                "VanillaGravshipExpanded.SettlementProximityGoodwillUtility_CheckConfirmSettle_Patch");
+            Type consumeFuel = AccessTools.TypeByName(
+                "VanillaGravshipExpanded.Building_GravEngine_ConsumeFuel_Patch");
+            Type drawOutcome = AccessTools.TypeByName(
+                "VanillaGravshipExpanded.Dialog_BeginRitual_DrawExtraRitualOutcomeDescriptions_Patch");
+            Type ritualBehavior = AccessTools.TypeByName(
+                "VanillaGravshipExpanded.RitualBehaviorWorker_GravshipLaunch_TryExecuteOn_Patch");
+            Type ritualOutcome = AccessTools.TypeByName(
+                "VanillaGravshipExpanded.RitualOutcomeEffectWorker_GravshipLaunch_Apply_Patch");
+
+            // VGE is optional. If its assembly is not active, there is nothing to isolate from.
+            if (showRitual == null || preLaunch == null || settle == null || consumeFuel == null ||
+                drawOutcome == null || ritualBehavior == null || ritualOutcome == null)
+            {
+                return;
+            }
+
+            var targets = new[]
+            {
+                AccessTools.Method(showRitual, "Prefix"),
+                AccessTools.Method(preLaunch, "Prefix"),
+                AccessTools.Method(settle, "Prefix"),
+                AccessTools.Method(consumeFuel, "Prefix"),
+                AccessTools.Method(consumeFuel, "Postfix"),
+                AccessTools.Method(drawOutcome, "Postfix"),
+                AccessTools.Method(ritualBehavior, "Postfix"),
+                AccessTools.Method(ritualOutcome, "Postfix"),
+            };
+
+            if (targets.Any(method => method == null))
+                return;
+
+            PatchGuard(harmony, targets[0], nameof(GuardVgeShowRitualBeginWindow));
+            PatchGuard(harmony, targets[1], nameof(GuardVgePreLaunchConfirmation));
+            PatchGuard(harmony, targets[2], nameof(GuardVgeCheckConfirmSettle));
+            PatchGuard(harmony, targets[3], nameof(GuardVgeConsumeFuel));
+            PatchGuard(harmony, targets[4], nameof(GuardVgeConsumeFuel));
+            PatchGuard(harmony, targets[5], nameof(GuardVgeDrawLaunchOutcome));
+            PatchGuard(harmony, targets[6], nameof(GuardVgeRitualBehavior));
+            PatchGuard(harmony, targets[7], nameof(GuardVgeRitualOutcome));
+
+            installed = true;
+        }
+
+        private static void PatchGuard(Harmony harmony, System.Reflection.MethodBase target, string guardName)
+        {
+            harmony.Patch(
+                target,
+                prefix: new HarmonyMethod(
+                    AccessTools.Method(typeof(WNGVGEVanillaLaunchIsolation), guardName))
+                {
+                    priority = Priority.First
+                });
+        }
+
+        private static bool IsWNGEngine(Building_GravEngine engine)
+        {
+            return engine is Building_WNGGravEngine;
+        }
+
+        private static bool IsWNGPilot(TargetInfo target)
+        {
+            return target.HasThing &&
+                   target.Thing?.TryGetComp<CompPilotConsole_WNGFamily>() != null;
+        }
+
+        // We are patching VGE's bool Prefix method itself. Returning false skips the VGE method;
+        // __result=true makes Harmony treat that skipped VGE prefix as "allow vanilla to continue".
+        private static bool GuardVgeShowRitualBeginWindow(object[] __args, ref bool __result)
+        {
+            if (__args != null &&
+                __args.Length > 1 &&
+                __args[1] is TargetInfo target &&
+                IsWNGPilot(target))
+            {
+                __result = true;
+                return false;
+            }
+            return true;
+        }
+
+        // VGE replaces Odyssey's confirmation launchAction with its own ExecuteGravshipLaunch.
+        // Skipping this method leaves the original Odyssey action unchanged.
+        private static bool GuardVgePreLaunchConfirmation(object[] __args)
+        {
+            return !(__args != null &&
+                     __args.Length > 0 &&
+                     __args[0] is Building_GravEngine engine &&
+                     IsWNGEngine(engine));
+        }
+
+        // If stale VGE launch state exists, do not let it replace Odyssey's tile confirmation
+        // callback for a WNG engine.
+        private static bool GuardVgeCheckConfirmSettle(object[] __args)
+        {
+            return !(__args != null &&
+                     __args.Length > 3 &&
+                     __args[3] is Building_GravEngine engine &&
+                     IsWNGEngine(engine));
+        }
+
+        // This blocks both VGE's ConsumeFuel Prefix and the crashing Postfix for WNG engines.
+        // Odyssey's Building_GravEngine.ConsumeFuel body still runs normally.
+        private static bool GuardVgeConsumeFuel(object[] __args)
+        {
+            return !(__args != null &&
+                     __args.Length > 0 &&
+                     __args[0] is Building_GravEngine engine &&
+                     IsWNGEngine(engine));
+        }
+
+        // VGE's launch-dialog outcome renderer assumes VGE-only engine comps such as CompHeatManager.
+        private static bool GuardVgeDrawLaunchOutcome(object[] __args)
+        {
+            if (__args == null || __args.Length == 0 || !(__args[0] is Dialog_BeginRitual dialog))
+                return true;
+
+            Building_GravEngine engine =
+                dialog.target.Thing?.TryGetComp<CompPilotConsole>()?.engine;
+            return !IsWNGEngine(engine);
+        }
+
+        private static bool GuardVgeRitualBehavior(object[] __args)
+        {
+            return !(__args != null &&
+                     __args.Length > 0 &&
+                     __args[0] is TargetInfo target &&
+                     IsWNGPilot(target));
+        }
+
+        private static bool GuardVgeRitualOutcome(object[] __args)
+        {
+            if (__args == null || __args.Length <= 2 || !(__args[2] is LordJob_Ritual ritual))
+                return true;
+
+            Building_GravEngine engine =
+                ritual.selectedTarget.Thing?.TryGetComp<CompPilotConsole>()?.engine;
+            return !IsWNGEngine(engine);
         }
     }
 

@@ -16,8 +16,17 @@ allowed = texts.get(allowed_path, "")
 required_contracts = (
     'using HarmonyLib;',
     'new Harmony("vardath.wraithnanitegravtech.gravship-native-bridge")',
-    '.PatchAll(typeof(WNGGravshipVanillaBridgeBootstrap).Assembly);',
-    '[HarmonyPatch(typeof(RitualObligationTargetWorker_GravshipLaunch),',
+    'harmony.PatchAll(typeof(WNGGravshipVanillaBridgeBootstrap).Assembly);',
+    'WNGVGEVanillaLaunchIsolation.TryInstall(harmony);',
+    'VanillaGravshipExpanded.GravshipUtility_PreLaunchConfirmation_Patch',
+    'VanillaGravshipExpanded.Building_GravEngine_ConsumeFuel_Patch',
+    'VanillaGravshipExpanded.Dialog_BeginRitual_DrawExtraRitualOutcomeDescriptions_Patch',
+    'VanillaGravshipExpanded.Dialog_BeginRitual_ShowRitualBeginWindow_Patch',
+    'VanillaGravshipExpanded.SettlementProximityGoodwillUtility_CheckConfirmSettle_Patch',
+    'VanillaGravshipExpanded.RitualBehaviorWorker_GravshipLaunch_TryExecuteOn_Patch',
+    'VanillaGravshipExpanded.RitualOutcomeEffectWorker_GravshipLaunch_Apply_Patch',
+    'return engine is Building_WNGGravEngine;',
+    '[HarmonyPatch(typeof(RitualObligationTargetWorker_GravshipLaunch),
     'nameof(RitualObligationTargetWorker_GravshipLaunch.GetTargets))]',
     'internal static class WNGRitualObligationTargetWorkerGravshipLaunchPatch',
     '[HarmonyPatch(typeof(Gravship), "AddThing")]',
@@ -69,14 +78,15 @@ for path, text in texts.items():
 
 print("=== D136 HARMONY BLAST-RADIUS AUDIT ===")
 print(f" - Production C# files scanned: {len(source_files)}")
-print(" - Reviewed production Harmony targets: 2")
+print(" - Reviewed native Odyssey patch targets: 2")
 print("   * RitualObligationTargetWorker_GravshipLaunch.GetTargets (postfix only)")
 print("   * Gravship.AddThing (postfix only)")
-print(" - Purpose: allow WNG custom PilotConsole ThingDefs through Odyssey hard-coded vanilla-def checks")
+print(" - Optional VGE isolation: guards only VGE launch-sequence patch methods for Building_WNGGravEngine")
+print(" - Purpose: keep Wraith/Asuran/Goa'uld WNG ships on Odyssey's native launch path")
 if failures:
     print("\nFAILURES:")
     for failure in failures:
         print(" -", failure)
     raise SystemExit(1)
 
-print("PASS: Harmony use is limited to the two reviewed Odyssey gravship hard-code bridges.")
+print("PASS: Harmony use is limited to the reviewed Odyssey bridges plus bounded optional VGE launch isolation.")
