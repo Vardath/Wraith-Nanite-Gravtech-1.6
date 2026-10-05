@@ -17,7 +17,9 @@
       <thingDefs><li>Plasteel</li><li>Uranium</li><li>ComponentSpacer</li></thingDefs>
     </fixedIngredientFilter>
     <products><WNG_AncientNeuralInterface>1</WNG_AncientNeuralInterface></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li></recipeUsers>
+    <recipeUsers><li>WNG_PrecursorFabricator</li>
+      <li>FabricationBench</li>
+    </recipeUsers>
   </RecipeDef>
 
   <RecipeDef ParentName="SurgeryInstallImplantBase">
