@@ -539,8 +539,10 @@ jobs:
           for required in (
               "GameComponent_WNGGravshipLaunchParity",
               "PreceptDefOf.GravshipLaunch",
-              "PreceptMaker.MakePrecept(launchDef)",
-              "ideo.AddPrecept(precept, init: true, fillWith: launchDef.ritualPatternBase)",
+              "new RitualObligationTargetWorker_GravshipLaunch(vanillaTargetDef)",
+              "ritual.isAnytime = true;",
+              "ritual.canBeAnytime = true;",
+              "ideo.AddPrecept(ritual, init: true, fillWith: vanillaPattern)",
           ):
               if required not in launch_parity_src:
                   failures.append(f"WNG vanilla launch-ritual parity contract missing: {required}")
