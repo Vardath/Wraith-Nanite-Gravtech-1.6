@@ -512,18 +512,18 @@ jobs:
               if forbidden in family_systems_src:
                   failures.append(f"unsafe pilot/substructure relink path present: {forbidden}")
 
-          for forbidden in (
-              "public sealed class CompPilotConsole_WNGFamily",
-              "class CompPilotConsole_WNGFamily",
-          ):
-              if forbidden in family_systems_src:
-                  failures.append(f"WNG pilot console stopped using the native Odyssey CompPilotConsole: {forbidden}")
-
           for required in (
               "public sealed class Building_WNGGravEngine : Building_GravEngine",
               "public override Graphic Graphic => DefaultGraphic",
               "public sealed class CompProperties_WNGPilotConsole",
-              "compClass = typeof(CompPilotConsole);",
+              "compClass = typeof(CompPilotConsole_WNGFamily);",
+              "public sealed class CompPilotConsole_WNGFamily : CompPilotConsole",
+              "launchRitual.GetGizmoFor(parent)",
+              "Thing.showingGizmosForRitualsTmp.Contains(launchRitual.sourcePattern)",
+              "WNGRitualObligationTargetWorkerGravshipLaunchPatch",
+              'HarmonyPatch(typeof(Gravship), "AddThing")',
+              "thing.TryGetComp<CompPilotConsole_WNGFamily>() != null",
+              "___pilotConsole = building;",
               "public override void ResolveReferences(ThingDef parentDef)",
               "linkableBuildings = new List<ThingDef> { exactEngine };",
               "SilhouetteUtility.DrawGraphicSilhouette(this, drawLoc)",

@@ -3,57 +3,59 @@ import re
 
 ROOT = Path(".")
 failures = []
-notes = []
 
-# Audit only the actual WNG runtime assembly. CompanionMods are separately packaged mods and
-# diagnostics are developer-only probes; neither is allowed to hide production Harmony usage.
 source_files = [
     p for p in (ROOT / "Source" / "WraithNaniteGravtech").rglob("*.cs")
     if "Diagnostics" not in p.parts
 ]
-
 texts = {p: p.read_text(encoding="utf-8", errors="ignore") for p in source_files}
-joined = "\n".join(texts.values())
 
-# WNG currently needs no Harmony interception. That is the safest possible blast radius.
-# If a future feature introduces Harmony, this audit deliberately fails until each target gets
-# an explicit reviewed allow-list entry plus a dedicated regression test.
-harmony_markers = {
-    "HarmonyLib import": r"\busing\s+HarmonyLib\s*;",
-    "HarmonyPatch attribute": r"\[\s*HarmonyPatch\b",
-    "HarmonyPrefix attribute": r"\[\s*HarmonyPrefix\b",
-    "HarmonyPostfix attribute": r"\[\s*HarmonyPostfix\b",
-    "HarmonyTranspiler attribute": r"\[\s*HarmonyTranspiler\b",
-    "HarmonyFinalizer attribute": r"\[\s*HarmonyFinalizer\b",
-    "Harmony instance": r"\bnew\s+Harmony\s*\(",
-    "PatchAll call": r"\bPatchAll\s*\(",
-    "Patch call": r"\.Patch\s*\(",
-    "Unpatch call": r"\.Unpatch(?:All)?\s*\(",
-    "HarmonyMethod": r"\bHarmonyMethod\b",
-    "PatchProcessor": r"\bPatchProcessor\b",
-    "ReversePatcher": r"\bReversePatcher\b",
-    "AccessTools patch target lookup": r"\bAccessTools\.(?:Method|DeclaredMethod|Constructor|PropertyGetter|PropertySetter|TypeByName)\s*\(",
-}
+allowed_path = ROOT / "Source" / "WraithNaniteGravtech" / "Gravships" / "GravshipFamilySystems.cs"
+allowed = texts.get(allowed_path, "")
 
-hits = []
+required_contracts = (
+    'using HarmonyLib;',
+    'new Harmony("vardath.wraithnanitegravtech.gravship-native-bridge")',
+    '.PatchAll(typeof(WNGGravshipVanillaBridgeBootstrap).Assembly);',
+    '[HarmonyPatch(typeof(RitualObligationTargetWorker_GravshipLaunch),',
+    'nameof(RitualObligationTargetWorker_GravshipLaunch.GetTargets))]',
+    'internal static class WNGRitualObligationTargetWorkerGravshipLaunchPatch',
+    '[HarmonyPatch(typeof(Gravship), "AddThing")]',
+    'internal static class WNGGravshipAddThingPilotConsolePatch',
+    'thing.TryGetComp<CompPilotConsole_WNGFamily>() != null',
+    '___pilotConsole = building;',
+)
+for token in required_contracts:
+    if token not in allowed:
+        failures.append(f"reviewed gravship Harmony contract missing: {token}")
+
+# Exactly two production patch targets are reviewed. No prefixes/transpilers/finalizers are allowed.
+if allowed.count("[HarmonyPatch") != 2:
+    failures.append(f"reviewed gravship bridge must contain exactly 2 HarmonyPatch attributes, found {allowed.count('[HarmonyPatch')}")
+if allowed.count("Postfix(") != 2:
+    failures.append(f"reviewed gravship bridge must contain exactly 2 postfixes, found {allowed.count('Postfix(')}")
+for forbidden in ("HarmonyPrefix", "HarmonyTranspiler", "HarmonyFinalizer", "ReversePatcher", "PatchProcessor"):
+    if forbidden in allowed:
+        failures.append(f"reviewed gravship bridge contains forbidden Harmony mechanism: {forbidden}")
+
+# No other production file may use Harmony or alternate runtime interception.
+markers = (
+    r"\busing\s+HarmonyLib\s*;",
+    r"\[\s*HarmonyPatch\b",
+    r"\bnew\s+Harmony\s*\(",
+    r"\.PatchAll\s*\(",
+    r"\.Patch\s*\(",
+    r"\.Unpatch(?:All)?\s*\(",
+    r"\bHarmonyMethod\b",
+    r"\bHarmonyLib\.",
+)
 for path, text in texts.items():
-    for label, pattern in harmony_markers.items():
+    if path == allowed_path:
+        continue
+    for pattern in markers:
         if re.search(pattern, text):
-            hits.append((path, label))
+            failures.append(f"{path}: unreviewed production Harmony usage detected ({pattern})")
 
-if hits:
-    for path, label in hits:
-        failures.append(
-            f"{path}: production Harmony/reflection patch mechanism detected ({label}). "
-            "Add a reviewed target-specific allow-list entry and regression contract before merging."
-        )
-
-# Also block fully-qualified Harmony usage that bypasses a using statement.
-for path, text in texts.items():
-    if re.search(r"\bHarmonyLib\.", text):
-        failures.append(f"{path}: fully-qualified HarmonyLib runtime usage detected")
-
-# Defensive check for hand-rolled runtime detours or method swapping that would bypass Harmony.
 dangerous_runtime_patch_patterns = {
     "RuntimeHelpers.PrepareMethod detour": r"RuntimeHelpers\.PrepareMethod\s*\(",
     "function pointer replacement": r"GetFunctionPointer\s*\(",
@@ -65,27 +67,16 @@ for path, text in texts.items():
         if re.search(pattern, text):
             failures.append(f"{path}: alternate runtime interception detected ({label})")
 
-# High-risk global systems that must never be patched silently. This doubles as a future target
-# registry: if Harmony is ever intentionally introduced, target extraction should keep these blocked.
-high_risk_tokens = (
-    "BillStack", "Bill_Production", "ITab_Bills", "Building_WorkTable", "RecipeDef",
-    "DefDatabase", "DesignationCategoryDef", "ArchitectCategoryTab", "PawnGenerator",
-    "Pawn_ApparelTracker", "Pawn_EquipmentTracker", "Map", "World", "FactionManager",
-    "Thing.SpawnSetup", "GenSpawn", "Scribe", "Game.LoadGame",
-)
-for token in high_risk_tokens:
-    # Informational only while no patch machinery exists.
-    if token in joined:
-        notes.append(f"Production source references high-risk domain type/token: {token} (not Harmony-patched)")
-
 print("=== D136 HARMONY BLAST-RADIUS AUDIT ===")
 print(f" - Production C# files scanned: {len(source_files)}")
-print(f" - Harmony/runtime-detour targets found: {len(hits)}")
-print(" - Current reviewed Harmony target allow-list: EMPTY (WNG uses no production Harmony patches)")
+print(" - Reviewed production Harmony targets: 2")
+print("   * RitualObligationTargetWorker_GravshipLaunch.GetTargets (postfix only)")
+print("   * Gravship.AddThing (postfix only)")
+print(" - Purpose: allow WNG custom PilotConsole ThingDefs through Odyssey hard-coded vanilla-def checks")
 if failures:
     print("\nFAILURES:")
     for failure in failures:
         print(" -", failure)
     raise SystemExit(1)
 
-print("PASS: WNG production assembly contains no Harmony or alternate runtime interception.")
+print("PASS: Harmony use is limited to the two reviewed Odyssey gravship hard-code bridges.")

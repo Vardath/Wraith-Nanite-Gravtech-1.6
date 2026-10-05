@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -568,11 +570,15 @@ namespace WraithNaniteGravtech
     /// <summary>
     /// Exact-family definition layer for WNG pilot consoles.
     ///
-    /// The runtime comp is RimWorld's native CompPilotConsole. The only WNG-specific work happens
-    /// while Def references are resolved: after vanilla builds its reverse facility list, replace
-    /// that candidate list with the one grav engine belonging to this console's family. This keeps
-    /// the complete Odyssey pilot/ritual/launch implementation untouched while preventing
-    /// cross-family or spawn-order link drift.
+    /// WNG still inherits RimWorld's CompPilotConsole. The thin runtime subclass below exists only
+    /// to bridge Odyssey's two hard-coded PilotConsole ThingDef assumptions:
+    /// 1) the launch ritual gizmo can be omitted for a custom pilot-console ThingDef even though the
+    ///    real CompPilotConsole is linked and right-click piloting works;
+    /// 2) Gravship.AddThing records its world-object pilot console only when the ThingDef is exactly
+    ///    ThingDefOf.PilotConsole.
+    ///
+    /// All piloting, ritual setup, destination selection, launch validation and takeoff remain the
+    /// native Odyssey implementations.
     /// </summary>
     public sealed class CompProperties_WNGPilotConsole : CompProperties_GravshipFacility
     {
@@ -580,7 +586,7 @@ namespace WraithNaniteGravtech
 
         public CompProperties_WNGPilotConsole()
         {
-            compClass = typeof(CompPilotConsole);
+            compClass = typeof(CompPilotConsole_WNGFamily);
         }
 
         public override void ResolveReferences(ThingDef parentDef)
@@ -603,8 +609,118 @@ namespace WraithNaniteGravtech
         }
     }
 
-    // Every WNG pilot console uses the property class above, but the instantiated runtime comp is
-    // vanilla CompPilotConsole. Family-specific power/fuel/thruster systems remain separate comps.
+    /// <summary>
+    /// Native Odyssey pilot console with one UI compatibility bridge for custom WNG ThingDefs.
+    /// The command yielded here is RimWorld's own Command_Ritual from the real GravshipLaunch
+    /// precept. If Thing.GetGizmos already emitted that ritual, this comp emits nothing extra.
+    /// </summary>
+    public sealed class CompPilotConsole_WNGFamily : CompPilotConsole
+    {
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        {
+            foreach (Gizmo gizmo in base.CompGetGizmosExtra())
+                yield return gizmo;
+
+            if (!parent.Spawned || engine == null || !ModsConfig.IdeologyActive)
+                yield break;
+
+            Faction player = Faction.OfPlayerSilentFail;
+            if (player?.ideos == null)
+                yield break;
+
+            Precept_Ritual launchRitual = null;
+            foreach (Ideo ideo in player.ideos.AllIdeos)
+            {
+                launchRitual = ideo?.GetPrecept(PreceptDefOf.GravshipLaunch) as Precept_Ritual;
+                if (launchRitual != null)
+                    break;
+            }
+
+            if (launchRitual == null)
+                yield break;
+
+            // Thing.GetGizmos populates this set when it successfully emitted the ritual already.
+            // That keeps the bridge invisible on vanilla-compatible paths and prevents duplicates.
+            if (launchRitual.sourcePattern != null &&
+                Thing.showingGizmosForRitualsTmp.Contains(launchRitual.sourcePattern))
+            {
+                yield break;
+            }
+
+            foreach (Gizmo gizmo in launchRitual.GetGizmoFor(parent))
+                yield return gizmo;
+        }
+    }
+
+    /// <summary>
+    /// Odyssey hard-codes the vanilla PilotConsole ThingDef in two places that matter to WNG:
+    /// ritual target enumeration and Gravship world-object construction. These two narrow patches
+    /// broaden only those checks to WNG pilot consoles; they do not replace launch mechanics.
+    /// </summary>
+    [StaticConstructorOnStartup]
+    internal static class WNGGravshipVanillaBridgeBootstrap
+    {
+        static WNGGravshipVanillaBridgeBootstrap()
+        {
+            new Harmony("vardath.wraithnanitegravtech.gravship-native-bridge")
+                .PatchAll(typeof(WNGGravshipVanillaBridgeBootstrap).Assembly);
+        }
+    }
+
+    [HarmonyPatch(typeof(RitualObligationTargetWorker_GravshipLaunch),
+        nameof(RitualObligationTargetWorker_GravshipLaunch.GetTargets))]
+    internal static class WNGRitualObligationTargetWorkerGravshipLaunchPatch
+    {
+        private static IEnumerable<TargetInfo> Postfix(
+            IEnumerable<TargetInfo> __result,
+            RitualObligation obligation,
+            Map map)
+        {
+            HashSet<Thing> seen = new HashSet<Thing>();
+
+            foreach (TargetInfo target in __result)
+            {
+                if (target.HasThing)
+                    seen.Add(target.Thing);
+                yield return target;
+            }
+
+            foreach (string defName in new[]
+            {
+                "WNG_OrganicPilotNode",
+                "WNG_PrecursorPilotConsole",
+                "WNG_GoauldPeltac"
+            })
+            {
+                ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+                if (def == null)
+                    continue;
+
+                foreach (Thing thing in map.listerThings.ThingsOfDef(def))
+                {
+                    if (!seen.Add(thing))
+                        continue;
+
+                    CompPilotConsole console = thing.TryGetComp<CompPilotConsole>();
+                    if (console != null && (bool)console.CanUseNow())
+                        yield return thing;
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Gravship), "AddThing")]
+    internal static class WNGGravshipAddThingPilotConsolePatch
+    {
+        private static void Postfix(Thing thing, ref Building ___pilotConsole)
+        {
+            if (thing is Building building &&
+                thing.TryGetComp<CompPilotConsole_WNGFamily>() != null)
+            {
+                ___pilotConsole = building;
+            }
+        }
+    }
 
     public sealed class CompProperties_WNGGravshipFacility : CompProperties_GravshipFacility
     {

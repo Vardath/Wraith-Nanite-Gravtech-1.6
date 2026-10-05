@@ -8,6 +8,11 @@
   </supportedVersions>
   <modDependencies>
     <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+    </li>
+    <li>
       <packageId>ludeon.rimworld.royalty</packageId>
       <displayName>Royalty</displayName>
     </li>
@@ -29,6 +34,7 @@
     </li>
   </modDependencies>
   <loadAfter>
+    <li>brrainz.harmony</li>
     <li>ccyt.stargatesmod</li>
     <li>idolord.onac</li>
     <li>cravemode.rimgatejaffakreebiotech</li>
@@ -42,5 +48,5 @@ Block Replicators use a Drone -&gt; Hunter -&gt; Bulwark -&gt; Titan -&gt; Siege
 
 Human-form nanite beings add Lattice factions, infiltration, Queen/controller systems, Neural Interface and Pattern Archive technology. Ancient/Asuran content includes Puddle Jumpers, pulse weapons, personal and settlement shields, furniture, pilot systems and a complete themed Odyssey gravship family. Wraith Darts, Strike Craft and Cruisers, Al'kesh and Death Gliders, Goa'uld gravship systems, transport rings and related pharmacology expand the wider setting.
 
-Includes four Wraith/human-form player starts on the surface or in orbit and uses RimWorld/Odyssey native systems wherever practical. Requires Royalty, Ideology, Biotech, Anomaly and Odyssey. Combat Extended compatibility definitions are included. Optional integration is detected automatically for the Stargates mod (ccyt.stargatesmod), ONAC and RimGate Jaffa/Kree; Stargates can provide real gate-linked starts, visits, hunts and incursions without becoming a hard dependency.</description>
+Includes four Wraith/human-form player starts on the surface or in orbit and uses RimWorld/Odyssey native systems wherever practical. Requires Harmony, Royalty, Ideology, Biotech, Anomaly and Odyssey. Combat Extended compatibility definitions are included. Optional integration is detected automatically for the Stargates mod (ccyt.stargatesmod), ONAC and RimGate Jaffa/Kree; Stargates can provide real gate-linked starts, visits, hunts and incursions without becoming a hard dependency.</description>
 </ModMetaData>

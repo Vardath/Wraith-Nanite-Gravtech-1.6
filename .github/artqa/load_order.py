@@ -43,6 +43,7 @@ def packages(root, node_name):
 hard = packages(about_root, "modDependencies")
 load_after = packages(about_root, "loadAfter")
 expected_hard = {
+    "brrainz.harmony",
     "ludeon.rimworld.royalty",
     "ludeon.rimworld.ideology",
     "ludeon.rimworld.biotech",
