@@ -19,7 +19,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_AsuranNaniteSlurry</li><li>Silver</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranSleeperStatue>1</WNG_AsuranSleeperStatue></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li>
+    <recipeUsers>
       <li>TableSculpting</li>
     </recipeUsers>
     <effectWorking>Sculpt</effectWorking>
@@ -44,7 +44,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_AsuranNaniteSlurry</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranFeederStatue>1</WNG_AsuranFeederStatue></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li>
+    <recipeUsers>
       <li>TableSculpting</li>
     </recipeUsers>
     <effectWorking>Sculpt</effectWorking>
@@ -69,7 +69,7 @@
     </ingredients>
     <fixedIngredientFilter><thingDefs><li>Plasteel</li><li>ComponentSpacer</li><li>WNG_AsuranNaniteSlurry</li></thingDefs></fixedIngredientFilter>
     <products><WNG_AsuranReplicatorReliquary>1</WNG_AsuranReplicatorReliquary></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li>
+    <recipeUsers>
       <li>TableSculpting</li>
     </recipeUsers>
     <effectWorking>Sculpt</effectWorking>
