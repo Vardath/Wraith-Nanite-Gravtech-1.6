@@ -5,11 +5,12 @@ using Verse;
 namespace WraithNaniteGravtech
 {
     /// <summary>
-    /// Low-frequency continuity repair for abilities declared by active WNG genes.
+    /// Low-frequency continuity repair for WNG gene-granted abilities and narrowly scoped
+    /// xenotype continuity migrations.
     ///
-    /// This deliberately does not infer caste/PawnKind abilities and never removes abilities.
-    /// Its sole job is to restore a declared WNG gene ability if vanilla gene duplication,
-    /// replacement or save/load continuity has left that exact ability missing.
+    /// It never removes genes or abilities, never changes faction/xenotype identity, and does not
+    /// infer caste/PawnKind powers. The only gene migration is the explicit Whispers lesser-Wraith
+    /// package, so existing saves receive the same two genes now declared by that xenotype.
     /// </summary>
     public sealed class GameComponent_WNGGeneAbilityReconciler : GameComponent
     {
@@ -51,6 +52,8 @@ namespace WraithNaniteGravtech
             if (pawn == null || pawn.Dead || pawn.genes == null || pawn.abilities == null)
                 return;
 
+            EnsureWhispersLesserWraithGenes(pawn);
+
             foreach (Gene gene in pawn.genes.GenesListForReading)
             {
                 GeneDef geneDef = gene?.def;
@@ -82,6 +85,30 @@ namespace WraithNaniteGravtech
                             ": " +
                             ex.Message);
                     }
+                }
+            }
+        }
+
+        private static void EnsureWhispersLesserWraithGenes(Pawn pawn)
+        {
+            if (pawn?.genes?.Xenotype?.defName != "WNG_WhispersHybrid")
+                return;
+
+            foreach (string defName in new[] { "WNG_HybridLifeForce", "WNG_HybridTelepathy" })
+            {
+                GeneDef def = DefDatabase<GeneDef>.GetNamedSilentFail(defName);
+                if (def == null || pawn.genes.GetGene(def) != null)
+                    continue;
+
+                try
+                {
+                    pawn.genes.AddGene(def, xenogene: true);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(
+                        "[WNG] Could not restore Whispers lesser-Wraith gene " +
+                        defName + " for " + pawn.LabelShortCap + ": " + ex.Message);
                 }
             }
         }
