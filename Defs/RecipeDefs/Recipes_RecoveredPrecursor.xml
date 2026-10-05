@@ -26,8 +26,8 @@
       </thingDefs>
     </fixedIngredientFilter>
     <products><WNG_PrecursorPulseRifle>1</WNG_PrecursorPulseRifle></products>
-    <recipeUsers><li>WNG_PrecursorFabricator</li>
-      <li>FabricationBench</li>
+    <recipeUsers>
+      <li>WNG_PrecursorFabricator</li>
     </recipeUsers>
   </RecipeDef>
 </Defs>
