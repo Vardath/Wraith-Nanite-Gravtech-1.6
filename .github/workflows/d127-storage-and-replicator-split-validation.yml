@@ -143,10 +143,24 @@ jobs:
               if block is None or "<alwaysHaulable>false</alwaysHaulable>" not in block.group(0):
                   failures.append(f"intentional hidden research token changed haulability: {name}")
 
-          # Replicator blocks must be both stockpilable and usable by the current WNG disposal bill.
-          salvage=Path("Defs/RecipeDefs/Recipes_ReplicatorSalvage.xml").read_text(encoding="utf-8")
-          if "<li>WNG_ReplicatorMatter</li>" not in salvage or "<li>WNG_PrecursorFabricator</li>" not in salvage:
-              failures.append("Replicator-block disposal recipe lost its exact block ingredient or WNG fabricator user")
+          # Replicator blocks must be both stockpilable and disposable through the intentional
+          # vanilla Electric Smelter route rather than a hidden WNG-only fabrication path.
+          salvage_root=ET.parse("Defs/RecipeDefs/Recipes_ReplicatorSalvage.xml").getroot()
+          reprocess=next((n for n in list(salvage_root) if n.findtext("defName")=="WNG_ReprocessReplicatorMatter"),None)
+          destroy_core=next((n for n in list(salvage_root) if n.findtext("defName")=="WNG_DestroyReplicatorCoreFragment"),None)
+          for recipe,name,ingredient in (
+              (reprocess,"WNG_ReprocessReplicatorMatter","WNG_ReplicatorMatter"),
+              (destroy_core,"WNG_DestroyReplicatorCoreFragment","WNG_ReplicatorCoreFragment"),
+          ):
+              if recipe is None:
+                  failures.append(f"Replicator disposal recipe missing: {name}")
+                  continue
+              users=[x.text for x in recipe.findall("./recipeUsers/li") if x.text]
+              ingredients=[x.text for x in recipe.findall(".//ingredients//thingDefs/li") if x.text]
+              if users != ["ElectricSmelter"]:
+                  failures.append(f"{name} must remain vanilla ElectricSmelter-only; got {users}")
+              if ingredient not in ingredients:
+                  failures.append(f"{name} lost exact disposal ingredient {ingredient}")
 
           # Genuine pawn death (including explosive/projectile kills) must own the 2:1 split.
           hierarchy=Path("Source/WraithNaniteGravtech/Replicators/ReplicatorHierarchy.cs").read_text(encoding="utf-8")
