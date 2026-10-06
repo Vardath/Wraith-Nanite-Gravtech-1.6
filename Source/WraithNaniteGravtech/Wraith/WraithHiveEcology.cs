@@ -106,20 +106,33 @@ namespace WraithNaniteGravtech
             return remaining <= 0;
         }
 
-        public static void SpawnResource(Map map, IntVec3 near, ThingDef def, int count)
+        public static bool SpawnResource(Map map, IntVec3 near, ThingDef def, int count)
         {
             if (map == null || def == null || count <= 0)
-                return;
+                return false;
 
             int remaining = count;
             int stackLimit = Math.Max(1, def.stackLimit);
             while (remaining > 0)
             {
+                int batch = Math.Min(remaining, stackLimit);
                 Thing thing = ThingMaker.MakeThing(def);
-                thing.stackCount = Math.Min(remaining, stackLimit);
-                remaining -= thing.stackCount;
-                GenPlace.TryPlaceThing(thing, near, map, ThingPlaceMode.Near);
+                thing.stackCount = batch;
+
+                bool placed = GenPlace.TryPlaceThing(thing, near, map, ThingPlaceMode.Near);
+                if (!placed && near != map.Center)
+                    placed = GenPlace.TryPlaceThing(thing, map.Center, map, ThingPlaceMode.Near);
+
+                if (!placed)
+                {
+                    if (!thing.Destroyed && !thing.Spawned && thing.ParentHolder == null)
+                        thing.Destroy(DestroyMode.Vanish);
+                    return false;
+                }
+
+                remaining -= batch;
             }
+            return true;
         }
 
         public static Gene_Resource_LifeForce FindChargedDonor(Map map, Faction faction, float minimumValue)
