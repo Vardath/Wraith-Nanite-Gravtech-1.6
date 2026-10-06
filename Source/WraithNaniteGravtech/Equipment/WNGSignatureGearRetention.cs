@@ -184,12 +184,37 @@ namespace WraithNaniteGravtech
             if (weapon == null)
                 return;
 
+            Map sourceMap = weapon.Map;
+            IntVec3 sourceCell = weapon.Position;
+
             try
             {
+                // A spawned Thing is still owned by the map.  Pawn_EquipmentTracker.AddEquipment
+                // expects an unowned Thing, so detach the exact dropped weapon before handing it
+                // to the equipment tracker.  This prevents the map/equipment double-ownership loop
+                // that otherwise repeats every retention scan.
+                if (weapon.Spawned)
+                    weapon.DeSpawn();
+
                 pawn.equipment.AddEquipment(weapon);
             }
             catch (Exception ex)
             {
+                // Preserve the exact weapon if the handoff fails.  Never leave it orphaned after
+                // a successful DeSpawn, and do not manufacture a replacement.
+                if (!weapon.Destroyed && !weapon.Spawned && weapon.holdingOwner == null && sourceMap != null)
+                {
+                    try
+                    {
+                        IntVec3 recoveryCell = sourceCell.InBounds(sourceMap) ? sourceCell : pawn.Position;
+                        GenPlace.TryPlaceThing(weapon, recoveryCell, sourceMap, ThingPlaceMode.Near);
+                    }
+                    catch (Exception restoreEx)
+                    {
+                        Log.Warning("[WNG] Could not return failed spawn-weapon recovery " + weapon.def.defName + " to the map: " + restoreEx.Message);
+                    }
+                }
+
                 Log.Warning("[WNG] Could not restore spawn weapon " + weapon.def.defName + " to " + pawn.LabelShortCap + ": " + ex.Message);
             }
         }
