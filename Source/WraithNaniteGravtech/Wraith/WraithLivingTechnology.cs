@@ -200,10 +200,22 @@ namespace WraithNaniteGravtech
             }
             try
             {
-                if (GenPlace.TryPlaceThing(minified, position, map, ThingPlaceMode.Near))
-                    return true;
-                reason = "no nearby cell can receive the matured living-technology output";
-                return false;
+                if (!GenPlace.TryPlaceThing(minified, position, map, ThingPlaceMode.Near))
+                {
+                    reason = "no nearby cell can receive the matured living-technology output";
+                    return false;
+                }
+
+                // Do not let a host-consumption transaction commit unless the prepared minified
+                // building is demonstrably present on the expected map. This protects both the
+                // Living Forge and seeded Wraith grav engine from a false-positive placement result.
+                if (!minified.Spawned || minified.Map != map)
+                {
+                    reason = "the matured living-technology output did not remain spawned on the expected map";
+                    return false;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
