@@ -202,6 +202,7 @@ namespace WraithNaniteGravtech
             {
                 // Preserve the exact weapon if the handoff fails.  Never leave it orphaned after
                 // a successful DeSpawn, and do not manufacture a replacement.
+                string rollbackFailure = null;
                 if (!weapon.Destroyed && !weapon.Spawned && weapon.holdingOwner == null && sourceMap != null)
                 {
                     try
@@ -211,11 +212,11 @@ namespace WraithNaniteGravtech
                     }
                     catch (Exception restoreEx)
                     {
-                        Log.Warning("[WNG] Could not return failed spawn-weapon recovery " + weapon.def.defName + " to the map: " + restoreEx.Message);
+                        rollbackFailure = "; map rollback also failed: " + restoreEx.Message;
                     }
                 }
 
-                Log.Warning("[WNG] Could not restore spawn weapon " + weapon.def.defName + " to " + pawn.LabelShortCap + ": " + ex.Message);
+                Log.Warning("[WNG] Could not restore spawn weapon " + weapon.def.defName + " to " + pawn.LabelShortCap + ": " + ex.Message + (rollbackFailure ?? string.Empty));
             }
         }
 
