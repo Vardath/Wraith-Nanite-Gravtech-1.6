@@ -3,7 +3,7 @@
   <HediffDef>
     <defName>WNG_HostSeedIncubation</defName>
     <label>living forge incubation</label>
-    <description>A Living Forge is growing through this host's tissues. The one-day gestation heavily incapacitates the host. If the host survives to maturity, the host is consumed and a minified Living Forge emerges. Death before maturity destroys the immature implant.</description>
+    <description>A Living Forge is growing through this host's tissues. The one-day gestation heavily incapacitates the host. If the host survives to maturity, the host is killed, the incubation is removed from the resulting corpse, and a minified Living Forge emerges nearby. Death before maturity destroys the immature implant.</description>
     <hediffClass>WraithNaniteGravtech.Hediff_HostSeedIncubation</hediffClass>
     <isBad>true</isBad>
     <duplicationAllowed>false</duplicationAllowed>
