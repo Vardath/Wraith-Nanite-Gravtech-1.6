@@ -66,6 +66,7 @@
     <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>A fitted everyday Wraith uniform built from dark leather, reptile-pattern leather and flexible hive-grown fabric. It is ordinary caste-neutral clothing rather than a combat shell.</description>
     <techLevel>Spacer</techLevel>
+    <smeltable>false</smeltable>
     <graphicData>
       <texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WraithUniform</texPath>
       <graphicClass>Graphic_Single</graphicClass>
