@@ -291,7 +291,6 @@ namespace WraithNaniteGravtech
                 IntVec3 cell;
                 if (available.Count == 0)
                 {
-                    Log.Error("[WNG] Could not find a free family-gravship spawn cell for " + pawn.Name);
                     cell = shipRect.CenterCell;
                 }
                 else
@@ -300,7 +299,8 @@ namespace WraithNaniteGravtech
                     available.RemoveAt(available.Count - 1);
                 }
 
-                GenPlace.TryPlaceThing(pawn, cell, map, ThingPlaceMode.Near);
+                if (!TryPlaceStarterThing(pawn, cell, map, shipRect))
+                    Log.Error("[WNG] Could not place starting pawn " + pawn.Name + " anywhere on the generated starter map.");
             }
         }
 
@@ -339,14 +339,31 @@ namespace WraithNaniteGravtech
                     IntVec3 target = cargoCells[cargoIndex % cargoCells.Count];
                     cargoIndex++;
 
-                    if (!GenPlace.TryPlaceThing(piece, target, map, ThingPlaceMode.Near))
+                    if (!TryPlaceStarterThing(piece, target, map, shipRect))
                     {
                         Log.Warning("[WNG] Could not place starter cargo " + piece.LabelCap +
-                                    " in the family gravship cargo area; using the ship centre.");
-                        GenPlace.TryPlaceThing(piece, shipRect.CenterCell, map, ThingPlaceMode.Near);
+                                    " anywhere on the generated starter map.");
                     }
                 }
             }
+        }
+
+        private static bool TryPlaceStarterThing(Thing thing, IntVec3 preferred, Map map, CellRect shipRect)
+        {
+            if (thing == null || thing.Destroyed || map == null)
+                return false;
+
+            if (GenPlace.TryPlaceThing(thing, preferred, map, ThingPlaceMode.Near))
+                return true;
+
+            IntVec3 fallback;
+            if (shipRect.TryRandomElement(c => c.InBounds(map) && c.Standable(map), out fallback) &&
+                GenPlace.TryPlaceThing(thing, fallback, map, ThingPlaceMode.Near))
+                return true;
+
+            IntVec3 center = map.Center;
+            return center.InBounds(map) &&
+                   GenPlace.TryPlaceThing(thing, center, map, ThingPlaceMode.Near);
         }
 
         private static IEnumerable<IntVec3> UsableInteriorCells(
@@ -506,8 +523,9 @@ namespace WraithNaniteGravtech
             foreach (Pawn pawn in Find.GameInitData.startingAndOptionalPawns)
             {
                 IntVec3 cell;
-                if (rect.TryRandomElement(c => c.Standable(map) && (c.GetTerrain(map)?.IsSubstructure ?? false), out cell))
-                    GenPlace.TryPlaceThing(pawn, cell, map, ThingPlaceMode.Near);
+                if (!rect.TryRandomElement(c => c.Standable(map) && (c.GetTerrain(map)?.IsSubstructure ?? false), out cell))
+                    cell = rect.CenterCell;
+                TryPlaceStarterThing(pawn, cell, map, rect);
             }
 
             foreach (Thing item in startingItems)
@@ -526,7 +544,7 @@ namespace WraithNaniteGravtech
 
                     Thing piece = item.SplitOff(Math.Min(item.def.stackLimit, remaining));
                     remaining -= piece.stackCount;
-                    GenPlace.TryPlaceThing(piece, shelf.OccupiedRect().RandomCell, map, ThingPlaceMode.Near);
+                    TryPlaceStarterThing(piece, shelf.OccupiedRect().RandomCell, map, rect);
                 }
             }
 
