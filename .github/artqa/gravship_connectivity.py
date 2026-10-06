@@ -129,6 +129,49 @@ for family,cfg in families.items():
         if name not in links:
             failures.append(f"{family}: network facility {name} missing from {ename}.linkableFacilities")
 
+# Seeded Wraith grav-engine maturation contract: the real minified engine must be
+# placed and confirmed before the living host is consumed. Unlike Living Forge
+# maturation, the grav-engine host intentionally retains the historical Vanish cleanup.
+wraith_engine = defs.get("WNG_WraithGravEngine")
+if wraith_engine is not None:
+    minified_def = (wraith_engine[1].findtext("minifiedDef") or "").strip()
+    if minified_def != "MinifiedGravEngine":
+        failures.append(f"Wraith: WNG_WraithGravEngine minifiedDef is {minified_def!r}, expected 'MinifiedGravEngine'")
+
+grav_seed_source_path = ROOT/"Source/WraithNaniteGravtech/Wraith/WraithGravEngine.cs"
+living_tech_source_path = ROOT/"Source/WraithNaniteGravtech/Wraith/WraithLivingTechnology.cs"
+if not grav_seed_source_path.exists():
+    failures.append("missing seeded Wraith grav-engine source")
+else:
+    grav_seed_source = grav_seed_source_path.read_text(encoding="utf-8", errors="ignore")
+    start = grav_seed_source.find("class Hediff_GravEngineSeedIncubation")
+    end = grav_seed_source.find("class CompProperties_CorpseGravEngineIncubation", start)
+    host_segment = grav_seed_source[start:end if end >= 0 else None] if start >= 0 else ""
+    if not host_segment:
+        failures.append("Wraith: could not isolate Hediff_GravEngineSeedIncubation")
+    else:
+        prepare_i = host_segment.find("TryPrepareMinifiedGravEngine")
+        place_i = host_segment.find("TryPlacePrepared(minified, pawn.Position, pawn.Map, out reason)")
+        commit_i = host_segment.find("outputCommitted = true;", place_i)
+        cleanup_i = host_segment.find("TryCleanupCommittedHost();", commit_i)
+        vanish_i = host_segment.find("pawn.Destroy(DestroyMode.Vanish)")
+        if min(prepare_i, place_i, commit_i, cleanup_i, vanish_i) < 0:
+            failures.append("Wraith: seeded grav-engine host maturation is missing prepare/place/commit/vanish lifecycle steps")
+        elif not (prepare_i < place_i < commit_i < cleanup_i):
+            failures.append("Wraith: seeded grav-engine host can commit/cleanup before the minified engine placement transaction")
+        if "pawn.Kill(" in host_segment:
+            failures.append("Wraith: seeded grav-engine host cleanup changed from Vanish to pawn.Kill; keep the historical despawn contract")
+
+if not living_tech_source_path.exists():
+    failures.append("missing Wraith living-technology output utility source")
+else:
+    living_tech_source = living_tech_source_path.read_text(encoding="utf-8", errors="ignore")
+    for token in ("GenPlace.TryPlaceThing(minified, position, map, ThingPlaceMode.Near)",
+                  "!minified.Spawned",
+                  "minified.Map != map"):
+        if token not in living_tech_source:
+            failures.append(f"Wraith: minified living-technology placement lacks committed-spawn guard {token}")
+
 # Cross-family contamination: an engine must not advertise another family's facilities.
 family_by_def={}
 for name,(path,node) in defs.items():
