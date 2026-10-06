@@ -317,7 +317,7 @@ namespace WraithNaniteGravtech
             host.health.AddHediff(typed);
             base.Apply(target, dest);
             WraithLivingTechnologyUtility.BestEffortMessage(
-                host.LabelShort + " is incubating a Living Forge. The host will be consumed after one day if it survives the gestation.",
+                host.LabelShort + " is incubating a Living Forge. The host will die after one day if it survives the gestation; the corpse will remain and the incubation will be removed.",
                 host,
                 MessageTypeDefOf.NeutralEvent);
         }
@@ -370,7 +370,7 @@ namespace WraithNaniteGravtech
 
             if (outputCommitted)
             {
-                TryCleanupCommittedHost();
+                TryFinalizeCommittedHost();
                 return;
             }
 
@@ -410,24 +410,43 @@ namespace WraithNaniteGravtech
                 return;
             }
 
-            // The placed minified Forge is now the gameplay commit. Latch before consuming the
-            // source host so cleanup exceptions or save/reload can never manufacture a second Forge.
+            // Commit the minified Forge first so a death/corpse cleanup exception can never erase the
+            // matured output. Host finalization now uses RimWorld's normal death pipeline rather than
+            // Destroy(Vanish), leaving a corpse behind.
             outputCommitted = true;
-            TryCleanupCommittedHost();
+            TryFinalizeCommittedHost();
             WraithLivingTechnologyUtility.BestEffortMessage(
-                "The one-day gestation is complete. The host has been consumed into a minified Living Forge.",
+                "The one-day gestation is complete. The host has died and a minified Living Forge has emerged beside the corpse.",
                 minified,
                 MessageTypeDefOf.PositiveEvent);
         }
 
-        private void TryCleanupCommittedHost()
+        private void TryFinalizeCommittedHost()
         {
             if (pawn == null || pawn.Destroyed)
                 return;
-            try { pawn.Destroy(DestroyMode.Vanish); }
+
+            try
+            {
+                if (!pawn.Dead)
+                    pawn.Kill(null);
+
+                if (!pawn.Dead)
+                {
+                    Log.Warning("[WNG] Living Forge output committed but the host resisted forced death; finalization will retry.");
+                    return;
+                }
+
+                // A dead Pawn remains the InnerPawn of its Corpse. Remove only the gestation marker
+                // so the corpse is ordinary biological remains and cannot present stale incubation.
+                Pawn corpsePawn = pawn.Corpse?.InnerPawn ?? pawn;
+                Hediff incubation = corpsePawn.health?.hediffSet?.GetFirstHediffOfDef(def);
+                if (incubation != null)
+                    corpsePawn.health.RemoveHediff(incubation);
+            }
             catch (Exception ex)
             {
-                try { Log.Warning("[WNG] Living Forge output committed but consumed host cleanup failed; output will not be duplicated: " + ex.Message); }
+                try { Log.Warning("[WNG] Living Forge output committed but host death/corpse cleanup failed; output will not be duplicated and finalization will retry: " + ex.Message); }
                 catch { }
             }
         }
