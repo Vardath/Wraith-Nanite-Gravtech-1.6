@@ -142,9 +142,21 @@ for token in (
     "GenStep_ReserveGravshipArea.SetStartSpot",
     "GravshipPlacementUtility.ClearAreaForGravship",
     "RelinkFamilyFacilities",
+    "TryPlaceStarterThing",
+    "if (!TryPlaceStarterThing(pawn",
+    "if (!TryPlaceStarterThing(piece",
 ):
     if token not in starter:
         fail.append("orbital starter lost safety/lifecycle contract: "+token)
+
+# Starter pawns/cargo must not use one-shot unchecked placement calls: failed placement can
+# otherwise silently remove an exact starting pawn or split-off inventory stack from the scenario.
+for forbidden in (
+    "GenPlace.TryPlaceThing(pawn, cell, map, ThingPlaceMode.Near);",
+    "GenPlace.TryPlaceThing(piece, shelf.OccupiedRect().RandomCell, map, ThingPlaceMode.Near);",
+):
+    if forbidden in starter:
+        fail.append("orbital starter retains unchecked placement path: "+forbidden)
 
 # 8) Optional CE scenario patches may add ammo only to the four WNG scenarios.
 ce=ROOT/"Compatibility/CombatExtended/Patches/Scenarios_WNG.xml"
