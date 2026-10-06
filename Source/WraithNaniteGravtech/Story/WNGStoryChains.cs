@@ -209,6 +209,12 @@ namespace WraithNaniteGravtech
 
         protected override bool TestRunInt(Slate slate)
         {
+            // The Replicator branch is driven by Replicator incidents. Do not offer a quest
+            // whose first/third stages are explicitly disabled by the player's story-event toggle.
+            if (StoryBranch == WNGStoryBranch.Replicator &&
+                !WNGSettingsUtility.ReplicatorStoryEventsEnabled)
+                return false;
+
             WNGStoryProgress progress = WNGStoryChainUtility.Progress;
             return WNGStoryChainUtility.BestPlayerHome() != null
                 && progress != null
