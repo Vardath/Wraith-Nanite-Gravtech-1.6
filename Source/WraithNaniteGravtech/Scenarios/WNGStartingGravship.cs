@@ -579,7 +579,13 @@ namespace WraithNaniteGravtech
                 groups.Add(new List<Thing> { pawn });
 
             if (groups.Count == 0)
-                return;
+            {
+                // Defensive fallback for unusual custom scenarios with cargo but no starting pawn.
+                // Preserve the exact starting items instead of returning before they enter a drop pod.
+                if (startingItems == null || startingItems.Count == 0)
+                    return;
+                groups.Add(new List<Thing>());
+            }
 
             int index = 0;
             foreach (Thing item in startingItems)
