@@ -175,7 +175,9 @@ required_tokens=(
     "pawn.apparel.Wear(worn, true)",
     "if (!withinSpawnWindow || pawn.equipment == null)",
     "FindDroppedSignatureWeapon",
+    "weapon.DeSpawn()",
     "pawn.equipment.AddEquipment(weapon)",
+    "GenPlace.TryPlaceThing(weapon",
     "pawn.outfits?.forcedHandler?.SetForced(apparel, true)",
     "Scribe_Collections.Look",
 )
