@@ -538,13 +538,16 @@ namespace WraithNaniteGravtech
                 while (remaining > 0 && safety-- > 0)
                 {
                     Thing shelf;
-                    if (!spawned.Where(t => t.def == ThingDefOf.Shelf || t.def == ThingDefOf.ShelfSmall)
+                    IntVec3 target = rect.CenterCell;
+                    if (spawned.Where(t => t.def == ThingDefOf.Shelf || t.def == ThingDefOf.ShelfSmall)
                         .TryRandomElement(out shelf))
-                        break;
+                    {
+                        target = shelf.OccupiedRect().RandomCell;
+                    }
 
                     Thing piece = item.SplitOff(Math.Min(item.def.stackLimit, remaining));
                     remaining -= piece.stackCount;
-                    TryPlaceStarterThing(piece, shelf.OccupiedRect().RandomCell, map, rect);
+                    TryPlaceStarterThing(piece, target, map, rect);
                 }
             }
 
