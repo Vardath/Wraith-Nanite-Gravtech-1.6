@@ -246,7 +246,9 @@ for rel,tokens in contracts.items():
 wraith_ecology_path=ROOT/"Source"/"WraithNaniteGravtech"/"Wraith"/"WraithHiveEcology.cs"
 wraith_ecology=wraith_ecology_path.read_text(encoding="utf-8",errors="ignore") if wraith_ecology_path.exists() else ""
 for token in (
-    "public static bool SpawnResource",
+    "public static void SpawnResource",
+    "TrySpawnResource(map, near, def, count);",
+    "internal static bool TrySpawnResource",
     "bool placed = GenPlace.TryPlaceThing",
     "thing.ParentHolder == null",
     "remaining -= batch",
