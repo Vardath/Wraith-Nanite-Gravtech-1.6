@@ -106,7 +106,13 @@ namespace WraithNaniteGravtech
             return remaining <= 0;
         }
 
-        public static bool SpawnResource(Map map, IntVec3 near, ThingDef def, int count)
+        // Keep this established public signature stable for external WNG integrations.
+        public static void SpawnResource(Map map, IntVec3 near, ThingDef def, int count)
+        {
+            TrySpawnResource(map, near, def, count);
+        }
+
+        internal static bool TrySpawnResource(Map map, IntVec3 near, ThingDef def, int count)
         {
             if (map == null || def == null || count <= 0)
                 return false;
