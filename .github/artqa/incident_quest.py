@@ -26,6 +26,7 @@ def parse_defs(folder, tag):
 
 incidents=parse_defs("Defs/IncidentDefs","IncidentDef")
 sites=parse_defs("Defs/SitePartDefs","SitePartDef")
+quests=parse_defs("Defs/QuestScriptDefs","QuestScriptDef")
 
 # Production C# class index.
 source_files=[p for p in (ROOT/"Source"/"WraithNaniteGravtech").rglob("*.cs") if "Diagnostics" not in p.parts]
@@ -62,6 +63,149 @@ for path in (ROOT/"Defs").rglob("*.xml"):
 
 def class_name(worker):
     return worker.split(".")[-1] if worker else ""
+
+# QuestScriptDef structural validation.
+quest_root_classes=set()
+for name,(path,node) in quests.items():
+    root=node.find("root")
+    root_class=((root.get("Class") if root is not None else "") or "").strip()
+    if not root_class:
+        failures.append(f"{name}: missing root Class ({path})")
+    else:
+        cls=class_name(root_class)
+        quest_root_classes.add(cls)
+        found=class_to_paths.get(cls,[])
+        if not found:
+            failures.append(f"{name}: root Class {root_class} has no production C# class")
+        elif not any("QuestNode" in bases for _,bases in found):
+            failures.append(f"{name}: root class {cls} is not recognizably a QuestNode")
+
+        if found:
+            source="\n".join(source_text[p] for p,_ in found)
+            if "TestRunInt" not in source:
+                failures.append(f"{name}: root class {cls} lacks TestRunInt")
+            if "RunInt" not in source:
+                failures.append(f"{name}: root class {cls} lacks RunInt")
+            if "QuestGen.quest.AddPart" not in source:
+                failures.append(f"{name}: root class {cls} never adds a quest part")
+            if 'HardcodedSignalWithQuestID("Accepted")' not in source:
+                failures.append(f"{name}: root class {cls} lacks an Accepted quest signal")
+
+    for tag in ("rootSelectionWeight","rootEarliestDay","minRefireDays"):
+        raw=(node.findtext(tag) or "").strip()
+        if not raw:
+            failures.append(f"{name}: missing {tag} ({path})")
+            continue
+        try:
+            if float(raw)<0:
+                failures.append(f"{name}: negative {tag}={raw}")
+        except ValueError:
+            failures.append(f"{name}: non-numeric {tag}={raw}")
+
+    expire=(node.findtext("expireDaysRange") or "").strip()
+    if not expire:
+        failures.append(f"{name}: missing expireDaysRange ({path})")
+    else:
+        try:
+            lo_raw,hi_raw=[x.strip() for x in expire.split("~",1)]
+            lo=float(lo_raw); hi=float(hi_raw)
+            if lo<=0 or hi<lo:
+                failures.append(f"{name}: invalid expireDaysRange={expire}")
+        except Exception:
+            failures.append(f"{name}: invalid expireDaysRange={expire}")
+
+    name_rules=node.find("./questNameRules/rulesStrings/li")
+    desc_rules=node.find("./questDescriptionRules/rulesStrings/li")
+    if name_rules is None or not (name_rules.text or "").strip():
+        failures.append(f"{name}: missing questNameRules text")
+    if desc_rules is None or not (desc_rules.text or "").strip():
+        failures.append(f"{name}: missing questDescriptionRules text")
+
+# The three legacy chains must resolve every authored stage to a real IncidentDef/SitePartDef.
+legacy_stage_contract={
+    "Wraith":[
+        ("WNG_WraithRuinedLaboratoryDiscovery","WNG_WraithRuinedLaboratory"),
+        ("WNG_WraithCloningInstallationDiscovery","WNG_WraithCloningInstallation"),
+        ("WNG_WraithMatureHiveDiscovery","WNG_WraithMatureHive"),
+    ],
+    "Replicator":[
+        ("WNG_ReplicatorConsumedRuinDiscovery","WNG_ReplicatorConsumedRuin"),
+        ("WNG_HumanFormInfiltration",None),
+        ("WNG_ReplicatorQueenVaultDiscovery","WNG_ReplicatorQueenVault"),
+    ],
+    "Ancient":[
+        ("WNG_PrecursorLaboratoryDiscovery","WNG_PrecursorLaboratorySite"),
+        ("WNG_PrecursorVaultDiscovery","WNG_PrecursorVaultSite"),
+        ("WNG_AsuranDormantFacilityDiscovery","WNG_AsuranDormantFacility"),
+    ],
+}
+for branch,stages in legacy_stage_contract.items():
+    for incident_name,site_name in stages:
+        if incident_name not in incidents:
+            failures.append(f"{branch} legacy quest: missing IncidentDef {incident_name}")
+        if site_name and site_name not in sites:
+            failures.append(f"{branch} legacy quest: missing SitePartDef {site_name}")
+
+story_path=ROOT/"Source/WraithNaniteGravtech/Story/WNGStoryChains.cs"
+if not story_path.exists():
+    failures.append("missing WNG story-chain quest source")
+else:
+    story_source=story_path.read_text(encoding="utf-8",errors="ignore")
+    for token in (
+        "QuestNode_Root_WraithLegacy",
+        "QuestNode_Root_ReplicatorPattern",
+        "QuestNode_Root_AncientLegacy",
+        "QuestNode_Root_WNGConvergence",
+        "QuestPart_WNGStoryChain",
+        "QuestPart_WNGConvergence",
+        "WNGSettingsUtility.ReplicatorStoryEventsEnabled",
+        "Scribe_References.Look(ref currentSite",
+        "Scribe_Values.Look(ref stage",
+        "Scribe_Values.Look(ref started",
+    ):
+        if token not in story_source:
+            failures.append(f"story-chain quest contract missing {token}")
+
+# Site-producing recovery quests must persist their world-object reference and terminal state.
+for source_rel,tokens in {
+    "Source/WraithNaniteGravtech/Ancient/AncientArchaeology.cs":(
+        "QuestPart_AncientArchaeology",
+        "Scribe_References.Look(ref site",
+        "Scribe_Values.Look(ref started",
+        "Scribe_Values.Look(ref resolved",
+        "Find.WorldObjects.Add(created)",
+    ),
+    "Source/WraithNaniteGravtech/Asurans/SovereignNeuralLattice.cs":(
+        "QuestPart_SovereignLatticeRecovery",
+        "Scribe_References.Look(ref cacheSite",
+        "Scribe_Values.Look(ref started",
+        "Scribe_Values.Look(ref resolved",
+        "Find.WorldObjects.Add(site)",
+    ),
+    "Source/WraithNaniteGravtech/Replicators/ReplicatorSalvageQuestAndTrade.cs":(
+        "QuestPart_ReplicatorSalvageConsignment",
+        "BestEligibleMap()",
+        "TryDropConsignment",
+        "Scribe_Values.Look",
+    ),
+    "Source/WraithNaniteGravtech/Wraith/WraithInterHiveMediation.cs":(
+        "QuestPart_WraithInterHiveMediation",
+        "CanAccept()",
+        "TryConsumePayment",
+        "TryAffectGoodwillWith",
+        "RefundPayment",
+        "Scribe_References.Look(ref first",
+        "Scribe_References.Look(ref second",
+    ),
+}.items():
+    path=ROOT/source_rel
+    if not path.exists():
+        failures.append(f"missing quest source {source_rel}")
+        continue
+    text=path.read_text(encoding="utf-8",errors="ignore")
+    for token in tokens:
+        if token not in text:
+            failures.append(f"{source_rel}: quest lifecycle contract missing {token}")
 
 # Incident structural validation.
 target_counts=Counter()
@@ -190,6 +334,8 @@ for collection in (incidents,sites):
                     failures.append(f"{name}: missing pawn kind ref {val}")
 
 print("=== D157 INCIDENT / QUEST AUDIT ===")
+print(f" - WNG QuestScriptDefs audited: {len(quests)}")
+print(f" - Quest root classes referenced: {len(quest_root_classes)}")
 print(f" - WNG IncidentDefs audited: {len(incidents)}")
 print(f" - WNG SitePartDefs audited: {len(sites)}")
 print(f" - Incident worker classes referenced: {len(incident_workers)}")
@@ -208,4 +354,4 @@ if failures:
     print("\nFAILURES:")
     for f in failures: print(" -",f)
     raise SystemExit(1)
-print("PASS: Incident/Site definitions, workers, target guards and WNG cross-references are structurally coherent.")
+print("PASS: Quest scripts, quest roots/lifecycles, Incident/Site definitions, workers, target guards and WNG cross-references are structurally coherent.")
