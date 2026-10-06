@@ -436,7 +436,8 @@
       "tests": [
         ".github/artqa/health_gene.py",
         ".github/artqa/surgery.py",
-        ".github/artqa/save_load_migration.py"
+        ".github/artqa/save_load_migration.py",
+        ".github/artqa/gravship_connectivity.py"
       ],
       "guards": [
         {
@@ -445,7 +446,10 @@
             "TryImplantCorpse(corpse);",
             "Hediff_GravEngineSeedIncubation",
             "CorpseGravEngineIncubationUtility.TryBegin",
-            "WNG_CorpseGravEngineIncubation"
+            "WNG_CorpseGravEngineIncubation",
+            "TryPrepareMinifiedGravEngine",
+            "TryPlacePrepared(minified, pawn.Position, pawn.Map, out reason)",
+            "pawn.Destroy(DestroyMode.Vanish)"
           ]
         }
       ]
