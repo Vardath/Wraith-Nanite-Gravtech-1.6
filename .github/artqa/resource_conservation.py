@@ -242,6 +242,21 @@ for rel,tokens in contracts.items():
         if token not in text:
             failures.append(f"{rel}: missing conservation transaction token {token}")
 
+# Wraith resource grants/refunds must commit physical stacks before accounting them as restored.
+wraith_ecology_path=ROOT/"Source"/"WraithNaniteGravtech"/"Wraith"/"WraithHiveEcology.cs"
+wraith_ecology=wraith_ecology_path.read_text(encoding="utf-8",errors="ignore") if wraith_ecology_path.exists() else ""
+for token in (
+    "public static bool SpawnResource",
+    "bool placed = GenPlace.TryPlaceThing",
+    "thing.ParentHolder == null",
+    "remaining -= batch",
+    "return true;",
+):
+    if token not in wraith_ecology:
+        failures.append(f"Wraith resource placement/refund contract missing: {token}")
+if "remaining -= thing.stackCount;\n                GenPlace.TryPlaceThing" in wraith_ecology:
+    failures.append("Wraith SpawnResource still accounts a stack before confirming physical placement")
+
 # The Asuran source is intentionally reserve-driven. Its default must be nonzero and output exact.
 settings=(ROOT/"Source"/"WraithNaniteGravtech/WNGSettings.cs").read_text(encoding="utf-8",errors="ignore")
 ability=(ROOT/"Defs"/"AbilityDefs"/"Abilities_HumanForm.xml")
