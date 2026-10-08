@@ -188,13 +188,25 @@ for token in (
     "PatchGeologicalLandformsGravTide(harmony)",
     "PatchVanillaGravshipExpanded(harmony)",
     "PatchAutoNameBabies(harmony)",
-    "Harmony.GetPatchInfo(target)",
-    "priority = Priority.First",
-    "compat.before = new[] { patch.owner }",
+    "harmony.Patch(gravPrefix, transpiler: compat)",
+    "Preserved native Geological Landforms and GravTide lightning patches",
     "failed open",
 ):
     if token not in z_text:
         failures.append(f"Z ADAPTIVE OWNED: runtime ordering/arbitration contract missing: {token}")
+
+# The old arbitration destroyed a Geological Landforms prefix and drew a live
+# incompatibility warning. Preserve both upstream lightning patches and guard
+# against a regression that installs a second random filter or unpatches either.
+lightning_start = z_text.find("private static void PatchGeologicalLandformsGravTideLightning(")
+lightning_end = z_text.find("private static void PatchGeologicalLandformsGravTidePlantGrowth(", lightning_start)
+if lightning_start < 0 or lightning_end < 0:
+    failures.append("Z ADAPTIVE OWNED: non-destructive lightning compatibility boundary missing")
+else:
+    lightning_block = z_text[lightning_start:lightning_end]
+    for unsafe in ("harmony.Unpatch(", "harmony.Patch(target, prefix: compat)", "Harmony.GetPatchInfo(target)"):
+        if unsafe in lightning_block:
+            failures.append(f"Z ADAPTIVE OWNED: destructive/duplicate lightning arbitration reintroduced: {unsafe}")
 
 print("=== D162 LOAD-ORDER AUDIT ===")
 print(f" - WNG production C# files scanned: {len(prod)}")
