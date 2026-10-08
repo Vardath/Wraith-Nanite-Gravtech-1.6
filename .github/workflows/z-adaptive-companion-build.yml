@@ -51,6 +51,9 @@ jobs:
           grep -q 'Defs/SoundDef//grains/li' "$root/Patches/AdaptiveKnownFixes.xml"
           grep -q 'GeologicalLandformsLightningPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'PocketMapParent parent' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'SafeVgeGravEngineThingsOfDef' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'GiddyUpSetDeadStorageReadyPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'MissingIdeoApparelTipFinalizer' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'parent.sourceMap.TileInfo.hilliness' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
 
       - name: Restore RimWorld 1.6 reference assemblies

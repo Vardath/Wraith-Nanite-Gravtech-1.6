@@ -28,6 +28,11 @@ namespace ZAdaptiveRuntime
         private static bool psychicShockTargetGuardLogged;
         private static bool ideologyDeityTypeBridgeLogged;
         private static bool ideologyDeityNameBridgeLogged;
+        private static bool invalidVgeThingRequestLogged;
+        private static bool giddyUpUninitializedDeathLogged;
+        private static bool invalidRoleApparelTipLogged;
+        private static MethodInfo giddyUpStorageGetter;
+        private static readonly List<Thing> EmptyVgeThingList = new List<Thing>(0);
 
         static ZAdaptiveRuntimeBootstrap()
         {
@@ -46,6 +51,177 @@ namespace ZAdaptiveRuntime
             PatchScrollMentalStateTarget(harmony);
             PatchInvisibilityPsychology(harmony);
             PatchAutoNameBabies(harmony);
+            PatchVgeGravEngineListerGuard(harmony);
+            PatchGiddyUpDeathInitGuard(harmony);
+            PatchMissingIdeoApparelTipGuard(harmony);
+        }
+
+
+        // 2026-10-09 Player.log: VGE GravEngineTracker.GetGravEngine_ListerThings
+        // repeatedly sends an invalid def to ListerThings.ThingsOfDef, generating
+        // 34k+ invalid ThingRequest exceptions and cascading memory pressure.
+        // The upstream implementation also queries engine.minifiedDef without a
+        // null check. Keep all valid engine lookups and boarding behavior intact.
+        private static void PatchVgeGravEngineListerGuard(Harmony harmony)
+        {
+            Type tracker = AccessTools.TypeByName("VanillaGravshipExpanded.GravEngineTracker");
+            if (tracker == null)
+                return;
+
+            MethodInfo target = AccessTools.Method(tracker, "GetGravEngine_ListerThings",
+                new[] { typeof(Map) });
+            MethodInfo original = AccessTools.Method(typeof(ListerThings), nameof(ListerThings.ThingsOfDef),
+                new[] { typeof(ThingDef) });
+            MethodInfo replacement = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(SafeVgeGravEngineThingsOfDef));
+            MethodInfo transpiler = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(VgeGravEngineListerTranspiler));
+
+            if (target == null || original == null || replacement == null || transpiler == null)
+            {
+                Log.Warning("[Z Adaptive] VGE grav-engine invalid-def guard could not resolve its exact method; leaving upstream behavior intact.");
+                return;
+            }
+
+            try
+            {
+                harmony.Patch(target, transpiler: new HarmonyMethod(transpiler));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] VGE grav-engine invalid-def guard failed open: " +
+                    ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        private static IEnumerable<CodeInstruction> VgeGravEngineListerTranspiler(
+            IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo original = AccessTools.Method(typeof(ListerThings), nameof(ListerThings.ThingsOfDef),
+                new[] { typeof(ThingDef) });
+            MethodInfo safe = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(SafeVgeGravEngineThingsOfDef));
+            int replacements = 0;
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (original != null && safe != null && instruction.Calls(original))
+                {
+                    // Retain labels and exception blocks attached to the original IL.
+                    instruction.opcode = OpCodes.Call;
+                    instruction.operand = safe;
+                    replacements++;
+                }
+                yield return instruction;
+            }
+
+            if (replacements == 0)
+                Log.Warning("[Z Adaptive] VGE grav-engine lookup changed; no ThingsOfDef call was replaced.");
+        }
+
+        private static List<Thing> SafeVgeGravEngineThingsOfDef(ListerThings lister, ThingDef def)
+        {
+            // Undefined ThingRequests cannot be passed to ListerThings.ThingsMatching.
+            // Returning an empty list means only the invalid *candidate* is skipped;
+            // the remaining grav engines and world-object fallbacks are still searched.
+            if (def == null || ThingRequest.ForDef(def).group == ThingRequestGroup.Undefined)
+            {
+                if (!invalidVgeThingRequestLogged)
+                {
+                    invalidVgeThingRequestLogged = true;
+                    Log.Warning("[Z Adaptive] Skipped a missing/unlistable Vanilla Gravship Expanded grav-engine or minified def instead of throwing Invalid ThingRequest during pawn AI.");
+                }
+                return EmptyVgeThingList;
+            }
+
+            return lister != null ? lister.ThingsOfDef(def) : EmptyVgeThingList;
+        }
+
+        // Giddy-Up 2's SetDead postfix omits the ExtendedDataStorage.Singleton
+        // null check already present in its MakeDowned postfix. Pawns can die
+        // during new-world initialization before that world component exists.
+        private static void PatchGiddyUpDeathInitGuard(Harmony harmony)
+        {
+            Type patchType = AccessTools.TypeByName("GiddyUp.Harmony.Patch_SetDead");
+            Type storageType = AccessTools.TypeByName("GiddyUp.ExtendedDataStorage");
+            if (patchType == null || storageType == null)
+                return;
+
+            MethodInfo target = AccessTools.Method(patchType, "Postfix",
+                new[] { typeof(Pawn_HealthTracker) });
+            giddyUpStorageGetter = AccessTools.PropertyGetter(storageType, "Singleton");
+            MethodInfo prefix = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(GiddyUpSetDeadStorageReadyPrefix));
+            if (target == null || prefix == null || giddyUpStorageGetter == null)
+            {
+                Log.Warning("[Z Adaptive] Giddy-Up death-init guard could not resolve storage accessor; no patch installed.");
+                return;
+            }
+
+            try
+            {
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] Giddy-Up death-init guard failed open: " +
+                    ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        private static bool GiddyUpSetDeadStorageReadyPrefix(Pawn_HealthTracker __0)
+        {
+            if (__0?.pawn == null)
+                return false;
+
+            try
+            {
+                if (giddyUpStorageGetter?.Invoke(null, null) != null)
+                    return true;
+
+                if (!giddyUpUninitializedDeathLogged)
+                {
+                    giddyUpUninitializedDeathLogged = true;
+                    Log.Message("[Z Adaptive] Deferred Giddy-Up's optional death dismount before its world storage was initialized.");
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] Giddy-Up readiness probe failed open: " +
+                    ex.GetType().Name + ": " + ex.Message);
+                return true;
+            }
+        }
+
+        // A generated role with no matching required-apparel records can cause
+        // Precept_Role.GetTip -> AllApparelRequirementLabels -> Enumerable.First
+        // to throw every GUI frame. Only provide a fallback tooltip for this
+        // exact LINQ failure; ideology roles and apparel requirements are unchanged.
+        private static void PatchMissingIdeoApparelTipGuard(Harmony harmony)
+        {
+            MethodInfo target = AccessTools.Method(typeof(Precept_Role), "GetTip", Type.EmptyTypes);
+            MethodInfo finalizer = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(MissingIdeoApparelTipFinalizer));
+            if (target != null && finalizer != null)
+                harmony.Patch(target, finalizer: new HarmonyMethod(finalizer));
+        }
+
+        private static Exception MissingIdeoApparelTipFinalizer(
+            Exception __exception, ref string __result)
+        {
+            if (__exception is InvalidOperationException &&
+                string.Equals(__exception.Message, "Sequence contains no elements",
+                    StringComparison.Ordinal))
+            {
+                __result = "An ideology role requires apparel that is unavailable in the current mod configuration.";
+                if (!invalidRoleApparelTipLogged)
+                {
+                    invalidRoleApparelTipLogged = true;
+                    Log.Warning("[Z Adaptive] A role apparel tooltip had no matching apparel; showed a diagnostic tooltip instead of repeatedly throwing.");
+                }
+                return null;
+            }
+            return __exception;
         }
 
         private static void PatchStaticAtlas(Harmony harmony)
