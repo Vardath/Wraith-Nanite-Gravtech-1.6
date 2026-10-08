@@ -32,6 +32,7 @@ namespace ZAdaptiveRuntime
         private static bool giddyUpUninitializedDeathLogged;
         private static bool invalidRoleApparelTipLogged;
         private static MethodInfo giddyUpStorageGetter;
+        private static readonly FieldInfo GiddyUpHealthPawnField = AccessTools.Field(typeof(Pawn_HealthTracker), "pawn");
         private static readonly List<Thing> EmptyVgeThingList = new List<Thing>(0);
 
         static ZAdaptiveRuntimeBootstrap()
@@ -170,7 +171,13 @@ namespace ZAdaptiveRuntime
 
         private static bool GiddyUpSetDeadStorageReadyPrefix(Pawn_HealthTracker __0)
         {
-            if (__0?.pawn == null)
+            if (__0 == null)
+                return false;
+
+            // Pawn_HealthTracker.pawn is not public in the RimWorld 1.6 reference
+            // assembly. Read the same instance field reflectively and fail open
+            // if upstream layout changes.
+            if (GiddyUpHealthPawnField != null && GiddyUpHealthPawnField.GetValue(__0) == null)
                 return false;
 
             try
