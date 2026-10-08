@@ -425,12 +425,31 @@ namespace ZAdaptiveRuntime
             if (gravLightningPatchType == null || landformsLightningPatchType == null)
                 return;
 
-            // Never unpatch Geological Landforms' own lightning prefix. Removing an upstream
-            // Harmony patch is classified as destructive by its compatibility detector.
-            // A second probabilistic prefix would also apply its impassable-tile chance
-            // twice. Until a non-destructive, version-specific ordering fix is verified,
-            // preserve both mods' native implementations instead of altering their odds.
-            Log.Message("[Z Adaptive] Preserved native Geological Landforms and GravTide lightning patches; no destructive replacement applied.");
+            // The Geological Landforms FireEvent prefix accesses map.TileInfo directly.
+            // GravTide's generated seabed is a PocketMap with no world tile. Intercept
+            // *only that prefix method*, not WeatherEvent_LightningStrike.FireEvent:
+            // ordinary landform lightning and the GravTide targeting prefixes are left
+            // intact. For linked pocket maps use the parent surface tile's hilliness.
+            MethodInfo target = AccessTools.Method(landformsLightningPatchType,
+                "FireEvent", new[] { typeof(Map) });
+            MethodInfo guard = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(GeologicalLandformsLightningPrefix));
+            if (target == null || guard == null)
+            {
+                Log.Warning("[Z Adaptive] Geological Landforms pocket-map lightning guard unavailable; original patches preserved.");
+                return;
+            }
+
+            try
+            {
+                harmony.Patch(target, prefix: new HarmonyMethod(guard));
+                Log.Message("[Z Adaptive] Guarded Geological Landforms lightning hilliness lookup on linked pocket maps without replacing the upstream FireEvent patch.");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] Geological Landforms pocket-map lightning guard failed open: " +
+                    ex.GetType().Name + ": " + ex.Message);
+            }
         }
 
                 private static void PatchGeologicalLandformsGravTidePlantGrowth(
@@ -472,12 +491,21 @@ namespace ZAdaptiveRuntime
             }
         }
 
-        private static bool GeologicalLandformsLightningPrefix(Map ___map)
+        // Harmony's __0 binds to the original GL prefix method's first parameter;
+        // using ___map here would incorrectly request an instance field from GL's
+        // static patch class. Returning false skips only GL's vulnerable prefix body.
+        private static bool GeologicalLandformsLightningPrefix(Map __0, ref bool __result)
         {
-            if (___map == null)
+            if (__0 == null || __0.Tile >= 0 ||
+                !(__0.Parent is PocketMapParent parent) ||
+                parent.sourceMap == null || parent.sourceMap.Tile < 0)
                 return true;
 
-            return ___map.TileInfo.hilliness != Hilliness.Impassable || Rand.Value < 0.3f;
+            // Preserve GL's exact 30% chance on an impassable surface, as though
+            // its original code had read the parent map instead of the invalid pocket.
+            __result = parent.sourceMap.TileInfo.hilliness != Hilliness.Impassable ||
+                       Rand.Value < 0.3f;
+            return false;
         }
 
         private static IEnumerable<CodeInstruction> GeologicalLandformsTileCompatTranspiler(

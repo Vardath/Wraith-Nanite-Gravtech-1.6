@@ -49,6 +49,9 @@ jobs:
           grep -q 'GraphicMultiRequestNullPathPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'Custom/Gravship chroma key' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'Defs/SoundDef//grains/li' "$root/Patches/AdaptiveKnownFixes.xml"
+          grep -q 'GeologicalLandformsLightningPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'PocketMapParent parent' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'parent.sourceMap.TileInfo.hilliness' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
 
       - name: Restore RimWorld 1.6 reference assemblies
         run: dotnet restore CompanionMods/Z-Adaptive-Error-Patch/Source/ZAdaptiveRuntime/ZAdaptiveRuntime.csproj
