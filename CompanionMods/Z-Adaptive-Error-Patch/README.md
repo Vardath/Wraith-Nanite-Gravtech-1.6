@@ -108,3 +108,15 @@ The public Wraith-Nanite-Gravtech-1.6 repository's `CompanionMods/Z-Adaptive-Err
 The 2026-10-08 Player-prev(5).log reports third-party XML patch failures in MorrowRim - Dunmer Lamp Pack, RimShips, Progression: Gravship, Rim-Elves and Mechanoid Mechanitor. These are emitted while each upstream mod applies its own patch operations; late-loading Z Adaptive cannot undo a patch failure already logged. No invented replacement Defs or silent exception suppression were added. A missing-target patch should instead be repaired at its owning mod's source against its current dependency Def names.
 
 The same log contains InsectWorkEverything transpiler/target failures, stale Yayo settings data, optional facial animation Defs without their type, and a repeated NullReferenceException with no original stack in the supplied log. They remain unverified for a targeted runtime fix. World generation ends with ThreadAbortException, not a reliably attributable root-cause exception in this log. Verify the installed playable ZIP in-game before claiming resolved warnings.
+
+13. **Graphic_Multi null path with supplied texture (2026-10-09)**
+    - The current log reaches `Graphic_Multi.Init` and `ContentFinder.Get` with a null texture-path key.
+    - The existing fallback skipped empty paths whenever the request also contained a direct texture. Unlike `Graphic_Single`, `Graphic_Multi` still resolves its directional textures from `req.path`.
+    - The `Graphic_Multi.Init` prefix now enforces a nonempty path in that case, using the existing bundled four-direction placeholder only for the malformed request. Ordinary requests and direct-texture `Graphic_Single` requests retain their behavior.
+
+14. **Empty AudioGrain clip paths and VGE shader identity (2026-10-09)**
+    - An optional, guarded XML operation discards only `SoundDef` grain entries with a present but empty `clipPath` that otherwise request `AudioClip at ''`. Other grain entries remain intact.
+    - The existing gravship chroma-key `_MainTex` / `_Color` guards now recognize the shader's exact `Custom/Gravship chroma key` identity as well as the material name. The offending material is still not treated as an ordinary texture.
+    - These repairs address narrowly identified warning/error paths, **not** the separate native GPU startup crash or the untraced world-generation `ArgumentOutOfRangeException`.
+
+The optional runtime guard still requires a newly built `ZAdaptiveRuntime.dll` and installation of the CI-produced companion ZIP; editing the XML/source in the repository does not update an already-installed game automatically.

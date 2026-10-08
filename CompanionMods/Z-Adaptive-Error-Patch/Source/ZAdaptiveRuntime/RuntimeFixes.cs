@@ -87,6 +87,22 @@ namespace ZAdaptiveRuntime
             NormalizeGraphicRequest(ref req);
         }
 
+        private static void GraphicMultiRequestNullPathPrefix(ref GraphicRequest req)
+        {
+            NormalizeGraphicRequest(ref req);
+            // Graphic_Multi.Init calls ContentFinder for directional textures using req.path.
+            // A supplied req.texture does not make a null path safe for Graphic_Multi.
+            if (string.IsNullOrWhiteSpace(req.path))
+            {
+                req.path = "ZAdaptive/Placeholder";
+                if (!graphicRequestNullPathLogged)
+                {
+                    graphicRequestNullPathLogged = true;
+                    Log.Warning("[Z Adaptive] Replaced a null Graphic_Multi path with the bundled directional placeholder.");
+                }
+            }
+        }
+
         private static void PatchGraphicInitRequests(Harmony harmony)
         {
             MethodInfo prefix = AccessTools.Method(
@@ -110,8 +126,13 @@ namespace ZAdaptiveRuntime
             else
                 Log.Warning("[Z Adaptive] Could not install the Graphic_Single request guard.");
 
-            if (multiInit != null)
-                harmony.Patch(multiInit, prefix: new HarmonyMethod(prefix));
+            // A Graphic_Multi still resolves directional texture paths even when a caller
+            // supplies req.texture. Its Init needs a stricter missing-path guard than Single.
+            MethodInfo multiPrefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(GraphicMultiRequestNullPathPrefix));
+            if (multiInit != null && multiPrefix != null)
+                harmony.Patch(multiInit, prefix: new HarmonyMethod(multiPrefix));
             else
                 Log.Warning("[Z Adaptive] Could not install the Graphic_Multi request guard.");
         }
@@ -638,12 +659,19 @@ namespace ZAdaptiveRuntime
             return __exception;
         }
 
+        private static bool IsGravshipChromaKey(Material material)
+        {
+            return material != null &&
+                (material.name == "GravshipChromaKey" ||
+                 (material.shader != null && material.shader.name == "Custom/Gravship chroma key"));
+        }
+
         private static bool GraphicSingleAtlasPrefix(Graphic_Single __instance)
         {
             try
             {
                 Material mat = __instance?.MatSingle;
-                if (mat != null && mat.name == "GravshipChromaKey" && !mat.HasProperty("_MainTex"))
+                if (IsGravshipChromaKey(mat) && !mat.HasProperty("_MainTex"))
                 {
                     return false;
                 }
@@ -712,7 +740,7 @@ namespace ZAdaptiveRuntime
             if (material == null)
                 return Color.clear;
 
-            if (material.name == "GravshipChromaKey" && !material.HasProperty("_Color"))
+            if (IsGravshipChromaKey(material) && !material.HasProperty("_Color"))
                 return Color.clear;
 
             return material.color;

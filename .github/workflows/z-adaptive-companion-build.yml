@@ -42,6 +42,9 @@ jobs:
           grep -q 'RecalculatePerceivedPathCostAt' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'RenderAndSaveTexture' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'AutoNameBabiesFinalizer' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'GraphicMultiRequestNullPathPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'Custom/Gravship chroma key' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'Defs/SoundDef//grains/li' "$root/Patches/AdaptiveKnownFixes.xml"
 
       - name: Restore RimWorld 1.6 reference assemblies
         run: dotnet restore CompanionMods/Z-Adaptive-Error-Patch/Source/ZAdaptiveRuntime/ZAdaptiveRuntime.csproj

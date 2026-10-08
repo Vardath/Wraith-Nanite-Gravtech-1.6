@@ -343,4 +343,13 @@
     <li Class="PatchOperationReplace"><xpath>Defs/KeyBindingDef[defName="MainTab_CQFA_LevelSchedule"]/defaultKeyCode[normalize-space(text())="F9"]</xpath><value><defaultKeyCode>None</defaultKeyCode></value></li>
   </operations></Operation>
 
+
+  <!-- 2026-10-08 live log: an AudioGrain with an empty clipPath asks Unity to
+       load AudioClip at ''. A clip with no path cannot produce sound. Remove
+       only malformed grain entries, leaving valid sound clips untouched. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/SoundDef//grains/li[clipPath and not(normalize-space(clipPath))]</xpath></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/SoundDef//grains/li[clipPath and not(normalize-space(clipPath))]</xpath></li>
+  </operations></Operation>
+
 </Patch>
