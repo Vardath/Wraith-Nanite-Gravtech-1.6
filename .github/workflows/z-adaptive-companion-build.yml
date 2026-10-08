@@ -34,8 +34,12 @@ jobs:
           from pathlib import Path
           root=Path('CompanionMods/Z-Adaptive-Error-Patch')
           ET.parse(root/'About/About.xml')
-          ET.parse(root/'Patches/AdaptiveKnownFixes.xml')
-          print('Z Adaptive XML parses cleanly.')
+          patches=list((root/'Patches').glob('*.xml'))
+          assert patches, 'No Z Adaptive XML patches'
+          for patch in patches:
+              ET.parse(patch)
+          assert (root/'Patches/GravTideOceanFloor.xml').is_file()
+          print(f'Z Adaptive metadata and {len(patches)} XML patch files parse cleanly.')
           PY
           grep -q 'PatchVehicleFrameworkGravTide' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'VehiclePathingReadyPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
@@ -94,6 +98,7 @@ jobs:
               'Z Adaptive Error Patch/Assemblies/ZAdaptiveRuntime.dll',
               'Z Adaptive Error Patch/Assemblies/ZAdaptiveRuntime.pdb',
               'Z Adaptive Error Patch/Patches/AdaptiveKnownFixes.xml',
+              'Z Adaptive Error Patch/Patches/GravTideOceanFloor.xml',
               'Z Adaptive Error Patch/README.md',
               'Z Adaptive Error Patch/Textures/Preview.png',
               'Z Adaptive Error Patch/Textures/ZAdaptive/Placeholder_north.png',
