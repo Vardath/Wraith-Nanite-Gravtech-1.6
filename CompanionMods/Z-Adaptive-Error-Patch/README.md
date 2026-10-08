@@ -120,3 +120,10 @@ The same log contains InsectWorkEverything transpiler/target failures, stale Yay
     - These repairs address narrowly identified warning/error paths, **not** the separate native GPU startup crash or the untraced world-generation `ArgumentOutOfRangeException`.
 
 The optional runtime guard still requires a newly built `ZAdaptiveRuntime.dll` and installation of the CI-produced companion ZIP; editing the XML/source in the repository does not update an already-installed game automatically.
+
+15. **Ocean Floor 1.0.0 — stale work-speed StatDef references (2026-10-09)**
+    - Examined the supplied Workshop RAR (ID 3815134598): **Ocean Floor**, `we1tall.depths`, 1.6 build.
+    - Its `Patches/WaterPhysics.xml` targets `WorkSpeedGlobal`, whereas the same mod uses `GeneralLaborSpeed` for RimWorld 1.6 recipes. Its Captain/Manners hediff stages also contain five `WorkSpeedGlobal` factors.
+    - Guarded, Ocean Floor-only XML operations attach `Depths.StatPart_WaterWork` to `GeneralLaborSpeed` (only if missing) and migrate the five exact hediff factors, preserving their numerical values (1.2, 0.9, 0.8, 1.12 and 0.93).
+    - All operations require `GeneralLaborSpeed` to exist and `WorkSpeedGlobal` to be absent, avoiding changes on builds where the older stat is valid. Existing stat parts are preserved. Z Adaptive now explicitly loads after `we1tall.depths`.
+    - The supplied player log confirms `[Depths] loaded`. This repair addresses a verifiable compatibility defect, **not a proven map-generation crash**. Ocean Floor's compiled assembly includes settlement-map-generator, starting-tile and gravship hooks overlapping other underwater mods, but the available logs do not isolate a fatal Depths call stack. Those runtime interactions have intentionally not been disabled or broadly suppressed.

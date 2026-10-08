@@ -352,4 +352,76 @@
     <li Class="PatchOperationRemove"><xpath>Defs/SoundDef//grains/li[clipPath and not(normalize-space(clipPath))]</xpath></li>
   </operations></Operation>
 
+
+  <!-- 2026-10-09 Ocean Floor (we1tall.depths) 1.0.0 compatibility:
+       Correct stale WorkSpeedGlobal references to the 1.6 GeneralLaborSpeed StatDef
+       only when that old def does not exist. These target the actual Ocean Floor
+       authored WaterPhysics stat part and captain/mech hediff work factors. -->
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Ocean Floor</li></mods>
+    <match Class="PatchOperationSequence"><success>Always</success><operations>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="WorkSpeedGlobal"]</xpath><success>Invert</success></li>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="GeneralLaborSpeed" and parts and not(parts/li[@Class="Depths.StatPart_WaterWork"])]/parts</xpath></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/StatDef[defName="GeneralLaborSpeed"]/parts</xpath><value><li Class="Depths.StatPart_WaterWork" /></value></li>
+    </operations></match>
+  </Operation>
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Ocean Floor</li></mods>
+    <match Class="PatchOperationSequence"><success>Always</success><operations>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="WorkSpeedGlobal"]</xpath><success>Invert</success></li>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="GeneralLaborSpeed" and not(parts)]</xpath></li>
+      <li Class="PatchOperationAdd"><xpath>Defs/StatDef[defName="GeneralLaborSpeed" and not(parts)]</xpath><value><parts><li Class="Depths.StatPart_WaterWork" /></parts></value></li>
+    </operations></match>
+  </Operation>
+
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Ocean Floor</li></mods>
+    <match Class="PatchOperationSequence"><success>Always</success><operations>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="WorkSpeedGlobal"]</xpath><success>Invert</success></li>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="GeneralLaborSpeed"]</xpath></li>
+      <li Class="PatchOperationTest"><xpath>Defs/HediffDef[defName="DP_OrderAllHands"]//statFactors/WorkSpeedGlobal[normalize-space(text())="1.2"]</xpath></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/HediffDef[defName="DP_OrderAllHands"]//statFactors/WorkSpeedGlobal[normalize-space(text())="1.2"]</xpath><value><GeneralLaborSpeed>1.2</GeneralLaborSpeed></value></li>
+    </operations></match>
+  </Operation>
+
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Ocean Floor</li></mods>
+    <match Class="PatchOperationSequence"><success>Always</success><operations>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="WorkSpeedGlobal"]</xpath><success>Invert</success></li>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="GeneralLaborSpeed"]</xpath></li>
+      <li Class="PatchOperationTest"><xpath>Defs/HediffDef[defName="DP_OrderWorn"]//statFactors/WorkSpeedGlobal[normalize-space(text())="0.9"]</xpath></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/HediffDef[defName="DP_OrderWorn"]//statFactors/WorkSpeedGlobal[normalize-space(text())="0.9"]</xpath><value><GeneralLaborSpeed>0.9</GeneralLaborSpeed></value></li>
+    </operations></match>
+  </Operation>
+
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Ocean Floor</li></mods>
+    <match Class="PatchOperationSequence"><success>Always</success><operations>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="WorkSpeedGlobal"]</xpath><success>Invert</success></li>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="GeneralLaborSpeed"]</xpath></li>
+      <li Class="PatchOperationTest"><xpath>Defs/HediffDef[defName="DP_OrderFreeWatch"]//statFactors/WorkSpeedGlobal[normalize-space(text())="0.8"]</xpath></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/HediffDef[defName="DP_OrderFreeWatch"]//statFactors/WorkSpeedGlobal[normalize-space(text())="0.8"]</xpath><value><GeneralLaborSpeed>0.8</GeneralLaborSpeed></value></li>
+    </operations></match>
+  </Operation>
+
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Ocean Floor</li></mods>
+    <match Class="PatchOperationSequence"><success>Always</success><operations>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="WorkSpeedGlobal"]</xpath><success>Invert</success></li>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="GeneralLaborSpeed"]</xpath></li>
+      <li Class="PatchOperationTest"><xpath>Defs/HediffDef[defName="DP_MechPraised"]//statFactors/WorkSpeedGlobal[normalize-space(text())="1.12"]</xpath></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/HediffDef[defName="DP_MechPraised"]//statFactors/WorkSpeedGlobal[normalize-space(text())="1.12"]</xpath><value><GeneralLaborSpeed>1.12</GeneralLaborSpeed></value></li>
+    </operations></match>
+  </Operation>
+
+  <Operation Class="PatchOperationFindMod">
+    <mods><li>Ocean Floor</li></mods>
+    <match Class="PatchOperationSequence"><success>Always</success><operations>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="WorkSpeedGlobal"]</xpath><success>Invert</success></li>
+      <li Class="PatchOperationTest"><xpath>Defs/StatDef[defName="GeneralLaborSpeed"]</xpath></li>
+      <li Class="PatchOperationTest"><xpath>Defs/HediffDef[defName="DP_MechScolded"]//statFactors/WorkSpeedGlobal[normalize-space(text())="0.93"]</xpath></li>
+      <li Class="PatchOperationReplace"><xpath>Defs/HediffDef[defName="DP_MechScolded"]//statFactors/WorkSpeedGlobal[normalize-space(text())="0.93"]</xpath><value><GeneralLaborSpeed>0.93</GeneralLaborSpeed></value></li>
+    </operations></match>
+  </Operation>
+
 </Patch>
