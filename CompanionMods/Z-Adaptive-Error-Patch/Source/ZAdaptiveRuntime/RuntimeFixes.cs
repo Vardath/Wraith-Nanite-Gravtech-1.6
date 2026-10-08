@@ -8,6 +8,7 @@ using RimWorld.Planet;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using Verse;
+using Verse.Grammar;
 
 namespace ZAdaptiveRuntime
 {
@@ -18,15 +19,32 @@ namespace ZAdaptiveRuntime
         private static bool vehiclePathingDeferredLogged;
         private static bool vehiclePathingGuardFailureLogged;
         private static bool autoNameBabiesSuppressedLogged;
+        private static bool scrollMentalStateTargetGuardLogged;
+        private static bool invisibilityCorpseGuardLogged;
+        private static bool graphicRequestNullPathLogged;
+        private static bool knownGraphicAliasLogged;
+        private static bool firePanicEnumerationSuppressedLogged;
+        private static bool invalidEquipmentDropSuppressedLogged;
+        private static bool psychicShockTargetGuardLogged;
+        private static bool ideologyDeityTypeBridgeLogged;
+        private static bool ideologyDeityNameBridgeLogged;
 
         static ZAdaptiveRuntimeBootstrap()
         {
             var harmony = new Harmony("vardath.adaptiveerrorpatch.runtime");
             PatchStaticAtlas(harmony);
             PatchGraphicSingleAtlasInsertion(harmony);
+            PatchGraphicRequestNullPath(harmony);
+            PatchGraphicInitRequests(harmony);
+            PatchInvalidEquipmentDrops(harmony);
+            PatchFireDefinitiveEdition(harmony);
+            PatchPsychicShockTarget(harmony);
+            PatchIdeologyGrammar(harmony);
             PatchVanillaGravshipExpanded(harmony);
             PatchVehicleFrameworkGravTide(harmony);
             PatchGeologicalLandformsGravTide(harmony);
+            PatchScrollMentalStateTarget(harmony);
+            PatchInvisibilityPsychology(harmony);
             PatchAutoNameBabies(harmony);
         }
 
@@ -46,6 +64,269 @@ namespace ZAdaptiveRuntime
             MethodInfo prefix = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap), nameof(GraphicSingleAtlasPrefix));
             if (target != null && prefix != null)
                 harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+        }
+
+        private static void PatchGraphicRequestNullPath(Harmony harmony)
+        {
+            MethodInfo target = AccessTools.Method(
+                typeof(GraphicDatabase),
+                "Get",
+                new[] { typeof(GraphicRequest) });
+            MethodInfo prefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(GraphicRequestNullPathPrefix));
+
+            if (target != null && prefix != null)
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Could not install the null GraphicRequest path guard.");
+        }
+
+        private static void GraphicRequestNullPathPrefix(ref GraphicRequest req)
+        {
+            NormalizeGraphicRequest(ref req);
+        }
+
+        private static void PatchGraphicInitRequests(Harmony harmony)
+        {
+            MethodInfo prefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(GraphicRequestNullPathPrefix));
+
+            MethodInfo singleInit = AccessTools.Method(
+                typeof(Graphic_Single),
+                "Init",
+                new[] { typeof(GraphicRequest) });
+            MethodInfo multiInit = AccessTools.Method(
+                typeof(Graphic_Multi),
+                "Init",
+                new[] { typeof(GraphicRequest) });
+
+            if (prefix == null)
+                return;
+
+            if (singleInit != null)
+                harmony.Patch(singleInit, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Could not install the Graphic_Single request guard.");
+
+            if (multiInit != null)
+                harmony.Patch(multiInit, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Could not install the Graphic_Multi request guard.");
+        }
+
+        private static void NormalizeGraphicRequest(ref GraphicRequest req)
+        {
+            // Def-time patching cannot catch every generated/inherited graphic request. Guard the
+            // final Graphic.Init boundary as well, which covers construction-ghost graphics and
+            // dynamically generated requests seen in the live 1.6 stack.
+            if (req.texture == null && string.IsNullOrWhiteSpace(req.path))
+            {
+                req.path = "ZAdaptive/Placeholder";
+                if (!graphicRequestNullPathLogged)
+                {
+                    graphicRequestNullPathLogged = true;
+                    Log.Warning("[Z Adaptive] Replaced a null GraphicRequest path with the bundled placeholder texture.");
+                }
+                return;
+            }
+
+            string replacement = null;
+            switch (req.path)
+            {
+                case "Things/Pawn/Animal/Megascarab/MegascarabPack":
+                    replacement = "Things/Pawn/Animal/Megascarab/Megascarab";
+                    break;
+                case "Things/Pawn/Animal/Spelopede/SpelopedePack":
+                    replacement = "Things/Pawn/Animal/Spelopede/Spelopede";
+                    break;
+                case "BMT_Bees/Things/Animal/Bees/BeeSwarmPack":
+                    replacement = "BMT_Bees/Things/Animal/Bees/BeeSwarm";
+                    break;
+                case "Things/Pawn/Animal/Creamgrub/CreamgrubPack":
+                    replacement = "Things/Pawn/Animal/Creamgrub/Creamgrub";
+                    break;
+                case "BMT_Caverns/Things/Animal/Jellypot/JellypotPack":
+                    replacement = "BMT_Caverns/Things/Animal/Jellypot/Jellypot";
+                    break;
+            }
+
+            if (replacement == null)
+                return;
+
+            req.path = replacement;
+            if (!knownGraphicAliasLogged)
+            {
+                knownGraphicAliasLogged = true;
+                Log.Warning("[Z Adaptive] Redirected an obsolete animal '*Pack' texture request to its live 1.6 texture stem.");
+            }
+        }
+
+        private static void PatchInvalidEquipmentDrops(Harmony harmony)
+        {
+            MethodInfo target = AccessTools.Method(
+                typeof(Pawn_EquipmentTracker),
+                "TryDropEquipment",
+                new[]
+                {
+                    typeof(ThingWithComps),
+                    typeof(ThingWithComps).MakeByRefType(),
+                    typeof(IntVec3),
+                    typeof(bool)
+                });
+            MethodInfo prefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(InvalidEquipmentDropPrefix));
+
+            if (target != null && prefix != null)
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Could not install the invalid equipment-drop guard.");
+        }
+
+        private static bool InvalidEquipmentDropPrefix(
+            Pawn_EquipmentTracker __instance,
+            IntVec3 __2,
+            ref bool __result)
+        {
+            // Several mods can request an equipment drop while a pawn is being transferred,
+            // despawned, or otherwise has IntVec3.Invalid as its current cell. Vanilla cannot
+            // place an item at that coordinate; allowing the call only produces an error loop.
+            if (__2.IsValid)
+                return true;
+
+            __result = false;
+            if (!invalidEquipmentDropSuppressedLogged)
+            {
+                invalidEquipmentDropSuppressedLogged = true;
+                Log.Warning("[Z Adaptive] Rejected an equipment drop at IntVec3.Invalid during a pawn/map transition.");
+            }
+            return false;
+        }
+
+        private static void PatchFireDefinitiveEdition(Harmony harmony)
+        {
+            Type firePanicType = AccessTools.TypeByName("FireDefinitiveEdition.MapComponent_FirePanic");
+            if (firePanicType == null)
+                return;
+
+            MethodInfo target = AccessTools.Method(firePanicType, "MapComponentTick");
+            MethodInfo finalizer = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(FirePanicTickFinalizer));
+
+            if (target != null && target.DeclaringType == firePanicType && finalizer != null)
+                harmony.Patch(target, finalizer: new HarmonyMethod(finalizer));
+            else
+                Log.Warning("[Z Adaptive] Fire Definitive Edition is loaded but its FirePanic tick guard could not be installed.");
+        }
+
+        private static Exception FirePanicTickFinalizer(Exception __exception)
+        {
+            if (__exception is InvalidOperationException &&
+                __exception.Message != null &&
+                __exception.Message.IndexOf("Collection was modified", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                if (!firePanicEnumerationSuppressedLogged)
+                {
+                    firePanicEnumerationSuppressedLogged = true;
+                    Log.Warning("[Z Adaptive] Fire Definitive Edition modified its FirePanic collection while enumerating it; aborted that tick safely instead of propagating the exception.");
+                }
+                return null;
+            }
+
+            return __exception;
+        }
+
+        private static void PatchPsychicShockTarget(Harmony harmony)
+        {
+            MethodInfo target = AccessTools.Method(
+                typeof(CompTargetEffect_PsychicShock),
+                "DoEffectOn",
+                new[] { typeof(Pawn), typeof(Thing) });
+            MethodInfo prefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(PsychicShockTargetPrefix));
+
+            if (target != null && prefix != null)
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Could not install the PsychicShock non-pawn target guard.");
+        }
+
+        private static bool PsychicShockTargetPrefix(Thing __1)
+        {
+            // CompTargetEffect_PsychicShock assumes its Thing target is a Pawn and casts directly.
+            // In the live 1.6 stack a target-effect verb can reach this method with a non-pawn
+            // target, producing a per-tick InvalidCastException loop. Preserve vanilla behavior
+            // for valid pawn targets and reject only the incompatible target type.
+            if (__1 is Pawn)
+                return true;
+
+            if (!psychicShockTargetGuardLogged)
+            {
+                psychicShockTargetGuardLogged = true;
+                Log.Warning("[Z Adaptive] Suppressed PsychicShock on a non-pawn target to prevent CompTargetEffect_PsychicShock InvalidCastException loops.");
+            }
+            return false;
+        }
+
+        private static void PatchIdeologyGrammar(Harmony harmony)
+        {
+            MethodInfo target = AccessTools.Method(
+                typeof(NameGenerator),
+                nameof(NameGenerator.GenerateName),
+                new[]
+                {
+                    typeof(GrammarRequest),
+                    typeof(Predicate<string>),
+                    typeof(bool),
+                    typeof(string),
+                    typeof(string)
+                });
+            MethodInfo prefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(IdeologyGrammarPrefix));
+
+            if (target != null && prefix != null)
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Could not install the RimWorld 1.6 ideology grammar bridge guard.");
+        }
+
+        private static void IdeologyGrammarPrefix(ref GrammarRequest request, string rootKeyword)
+        {
+            // RimWorld 1.6 deity-type grammar can request memeConceptDef while generated meme packs
+            // provide only memeConcept. Bridge the two only when the requested root is r_deityType,
+            // the destination symbol is genuinely absent, and the source symbol is actually present.
+            // This preserves all upstream/custom content and only supplies the missing grammar edge.
+            if (rootKeyword == "r_deityType" &&
+                !request.HasRule("memeConceptDef") &&
+                request.HasRule("memeConcept"))
+            {
+                request.Rules.Add(new Rule_String("memeConceptDef", "[memeConcept]"));
+                if (!ideologyDeityTypeBridgeLogged)
+                {
+                    ideologyDeityTypeBridgeLogged = true;
+                    Log.Message("[Z Adaptive] Added the missing memeConceptDef -> memeConcept bridge for RimWorld 1.6 deity-type generation.");
+                }
+            }
+
+            // Some custom cultures assign a person-name RulePackDef as their deity-name maker.
+            // If that pack supplies r_name but not the r_deityName root expected by Ideology,
+            // reuse the pack's own generated name rather than inventing or replacing any content.
+            if (rootKeyword == "r_deityName" &&
+                !request.HasRule("r_deityName") &&
+                request.HasRule("r_name"))
+            {
+                request.Rules.Add(new Rule_String("r_deityName", "[r_name]"));
+                if (!ideologyDeityNameBridgeLogged)
+                {
+                    ideologyDeityNameBridgeLogged = true;
+                    Log.Message("[Z Adaptive] Bridged r_deityName to an existing r_name rule for a custom ideology deity namer.");
+                }
+            }
         }
 
         private static void PatchVanillaGravshipExpanded(Harmony harmony)
@@ -123,55 +404,15 @@ namespace ZAdaptiveRuntime
             if (gravLightningPatchType == null || landformsLightningPatchType == null)
                 return;
 
-            try
-            {
-                MethodInfo target = AccessTools.Method(typeof(WeatherEvent_LightningStrike), "FireEvent");
-                MethodInfo gravPrefix = AccessTools.Method(gravLightningPatchType, "Prefix");
-                MethodInfo landformsPrefix = AccessTools.Method(landformsLightningPatchType, "FireEvent");
-                MethodInfo compatPrefix = AccessTools.Method(
-                    typeof(ZAdaptiveRuntimeBootstrap),
-                    nameof(GeologicalLandformsLightningPrefix));
-
-                if (target == null || gravPrefix == null || landformsPrefix == null || compatPrefix == null)
-                {
-                    Log.Warning("[Z Adaptive] Geological Landforms + GravTide lightning compatibility targets were not all found.");
-                    return;
-                }
-
-                HarmonyMethod compat = new HarmonyMethod(compatPrefix)
-                {
-                    priority = Priority.First
-                };
-
-                Patches patchInfo = Harmony.GetPatchInfo(target);
-                if (patchInfo != null)
-                {
-                    foreach (Patch patch in patchInfo.Prefixes)
-                    {
-                        if (patch.PatchMethod == gravPrefix && !string.IsNullOrEmpty(patch.owner))
-                        {
-                            compat.before = new[] { patch.owner };
-                            break;
-                        }
-                    }
-                }
-
-                // Move Geological Landforms' filter into Z Adaptive so it is guaranteed to run
-                // before GravTide's bool-returning prefix.  If the landform filter suppresses the
-                // event, GravTide has nothing to process; otherwise GravTide retains full control.
-                harmony.Patch(target, prefix: compat);
-                harmony.Unpatch(target, landformsPrefix);
-
-                Log.Message("[Z Adaptive] Installed Geological Landforms + GravTide lightning arbitration.");
-            }
-            catch (Exception ex)
-            {
-                Log.Warning("[Z Adaptive] Geological Landforms + GravTide lightning compatibility failed open: " +
-                    ex.GetType().Name + ": " + ex.Message);
-            }
+            // Never unpatch Geological Landforms' own lightning prefix. Removing an upstream
+            // Harmony patch is classified as destructive by its compatibility detector.
+            // A second probabilistic prefix would also apply its impassable-tile chance
+            // twice. Until a non-destructive, version-specific ordering fix is verified,
+            // preserve both mods' native implementations instead of altering their odds.
+            Log.Message("[Z Adaptive] Preserved native Geological Landforms and GravTide lightning patches; no destructive replacement applied.");
         }
 
-        private static void PatchGeologicalLandformsGravTidePlantGrowth(
+                private static void PatchGeologicalLandformsGravTidePlantGrowth(
             Harmony harmony,
             Type gravGrowthPatchType,
             Type landformsGrowthPatchType)
@@ -181,32 +422,27 @@ namespace ZAdaptiveRuntime
 
             try
             {
-                MethodInfo target = AccessTools.Method(
-                    typeof(MapPlantGrowthRateCalculator),
-                    "BuildFor",
-                    new[] { typeof(Map) });
                 MethodInfo gravPrefix = AccessTools.Method(gravGrowthPatchType, "Prefix");
                 MethodInfo landformsTranspiler = AccessTools.Method(landformsGrowthPatchType, "BuildFor_Transpiler");
                 MethodInfo compatTranspiler = AccessTools.Method(
                     typeof(ZAdaptiveRuntimeBootstrap),
                     nameof(GeologicalLandformsTileCompatTranspiler));
 
-                if (target == null || gravPrefix == null || landformsTranspiler == null || compatTranspiler == null)
+                if (gravPrefix == null || landformsTranspiler == null || compatTranspiler == null)
                 {
                     Log.Warning("[Z Adaptive] Geological Landforms + GravTide plant-growth compatibility targets were not all found.");
                     return;
                 }
 
-                // Geological Landforms replaces Map.Tile with the source tile for pocket maps.
-                // GravTide can skip the original BuildFor method, so the original transpiler alone
-                // cannot protect GravTide's override path.  Apply the same tile substitution to
-                // both paths, then remove only the upstream transpiler that we have superseded.
+                // Geological Landforms already protects the vanilla BuildFor path. GravTide can
+                // skip that original method from its own Prefix, so apply the same tile substitution
+                // only inside GravTide's override. Do not replace or unpatch Geological Landforms'
+                // own transpiler: leaving the upstream patch intact avoids a destructive-patch
+                // conflict while still covering the path that would otherwise bypass it.
                 HarmonyMethod compat = new HarmonyMethod(compatTranspiler);
-                harmony.Patch(target, transpiler: compat);
                 harmony.Patch(gravPrefix, transpiler: compat);
-                harmony.Unpatch(target, landformsTranspiler);
 
-                Log.Message("[Z Adaptive] Installed Geological Landforms + GravTide pocket-map plant-growth compatibility.");
+                Log.Message("[Z Adaptive] Installed Geological Landforms + GravTide pocket-map compatibility on the GravTide override path.");
             }
             catch (Exception ex)
             {
@@ -253,6 +489,76 @@ namespace ZAdaptiveRuntime
                    parent.sourceMap.Tile >= 0
                 ? parent.sourceMap.Tile
                 : map.Tile;
+        }
+
+        private static void PatchScrollMentalStateTarget(Harmony harmony)
+        {
+            Type scrollType = AccessTools.TypeByName("RomyScrolls.CompTargetEffect_ScrollGiveMentalState");
+            if (scrollType == null)
+                return;
+
+            MethodInfo target = AccessTools.Method(
+                scrollType,
+                "DoEffectOn",
+                new[] { typeof(Pawn), typeof(Thing) });
+            MethodInfo prefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(ScrollMentalStateTargetPrefix));
+
+            // Do not accidentally patch an inherited generic target-effect method if a future
+            // Scrolls release removes or renames this concrete override.
+            if (target != null && target.DeclaringType == scrollType && prefix != null)
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Scrolls mental-state target effect was detected but its concrete DoEffectOn override could not be guarded.");
+        }
+
+        private static bool ScrollMentalStateTargetPrefix(Thing __1)
+        {
+            if (__1 is Pawn)
+                return true;
+
+            if (!scrollMentalStateTargetGuardLogged)
+            {
+                scrollMentalStateTargetGuardLogged = true;
+                Log.Warning("[Z Adaptive] Suppressed a Scrolls mental-state effect on a non-pawn target; this prevents CompTargetEffect_ScrollGiveMentalState from invalidly casting Thing to Pawn.");
+            }
+            return false;
+        }
+
+        private static void PatchInvisibilityPsychology(Harmony harmony)
+        {
+            MethodInfo target = AccessTools.Method(
+                typeof(InvisibilityUtility),
+                nameof(InvisibilityUtility.IsPsychologicallyInvisible),
+                new[] { typeof(Pawn) });
+            MethodInfo prefix = AccessTools.Method(
+                typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(InvisibilityPsychologyPrefix));
+
+            if (target != null && prefix != null)
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+            else
+                Log.Warning("[Z Adaptive] Could not install the dead/null-mind invisibility render guard.");
+        }
+
+        private static bool InvisibilityPsychologyPrefix(Pawn pawn, ref bool __result)
+        {
+            // Corpses can retain an invisibility hediff after the pawn mindState has been torn down.
+            // Vanilla HediffComp_Invisibility dereferences mindState while the corpse is rendered,
+            // which can abort DynamicDrawManager and leave later spawn/despawn operations occurring
+            // inside a draw pass. A dead pawn has no gameplay reason to remain psychologically
+            // invisible, so fail visible without touching living-pawn invisibility behavior.
+            if (pawn != null && !pawn.Dead && pawn.mindState != null)
+                return true;
+
+            __result = false;
+            if (!invisibilityCorpseGuardLogged)
+            {
+                invisibilityCorpseGuardLogged = true;
+                Log.Warning("[Z Adaptive] Bypassed psychological invisibility for a dead/null-mind pawn during rendering to prevent HediffComp_Invisibility null-reference draw failures.");
+            }
+            return false;
         }
 
         private static void PatchAutoNameBabies(Harmony harmony)

@@ -46,8 +46,8 @@
 
   <!-- Remove stale optional facility links only when the facility itself is absent. -->
   <Operation Class="PatchOperationSequence"><success>Always</success><operations>
-    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="SOA_NuclearThruster"]</xpath><success>Invert</success></li>
-    <li Class="PatchOperationRemove"><xpath>Defs/*//linkableFacilities/li[text()="SOA_NuclearThruster"] | Defs/*//facilityQualityOffsets/li[defName="SOA_NuclearThruster"] | Defs/*//facilityQualityOffsets/li[text()="SOA_NuclearThruster"]</xpath></li>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="SOA_NuclearThruster" and not(translate(normalize-space(@Abstract), "TRUE", "true")="true")]</xpath><success>Invert</success></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//linkableFacilities/li[normalize-space(text())="SOA_NuclearThruster" or *[normalize-space(text())="SOA_NuclearThruster"]] | Defs/*//facilityQualityOffsets/li[normalize-space(text())="SOA_NuclearThruster" or *[normalize-space(text())="SOA_NuclearThruster"]]</xpath></li>
   </operations></Operation>
 
   <!-- Removed optional alien leathers. -->
@@ -162,14 +162,26 @@
     <li Class="PatchOperationRemove"><xpath>Defs/*//*[normalize-space(text())="MNCallDown"]</xpath></li>
   </operations></Operation>
 
-  <!-- Helper races reported as meat-producing even though meatDef is null. -->
+  <!-- Some current 1.6 content contains leading/trailing whitespace inside otherwise valid
+       optional sound references. Remove only the malformed whitespace-bearing reference so a
+       correctly-authored reference remains untouched when the SoundDef exists. -->
   <Operation Class="PatchOperationSequence"><success>Always</success><operations>
-    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer"]/race/hasMeat</xpath></li>
-    <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer"]/race/hasMeat</xpath><value><hasMeat>false</hasMeat></value></li>
+    <li Class="PatchOperationTest"><xpath>Defs/*//*[normalize-space(text())="MNGravitySwitch" and not(text()="MNGravitySwitch")]</xpath></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//*[normalize-space(text())="MNGravitySwitch" and not(text()="MNGravitySwitch")]</xpath></li>
   </operations></Operation>
   <Operation Class="PatchOperationSequence"><success>Always</success><operations>
-    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[(defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer") and race and not(race/hasMeat)]</xpath></li>
-    <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[(defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer")]/race</xpath><value><hasMeat>false</hasMeat></value></li>
+    <li Class="PatchOperationTest"><xpath>Defs/*//*[normalize-space(text())="MNDownpourImpact" and not(text()="MNDownpourImpact")]</xpath></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//*[normalize-space(text())="MNDownpourImpact" and not(text()="MNDownpourImpact")]</xpath></li>
+  </operations></Operation>
+
+  <!-- Helper races reported as meat-producing even though meatDef is null. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer" or defName="HL_MT_VandaliteRace" or defName="HL_MT_EyelyeRace" or defName="HL_MT_DoublingPinRace" or defName="HL_MT_OddogRace" or defName="HL_MT_FriglinRace" or defName="HL_MT_SparkiliteRace" or defName="HL_MT_DingerRace"]/race/hasMeat</xpath></li>
+    <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer" or defName="HL_MT_VandaliteRace" or defName="HL_MT_EyelyeRace" or defName="HL_MT_DoublingPinRace" or defName="HL_MT_OddogRace" or defName="HL_MT_FriglinRace" or defName="HL_MT_SparkiliteRace" or defName="HL_MT_DingerRace"]/race/hasMeat</xpath><value><hasMeat>false</hasMeat></value></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[(defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer" or defName="HL_MT_VandaliteRace" or defName="HL_MT_EyelyeRace" or defName="HL_MT_DoublingPinRace" or defName="HL_MT_OddogRace" or defName="HL_MT_FriglinRace" or defName="HL_MT_SparkiliteRace" or defName="HL_MT_DingerRace") and race and not(race/hasMeat)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[(defName="HL_BMT_Bees" or defName="HL_RustMech_Scyther" or defName="HL_RustMech_Lancer" or defName="HL_MT_VandaliteRace" or defName="HL_MT_EyelyeRace" or defName="HL_MT_DoublingPinRace" or defName="HL_MT_OddogRace" or defName="HL_MT_FriglinRace" or defName="HL_MT_SparkiliteRace" or defName="HL_MT_DingerRace")]/race</xpath><value><hasMeat>false</hasMeat></value></li>
   </operations></Operation>
 
   <!-- Null Graphic_Multi path guard. -->
@@ -199,6 +211,136 @@
   <Operation Class="PatchOperationSequence"><success>Always</success><operations>
     <li Class="PatchOperationTest"><xpath>Defs/ThingDef//texPath[normalize-space(text())="Things/Pawn/Animal/Creamgrub/CreamgrubPack"]</xpath></li>
     <li Class="PatchOperationReplace"><xpath>Defs/ThingDef//texPath[normalize-space(text())="Things/Pawn/Animal/Creamgrub/CreamgrubPack"]</xpath><value><texPath>Things/Pawn/Animal/Creamgrub/Creamgrub</texPath></value></li>
+  </operations></Operation>
+
+
+
+  <!-- Current 1.6 stack: additional removed sound defs. Strip only exact stale references and
+       only while the corresponding SoundDef is absent. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/SoundDef[defName="Pawn_Melee_Punch_HitBuilding"]</xpath><success>Invert</success></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//*[normalize-space(text())="Pawn_Melee_Punch_HitBuilding"]</xpath></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/SoundDef[defName="hammerImpact"]</xpath><success>Invert</success></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//*[normalize-space(text())="hammerImpact"]</xpath></li>
+  </operations></Operation>
+
+  <!-- Biomes Caverns 1.6 uses Jellypot, not the obsolete JellypotPack texture stem. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef//texPath[normalize-space(text())="BMT_Caverns/Things/Animal/Jellypot/JellypotPack"]</xpath></li>
+    <li Class="PatchOperationReplace"><xpath>Defs/ThingDef//texPath[normalize-space(text())="BMT_Caverns/Things/Animal/Jellypot/JellypotPack"]</xpath><value><texPath>BMT_Caverns/Things/Animal/Jellypot/Jellypot</texPath></value></li>
+  </operations></Operation>
+
+  <!-- Optional Biomes Caverns content removed in 1.6 but still referenced by older quest/flight data. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/PawnKindDef[defName="BMT_CrystalCrab_Sandstone"]</xpath><success>Invert</success></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//extraKinds/li[normalize-space(text())="BMT_CrystalCrab_Sandstone"]</xpath></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/PawnKindDef[defName="BMT_WoollySpider" and not(translate(normalize-space(@Abstract), "TRUE", "true")="true")]</xpath><success>Invert</success></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//*[@Class="QuestEditor_Library.PawnSpawnData" and *[normalize-space(text())="BMT_WoollySpider"]]</xpath></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="BMT_EggWoollySpiderFertilized"]</xpath><success>Invert</success></li>
+    <li Class="PatchOperationRemove"><xpath>Defs/*//*[@Class="QuestEditor_Library.CQFThingDefCount" and *[normalize-space(text())="BMT_EggWoollySpiderFertilized"]]</xpath></li>
+  </operations></Operation>
+
+  <!-- Wildspawn declares no nutrition, so 1.6 requires NeverForNutrition. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="WildspawnPlant"]/ingestible/preferability</xpath></li>
+    <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="WildspawnPlant"]/ingestible/preferability</xpath><value><preferability>NeverForNutrition</preferability></value></li>
+  </operations></Operation>
+
+  <!-- Kindred artifacts/hunter gear inherit smeltability but define no smelting return. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[(defName="Kindred_Artifact_Dirge" or defName="Kindred_Artifact_SeventhCircle" or defName="Kindred_Artifact_Lamentation" or defName="Kindred_Artifact_ThornedCrown" or defName="Kindred_Artifact_AegisOfAsh" or defName="Kindred_Hunter_Cleaver" or defName="Kindred_Hunter_Blunderbuss" or defName="Kindred_Hunter_Pistol" or defName="Kindred_Hunter_Tricorn" or defName="Kindred_Hunter_Greatcoat") and smeltable]</xpath></li>
+    <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[(defName="Kindred_Artifact_Dirge" or defName="Kindred_Artifact_SeventhCircle" or defName="Kindred_Artifact_Lamentation" or defName="Kindred_Artifact_ThornedCrown" or defName="Kindred_Artifact_AegisOfAsh" or defName="Kindred_Hunter_Cleaver" or defName="Kindred_Hunter_Blunderbuss" or defName="Kindred_Hunter_Pistol" or defName="Kindred_Hunter_Tricorn" or defName="Kindred_Hunter_Greatcoat")]/smeltable</xpath><value><smeltable>false</smeltable></value></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[(defName="Kindred_Artifact_Dirge" or defName="Kindred_Artifact_SeventhCircle" or defName="Kindred_Artifact_Lamentation" or defName="Kindred_Artifact_ThornedCrown" or defName="Kindred_Artifact_AegisOfAsh" or defName="Kindred_Hunter_Cleaver" or defName="Kindred_Hunter_Blunderbuss" or defName="Kindred_Hunter_Pistol" or defName="Kindred_Hunter_Tricorn" or defName="Kindred_Hunter_Greatcoat") and not(smeltable)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[(defName="Kindred_Artifact_Dirge" or defName="Kindred_Artifact_SeventhCircle" or defName="Kindred_Artifact_Lamentation" or defName="Kindred_Artifact_ThornedCrown" or defName="Kindred_Artifact_AegisOfAsh" or defName="Kindred_Hunter_Cleaver" or defName="Kindred_Hunter_Blunderbuss" or defName="Kindred_Hunter_Pistol" or defName="Kindred_Hunter_Tricorn" or defName="Kindred_Hunter_Greatcoat") and not(smeltable)]</xpath><value><smeltable>false</smeltable></value></li>
+  </operations></Operation>
+
+  <!-- Kindred awardable titles omitted the required 1.6 heir-change quest point field. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/RoyalTitleDef[(defName="Kindred_Title_Recognised" or defName="Kindred_Title_Ancilla" or defName="Kindred_Title_Primogen" or defName="Kindred_Title_Prince" or defName="Kindred_Title_Justicar") and not(changeHeirQuestPoints)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/RoyalTitleDef[(defName="Kindred_Title_Recognised" or defName="Kindred_Title_Ancilla" or defName="Kindred_Title_Primogen" or defName="Kindred_Title_Prince" or defName="Kindred_Title_Justicar") and not(changeHeirQuestPoints)]</xpath><value><changeHeirQuestPoints>1000</changeHeirQuestPoints></value></li>
+  </operations></Operation>
+
+  <!-- Exact whitespace config repairs from the active stack. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="Gun_PGI_PerfectFrostbiteTurret" and not(description)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[defName="Gun_PGI_PerfectFrostbiteTurret" and not(description)]</xpath><value><description>Perfect frost turret.</description></value></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[defName="CheatShelf10k"]/description</xpath></li>
+    <li Class="PatchOperationReplace"><xpath>Defs/ThingDef[defName="CheatShelf10k"]/description</xpath><value><description>A compact storage unit utilizing questionable spatial compression technology. Holds an absurd number of item stacks within a single tile, dramatically reducing storage footprint. Warehouse? Never heard of it.</description></value></li>
+  </operations></Operation>
+
+  <!-- Ideology grammar inheritance repairs from the 2026-10-07 live new-game log.
+       These add only vanilla global grammar packs that the affected custom RulePackDefs omitted. -->
+
+  <!-- Monolyn deity namer: supplies the vanilla r_deityName root while preserving Monolyn's own name rules. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/RulePackDef[defName="DeityMaker_Monolyn" and include and not(include/li[normalize-space(text())="NamerDeityGlobal"])]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/RulePackDef[defName="DeityMaker_Monolyn"]/include</xpath><value><li>NamerDeityGlobal</li></value></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/RulePackDef[defName="DeityMaker_Monolyn" and not(include)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/RulePackDef[defName="DeityMaker_Monolyn"]</xpath><value><include><li>NamerDeityGlobal</li></include></value></li>
+  </operations></Operation>
+
+  <!-- Monolyn ideology namer: supplies hyphenPrefix/global ideology grammar without replacing custom rules. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/RulePackDef[defName="NamerIdeoMonolyn" and include and not(include/li[normalize-space(text())="NamerIdeoGlobal"])]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/RulePackDef[defName="NamerIdeoMonolyn"]/include</xpath><value><li>NamerIdeoGlobal</li></value></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/RulePackDef[defName="NamerIdeoMonolyn" and not(include)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/RulePackDef[defName="NamerIdeoMonolyn"]</xpath><value><include><li>NamerIdeoGlobal</li></include></value></li>
+  </operations></Operation>
+
+  <!-- Ultima Fellowship ideology namer: same missing vanilla ideology grammar inheritance. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/RulePackDef[defName="Ultima_NamerIdeoFellowship" and include and not(include/li[normalize-space(text())="NamerIdeoGlobal"])]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/RulePackDef[defName="Ultima_NamerIdeoFellowship"]/include</xpath><value><li>NamerIdeoGlobal</li></value></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/RulePackDef[defName="Ultima_NamerIdeoFellowship" and not(include)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/RulePackDef[defName="Ultima_NamerIdeoFellowship"]</xpath><value><include><li>NamerIdeoGlobal</li></include></value></li>
+  </operations></Operation>
+
+
+  <!-- Map Mode Framework 1.6 Growing Period cache performs planet-temperature work on a
+       background Task. In the active Odyssey/Worldbuilder stack that reaches Burst-backed
+       PlanetLayer tile geometry off the main thread and can hard-crash the native process.
+       Keep the map mode available but disable only its asynchronous pre-cache. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/MapModeFramework.MapModeDef[defName="GrowingPeriod"]/canCache[translate(normalize-space(text()), "TRUE", "true")="true"]</xpath></li>
+    <li Class="PatchOperationReplace"><xpath>Defs/MapModeFramework.MapModeDef[defName="GrowingPeriod"]/canCache</xpath><value><canCache>false</canCache></value></li>
+  </operations></Operation>
+
+
+  <!-- 2026-10-08 RimDoctor: three Star Trek phaser racks are haulable but lack an
+       authored Mass stat. Supply a modest non-zero mass only where missing. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[(defName="DG_PhaserChargingRack" or defName="DG_TypeIPhaserChargingRack" or defName="DG_TypeIIIPhaserChargingRack") and statBases and not(statBases/Mass)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[(defName="DG_PhaserChargingRack" or defName="DG_TypeIPhaserChargingRack" or defName="DG_TypeIIIPhaserChargingRack") and statBases and not(statBases/Mass)]/statBases</xpath><value><Mass>10</Mass></value></li>
+  </operations></Operation>
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/ThingDef[(defName="DG_PhaserChargingRack" or defName="DG_TypeIPhaserChargingRack" or defName="DG_TypeIIIPhaserChargingRack") and not(statBases)]</xpath></li>
+    <li Class="PatchOperationAdd"><xpath>Defs/ThingDef[(defName="DG_PhaserChargingRack" or defName="DG_TypeIPhaserChargingRack" or defName="DG_TypeIIIPhaserChargingRack") and not(statBases)]</xpath><value><statBases><Mass>10</Mass></statBases></value></li>
+  </operations></Operation>
+
+
+  <!-- The vanilla History hotkey is F9. The Level Schedule mod currently also
+       defaults to F9, causing two duplicate key binding conflict warnings.
+       Preserve History's shortcut and remove only the conflicting optional
+       Level Schedule default; the tab remains accessible via its button. -->
+  <Operation Class="PatchOperationSequence"><success>Always</success><operations>
+    <li Class="PatchOperationTest"><xpath>Defs/KeyBindingDef[defName="MainTab_CQFA_LevelSchedule"]/defaultKeyCode[normalize-space(text())="F9"]</xpath></li>
+    <li Class="PatchOperationReplace"><xpath>Defs/KeyBindingDef[defName="MainTab_CQFA_LevelSchedule"]/defaultKeyCode[normalize-space(text())="F9"]</xpath><value><defaultKeyCode>None</defaultKeyCode></value></li>
   </operations></Operation>
 
 </Patch>

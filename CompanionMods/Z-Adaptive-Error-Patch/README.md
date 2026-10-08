@@ -53,14 +53,58 @@ The runtime layer currently addresses two verified RimWorld/VGE interactions:
 
 4. **Geological Landforms × GravTide Harmony arbitration**
    - Both mods patch lightning strikes and plant-growth tile lookup. GravTide uses bool-returning prefixes that can skip the vanilla methods, while Geological Landforms relies on its own lightning prefix and a `BuildFor` transpiler.
-   - Z Adaptive moves Geological Landforms' impassable-tile lightning filter ahead of GravTide, so suppressed strikes stay suppressed while allowed strikes still pass through GravTide.
+   - Lightning: Z Adaptive preserves both mods' native prefixes. It no longer removes Geological Landforms' patch or installs a second probabilistic filter; that would alter strike odds and trigger a destructive-patch warning. Any remaining upstream ordering conflict requires a verified version-specific fix.
    - For plant-growth calculation, Z Adaptive applies Geological Landforms' pocket-map source-tile substitution to both vanilla `MapPlantGrowthRateCalculator.BuildFor` and GravTide's override prefix, so GravTide cannot bypass the landform-safe tile lookup.
-   - The upstream Geological Landforms patches are removed only after their equivalent compatibility behavior has been installed by Z Adaptive.
+   - The upstream Geological Landforms patches remain installed; the pocket-map override receives an additional targeted transpiler without replacing the original.
 
 5. **Auto Name Babies new-game collection mutation**
    - `AutoNameBabies.BabyNamer.NameUnnamedPlayerBabies` can throw `InvalidOperationException: Collection was modified; enumeration operation may not execute` from its `Game.FinalizeInit` postfix.
    - Naming is optional, so Z Adaptive suppresses only that exact collection-modified exception and allows new-game initialization to continue. Other exceptions from the mod are not swallowed.
 
+
+6. **RimWorld 1.6 ideology deity grammar bridges**
+   - `NameGenerator.GenerateName` can receive `r_deityType` requests with `memeConcept` supplied by generated meme grammar but no `memeConceptDef`, causing repeated unresolved deity-type grammar.
+   - Z Adaptive adds `memeConceptDef -> [memeConcept]` only for `r_deityType`, only when `memeConceptDef` is absent, and only when `memeConcept` already exists.
+   - Custom deity namers that expose `r_name` but are invoked through Ideology's `r_deityName` root are bridged to their own existing `r_name` output. No deity name is invented or replaced.
+
+7. **Monolyn / Ultima ideology rule-pack inheritance**
+   - `DeityMaker_Monolyn` is given the vanilla `NamerDeityGlobal` include when missing, supplying the expected `r_deityName` root while retaining Monolyn's own name components.
+   - `NamerIdeoMonolyn` and `Ultima_NamerIdeoFellowship` are given the vanilla `NamerIdeoGlobal` include when missing. This supplies shared ideology grammar such as `hyphenPrefix` rather than hard-coding replacement names.
+
+8. **Map Mode Framework 1.6 growing-period native crash**
+   - Map Mode Framework asynchronously pre-caches the Growing Period overlay on a worker `Task`.
+   - In the current Odyssey/Worldbuilder stack that worker reaches Burst-backed `PlanetLayer` tile geometry through seasonal-temperature calculation, which can terminate the native RimWorld process instead of producing a recoverable managed exception.
+   - Z Adaptive leaves the Growing Period map mode available but forces only its `canCache` flag off, so the unsafe background pre-cache path is not started.
+
+9. **Current-stack stale-reference and helper-race sanitation**
+   - Optional `SOA_NuclearThruster` and `BMT_WoollySpider` references are now removed when only an abstract/non-resolvable source def exists.
+   - Whitespace-corrupted `MNGravitySwitch` / `MNDownpourImpact` references are removed without touching correctly-authored sound references.
+   - Colony Manager helper races from the live stack that advertise humanlike meat with a null `meatDef` are normalized to `hasMeat=false`.
+
 All runtime patches are narrowly targeted and fail open: if a target class/method is absent because a mod was removed or updated, normal game behavior continues.
 
 Validated startup-profiler CI build: workflow run `34085998839` — SUCCESS.
+
+10. **Phaser charging-rack authored mass (2026-10-08)**
+   - RimDoctor reported missing authored Mass on `DG_PhaserChargingRack`, `DG_TypeIPhaserChargingRack` and `DG_TypeIIIPhaserChargingRack` while all three are haulable.
+   - `Patches/AdaptiveKnownFixes.xml` now adds a `Mass` stat of 10 kg to those three Defs only when they have no authored Mass. Existing Mass values are preserved.
+   - This removes the specific missing-mass Def validation errors; the chosen fallback mass should be checked against the original mod's intended balance.
+
+11. **Known-description whitespace normalization (2026-10-08)**
+    - `CheatShelf10k`, its generated `Frame_CheatShelf10k`, and `RR_Biological_Exterminators` produced whitespace configuration errors in the latest diagnostic log.
+    - The runtime checks these exact ThingDefs at the `ThingDef.ConfigErrors` boundary and trims only leading/trailing whitespace. It preserves the mod authors' original description wording, including generated frame descriptions that may not exist during XML patch loading.
+    - In-game verification is still required: CI compiles code but cannot load the full 630-mod installation.
+
+12. **Competing F9 default shortcut (2026-10-08)**
+    - `MainTab_History` and `MainTab_CQFA_LevelSchedule` both advertised F9.
+    - A guarded XML patch changes only the latter's authored `defaultKeyCode` from `F9` to `None`, keeping the vanilla History shortcut and Level Schedule's tab/button available.
+    - Existing per-user key-binding overrides may still need to be reset in the game's key-binding settings.
+
+
+## Public WNG 1.6 consolidation (2026-10-08)
+
+The public Wraith-Nanite-Gravtech-1.6 repository's `CompanionMods/Z-Adaptive-Error-Patch` is now the distribution source of truth. It contains the complete standalone Z Adaptive 1.6 XML/runtime patch set, including the original hospital, reference, helper-race and worker guards and subsequent gravship, graphics, startup and compatibility fixes. Do not install the separately built standalone copy at the same time: both share package ID `vardath.adaptiveerrorpatch` and runtime Harmony IDs.
+
+The 2026-10-08 Player-prev(5).log reports third-party XML patch failures in MorrowRim - Dunmer Lamp Pack, RimShips, Progression: Gravship, Rim-Elves and Mechanoid Mechanitor. These are emitted while each upstream mod applies its own patch operations; late-loading Z Adaptive cannot undo a patch failure already logged. No invented replacement Defs or silent exception suppression were added. A missing-target patch should instead be repaired at its owning mod's source against its current dependency Def names.
+
+The same log contains InsectWorkEverything transpiler/target failures, stale Yayo settings data, optional facial animation Defs without their type, and a repeated NullReferenceException with no original stack in the supplied log. They remain unverified for a targeted runtime fix. World generation ends with ThreadAbortException, not a reliably attributable root-cause exception in this log. Verify the installed playable ZIP in-game before claiming resolved warnings.

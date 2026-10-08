@@ -17,7 +17,98 @@ namespace ZAdaptiveRuntime
     {
         public ZAdaptiveProfilerMod(ModContentPack content) : base(content)
         {
+            ZAdaptiveEarlyFixes.Install();
             StartupProfiler.Install();
+        }
+    }
+
+    /// <summary>
+    /// Def validation and key-binding compatibility must install from the Mod
+    /// constructor, before implied Defs and config checks. The regular
+    /// [StaticConstructorOnStartup] bootstrap executes too late for these.
+    /// </summary>
+    public static class ZAdaptiveEarlyFixes
+    {
+        private static bool installed;
+        private static bool keyBindingWarningLogged;
+
+        public static void Install()
+        {
+            if (installed)
+                return;
+            installed = true;
+
+            try
+            {
+                var harmony = new Harmony("vardath.adaptiveerrorpatch.early");
+                MethodInfo validate = AccessTools.Method(typeof(ThingDef), "ConfigErrors");
+                MethodInfo whitespacePrefix = AccessTools.Method(typeof(ZAdaptiveEarlyFixes), nameof(KnownDescriptionWhitespacePrefix));
+                if (validate != null && whitespacePrefix != null)
+                    harmony.Patch(validate, prefix: new HarmonyMethod(whitespacePrefix));
+                else
+                    Log.Warning("[Z Adaptive] Early ThingDef.ConfigErrors whitespace guard could not attach.");
+
+                // Key bindings for main tabs can be implied *after* the XML patch
+                // stage. Set only the conflicting optional default before
+                // KeyPrefs reads user overrides. Never overwrite custom bindings.
+                MethodInfo keyPrefsInit = AccessTools.Method("Verse.KeyPrefs:Init") ??
+                                          AccessTools.Method("RimWorld.KeyPrefs:Init");
+                MethodInfo keyPrefix = AccessTools.Method(typeof(ZAdaptiveEarlyFixes), nameof(KeyPrefsInitPrefix));
+                if (keyPrefsInit != null && keyPrefix != null)
+                    harmony.Patch(keyPrefsInit, prefix: new HarmonyMethod(keyPrefix));
+                else
+                    Log.Warning("[Z Adaptive] Optional Level Schedule key preference guard could not attach.");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] Early compatibility fix installation failed: " + ex);
+            }
+        }
+
+        private static void KnownDescriptionWhitespacePrefix(ThingDef __instance)
+        {
+            if (__instance == null || string.IsNullOrEmpty(__instance.description))
+                return;
+
+            switch (__instance.defName)
+            {
+                case "CheatShelf10k":
+                case "Frame_CheatShelf10k":
+                case "RR_Biological_Exterminators":
+                    __instance.description = __instance.description.Trim();
+                    break;
+            }
+        }
+
+        private static void KeyPrefsInitPrefix()
+        {
+            try
+            {
+                // Access these members reflectively because the key binding
+                // storage moved between RimWorld versions and mod builds.
+                Type bindingType = AccessTools.TypeByName("Verse.KeyBindingDef") ??
+                                   AccessTools.TypeByName("RimWorld.KeyBindingDef");
+                if (bindingType == null)
+                    return;
+
+                Type databaseType = typeof(DefDatabase<>).MakeGenericType(bindingType);
+                MethodInfo lookup = AccessTools.Method(databaseType, "GetNamedSilentFail", new[] { typeof(string) });
+                object binding = lookup?.Invoke(null, new object[] { "MainTab_CQFA_LevelSchedule" });
+                FieldInfo defaultKeyField = AccessTools.Field(bindingType, "defaultKeyCode");
+                if (binding == null || defaultKeyField == null)
+                    return;
+
+                object current = defaultKeyField.GetValue(binding);
+                if (current is UnityEngine.KeyCode key && key == UnityEngine.KeyCode.F9)
+                    defaultKeyField.SetValue(binding, UnityEngine.KeyCode.None);
+            }
+            catch (Exception ex)
+            {
+                if (keyBindingWarningLogged)
+                    return;
+                keyBindingWarningLogged = true;
+                Log.Warning("[Z Adaptive] Could not normalize optional Level Schedule default key: " + ex);
+            }
         }
     }
 
