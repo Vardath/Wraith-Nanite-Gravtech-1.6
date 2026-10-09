@@ -7,7 +7,7 @@
     <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A compact Wraith fighting blade grown around layered cartilage, a mineralized cutting ridge and a recurved puncture point.</description>
     <techLevel>Spacer</techLevel>
-    <smeltable>false</smeltable>
+    <smeltable>true</smeltable>
     <graphicData>
       <texPath>Things/Item/Weapon/Wraith/WNG_WraithBoneBlade</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -63,6 +63,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>1</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
     <defName>WNG_WraithWarGlaive</defName>
@@ -71,7 +73,7 @@
     <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A two-handed Wraith polearm grown around a flexible dark spine and broad mineralized crescent, built for heavy close combat.</description>
     <techLevel>Spacer</techLevel>
-    <smeltable>false</smeltable>
+    <smeltable>true</smeltable>
     <graphicData>
       <texPath>Things/Item/Weapon/Wraith/WNG_WraithWarGlaive</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -128,6 +130,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>3</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="BaseHumanMakeableGun">
     <defName>WNG_WraithStunStaff</defName>
@@ -188,6 +192,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>2</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="BaseBullet">
     <defName>WNG_ProjectileStunStaff</defName>
@@ -249,6 +255,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>1</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="BaseBullet">
     <defName>WNG_ProjectileStunner</defName>
@@ -312,6 +320,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>2</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="BaseBullet">
     <defName>WNG_ProjectileLivingCarbine</defName>
@@ -376,6 +386,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>4</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="BaseBullet">
     <defName>WNG_ProjectileHeavyBio</defName>

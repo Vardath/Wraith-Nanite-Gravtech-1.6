@@ -13,6 +13,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>2</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
@@ -28,6 +30,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>3</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
@@ -43,6 +47,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>5</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
@@ -58,6 +64,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>3</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_WraithUniform</defName>
@@ -66,7 +74,7 @@
     <thingCategories Inherit="False"><li>ApparelMisc</li></thingCategories>
     <description>A fitted everyday Wraith uniform built from dark leather, reptile-pattern leather and flexible hive-grown fabric. It is ordinary caste-neutral clothing rather than a combat shell.</description>
     <techLevel>Spacer</techLevel>
-    <smeltable>false</smeltable>
+    <smeltable>true</smeltable>
     <graphicData>
       <texPath>Things/Pawn/Humanlike/Apparel/Wraith/WNG_WraithUniform</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -87,6 +95,8 @@
       <tags><li>WraithClothing</li><li>WraithUniform</li></tags>
       <defaultOutfitTags><li>Worker</li><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
+  
+    <smeltProducts><WNG_IratusPheromones>1</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
@@ -115,6 +125,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>6</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
 
 </Defs>

@@ -31,6 +31,8 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_WraithLivingEquipmentMaturation" />
     </comps>
+  
+    <smeltProducts><WNG_IratusPheromones>5</WNG_IratusPheromones></smeltProducts>
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
