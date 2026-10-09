@@ -713,6 +713,7 @@ namespace ZAdaptiveRuntime
             if (gravLightningPatchType == null || landformsLightningPatchType == null)
                 return;
 
+            // Preserved native Geological Landforms and GravTide lightning patches.
             // The Geological Landforms FireEvent prefix accesses map.TileInfo directly.
             // GravTide's generated seabed is a PocketMap with no world tile. Intercept
             // *only that prefix method*, not WeatherEvent_LightningStrike.FireEvent:
