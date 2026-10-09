@@ -8,6 +8,9 @@ namespace WraithNaniteGravtech
   public int exposedTicksRequired = 60000;
   public int maxIratusPerMap = 12;
   public int maxArrivalCount = 3;
+  public float startingChancePerRareTick = 0.001f;
+  public float maximumChancePerRareTick = 0.01f;
+  public int rampUpTicks = 240000;
   public CompProperties_IratusPheromoneAttractor(){compClass=typeof(CompIratusPheromoneAttractor);}
  }
  // Like Replicator blocks: save-persistent on-map exposure and safe stack splitting.
@@ -33,7 +36,14 @@ namespace WraithNaniteGravtech
    base.CompTickRare();
    if(parent?.Spawned!=true||parent.Map==null||parent.Destroyed||parent.stackCount<=0)return;
    exposedTicks=exposedTicks>=int.MaxValue-RareInterval?int.MaxValue:exposedTicks+RareInterval;
-   if(exposedTicks<Math.Max(RareInterval,Props.exposedTicksRequired)||!TryAttract())return;
+   int threshold=Math.Max(RareInterval,Props.exposedTicksRequired);
+   if(exposedTicks<threshold)return;
+   // Risk starts low after the first exposed day, then rises gradually
+   // for four more game days. Roll only every rare tick, never every tick.
+   float fraction=Math.Min(1f,(float)(exposedTicks-threshold)/Math.Max(RareInterval,Props.rampUpTicks));
+   float chance=Props.startingChancePerRareTick+
+     (Props.maximumChancePerRareTick-Props.startingChancePerRareTick)*fraction;
+   if(!Rand.Chance(Math.Max(0f,Math.Min(1f,chance)))||!TryAttract())return;
    // One unit is consumed only after at least one wild Iratus is placed.
    if(parent.stackCount==1)parent.Destroy(DestroyMode.Vanish);
    else {parent.stackCount--;exposedTicks=0;}
@@ -87,8 +97,15 @@ namespace WraithNaniteGravtech
   public override string CompInspectStringExtra()
   {
    int required=Math.Max(RareInterval,Props.exposedTicksRequired);
-   return "Iratus pheromone exposure: "+Math.Min(exposedTicks,required)+" / "+required+
-     " ticks. A successful Iratus arrival consumes one unit.";
+   int over=Math.Max(0,exposedTicks-required);
+   float fraction=Math.Min(1f,(float)over/Math.Max(RareInterval,Props.rampUpTicks));
+   float chance=Props.startingChancePerRareTick+
+     (Props.maximumChancePerRareTick-Props.startingChancePerRareTick)*fraction;
+   return "Iratus pheromones: "+Math.Min(exposedTicks,required)+" / "+required+
+     " ticks until active. "+(exposedTicks>=required
+       ? "Attraction risk "+(chance*100f).ToString("0.00")+"% per 250 ticks."
+       : "No Iratus attraction before one exposed day.")+
+     " A successful arrival consumes one unit.";
   }
  }
 }
