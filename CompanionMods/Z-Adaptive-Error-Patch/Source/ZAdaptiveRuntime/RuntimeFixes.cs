@@ -28,6 +28,7 @@ namespace ZAdaptiveRuntime
         private static bool psychicShockTargetGuardLogged;
         private static bool ideologyDeityTypeBridgeLogged;
         private static bool ideologyDeityNameBridgeLogged;
+        private static bool ideologyNullRulePackLogged;
         private static bool invalidVgeThingRequestLogged;
         private static bool giddyUpUninitializedDeathLogged;
         private static bool invalidRoleApparelTipLogged;
@@ -501,6 +502,22 @@ namespace ZAdaptiveRuntime
 
         private static void IdeologyGrammarPrefix(ref GrammarRequest request, string rootKeyword)
         {
+            if (rootKeyword != "r_deityType" && rootKeyword != "r_deityName")
+                return;
+
+            // A missing/migrated culture naming RulePackDef can leave a null
+            // entry in a GrammarRequest.Includes list. RimWorld 1.6 HasRule()
+            // dereferences each entry directly; our previous bridge called it
+            // before checking this input and caused a faction-worldgen NRE.
+            // Remove only invalid null entries, leaving every surviving pack
+            // and the generated ideology's naming grammar intact.
+            int nullPacks = request.Includes.RemoveAll(pack => pack == null);
+            if (nullPacks > 0 && !ideologyNullRulePackLogged)
+            {
+                ideologyNullRulePackLogged = true;
+                Log.Warning("[Z Adaptive] Dropped null deity naming RulePackDef reference(s) before HasRule to protect faction world generation.");
+            }
+
             // RimWorld 1.6 deity-type grammar can request memeConceptDef while generated meme packs
             // provide only memeConcept. Bridge the two only when the requested root is r_deityType,
             // the destination symbol is genuinely absent, and the source symbol is actually present.
