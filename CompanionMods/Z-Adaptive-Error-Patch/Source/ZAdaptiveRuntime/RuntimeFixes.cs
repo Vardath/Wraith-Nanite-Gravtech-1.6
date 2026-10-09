@@ -58,6 +58,7 @@ namespace ZAdaptiveRuntime
             TryInstallRuntimeHook("PatchGiddyUpDeathInitGuard", () => PatchGiddyUpDeathInitGuard(harmony));
             TryInstallRuntimeHook("PatchMissingIdeoApparelTipGuard", () => PatchMissingIdeoApparelTipGuard(harmony));
             TryInstallRuntimeHook("WorldgenDiagnostics", () => PatchWorldGenerationDiagnostics(harmony));
+            TryInstallRuntimeHook("MAPSameIdeoInit", () => PatchMechanoidMechanitorIdeoInitialization(harmony));
         }
 
         private static void TryInstallRuntimeHook(string name, Action install)
@@ -105,6 +106,42 @@ namespace ZAdaptiveRuntime
                         " MiB; managed=" + (GC.GetTotalMemory(false) / (1024L * 1024L)) + " MiB";
             }
             catch (Exception ex) { return "memory counters unavailable: " + ex.GetType().Name; }
+        }
+
+
+        // [MAP] Mechanoid Mechanitor may recalculate faction goodwill during
+        // new-game setup before Faction.OfPlayer or ideology trackers are ready.
+        // RimWorld GoodwillSituationWorker_SameIdeo assumes they are non-null.
+        // Preserve the *native* goodwill formula whenever both factions have
+        // valid trackers; return zero only when ideology comparisons are impossible.
+        private static void PatchMechanoidMechanitorIdeoInitialization(Harmony harmony)
+        {
+            if (AccessTools.TypeByName(
+                "MAP_MechanoidMechanitor.Scenarios.MechanoidMechanitorPermanentEnemyCache_InitialRelationsApplied_Patch") == null)
+                return;
+
+            MethodInfo target = AccessTools.Method(typeof(GoodwillSituationWorker_SameIdeo),
+                nameof(GoodwillSituationWorker_SameIdeo.GetNaturalGoodwillOffset),
+                new[] { typeof(Faction) });
+            MethodInfo prefix = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(MechanoidMechanitorSameIdeoPrefix));
+            if (target != null && prefix != null)
+                harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+        }
+
+        private static bool MechanoidMechanitorSameIdeoPrefix(Faction other, ref int __result)
+        {
+            if (Find.IdeoManager != null &&
+                Faction.OfPlayer != null &&
+                Faction.OfPlayer.ideos != null &&
+                other != null &&
+                other.ideos != null)
+                return true;
+
+            // No valid ideology relationship exists at this moment. The
+            // appropriate neutral offset is zero, not a new faction hostility.
+            __result = 0;
+            return false;
         }
 
         // 2026-10-09 Player.log: VGE GravEngineTracker.GetGravEngine_ListerThings
