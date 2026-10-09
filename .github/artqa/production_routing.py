@@ -38,6 +38,7 @@ approved_external_routes= {
     "WNG_Make_KassaDistillate": {"DrugLab"},
     "WNG_Make_Roshna": {"DrugLab"},
     "WNG_Make_IratusParalytic": {"DrugLab"},
+    "WNG_MakeIratusPerfume": {"DrugLab"},
     "WNG_Make_IratusQueenRestorative": {"DrugLab"},
     "WNG_Make_HybridStabiliserDose": {"DrugLab"},
     "WNG_Make_HoffanSerum": {"DrugLab"},
