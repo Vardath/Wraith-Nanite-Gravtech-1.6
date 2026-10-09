@@ -115,5 +115,7 @@
         <blocksRangedWeapons>false</blocksRangedWeapons>
       </li>
     </comps>
+  
+    <smeltProducts><WNG_ReplicatorMatter>2</WNG_ReplicatorMatter></smeltProducts>
   </ThingDef>
 </Defs>

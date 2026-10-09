@@ -21,6 +21,8 @@
       <tags><li>WNG_HumanFormArmor</li><li>WNG_PrecursorArmor</li></tags>
       <defaultOutfitTags><li>Worker</li><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
+  
+    <smeltProducts><WNG_ReplicatorMatter>2</WNG_ReplicatorMatter></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_HumanFormUniform</defName>
@@ -58,6 +60,8 @@
       <tags><li>WNG_HumanFormClothing</li></tags>
       <defaultOutfitTags><li>Worker</li><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
+  
+    <smeltProducts><WNG_ReplicatorMatter>2</WNG_ReplicatorMatter></smeltProducts>
   </ThingDef>
   <ThingDef ParentName="ApparelBase">
     <defName>WNG_HumanFormFieldArmor</defName>
@@ -82,6 +86,8 @@
       <tags><li>WNG_HumanFormArmor</li><li>WNG_HumanFormFieldArmor</li></tags>
       <defaultOutfitTags><li>Worker</li><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
+  
+    <smeltProducts><WNG_ReplicatorMatter>3</WNG_ReplicatorMatter></smeltProducts>
   </ThingDef>
 
   <ThingDef ParentName="ApparelBase">
@@ -104,6 +110,8 @@
       <tags><li>WNG_HumanFormArmor</li><li>WNG_HumanFormCommandArmor</li></tags>
       <defaultOutfitTags><li>Soldier</li><li>Spacefarer</li></defaultOutfitTags>
     </apparel>
+  
+    <smeltProducts><WNG_ReplicatorMatter>4</WNG_ReplicatorMatter></smeltProducts>
   </ThingDef>
 
 </Defs>

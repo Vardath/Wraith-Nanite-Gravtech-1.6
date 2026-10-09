@@ -12,7 +12,7 @@
     <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A compact Asuran precision weapon that holds a narrow cutting field along a nanite-forged edge. It is light, fast and optimized for accurate close combat.</description>
     <techLevel>Ultra</techLevel>
-    <smeltable>false</smeltable>
+    <smeltable>true</smeltable>
     <graphicData>
       <texPath>Things/Item/Weapon/Precursor/WNG_AsuranPhaseBlade</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -40,6 +40,8 @@
         <power>6</power><cooldownTime>1.0</cooldownTime><armorPenetration>0.12</armorPenetration><chanceFactor>0.1</chanceFactor>
       </li>
     </tools>
+  
+    <smeltProducts><WNG_ReplicatorMatter>3</WNG_ReplicatorMatter></smeltProducts>
   </ThingDef>
 
   <ThingDef ParentName="BaseMeleeWeapon_Sharp_Quality">
@@ -49,7 +51,7 @@
     <thingCategories Inherit="False"><li>WeaponsMelee</li></thingCategories>
     <description>A long Asuran polearm built around a reinforced nanite shaft and concentrated penetration field. It sacrifices the phase blade's speed for reach, stopping power and exceptional armor penetration.</description>
     <techLevel>Ultra</techLevel>
-    <smeltable>false</smeltable>
+    <smeltable>true</smeltable>
     <graphicData>
       <texPath>Things/Item/Weapon/Precursor/WNG_AsuranFieldLance</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -77,5 +79,7 @@
         <power>9</power><cooldownTime>1.55</cooldownTime><armorPenetration>0.18</armorPenetration><chanceFactor>0.12</chanceFactor>
       </li>
     </tools>
+  
+    <smeltProducts><WNG_ReplicatorMatter>5</WNG_ReplicatorMatter></smeltProducts>
   </ThingDef>
 </Defs>
