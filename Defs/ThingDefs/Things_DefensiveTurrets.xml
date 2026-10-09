@@ -6,6 +6,8 @@
     <label>wraith living turret</label>
     <description>A rooted defensive organism grown around a rotating bio-weapon lobe. It metabolizes internally rather than drawing colony electricity, tracks hostiles using native turret behavior, and fires hardened bioelectric salvos.</description>
     <thingClass>Building_TurretGun</thingClass>
+    <!-- Native 1.6 turret top is rendered by DrawAt, not by the static map mesh. -->
+    <drawerType>MapMeshAndRealTime</drawerType>
     <tickerType>Normal</tickerType>
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
@@ -46,10 +48,12 @@
       <turretBurstWarmupTime>1.2</turretBurstWarmupTime>
       <turretBurstCooldownTime>3.1</turretBurstCooldownTime>
       <turretTopDrawSize>1.7</turretTopDrawSize>
+      <ai_combatDangerous>true</ai_combatDangerous>
+      <combatPower>48</combatPower>
     </building>
   </ThingDef>
 
-  <ThingDef ParentName="BaseGun">
+  <ThingDef ParentName="BaseWeaponTurret">
     <defName>WNG_Gun_WraithLivingTurret</defName>
     <label>wraith living turret lobe</label>
     <description>The rotating grown firing organ of a Wraith living turret.</description>
@@ -89,6 +93,8 @@
     <label>Asuran autonomous turret</label>
     <description>A compact Asuran defensive node whose nanite composite contains its own field-energy reservoir and targeting submind. It requires no external power connection and uses native turret targeting to deliver precise pulse bursts.</description>
     <thingClass>Building_TurretGun</thingClass>
+    <!-- Native 1.6 turret top is rendered by DrawAt, not by the static map mesh. -->
+    <drawerType>MapMeshAndRealTime</drawerType>
     <tickerType>Normal</tickerType>
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
@@ -131,10 +137,12 @@
       <turretBurstWarmupTime>0.9</turretBurstWarmupTime>
       <turretBurstCooldownTime>2.6</turretBurstCooldownTime>
       <turretTopDrawSize>1.65</turretTopDrawSize>
+      <ai_combatDangerous>true</ai_combatDangerous>
+      <combatPower>65</combatPower>
     </building>
   </ThingDef>
 
-  <ThingDef ParentName="BaseGun">
+  <ThingDef ParentName="BaseWeaponTurret">
     <defName>WNG_Gun_AsuranAutoturret</defName>
     <label>Asuran turret emitter</label>
     <description>The self-aligning field emitter of an Asuran autonomous turret.</description>
