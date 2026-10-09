@@ -29,6 +29,16 @@ namespace WraithNaniteGravtech
     {
         private int nextReadyTick;
 
+        // Presentation only: retains existing transactional transport logic.
+        private const int RingRiseTicks = 65;
+        private const int RingHoldTicks = 32;
+        private const int RingRetractTicks = 70;
+        private const int RingVisualTicks = RingRiseTicks + RingHoldTicks + RingRetractTicks;
+        private const string RingEffectTexturePath = "Things/Building/Goauld/WNG_GoauldRingEffect";
+        private int ringVisualStartTick = -1;
+        private static Material ringMaterial;
+        private static Mesh ringMesh;
+
         private CompProperties_GoauldTransportRings Props => (CompProperties_GoauldTransportRings)props;
         private CompTransporter Transporter => parent.TryGetComp<CompTransporter>();
         private CompPowerTrader Power => parent.TryGetComp<CompPowerTrader>();
@@ -234,11 +244,64 @@ namespace WraithNaniteGravtech
 
             try
             {
+                // Effect starts only once every exact transferred object is safely committed.
+                BeginRingVisual();
+                destination.BeginRingVisual();
                 Messages.Message("Transport complete to " + DestinationLabel(destination) + ": " + spawned.Count + " exact loaded entries rematerialized.", destination.parent, MessageTypeDefOf.PositiveEvent, false);
             }
             catch (Exception ex)
             {
                 Log.Warning("[WNG] Transport-ring transfer committed, but presentation failed: " + ex.Message);
+            }
+        }
+
+        private void BeginRingVisual()
+        {
+            ringVisualStartTick = Find.TickManager.TicksGame;
+            if (parent?.Spawned == true && parent.Map != null)
+                FleckMaker.ThrowLightningGlow(parent.DrawPos, parent.Map, 2.4f);
+        }
+
+        public override void PostDraw()
+        {
+            base.PostDraw();
+            if (ringVisualStartTick < 0 || parent?.Spawned != true)
+                return;
+
+            int elapsed = Find.TickManager.TicksGame - ringVisualStartTick;
+            if (elapsed < 0 || elapsed >= RingVisualTicks)
+                return;
+
+            if (ringMaterial == null)
+            {
+                Texture2D texture = ContentFinder<Texture2D>.Get(RingEffectTexturePath, false);
+                if (texture == null)
+                    return;
+                ringMaterial = MaterialPool.MatFrom(texture, ShaderDatabase.Transparent, Color.white);
+            }
+
+            if (ringMesh == null)
+                ringMesh = MeshPool.GridPlane(new Vector2(3.0f, 3.0f));
+
+            // In the overhead camera, screen-north offsets make these elliptical
+            // horizontal annuli read as stacked rings rising above the floor.
+            // The platform remains flat and unobstructed outside this brief effect.
+            Vector3 center = parent.DrawPos;
+            float altitude = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);
+            for (int ring = 0; ring < 5; ring++)
+            {
+                float rise = Mathf.Clamp01((elapsed - ring * 7f) / (RingRiseTicks - ring * 7f));
+                float retract = Mathf.Clamp01((elapsed - RingRiseTicks - RingHoldTicks -
+                    (4 - ring) * 7f) / (RingRetractTicks - 28f));
+                float lift = Mathf.SmoothStep(0f, 1f, rise) *
+                    (1f - Mathf.SmoothStep(0f, 1f, retract));
+                if (lift <= 0.001f)
+                    continue;
+
+                Vector3 loc = center;
+                loc.y = altitude + ring * 0.002f;
+                loc.z += lift * (0.16f + ring * 0.26f);
+                Graphics.DrawMesh(ringMesh, loc, Quaternion.identity, ringMaterial, 0);
             }
         }
 
