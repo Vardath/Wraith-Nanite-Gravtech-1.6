@@ -39,25 +39,73 @@ namespace ZAdaptiveRuntime
         static ZAdaptiveRuntimeBootstrap()
         {
             var harmony = new Harmony("vardath.adaptiveerrorpatch.runtime");
-            PatchStaticAtlas(harmony);
-            PatchGraphicSingleAtlasInsertion(harmony);
-            PatchGraphicRequestNullPath(harmony);
-            PatchGraphicInitRequests(harmony);
-            PatchInvalidEquipmentDrops(harmony);
-            PatchFireDefinitiveEdition(harmony);
-            PatchPsychicShockTarget(harmony);
-            PatchIdeologyGrammar(harmony);
-            PatchVanillaGravshipExpanded(harmony);
-            PatchVehicleFrameworkGravTide(harmony);
-            PatchGeologicalLandformsGravTide(harmony);
-            PatchScrollMentalStateTarget(harmony);
-            PatchInvisibilityPsychology(harmony);
-            PatchAutoNameBabies(harmony);
-            PatchVgeGravEngineListerGuard(harmony);
-            PatchGiddyUpDeathInitGuard(harmony);
-            PatchMissingIdeoApparelTipGuard(harmony);
+            Log.Message("[Z Adaptive] Runtime bootstrap active; independent compatibility hooks initializing.");
+            TryInstallRuntimeHook("PatchStaticAtlas", () => PatchStaticAtlas(harmony));
+            TryInstallRuntimeHook("PatchGraphicSingleAtlasInsertion", () => PatchGraphicSingleAtlasInsertion(harmony));
+            TryInstallRuntimeHook("PatchGraphicRequestNullPath", () => PatchGraphicRequestNullPath(harmony));
+            TryInstallRuntimeHook("PatchGraphicInitRequests", () => PatchGraphicInitRequests(harmony));
+            TryInstallRuntimeHook("PatchInvalidEquipmentDrops", () => PatchInvalidEquipmentDrops(harmony));
+            TryInstallRuntimeHook("PatchFireDefinitiveEdition", () => PatchFireDefinitiveEdition(harmony));
+            TryInstallRuntimeHook("PatchPsychicShockTarget", () => PatchPsychicShockTarget(harmony));
+            TryInstallRuntimeHook("PatchIdeologyGrammar", () => PatchIdeologyGrammar(harmony));
+            TryInstallRuntimeHook("PatchVanillaGravshipExpanded", () => PatchVanillaGravshipExpanded(harmony));
+            TryInstallRuntimeHook("PatchVehicleFrameworkGravTide", () => PatchVehicleFrameworkGravTide(harmony));
+            TryInstallRuntimeHook("PatchGeologicalLandformsGravTide", () => PatchGeologicalLandformsGravTide(harmony));
+            TryInstallRuntimeHook("PatchScrollMentalStateTarget", () => PatchScrollMentalStateTarget(harmony));
+            TryInstallRuntimeHook("PatchInvisibilityPsychology", () => PatchInvisibilityPsychology(harmony));
+            TryInstallRuntimeHook("PatchAutoNameBabies", () => PatchAutoNameBabies(harmony));
+            TryInstallRuntimeHook("PatchVgeGravEngineListerGuard", () => PatchVgeGravEngineListerGuard(harmony));
+            TryInstallRuntimeHook("PatchGiddyUpDeathInitGuard", () => PatchGiddyUpDeathInitGuard(harmony));
+            TryInstallRuntimeHook("PatchMissingIdeoApparelTipGuard", () => PatchMissingIdeoApparelTipGuard(harmony));
+            TryInstallRuntimeHook("WorldgenDiagnostics", () => PatchWorldGenerationDiagnostics(harmony));
         }
 
+        private static void TryInstallRuntimeHook(string name, Action install)
+        {
+            try { install(); }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] Patch install failed (" + name +
+                    "); remaining independent patches will still initialize: " + ex);
+            }
+        }
+
+        // Diagnostic only. Preserve the original exception and terrain/grid data.
+        private static void PatchWorldGenerationDiagnostics(Harmony harmony)
+        {
+            MethodInfo generate = AccessTools.Method(typeof(WorldGenerator), "GenerateWorld");
+            MethodInfo reach = AccessTools.Method(typeof(WorldReachability), "InvalidateAllFields");
+            MethodInfo begin = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap), nameof(WorldgenStartInfo));
+            MethodInfo failure = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap), nameof(WorldReachabilityFaultInfo));
+            if (generate != null && begin != null)
+                harmony.Patch(generate, prefix: new HarmonyMethod(begin));
+            if (reach != null && failure != null)
+                harmony.Patch(reach, finalizer: new HarmonyMethod(failure));
+        }
+
+        private static void WorldgenStartInfo()
+        {
+            Log.Message("[Z Adaptive] Worldgen start: " + MemoryStat());
+        }
+
+        private static Exception WorldReachabilityFaultInfo(Exception __exception)
+        {
+            if (__exception != null)
+                Log.Error("[Z Adaptive] World reachability threw (exception preserved): " +
+                    __exception + "; " + MemoryStat());
+            return __exception;
+        }
+
+        private static string MemoryStat()
+        {
+            try
+            {
+                using (var process = System.Diagnostics.Process.GetCurrentProcess())
+                    return "process private=" + (process.PrivateMemorySize64 / (1024L * 1024L)) +
+                        " MiB; managed=" + (GC.GetTotalMemory(false) / (1024L * 1024L)) + " MiB";
+            }
+            catch (Exception ex) { return "memory counters unavailable: " + ex.GetType().Name; }
+        }
 
         // 2026-10-09 Player.log: VGE GravEngineTracker.GetGravEngine_ListerThings
         // repeatedly sends an invalid def to ListerThings.ThingsOfDef, generating
