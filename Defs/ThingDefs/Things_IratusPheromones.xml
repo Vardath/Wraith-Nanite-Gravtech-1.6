@@ -3,8 +3,11 @@
   <ThingDef ParentName="ResourceBase">
     <defName>WNG_IratusPheromones</defName>
     <label>Iratus pheromones</label>
-    <description>Volatile Wraith-derived biological attractant reclaimed from living Wraith armour and weapons. A stack left exposed on a map for one full day attracts wild Iratus bugs from the map edge. Each successful arrival consumes one unit of pheromones. The remaining stack begins another one-day attraction cycle. Seal or dispose of this hazardous salvage before it draws predators.</description>
-    <thingCategories Inherit="False"><li>Manufactured</li></thingCategories>
+    <description>Volatile Wraith-derived biological attractant reclaimed from living Wraith armour and weapons. A stack exposed on a map for one game day begins emitting an Iratus attractant signal. The chance of drawing wild Iratus bugs from the map edge rises gradually during subsequent days. Each successful arrival consumes one unit of pheromones. The remaining stack begins another one-day attraction cycle. Seal or dispose of this hazardous salvage before it draws predators.</description>
+    <thingCategories Inherit="False"><li>Drugs</li></thingCategories>
+    <alwaysHaulable>true</alwaysHaulable>
+    <tradeability>Sellable</tradeability>
+    <rotatable>false</rotatable>
     <graphicData>
       <texPath>Things/Item/Resource/WNG_IratusPheromones</texPath>
       <graphicClass>Graphic_Single</graphicClass>
@@ -25,6 +28,9 @@
         <exposedTicksRequired>60000</exposedTicksRequired>
         <maxIratusPerMap>12</maxIratusPerMap>
         <maxArrivalCount>3</maxArrivalCount>
+        <startingChancePerRareTick>0.001</startingChancePerRareTick>
+        <maximumChancePerRareTick>0.01</maximumChancePerRareTick>
+        <rampUpTicks>240000</rampUpTicks>
       </li>
     </comps>
   </ThingDef>
