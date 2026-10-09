@@ -66,7 +66,8 @@ for cx,cy,rx,ry in [(444,467,64,135),(563,465,65,139),(511,651,85,80)]:
     d.ellipse((cx-rx+30,cy-ry+24,cx-rx+43,cy-ry+85),fill=(255,255,200,180))
     for j in range(4):
         yy=cy-ry+45+j*(2*ry-90)//4
-        d.ellipse((cx+r.randrange(-rx//2,rx//2),yy,cx+r.randrange(-rx//2,rx//2)+10,yy+10),
+        bx=cx+r.randrange(-rx//2,rx//2)
+        d.ellipse((bx,yy,bx+10,yy+10),
                   fill=(255,235,90,120))
 # Gold-vein Wraith restraint spines, central hinge and armored clasp.
 d=ImageDraw.Draw(im)
