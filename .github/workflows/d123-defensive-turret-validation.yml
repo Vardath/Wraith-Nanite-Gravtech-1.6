@@ -48,10 +48,14 @@ jobs:
                   continue
               if node.findtext("thingClass") != "Building_TurretGun":
                   failures.append(f"{name} is not using native Building_TurretGun")
+              if node.findtext("drawerType") != "MapMeshAndRealTime":
+                  failures.append(f"{name} has no real-time DrawAt: turret top will be invisible")
               if node.findtext("designationCategory") != "Security":
                   failures.append(f"{name} is not discoverable in vanilla Security")
               if node.findtext("./building/turretGunDef") != expected["gun"]:
                   failures.append(f"{name} gun link regressed")
+              if node.findtext("tickerType") != "Normal":
+                  failures.append(f"{name} has no normal targeting tick updates")
               if node.findtext("./researchPrerequisites/li") != expected["research"]:
                   failures.append(f"{name} research gate regressed")
               if node.findtext("./graphicData/texPath") != expected["tex"]:
@@ -70,6 +74,10 @@ jobs:
               if gun is None:
                   failures.append(f"{name} turret gun missing: {expected['gun']}")
               else:
+                  if gun.attrib.get("ParentName") != "BaseWeaponTurret":
+                      failures.append(f"{expected['gun']} must inherit the native turret-weapon archetype")
+                  if gun.findtext("./verbs/li/verbClass") != "Verb_Shoot":
+                      failures.append(f"{expected['gun']} cannot use vanilla projectile shooting")
                   if gun.findtext("./graphicData/texPath") != expected["top"]:
                       failures.append(f"{expected['gun']} top art path regressed")
                   top_art = Path("Textures") / (expected["top"] + ".png")
