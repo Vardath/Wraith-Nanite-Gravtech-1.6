@@ -50,6 +50,8 @@ jobs:
           grep -q 'Custom/Gravship chroma key' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'Defs/SoundDef//grains/li' "$root/Patches/AdaptiveKnownFixes.xml"
           grep -q 'GeologicalLandformsLightningPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -Fq 'GravTide.SeabedPlantGrowth+BuildFor_Patch' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'CallsExactStaticMethod' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'PocketMapParent parent' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'SafeVgeGravEngineThingsOfDef' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'GiddyUpSetDeadStorageReadyPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"

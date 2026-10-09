@@ -581,7 +581,10 @@ namespace ZAdaptiveRuntime
         private static void PatchGeologicalLandformsGravTide(Harmony harmony)
         {
             Type gravLightningPatchType = AccessTools.TypeByName("GravTide.WeatherEvent_LightningStrike_FireEvent_Patch");
-            Type gravGrowthPatchType = AccessTools.TypeByName("GravTide.BuildFor_Patch");
+            // Current GravTide declares the patch as a nested class; preserve the
+            // legacy flat-name fallback for older installed versions.
+            Type gravGrowthPatchType = AccessTools.TypeByName("GravTide.SeabedPlantGrowth+BuildFor_Patch")
+                ?? AccessTools.TypeByName("GravTide.BuildFor_Patch");
             Type landformsLightningPatchType = AccessTools.TypeByName("GeologicalLandforms.Patches.Patch_RimWorld_WeatherEvent_LightningStrike");
             Type landformsGrowthPatchType = AccessTools.TypeByName("GeologicalLandforms.Patches.Patch_Verse_MapPlantGrowthRateCalculator");
 
@@ -635,7 +638,7 @@ namespace ZAdaptiveRuntime
             }
         }
 
-                private static void PatchGeologicalLandformsGravTidePlantGrowth(
+        private static void PatchGeologicalLandformsGravTidePlantGrowth(
             Harmony harmony,
             Type gravGrowthPatchType,
             Type landformsGrowthPatchType)
@@ -657,6 +660,19 @@ namespace ZAdaptiveRuntime
                     return;
                 }
 
+                // GravTide 2026.10.09 uses SeaPlace.SurfaceTileOf(map) in this
+                // prefix, providing a valid world tile even on an underwater
+                // pocket map. Check the actual method IL before assuming this
+                // remains true for a future or older GravTide version.
+                Type seaPlace = AccessTools.TypeByName("GravTide.SeaPlace");
+                MethodInfo surfaceTile = seaPlace == null ? null : AccessTools.Method(
+                    seaPlace, "SurfaceTileOf", new[] { typeof(Map) });
+                if (surfaceTile != null && CallsExactStaticMethod(gravPrefix, surfaceTile))
+                {
+                    Log.Message("[Z Adaptive] Geological Landforms + GravTide: native surface-tile handling verified; skipped redundant growth transpiler.");
+                    return;
+                }
+
                 // Geological Landforms already protects the vanilla BuildFor path. GravTide can
                 // skip that original method from its own Prefix, so apply the same tile substitution
                 // only inside GravTide's override. Do not replace or unpatch Geological Landforms'
@@ -672,6 +688,38 @@ namespace ZAdaptiveRuntime
                 Log.Warning("[Z Adaptive] Geological Landforms + GravTide plant-growth compatibility failed open: " +
                     ex.GetType().Name + ": " + ex.Message);
             }
+        }
+
+        // Inspect direct call metadata without invoking a foreign mod method.
+        // If IL is unavailable or its call layout changed, preserve the older
+        // compatibility transpiler rather than assuming native support.
+        private static bool CallsExactStaticMethod(MethodInfo caller, MethodInfo callee)
+        {
+            if (caller == null || callee == null || caller.Module != callee.Module)
+                return false;
+
+            try
+            {
+                byte[] il = caller.GetMethodBody()?.GetILAsByteArray();
+                if (il == null)
+                    return false;
+
+                byte[] token = BitConverter.GetBytes(callee.MetadataToken);
+                for (int i = 0; i + 4 < il.Length; i++)
+                {
+                    if (il[i] != 0x28 && il[i] != 0x6F)
+                        continue;
+                    if (il[i + 1] == token[0] && il[i + 2] == token[1] &&
+                        il[i + 3] == token[2] && il[i + 4] == token[3])
+                        return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("[Z Adaptive] GravTide growth-call probe failed open: " +
+                    ex.GetType().Name + ": " + ex.Message);
+            }
+            return false;
         }
 
         // Harmony's __0 binds to the original GL prefix method's first parameter;
