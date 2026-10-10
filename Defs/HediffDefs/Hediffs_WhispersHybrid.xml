@@ -24,4 +24,30 @@
       </li>
     </stages>
   </HediffDef>
+  <!-- Temporary, non-stacking eyesight impairment for any pawn physically standing
+       in emitted Whispers mist. The normal BlindSmoke gas separately modifies shots
+       passing through the cloud, including shots toward the emitter. -->
+  <HediffDef>
+    <defName>WNG_WhispersMistObscured</defName>
+    <label>vision obscured by Whispers mist</label>
+    <description>Dense biological mist reduces this pawn's effective eyesight and ranged target acquisition. Sight returns shortly after leaving the mist.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <isBad>true</isBad>
+    <duplicationAllowed>false</duplicationAllowed>
+    <scenarioCanAdd>false</scenarioCanAdd>
+    <initialSeverity>1</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <stages>
+      <li>
+        <capMods>
+          <li><capacity>Sight</capacity><postFactor>0.65</postFactor></li>
+        </capMods>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <disappearsAfterTicks>180~180</disappearsAfterTicks>
+      </li>
+    </comps>
+  </HediffDef>
 </Defs>
