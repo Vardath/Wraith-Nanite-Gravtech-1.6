@@ -16,7 +16,7 @@
     <researchViewX>9.00</researchViewX>
     <researchViewY>5.50</researchViewY>
     <customUnlockTexts>
-      <li>Unlocks the WNG prerequisite path for hybrid-derived hearing and controllable mist-gland implants.</li>
+      <li>Unlocks the WNG prerequisite path for hybrid-derived hearing and passive, continuously emitting mist-gland implants.</li>
     </customUnlockTexts>
   </ResearchProjectDef>
 </Defs>
