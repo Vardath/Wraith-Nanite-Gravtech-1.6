@@ -398,3 +398,82 @@ of managed verbs, or blanket exception suppression has been applied.
 Diagnosis requires a copy of the affected save and a fresh load/save
 stack from the updated mod list. This is still an unresolved
 save-integrity risk.
+
+## 2026-10-11 RimShips source audit and five-item crash follow-up
+
+Uploaded `3689132119.rar` is RimShips 1.6,
+`NeuralCat.RimShips`, with 371 archive entries, C# source, XML
+defs, and the assembly `Seaship.dll`. It directly confirms:
+
+1. **RimShips minified grav engine.** `Defs/Things_Buildings/ShipCore.xml`
+   defines `RimShipCore` inheriting `GravshipComponentBase` without
+   a custom `minifiedDef`. This accounts for the reported
+   `RimShipCore doesn't have a custom minified def` warning.
+   RimShips' own `Patches/Multifloors/Multifloors.xml` demonstrates
+   a correct separate `MinifiedThing` wrapper and `minifiedDef` link
+   for another grav engine. The guarded
+   `Patches/RimShipsMinifiedEngineCompat.xml` adds
+   `ZAdaptive_MinifiedRimShipCore` and links it **only when**
+   RimShipCore has no dedicated minified def / still uses generic
+   MinifiedThing. Existing custom minified defs, building stats,
+   ship travel, engines and ship movement code are unchanged.
+
+2. **RimShips/Avaloi mismatch.** RimShips' `Patches/Genes.xml`
+   unconditionally references `LTS_Hydragon`, `LTS_Mucorins`,
+   and `LTS_Nexarii` when a mod with display name
+   `Det's Xenotypes - Avaloi` is loaded. The log shows
+   `LTS_Hydragon` absent, aborting that three-part patch.
+   `Patches/RimShipsAvaloiGeneCompat.xml` restores the
+   appropriate existing RimShips genes **only for target xenotypes
+   actually present**, with per-gene duplicate protection.
+   No missing Avaloi xenotype is created and the earlier failure
+   message may still be logged by upstream.
+
+3. **RJW invalid interactions.** The prior 1.6 source-backed
+   `RJWImagoCompatibility.cs` now includes the optional
+   `JobGiver_JoinInBed.TryGiveJob` path alongside Quickie and
+   masturbation. The new
+   `Source/ZAdaptiveRuntime/RJWExistingInvalidJobsGuard.cs`
+   also checks an already generated/saved `JoinInBed`, `Quickie`,
+   or `RJW_Masturbate` job at pre-toil reservation time, declining
+   only those with no available interaction or missing partner.
+   It uses RJW's actual `SexInteractionFinder.FindInteractions`;
+   no fictitious sex act is inserted and other RJW jobs are not
+   modified. Jobs already mid-toil when loading may still need to
+   end; the guards are intentionally not a save migration.
+
+4. **Save serialization risk still open.** The supplied log shows
+   `Thing_Human11361` / Joyce duplicated, alongside the same
+   pawn's MVCF verbs, RJW organs, RimTalk, Deep Colony, Mimic
+   Slime, WNG hediffs, abilities, genes and injuries.
+   This strongly suggests a duplicated pawn/object graph but does
+   not establish which mod owns the erroneous `Scribe_Deep.Look`
+   or whether multiple references are deep-saving the same pawn.
+   RimDoctor also reports `InvalidCastException` while saving
+   `Map-0-PlayerHome` and references to discarded pawns.
+   We did **not** rewrite XML save IDs, delete pawns/genes/hediffs,
+   patch `Scribe_Deep`, suppress exceptions or modify MVCF.
+   A backed-up `.rws` and a fresh *full* save-time stack trace
+   are required before making a save-repair patch.
+
+5. **Bun Race / Big and Small / HAR rendering open.** The uploaded
+   Bun Race 1.5 content (loaded under 1.6) explicitly restricts
+   valid adult body types to Female, while supplying distinct
+   male and female graphic variants and baby/child sprites.
+   The logged missing root path `Bun/Bodies/` is consistent with
+   a renderer selecting a body type outside that valid set.
+   Neither stripping Bun's original body types nor globally
+   changing HAR was considered safe with no Big and Small
+   framework assembly/source supplied. No textures were
+   fabricated or replaced. Inspect updated Big and Small/HAR
+   versions or send a new pawn-specific render trace.
+
+The remaining upstream XML errors for Progression: Gravship,
+Rim-Elves and MorrowRim are likewise not corrected by speculative
+fallbacks without the owning 1.6 source/actual target defs.
+Existing compatible fixes, including the MAP mechanoid recreation
+fallback, remain untouched.
+
+This is a compiled compatibility update, **not** a claim that
+save integrity, Bun race rendering, or all XML warnings are
+resolved in the live 626-mod game.
