@@ -48,5 +48,5 @@
     <workerClass>WraithNaniteGravtech.Recipe_RemoveSovereignNeuralLattice</workerClass>
     <removesHediff>WNG_SovereignNeuralLattice</removesHediff>
     <recipeUsers><li>Human</li></recipeUsers>
-  </RecipeDef>
+  <appliedOnFixedBodyParts><li>Brain</li></appliedOnFixedBodyParts></RecipeDef>
 </Defs>
