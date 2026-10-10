@@ -5,30 +5,66 @@ namespace WraithNaniteGravtech.Anomaly
 {
     public static class WhispersImplantUtility
     {
+        // Retained so existing saves can deserialize the former castable ability.
         private const string MistAbilityDefName = "WNG_ReleaseWhispersMist";
         public static AbilityDef MistAbilityDef => DefDatabase<AbilityDef>.GetNamedSilentFail(MistAbilityDefName);
     }
 
+    /// <summary>
+    /// A permanent passive mist emitter, not an ability. Mirrors the native Whispers
+    /// fog on every interval, and removes legacy castable abilities from existing saves.
+    /// </summary>
     public sealed class Hediff_WhispersMistGland : Hediff_Implant
     {
         public override void PostAdd(DamageInfo? dinfo)
         {
             base.PostAdd(dinfo);
-            AbilityDef ability = WhispersImplantUtility.MistAbilityDef;
-            if (ability != null && pawn?.abilities != null && pawn.abilities.GetAbility(ability) == null)
-                pawn.abilities.GainAbility(ability);
+            RemoveLegacyMistAbility();
+        }
+
+        public override void TickInterval(int delta)
+        {
+            base.TickInterval(delta);
+            if (pawn == null || pawn.Dead || delta <= 0 ||
+                !pawn.IsHashIntervalTick(WhispersFogUtility.IntervalTicks, delta))
+                return;
+
+            // Also reconciles saved pawns whose implant was installed before this change.
+            RemoveLegacyMistAbility();
+
+            // A Whispers hybrid already emits fog through its native gene. Do not stack
+            // the same mist twice if one is also given the cultured implant.
+            if (!HasActiveNativeWhispersFog())
+                WhispersFogUtility.EmitPredatoryFog(pawn);
         }
 
         public override void PostRemoved()
         {
-            Pawn bearer = pawn;
-            AbilityDef ability = WhispersImplantUtility.MistAbilityDef;
-            if (ability != null && bearer?.abilities != null && bearer.abilities.GetAbility(ability) != null)
-                bearer.abilities.RemoveAbility(ability);
+            RemoveLegacyMistAbility();
             base.PostRemoved();
+        }
+
+        private void RemoveLegacyMistAbility()
+        {
+            AbilityDef ability = WhispersImplantUtility.MistAbilityDef;
+            if (ability != null && pawn?.abilities?.GetAbility(ability) != null)
+                pawn.abilities.RemoveAbility(ability);
+        }
+
+        private bool HasActiveNativeWhispersFog()
+        {
+            var genes = pawn?.genes?.GenesListForReading;
+            if (genes == null)
+                return false;
+            foreach (Gene gene in genes)
+                if (gene is Gene_WhispersPredator native && native.Active)
+                    return true;
+            return false;
         }
     }
 
+    // Legacy ability classes remain only for old save compatibility. The hediff
+    // removes the obsolete ability, and it is never granted again by the implant.
     public sealed class CompProperties_AbilityWhispersMist : CompProperties_AbilityEffect
     {
         public float radius = 10f;
@@ -38,32 +74,14 @@ namespace WraithNaniteGravtech.Anomaly
 
     public sealed class CompAbilityEffect_WhispersMist : CompAbilityEffect
     {
-        public new CompProperties_AbilityWhispersMist Props => (CompProperties_AbilityWhispersMist)props;
-
         public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
         {
-            Pawn caster = parent?.pawn;
-            HediffDef gland = DefDatabase<HediffDef>.GetNamedSilentFail("WNG_WhispersMistGland");
-            bool valid = caster != null && !caster.Dead && caster.Spawned && caster.Map?.gasGrid != null &&
-                         gland != null && caster.health?.hediffSet?.HasHediff(gland) == true;
-            if (!valid && throwMessages && caster != null)
-                Messages.Message("A functioning implanted Whispers mist gland is required.", caster, MessageTypeDefOf.RejectInput, false);
-            return valid && base.Valid(target, throwMessages);
+            return false;
         }
 
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
-            base.Apply(target, dest);
-            Pawn caster = parent?.pawn;
-            Map map = caster?.Map;
-            if (caster == null || map?.gasGrid == null)
-                return;
-
-            foreach (IntVec3 cell in GenRadial.RadialCellsAround(caster.Position, Props.radius, true))
-            {
-                if (cell.InBounds(map))
-                    map.gasGrid.AddGas(cell, GasType.BlindSmoke, Props.gasPerCell);
-            }
+            // Obsolete castable mist cannot create a second, manual emission path.
         }
     }
 }
