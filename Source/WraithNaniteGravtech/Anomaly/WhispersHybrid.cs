@@ -70,6 +70,8 @@ namespace WraithNaniteGravtech.Anomaly
     {
         public const int IntervalTicks = 120;
         private const float Radius = 10f;
+        private const string VisionObscuredDefName = "WNG_WhispersMistObscured";
+        private const int SightRefreshTicks = 180;
 
         public static void EmitPredatoryFog(Pawn pawn)
         {
@@ -83,6 +85,33 @@ namespace WraithNaniteGravtech.Anomaly
                 if (!cell.InBounds(map))
                     continue;
                 map.gasGrid.AddGas(cell, GasType.BlindSmoke, cell == origin ? 30 : 16);
+            }
+
+            // Native BlindSmoke already penalizes shooting through the cloud (including
+            // shots aimed at the emitter). It does not modify pawn Sight itself; apply
+            // a short-lived vision impairment only to pawns actually standing in the
+            // emitted mist. Refreshing rather than stacking keeps this bounded.
+            HediffDef visionDef = DefDatabase<HediffDef>.GetNamedSilentFail(VisionObscuredDefName);
+            if (visionDef == null || map.mapPawns == null)
+                return;
+
+            foreach (Pawn affected in map.mapPawns.AllPawnsSpawned)
+            {
+                if (affected == null || affected.Dead || !affected.Spawned ||
+                    affected.health?.hediffSet == null ||
+                    affected.Position.DistanceToSquared(origin) > Radius * Radius ||
+                    map.gasGrid.DensityAt(affected.Position, GasType.BlindSmoke) <= 0)
+                    continue;
+
+                Hediff impairment = affected.health.hediffSet.GetFirstHediffOfDef(visionDef);
+                if (impairment == null)
+                {
+                    impairment = affected.health.AddHediff(visionDef);
+                }
+
+                // Affects friends and foes, including the emitter. Clears quickly after
+                // leaving the cloud, rather than permanently changing sight capacity.
+                impairment?.TryGetComp<HediffComp_Disappears>()?.SetDuration(SightRefreshTicks);
             }
         }
     }
