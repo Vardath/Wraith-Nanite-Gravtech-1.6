@@ -15,8 +15,6 @@ namespace WraithNaniteGravtech.Anomaly
     public sealed class Gene_WhispersPredator : Gene
     {
         private const string SensoryHediffDefName = "WNG_WhispersBlindHunter";
-        private const int FogIntervalTicks = 120;
-        private const float FogRadius = 10f;
 
         public override void PostAdd()
         {
@@ -39,8 +37,8 @@ namespace WraithNaniteGravtech.Anomaly
             if (pawn.IsHashIntervalTick(600, delta))
                 EnsureSensoryState();
 
-            if (pawn.Spawned && pawn.Map != null && pawn.IsHashIntervalTick(FogIntervalTicks, delta))
-                EmitPredatoryFog();
+            if (pawn.IsHashIntervalTick(WhispersFogUtility.IntervalTicks, delta))
+                WhispersFogUtility.EmitPredatoryFog(pawn);
         }
 
         private void EnsureSensoryState()
@@ -62,14 +60,25 @@ namespace WraithNaniteGravtech.Anomaly
                 pawn.health.RemoveHediff(hediff);
         }
 
-        private void EmitPredatoryFog()
+    }
+
+    /// <summary>
+    /// Shared passive Whispers neck-gill emission. Native hybrids and cultured implants
+    /// use the same radius, pulse interval and non-toxic BlindSmoke intensity.
+    /// </summary>
+    internal static class WhispersFogUtility
+    {
+        public const int IntervalTicks = 120;
+        private const float Radius = 10f;
+
+        public static void EmitPredatoryFog(Pawn pawn)
         {
-            Map map = pawn.Map;
-            if (map?.gasGrid == null)
+            Map map = pawn?.Map;
+            if (pawn == null || pawn.Dead || !pawn.Spawned || map?.gasGrid == null)
                 return;
 
             IntVec3 origin = pawn.Position;
-            foreach (IntVec3 cell in GenRadial.RadialCellsAround(origin, FogRadius, true))
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(origin, Radius, true))
             {
                 if (!cell.InBounds(map))
                     continue;
