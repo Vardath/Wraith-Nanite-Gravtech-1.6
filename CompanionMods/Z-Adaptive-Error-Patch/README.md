@@ -358,3 +358,43 @@ behavior, load-time DefOf binding, or pre-existing serialized projectiles.
 Make a copy of the save before testing. Existing flying-object instances
 saved under the previously shared name may need to finish or be cleaned
 up safely; this patch does not rewrite saved objects.
+
+## 2026-10-11 Vanilla Expanded Framework and [MAP] Mechanoid Mechanitor (supplied source archives)
+
+Examined user-supplied archives 2023507013 (Vanilla Expanded Framework,
+`OskarPotocki.VanillaFactionsExpanded.Core`) and 3811415429
+([MAP] Mechanoid Mechanitor 1.6, `xyzf.mechanoidmechanitor`,
+version 1.0.10). All extracted XML parsed; no duplicate concrete
+`(DefType, defName)` keys were found in either package's 1.6 defs.
+
+**[MAP] recreation ThinkTree:** `1.6/Patches/Recreation/MechanoidMechanitorRecreationThinkTree.xml`
+unconditionally inserts
+`MAP_MechanoidMechanitor.JobGiver_MechanoidMechanitorRecreation` just
+before an *exact* `JobGiver_WanderColony[maxDanger="None"]` nested under
+the player-controlled `Mechanoid` Idle branch. The Player-prev(7) log
+confirms this specific XPath is missing in the actual 626-mod stack.
+This is a fragile compatibility assumption; it need not mean MAP's job
+giver or all Mechanoid work is invalid.
+
+`Patches/MechanoidMechanitorRecreationCompat.xml` is a second-chance
+compatibility operation that runs **after MAP**. Only if the original
+recreation job giver is absent *and* the existing player-controlled
+Mechanoid Idle branch still has a child, it prepends the same job giver
+before that branch's first child. It does not insert it into hostile or
+uncontrolled mechs, does not duplicate a successfully inserted job giver,
+and does not invent missing ThinkTree roots. The original upstream XML
+failure may still be logged because it happened before Z Adaptive's
+later patch; the fallback restores behaviour where its safe branch
+exists. The optional package ID was added to `About/About.xml/loadAfter`.
+
+**VEF/MVCF duplicate save IDs:** VEF bundles MVCF, so RimDoctor labels
+duplicated `MVCF.ManagedVerb` registrations as VEF, but the same
+source log repeats deep-saved genes, hediffs, and verbs from many other
+mods associated with the same pawn. These are *consistent with* a
+pawn or object graph deep-saved more than once, **not proof** of a
+specific VEF/MVCF defect. The archive contains no safe XML fix for
+that save-ownership problem. No save/load patch, ID rewrite, deletion
+of managed verbs, or blanket exception suppression has been applied.
+Diagnosis requires a copy of the affected save and a fresh load/save
+stack from the updated mod list. This is still an unresolved
+save-integrity risk.
