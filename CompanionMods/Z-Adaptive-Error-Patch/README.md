@@ -482,7 +482,7 @@ resolved in the live 626-mod game.
 
 Inspected **eleven** user-supplied workshop archives directly, reading
 their 1.6 XML, load folders and available source. XML parser validation:
-all 1,958 extracted XML files across these archives parsed (351 Big and
+all 1,959 extracted XML files across these archives parsed (351 Big and
 Small Framework, 371 Big and Small Genes, 1 Better Compatibility Body
 Texture, 10 Progression Gravship, 32 Moon Sugar & Skooma, 5 Dunmer
 Lamp Pack, 17 Mashed's Lamps Pack 1, 4 Passive Birthsigns, 3 Ashlander
@@ -500,7 +500,7 @@ Yurts, 1,104 Mashed's Ashlands, and 61 Rim-Elves).
   creating the container only when absent, and only when
   `KindInstinct` exists. Never fabricate a missing gene.
 - `Patches/ProgressionGravshipFuelOptimizerCompat.xml`:
-  `fern​y.ProgressionGravship` 1.6 (3522893553), conditional VGE
+  `ferny.ProgressionGravship` 1.6 (3522893553), conditional VGE
   Chapter 1 XML blindly replaces
   `ThingDef[FuelOptimizer]/researchPrerequisites` and the exact
   node is missing in the logged stack. If `FuelOptimizer` **exists**
