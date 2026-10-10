@@ -313,3 +313,48 @@ of missing references was added.
 All fixes require runtime verification with the updated complete mod
 list. Copy the save before testing; the duplicate Pawn Joyce registration
 is not resolved by a mod XML patch.
+
+## 2026-10-11 A RimWorld of Magic + Lord of the Rims Wizardry collision (uploaded workshop archive 1201382956)
+
+The user-supplied `1201382956.rar` is **A RimWorld of Magic** by Torann
+(`torann.arimworldofmagic`), including active `v1.6` content.
+The independent supplied 1.6 Lord of the Rims – Wizardry (Continued)
+archive (`3551419391`, `zal.lotrwizardry`) includes a completely different
+concrete `ThingDef` named `FlyingObject_Spinning`. This is a genuine
+cross-mod collision, not merely a suspected Vehicle Framework problem:
+
+- Torann: `FlyingObject_Spinning` -> `TorannMagic.FlyingObject_Spinning`,
+  defined under `v1.6/Defs/AbilityDefs/Abilities_Base.xml`.
+- Wizardry: `FlyingObject_Spinning` ->
+  `Wizardry.FlyingObject_Spinning`, defined under
+  `1.6/Defs/AbilityDefs/LotRW_Abilities_Base.xml`.
+
+Torann's `Projectile_Attraction.LaunchFlyingObect` makes the explicit
+`(FlyingObject_Spinning)GenSpawn.Spawn(TorannMagicDefOf.FlyingObject_Spinning, ...)`
+cast. Several other Torann abilities use `ThingDef.Named("FlyingObject_Spinning")`
+with the same cast. When Wizardry's incompatible definition wins name
+resolution, Torann's cast throws `InvalidCastException`, exactly matching
+the log's stack `TorannMagic.Projectile_Attraction.LaunchFlyingObect`.
+
+**Root-cause prevention:** `Patches/RimworldOfMagicWizardrySpinDefCollision.xml`
+runs *only when both exact 1.6 definitions coexist*. It retains Torann's
+original `defName` and XML parent `Name`, renaming only the Wizardry
+projectile's `defName` and `Name` to
+`LotRW_FlyingObject_Spinning`. `Source/ZAdaptiveRuntime/WizardrySpinDefBinding.cs`
+then reassigns the compiled `Wizardry.WizardryDefOf.FlyingObject_Spinning`
+field to the unique Wizardry ThingDef by reflection. The wizardry
+projectile retains its own original ThingClass, graphic and damage
+data, and Torann's spells again resolve to Torann's original class.
+The XML and C# repairs are guarded; if either upstream mod changes its
+definition, no blind override is attempted. Z Adaptive now requests
+`loadAfter` for both mods.
+
+The existing specific fallback in `NightErrors20261011.cs`, which prevents
+an invalid Attraction projectile from flooding the log, remains as a
+last-resort crash guard. The earlier Vehicle Framework non-vehicle-spawn
+guard remains independently useful for Wizardry's flying objects.
+A successful CI build validates assembly structure, **not** runtime spell
+behavior, load-time DefOf binding, or pre-existing serialized projectiles.
+Make a copy of the save before testing. Existing flying-object instances
+saved under the previously shared name may need to finish or be cleaned
+up safely; this patch does not rewrite saved objects.
