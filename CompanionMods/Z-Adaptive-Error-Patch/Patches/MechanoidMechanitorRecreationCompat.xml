@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!--
+    [MAP] Mechanoid Mechanitor (1.6), workshop 3811415429.
+    Its own Recreation/MechanoidMechanitorRecreationThinkTree.xml inserts
+    before JobGiver_WanderColony[maxDanger="None"] under the Idle tagger.
+    The 2026-10-10 Player log confirms this precise nested anchor is absent.
+
+    A narrower-but-robust fallback: if the original recreation giver does
+    not already exist, prepend it to the FIRST actual child of the same
+    player-controlled Mechanoid Idle tagger. This preserves all upstream
+    player-control and Idle gating. Do not graft recreation onto the whole
+    ThinkTree or a hostile mech's branch.
+
+    This late repair cannot retroactively remove the upstream log message,
+    and safely does nothing when the player-controlled Idle subtree itself
+    was removed/rewritten by another mod.
+  -->
+  <Operation Class="PatchOperationSequence">
+    <success>Always</success>
+    <operations>
+      <li Class="PatchOperationTest">
+        <xpath>Defs/ThinkTreeDef[defName="Mechanoid"]/thinkRoot/subNodes/li[@Class="ThinkNode_ConditionalPlayerControlledMech"]/subNodes/li[@Class="ThinkNode_Tagger" and tagToGive="Idle" and not(subNodes/li[@Class="MAP_MechanoidMechanitor.JobGiver_MechanoidMechanitorRecreation"])]/subNodes/li[1]</xpath>
+      </li>
+      <li Class="PatchOperationInsert">
+        <xpath>Defs/ThinkTreeDef[defName="Mechanoid"]/thinkRoot/subNodes/li[@Class="ThinkNode_ConditionalPlayerControlledMech"]/subNodes/li[@Class="ThinkNode_Tagger" and tagToGive="Idle" and not(subNodes/li[@Class="MAP_MechanoidMechanitor.JobGiver_MechanoidMechanitorRecreation"])]/subNodes/li[1]</xpath>
+        <order>Prepend</order>
+        <value>
+          <li Class="MAP_MechanoidMechanitor.JobGiver_MechanoidMechanitorRecreation" />
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>
