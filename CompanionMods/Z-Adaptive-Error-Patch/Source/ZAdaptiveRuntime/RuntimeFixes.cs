@@ -32,6 +32,8 @@ namespace ZAdaptiveRuntime
         private static bool invalidVgeThingRequestLogged;
         private static bool giddyUpUninitializedDeathLogged;
         private static bool invalidRoleApparelTipLogged;
+        private static bool obeliskLetterGuardLogged;
+        private static bool invalidTemperatureCellGuardLogged;
         private static MethodInfo giddyUpStorageGetter;
         private static readonly FieldInfo GiddyUpHealthPawnField = AccessTools.Field(typeof(Pawn_HealthTracker), "pawn");
         private static readonly List<Thing> EmptyVgeThingList = new List<Thing>(0);
@@ -59,6 +61,8 @@ namespace ZAdaptiveRuntime
             TryInstallRuntimeHook("PatchMissingIdeoApparelTipGuard", () => PatchMissingIdeoApparelTipGuard(harmony));
             TryInstallRuntimeHook("WorldgenDiagnostics", () => PatchWorldGenerationDiagnostics(harmony));
             TryInstallRuntimeHook("MAPSameIdeoInit", () => PatchMechanoidMechanitorIdeoInitialization(harmony));
+            TryInstallRuntimeHook("ObeliskLetterUI", () => PatchObeliskLetterChoices(harmony));
+            TryInstallRuntimeHook("GridCellTemperatureBounds", () => PatchGridCellTemperatureBounds(harmony));
         }
 
         private static void TryInstallRuntimeHook(string name, Action install)
@@ -69,6 +73,93 @@ namespace ZAdaptiveRuntime
                 Log.Warning("[Z Adaptive] Patch install failed (" + name +
                     "); remaining independent patches will still initialize: " + ex);
             }
+        }
+
+
+        // Player(20261010-011531).log, 10:24:42: Obelisk Control's
+        // ExistingObeliskLetterLinks.Postfix throws NRE while vanilla draws
+        // ChoiceLetter UI. Wrap only this optional mod postfix, never the
+        // global OnGUI pipeline, so unrelated UI exceptions remain visible.
+        private static void PatchObeliskLetterChoices(Harmony harmony)
+        {
+            Type patch = AccessTools.TypeByName("ObeliskControl.ExistingObeliskLetterLinks");
+            if (patch == null)
+                return;
+
+            MethodInfo target = AccessTools.Method(patch, "Postfix");
+            MethodInfo finalizer = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(ObeliskLetterLinksFinalizer));
+            if (target == null || finalizer == null)
+            {
+                Log.Warning("[Z Adaptive] Obelisk Control letter-link patch signature changed; leaving upstream behaviour unchanged.");
+                return;
+            }
+
+            harmony.Patch(target, finalizer: new HarmonyMethod(finalizer));
+        }
+
+        private static Exception ObeliskLetterLinksFinalizer(Exception __exception)
+        {
+            if (!(__exception is NullReferenceException))
+                return __exception;
+
+            if (!obeliskLetterGuardLogged)
+            {
+                obeliskLetterGuardLogged = true;
+                Log.Warning("[Z Adaptive] Isolated Obelisk Control's null letter-link UI postfix; preserved vanilla letter choices. " +
+                    "Only this specific NullReferenceException was suppressed.");
+            }
+
+            // The vanilla StandardLetter choices already exist. Dropping this
+            // optional postfix failure prevents repeated Root.OnGUI exceptions.
+            return null;
+        }
+
+        // Player(20261010-011531).log, 10:23:54 and 11:03:36:
+        // GridCellTemperature.Access.GenTemperature_TryGetTemperatureForCell
+        // indexes a private float[] before performing the vanilla map bounds
+        // check, corrupting baby-safety job execution on an invalid cell.
+        // Skip ONLY GridCellTemperature's prefix for invalid map/cell inputs
+        // and let RimWorld's original bounds-aware temperature query run.
+        // Never substitute ambient temperature on any valid cell.
+        private static void PatchGridCellTemperatureBounds(Harmony harmony)
+        {
+            Type patch = AccessTools.TypeByName(
+                "GridCellTemperature.Access.GenTemperature_TryGetTemperatureForCell");
+            if (patch == null)
+                return;
+
+            MethodInfo target = AccessTools.Method(patch, "Prefix");
+            MethodInfo prefix = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(GridTemperatureBadCellPrefix));
+            if (target == null || prefix == null)
+            {
+                Log.Warning("[Z Adaptive] GridCellTemperature prefix changed; no compatibility bounds guard installed.");
+                return;
+            }
+
+            harmony.Patch(target, prefix: new HarmonyMethod(prefix) { priority = Priority.First });
+        }
+
+        private static bool GridTemperatureBadCellPrefix(
+            IntVec3 c, Map map, ref float tempResult, ref bool __result)
+        {
+            if (map != null && c.InBounds(map))
+                return true;
+
+            if (!invalidTemperatureCellGuardLogged)
+            {
+                invalidTemperatureCellGuardLogged = true;
+                Log.Warning("[Z Adaptive] GridCellTemperature received an invalid map cell; " +
+                    "delegating temperature resolution to vanilla's safe bounds check.");
+            }
+
+            tempResult = 21f;
+            // This is the return value of the GridCellTemperature Harmony
+            // prefix itself. True instructs Harmony to run the vanilla
+            // GenTemperature.TryGetTemperatureForCell implementation.
+            __result = true;
+            return false;
         }
 
         // Diagnostic only. Preserve the original exception and terrain/grid data.
