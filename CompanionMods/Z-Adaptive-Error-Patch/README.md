@@ -477,3 +477,98 @@ fallback, remain untouched.
 This is a compiled compatibility update, **not** a claim that
 save integrity, Bun race rendering, or all XML warnings are
 resolved in the live 626-mod game.
+
+## 2026-10-11 eleven further source archives, remaining errors
+
+Inspected **eleven** user-supplied workshop archives directly, reading
+their 1.6 XML, load folders and available source. XML parser validation:
+all 1,958 extracted XML files across these archives parsed (351 Big and
+Small Framework, 371 Big and Small Genes, 1 Better Compatibility Body
+Texture, 10 Progression Gravship, 32 Moon Sugar & Skooma, 5 Dunmer
+Lamp Pack, 17 Mashed's Lamps Pack 1, 4 Passive Birthsigns, 3 Ashlander
+Yurts, 1,104 Mashed's Ashlands, and 61 Rim-Elves).
+
+### New narrow fallbacks (runtime verification required)
+
+- `Patches/RimElvesIntegratedGenesCompat.xml`: The original Rim-Elves
+  `1.6/Patches/Gene_Patch.xml` begins with an *inverted*
+  `PatchOperationTest` for `KindInstinct/exclusionTags`. Because
+  `Integrated Genes` (`turnovus.biotech.integratedgenes`) is
+  installed and known to add `exclusionTags`, that test can fail
+  despite a valid gene. Existing tags are not removed. Add only
+  `SuperiorityComplex` and `Fanaticism` when each is missing,
+  creating the container only when absent, and only when
+  `KindInstinct` exists. Never fabricate a missing gene.
+- `Patches/ProgressionGravshipFuelOptimizerCompat.xml`:
+  `fern​y.ProgressionGravship` 1.6 (3522893553), conditional VGE
+  Chapter 1 XML blindly replaces
+  `ThingDef[FuelOptimizer]/researchPrerequisites` and the exact
+  node is missing in the logged stack. If `FuelOptimizer` **exists**
+  but the prerequisite element is absent, and
+  `Ferny_AstrofuelOptimizer` also exists, add the intended
+  `researchPrerequisites` only to that Def. If the entire
+  FuelOptimizer ThingDef is absent or moved, do nothing until the
+  active VGE Chapter 1 definition is inspected.
+- `Patches/DunmerLanternStyleCompat.xml`: The source
+  `MorrowRim - Dunmer Lamp Pack` 1.6
+  `Patches/DunmerStylesPatch.xml` nests FindMod(Ideology) and
+  FindMod(ESCP - Dunmer / MorrowRim - Dunmer Styles) around a
+  brittle multi-addition sequence. The reported error is an outer
+  operation failure and does not identify which inner target failed.
+  Eight independently guarded operations restore its four intended
+  style-group/designator entries if the corresponding ESCP
+  StyleCategoryDef and list exists, creating only missing lists and
+  preventing duplicate entries. Missing StyleCategoryDefs, unrelated
+  lamp defs or non-existent designator classes are not fabricated.
+  Source for ESCP - Dunmer or Dunmer Styles is still needed to verify
+  each target, and original upstream error logs may persist.
+
+### Bun Race graphics (not patched)
+
+Bun Race 1.6 (`spankyh.bunrace.core`) has
+`alienRace/generalSettings/alienPartGenerator/bodyTypes` restricted
+to Female, Baby and Child despite both `Male_Naked_*` and
+`Female_Naked_*` images being packaged in its
+`Textures/Bun/Bodies`. Male adult Buns normally render using a
+Female torso with a gender-specific overlay. Reports for Big and Small
+Framework dated April 2026 reproduce the exact
+`Multi(initPath=Bun/Bodies/)` failure and describe a male-body
+selection clash with HAR. B&S's 1.6 sources include an optional HAR
+integration and VEF integration, while the uploaded Better
+Compatibility Body Texture pack provides B&S skins rather than Bun
+files. A safe repair should bind a B&S/HAR rendering hook for only Bun
+pawns, but a new complete trace and version-specific compiled
+renderer method are needed before doing that. Do NOT invent textures
+or rewrite Bun's allowed bodyTypes based on the warning alone.
+
+### Still open: save serialization
+
+The older session shows pawn Joyce / Thing_Human11361 registered
+twice, then duplicate MVCF verbs, RimTalk, Deep Colony, Mimic Slime
+abilities, RJW hediffs, WNG obscuring hediffs and genes. An
+`Exception while saving Map-0-PlayerHome: InvalidCastException`
+is marked VEF by RimDoctor, but the abbreviated RimDoctor line does
+not expose the original stack or establish which owner deep-saved
+the Pawn twice. None of the eleven archives is an affected `.rws`
+save. No changes to `Scribe_Deep`, save IDs or Pawn collections
+were made. Need a backed-up `.rws` with Joyce, fresh Player.log,
+and fresh RimDoctor session/report from the latest compiled build.
+Deep Colony, RimTalk, Mimic Slime Ability Expended, and Integrated
+Genes are useful additional sources if the save identifies them.
+
+### Source identification
+
+- 2925432336: Big and Small - Framework
+- 2920751126: Big and Small - Genes & More
+- 3563140976: Big and Small - Better Compatibility Body Texture
+- 3522893553: Progression: Gravship
+- 3244726208: MorrowRim - Moon Sugar and Skooma
+- 3654943384: MorrowRim - Dunmer Lamp Pack
+- 3244646697: MorrowRim - Mashed's Lamps Pack 1
+- 3244646911: MorrowRim - Passive Birthsigns
+- 2778937658: Morrowrim Ashlander Yurts
+- 3109835541: Mashed's Ashlands
+- 3028702598: Rim-Elves
+
+The current batch does not justify broader patches to unrelated
+weapons, research, gene serialization or biome changes.
