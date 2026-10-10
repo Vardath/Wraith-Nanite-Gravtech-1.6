@@ -188,3 +188,40 @@ Source: `Source/ZAdaptiveRuntime/NightErrors20261011.cs`. These are independent,
 - **Deliberately not hidden:** RJW missing `InteractionDef` data, duplicate registered save-object IDs, absent Bun body graphics, and unresolved unrelated mod XML patches. The logs are insufficient to reconstruct these assets or saved objects safely. Do not blanket-suppress save/load exceptions or rewrite existing saves.
 
 Testing: `.github/workflows/z-adaptive-companion-build.yml` compiles and packages the companion. In-game validation with the exact 626-mod setup and an existing save is still necessary; no automated test can prove the runtime crashes are fully resolved.
+
+## 2026-10-11 RJW and Imago source-informed compatibility (supplied archives)
+
+The supplied `rjw-master.rar` contains the RimWorld 1.6 RJW source. The observed
+`SexInteraction..ctor(InteractionDef def)` null reference is reproducible as a code
+path, not evidence that an XML InteractionDef is missing. Specifically,
+`SexInteractionHelper.ChooseInteraction` returns `false` when no compatible
+interactions exist, but `SexUtility.SelectSextype` ignores that result and
+returns `SexProps` without an interaction. On the next access,
+`SexProps.interaction` calls `new SexInteraction(null)` and the constructor
+dereferences the null Def. This affects, for example, the masturbation job
+for Bunlon and a Quickie job for Duster in the supplied Player log.
+
+`Source/ZAdaptiveRuntime/RJWImagoCompatibility.cs` patches only
+`rjw.JobGiver_Masturbate.TryGiveJob` and
+`rjw.JobGiver_DoQuickie.TryGiveJob`. For those two actual job definitions,
+it asks RJW's own `SexInteractionFinder.FindInteractions` whether the
+candidate pair has any valid interaction. When none exists, the proposed
+job is declined instead of running an invalid start/finish path. When
+RJW is absent, methods cannot be resolved, or the compatibility probe
+fails, normal selection remains unchanged. This handles *newly generated*
+jobs; an existing saved/active invalid job may still need to end.
+
+The supplied Imago 1.6 archive (`3816071711.rar`, package `Cain.Imago`)
+contains just one `Imago_Metamorphosis` definition, and its
+`LoadFolders.xml` correctly selects `Common` and `1.6`. That archive
+alone does not explain the log's duplicate gene registration.
+`Patches/ImagoDuplicateGeneGuard.xml` conservatively removes only
+second-and-later concrete GeneDef nodes with that exact name **if**
+duplicates coexist in the aggregated XML. The first gene, its class,
+cocoon, adult forms, and xenotype references remain intact. If a different
+mod adds the duplicate only at runtime, this XML guard cannot address
+that cause; verify against a new startup log before calling the issue fixed.
+
+These are changes to the maintained 1.6 companion, not modifications to
+the two supplied original archives. They require the current 1.6 companion
+assembly to be rebuilt by the companion CI workflow and verified in-game.
