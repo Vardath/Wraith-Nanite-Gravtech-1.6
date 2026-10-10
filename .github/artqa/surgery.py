@@ -165,6 +165,102 @@ for cls,base in class_base.items():
             # Allow no orphan production surgery classes: dead code can drift and later get reconnected incorrectly.
             fail.append(f"orphan custom surgery worker not referenced by WNG RecipeDef: {cls} ({class_file[cls]})")
 
+# Cross-check the COMPLETE physical implant pipeline rather than merely accepting
+# syntactically valid surgery XML. The installed surgery must be visible on human
+# pawns, accept the manufactured object, and target the same hediff/body part.
+physical_implants={}
+for path in (ROOT/"Defs"/"ThingDefs").rglob("*.xml"):
+    try: root=ET.parse(path).getroot()
+    except Exception as exc:
+        fail.append(f"{path}: implant item XML parse failed: {exc}")
+        continue
+    for node in root.findall("ThingDef"):
+        name=(node.findtext("defName") or "").strip()
+        categories={(li.text or "").strip() for li in node.findall("./thingCategories/li")}
+        if name.startswith("WNG_") and "BodyPartsBionic" in categories:
+            if name in physical_implants:
+                fail.append(f"{name}: duplicate physical implant item")
+            physical_implants[name]=(path,node)
+            texture=(node.findtext("./graphicData/texPath") or "").strip()
+            if not texture or not (ROOT/"Textures"/(texture+".png")).is_file():
+                fail.append(f"{name}: missing implant texture {texture} ({path})")
+
+all_recipes={}
+product_outputs=set()
+for path in (ROOT/"Defs"/"RecipeDefs").rglob("*.xml"):
+    try: root=ET.parse(path).getroot()
+    except Exception as exc:
+        fail.append(f"{path}: implant recipe XML parse failed: {exc}")
+        continue
+    for node in root.findall("RecipeDef"):
+        name=(node.findtext("defName") or "").strip()
+        if not name: continue
+        if name in all_recipes:
+            fail.append(f"{name}: duplicate surgery/production recipe")
+        all_recipes[name]=(path,node)
+        product_outputs.update(child.tag for child in node.findall("./products/*"))
+
+if len(physical_implants)<15:
+    fail.append(f"physical WNG implant inventory unexpectedly small: {len(physical_implants)} (expected 15)")
+for name,(item_path,item_node) in sorted(physical_implants.items()):
+    if name not in hediffs:
+        fail.append(f"{name}: physical implant has no matching WNG HediffDef")
+    if name not in product_outputs:
+        fail.append(f"{name}: physical implant has no manufacturing recipe")
+
+    install=[(path,n) for path,n in all_recipes.values()
+             if (n.findtext("addsHediff") or "").strip()==name
+             and (n.get("ParentName") or "").startswith("SurgeryInstall")]
+    removal=[(path,n) for path,n in all_recipes.values()
+             if (n.findtext("removesHediff") or "").strip()==name
+             and (n.get("ParentName") or "").startswith("SurgeryRemove")]
+    if len(install)!=1 or len(removal)!=1:
+        fail.append(f"{name}: expected exactly one install and remove surgery, got {len(install)}/{len(removal)}")
+        continue
+    install_path,install_node=install[0]
+    remove_path,remove_node=removal[0]
+
+    installed_parts=[(li.text or "").strip() for li in install_node.findall("./appliedOnFixedBodyParts/li")]
+    removal_parts=[(li.text or "").strip() for li in remove_node.findall("./appliedOnFixedBodyParts/li")]
+    if not installed_parts or installed_parts!=removal_parts:
+        fail.append(f"{name}: install/remove body parts do not match ({installed_parts} vs {removal_parts})")
+
+    for action,node,p in (("install",install_node,install_path),("remove",remove_node,remove_path)):
+        users={(li.text or "").strip() for li in node.findall("./recipeUsers/li")}
+        if "Human" not in users:
+            fail.append(f"{name}: {action} surgery missing Human recipe user ({p})")
+    if install_node.find("researchPrerequisite") is not None:
+        fail.append(f"{name}: implant surgery is research-gated despite owned implant being available")
+
+    ingredient_defs={(li.text or "").strip() for li in install_node.findall(".//ingredients/li/filter/thingDefs/li")}
+    fixed_defs={(li.text or "").strip() for li in install_node.findall("./fixedIngredientFilter/thingDefs/li")}
+    if name not in ingredient_defs or name not in fixed_defs:
+        fail.append(f"{name}: install surgery missing physical implant ingredient or its filter")
+
+print(f" - Physical implant items with verified surgery/material/texture paths: {len(physical_implants)}")
+
+# The native hybrid and physical mist gland must share gas output. All pawns
+# standing in the fog get a temporary sight penalty, and the real BlindSmoke
+# maintains its vanilla incoming/outgoing projectile hit-chance reduction.
+mist_code=(ROOT/"Source/WraithNaniteGravtech/Anomaly/WhispersHybrid.cs").read_text(encoding="utf-8")
+implant_code=(ROOT/"Source/WraithNaniteGravtech/Anomaly/WhispersImplants.cs").read_text(encoding="utf-8")
+mist_hediffs=(ROOT/"Defs/HediffDefs/Hediffs_WhispersHybrid.xml")
+mist_xml=ET.parse(mist_hediffs).getroot()
+mist=next((h for h in mist_xml.findall("HediffDef")
+           if h.findtext("defName")=="WNG_WhispersMistObscured"),None)
+if mist is None or mist.findtext("./stages/li/capMods/li/postFactor")!="0.65":
+    fail.append("Whispers mist eyesight penalty missing or incorrectly configured")
+if mist is None or mist.findtext("./comps/li/disappearsAfterTicks")!="180~180":
+    fail.append("Whispers mist eyesight penalty fails to clear after leaving")
+for needle in ("map.gasGrid.AddGas(cell, GasType.BlindSmoke",
+               "map.gasGrid.DensityAt(affected.Position, GasType.BlindSmoke)",
+               "affected.health.AddHediff(visionDef)",
+               "SetDuration(SightRefreshTicks)"):
+    if needle not in mist_code:
+        fail.append(f"Whispers fog lacks required gas/exposure mechanism: {needle}")
+if "WhispersFogUtility.EmitPredatoryFog(pawn)" not in implant_code or "GainAbility(" in implant_code:
+    fail.append("Whispers implant must use passive shared emission, not castable mist")
+
 print("=== D154 SURGERY AUDIT ===")
 print(f" - WNG surgery RecipeDefs enumerated: {len(surgeries)}")
 print(f" - Custom surgery workers: {custom}")
