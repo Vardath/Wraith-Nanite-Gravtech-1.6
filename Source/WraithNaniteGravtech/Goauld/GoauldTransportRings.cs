@@ -36,7 +36,10 @@ namespace WraithNaniteGravtech
         private const int RingVisualTicks = RingRiseTicks + RingHoldTicks + RingRetractTicks;
         private const string RingEffectTexturePath = "Things/Building/Goauld/WNG_GoauldRingEffect";
         private int ringVisualStartTick = -1;
-        private static Material ringMaterial;
+        // Each installed platform lazily resolves the pooled material during
+        // normal main-thread drawing; no Unity Material is cached in a
+        // static field that can be touched during early startup.
+        private Material ringMaterial;
         private static Mesh ringMesh;
 
         private CompProperties_GoauldTransportRings Props => (CompProperties_GoauldTransportRings)props;
