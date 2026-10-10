@@ -33,6 +33,7 @@ namespace ZAdaptiveRuntime
         private static bool giddyUpUninitializedDeathLogged;
         private static bool invalidRoleApparelTipLogged;
         private static bool obeliskLetterGuardLogged;
+        private static bool obeliskLetterPostfixDisabled;
         private static bool invalidTemperatureCellGuardLogged;
         private static MethodInfo giddyUpStorageGetter;
         private static readonly FieldInfo GiddyUpHealthPawnField = AccessTools.Field(typeof(Pawn_HealthTracker), "pawn");
@@ -87,15 +88,27 @@ namespace ZAdaptiveRuntime
                 return;
 
             MethodInfo target = AccessTools.Method(patch, "Postfix");
+            MethodInfo prefix = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
+                nameof(ObeliskLetterLinksShouldRun));
             MethodInfo finalizer = AccessTools.Method(typeof(ZAdaptiveRuntimeBootstrap),
                 nameof(ObeliskLetterLinksFinalizer));
-            if (target == null || finalizer == null)
+            if (target == null || prefix == null || finalizer == null)
             {
                 Log.Warning("[Z Adaptive] Obelisk Control letter-link patch signature changed; leaving upstream behaviour unchanged.");
                 return;
             }
 
-            harmony.Patch(target, finalizer: new HarmonyMethod(finalizer));
+            harmony.Patch(target,
+                prefix: new HarmonyMethod(prefix) { priority = Priority.First },
+                finalizer: new HarmonyMethod(finalizer));
+        }
+
+        private static bool ObeliskLetterLinksShouldRun()
+        {
+            // Disabling this optional postfix after its first confirmed failure
+            // avoids repeating the same exception and expensive GUI work
+            // on every subsequent letter-window redraw.
+            return !obeliskLetterPostfixDisabled;
         }
 
         private static Exception ObeliskLetterLinksFinalizer(Exception __exception)
@@ -103,15 +116,16 @@ namespace ZAdaptiveRuntime
             if (!(__exception is NullReferenceException))
                 return __exception;
 
+            obeliskLetterPostfixDisabled = true;
             if (!obeliskLetterGuardLogged)
             {
                 obeliskLetterGuardLogged = true;
-                Log.Warning("[Z Adaptive] Isolated Obelisk Control's null letter-link UI postfix; preserved vanilla letter choices. " +
-                    "Only this specific NullReferenceException was suppressed.");
+                Log.Warning("[Z Adaptive] Disabled Obelisk Control's failing optional letter-link postfix " +
+                    "after its first null exception; further UI redraws bypass that routine. " +
+                    "Vanilla letter choices remain available.");
             }
 
-            // The vanilla StandardLetter choices already exist. Dropping this
-            // optional postfix failure prevents repeated Root.OnGUI exceptions.
+            // Preserve every unrelated exception and other UI patch.
             return null;
         }
 
