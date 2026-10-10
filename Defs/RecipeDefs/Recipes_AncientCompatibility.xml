@@ -49,5 +49,5 @@
     <workAmount>3000</workAmount>
     <removesHediff>WNG_AncientNeuralInterface</removesHediff>
     <recipeUsers><li>Human</li></recipeUsers>
-  </RecipeDef>
+  <appliedOnFixedBodyParts><li>Brain</li></appliedOnFixedBodyParts></RecipeDef>
 </Defs>
