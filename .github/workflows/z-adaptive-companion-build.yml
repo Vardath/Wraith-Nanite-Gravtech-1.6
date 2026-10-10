@@ -60,6 +60,8 @@ jobs:
           grep -q 'request.Includes.RemoveAll(pack => pack == null)' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'parent.sourceMap.TileInfo.hilliness' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
           grep -q 'MechanoidMechanitorSameIdeoPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'ObeliskLetterLinksFinalizer' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
+          grep -q 'GridTemperatureBadCellPrefix' "$root/Source/ZAdaptiveRuntime/RuntimeFixes.cs"
 
       - name: Restore RimWorld 1.6 reference assemblies
         run: dotnet restore CompanionMods/Z-Adaptive-Error-Patch/Source/ZAdaptiveRuntime/ZAdaptiveRuntime.csproj
