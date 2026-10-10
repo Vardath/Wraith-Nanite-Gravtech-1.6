@@ -41,6 +41,7 @@ namespace ZAdaptiveRuntime
                 var harmony = new Harmony("vardath.zadaptive.rjw.interactionguards");
                 PatchGiver(harmony, "rjw.JobGiver_Masturbate");
                 PatchGiver(harmony, "rjw.JobGiver_DoQuickie");
+                PatchGiver(harmony, "rjw.JobGiver_JoinInBed");
             }
             catch (Exception ex)
             {
@@ -68,13 +69,14 @@ namespace ZAdaptiveRuntime
 
             bool solo = job.def.defName == "RJW_Masturbate";
             bool quickie = job.def.defName == "Quickie";
-            if (!solo && !quickie)
+            bool joinInBed = job.def.defName == "JoinInBed";
+            if (!solo && !quickie && !joinInBed)
                 return;
 
             Pawn partner = solo ? pawn : job.targetA.Thing as Pawn;
             if (partner == null)
             {
-                if (quickie)
+                if (quickie || joinInBed)
                     __result = null;
                 return;
             }
@@ -103,7 +105,7 @@ namespace ZAdaptiveRuntime
                 {
                     missingInteractionLogged = true;
                     Log.Warning("[Z Adaptive] RJW 1.6 generated an " +
-                        (solo ? "RJW_Masturbate" : "Quickie") +
+                        (solo ? "RJW_Masturbate" : (joinInBed ? "JoinInBed" : "Quickie")) +
                         " job without any permitted SexInteraction. The invalid job " +
                         "was declined; all supported interactions remain available.");
                 }
