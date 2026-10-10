@@ -225,3 +225,36 @@ that cause; verify against a new startup log before calling the issue fixed.
 These are changes to the maintained 1.6 companion, not modifications to
 the two supplied original archives. They require the current 1.6 companion
 assembly to be rebuilt by the companion CI workflow and verified in-game.
+
+## 2026-10-11 Kindred — Vampires of the Rim update (workshop 3813009890)
+
+Inspected the supplied updated RAR archive directly (RimWorld 1.6,
+package `tanyavonhart.kindred`) and cross-checked the 2026-10-10 logs.
+The Society of Leopold, Order of Hermes, and Sabbat intentionally attack
+vampire colonies; **do not** neutralize their factions or disable raids.
+
+Three known current XML defects remain: `Kindred_Mage_AdeptFlame` inherits
+`300~900` weapon money from `Kindred_MageAdept`, while
+`Kindred_Mage_TheurgeMind` and `Kindred_Mage_TheurgeAccord` inherit
+`500~1200` from `Kindred_MageTheurge`. In the reported actual game load,
+their eligible EltexStaff costs at least 2000, causing the three pawn-kind
+configuration errors and possible weaponless enemy magi.
+
+`Patches/KindredMageBudgetCompat.xml` adds `2050~2900` only for these
+three exact pawn kinds. Guards handle absent child overrides and old
+inherited values that have already been expanded. An updated upstream
+budget outside those old values is left untouched. Their psycast abilities,
+combat power, faction relations, and equipment tags are unchanged.
+
+`About/About.xml` now explicitly loads after `tanyavonhart.kindred`.
+The older `local.kindred` entry remains for installs that still use it,
+preserving the earlier `KindredSmeltCompat.xml` repairs and other fixes.
+
+Archive XML parses cleanly with no duplicate `(Def type, defName)` keys
+in its scanned Def XML. The apparent absent image paths for gore and
+sculpture are legitimate `Graphic_Random` directories with individual
+variant PNGs, so no art-path rewrite was applied. The prior runtime
+warnings about Kindred classes owning Unity static fields could not be
+proved to still occur on this updated DLL without a fresh game log;
+they are not suppressed. This is a targeted compatibility correction,
+not a verified fix for unrelated runtime exceptions.
