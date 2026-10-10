@@ -26,7 +26,7 @@
     <recipeMaker IsNull="True" />
     <label>Whispers mist gland</label>
     <thingCategories Inherit="False"><li>BodyPartsBionic</li></thingCategories>
-    <description>A controllable cultured neck-gill organ derived from Whispers hybrid tissue. Once implanted it can deliberately saturate the surrounding area with dense obscuring biological mist, reproducing the creature's predatory cover without changing the bearer's species.</description>
+    <description>A cultured neck-gill organ derived from Whispers hybrid tissue. Once implanted, it continuously emits non-toxic obscuring biological mist around the bearer in the same ten-tile radius and at the same rate as a native Whispers hybrid, without changing the bearer's species.</description>
     <graphicData>
       <texPath>Things/Item/Whispers/WNG_WhispersMistGland</texPath>
       <graphicClass>Graphic_Single</graphicClass>
