@@ -258,3 +258,58 @@ warnings about Kindred classes owning Unity static fields could not be
 proved to still occur on this updated DLL without a fresh game log;
 they are not suppressed. This is a targeted compatibility correction,
 not a verified fix for unrelated runtime exceptions.
+
+## 2026-10-11 nine supplied mod archives — source-grounded follow-up
+
+Inspected the actual user-supplied 1.6 RAR content for Capture Expansion
+(`3787736781`), Bun Race (`2108324996`), Custom Base Framework
+(`3813689040`), Lord of the Rims - Wizardry (Continued)
+(`3551419391`), Vehicle Framework (`3014915404`), Mimic Slime -
+Deliria (`3636189401`), Humanoid Alien Races (`839005762`),
+Dark Ages: Crypts and Tombs (`2963826335`), and Star Wars: The Force
+Standalone (`3557220601`). The scanned XML in those archives parsed
+without structural errors or duplicated concrete Def names within each
+1.6 content selection; that does *not* prove their interaction is safe.
+
+**Capture Expansion 1.6 confirmed code defect:** Its
+`WorkGiver_Warden_RestrainPrisonerToBed.JobOnThing` verifies that a
+bed is reservable but does **not** check the prisoner's reservation. Its
+`JobDriver_RestrainPrisonerToBed.TryMakePreToilReservations` calls
+`Prisoner.ClearAllReservations()` before reserving the prisoner and bed.
+This can invalidate another job's pawn reservation when multiple wardens
+target the same captive, consistent with the logged
+`CE_RestrainPrisonerToBed` ten-jobs-in-one-tick storm.
+
+`Source/ZAdaptiveRuntime/CaptureExpansionReservations.cs` patches only
+these two optional mod methods when their exact classes exist. It
+declines new restraint jobs when the prisoner is already reserved and
+claims prisoner/bed reservations *without erasing unrelated claims*.
+The earlier `NightErrors20261011` same-job retry throttle is retained
+as an additional guard. Ordinary prisoner jobs, restraints, releases,
+and non-Capture-Expansion mods are unchanged.
+
+**Bun Race:** The original package *does include* female/male body
+textures under `Textures/Bun/Bodies/` and defines
+`alienRace/graphicPaths/body=Bun/Bodies/`. The logged attempt to
+resolve the bare directory rather than a body-type suffix is therefore
+not proof of missing source textures. Big and Small / HAR renderer
+selection is a possible contributor; without the specific pawn/bodyType
+and a new trace, avoid replacing all Bun visuals or changing gene/body
+type restrictions.
+
+**Other archive checks:** Custom Base Framework has no isolated XML
+error explaining the null settlement material; the previously
+compiled targeted settlement guard remains. The Wizardry/Vehicle
+Framework null-spawn guard from `NightErrors20261011` remains. Mimic
+Slime ability load-ID collisions occur alongside a duplicated Pawn,
+so no ability IDs or serialized pawns were altered. HAR's one
+`ResolveReferences` NRE does not identify which race Def triggered
+it. The `/lastUser` reference warnings on the Dark Ages skeleton
+statue and Force Darkside Web scroll cannot be attributed to code in
+either archive; both have unrelated Defs and neither defines a
+`lastUser` serializer. No blanket save-game rewrite or suppression
+of missing references was added.
+
+All fixes require runtime verification with the updated complete mod
+list. Copy the save before testing; the duplicate Pawn Joyce registration
+is not resolved by a mod XML patch.
