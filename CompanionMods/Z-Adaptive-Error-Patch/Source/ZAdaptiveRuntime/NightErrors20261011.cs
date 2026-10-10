@@ -39,6 +39,18 @@ namespace ZAdaptiveRuntime
                     harmony.Patch(getter, finalizer: new HarmonyMethod(
                         AccessTools.Method(typeof(NightErrors20261011), nameof(SettlementMaterialFinalizer))));
             });
+            Install("invalid null GenSpawn", () =>
+            {
+                // Vehicle Framework dereferences newThing in its spawn prefix.
+                // A third-party caller must never send null into this overload.
+                MethodInfo target = AccessTools.Method(typeof(GenSpawn), "Spawn",
+                    new[] { typeof(Thing), typeof(IntVec3), typeof(Map),
+                        typeof(Rot4), typeof(WipeMode), typeof(bool), typeof(bool) });
+                if (target != null)
+                    harmony.Patch(target, prefix: new HarmonyMethod(
+                        AccessTools.Method(typeof(NightErrors20261011), nameof(NullSpawnPrefix)))
+                        { priority = Priority.First });
+            });
             Install("Vehicle Framework non-vehicle spawn", () =>
             {
                 Type owner = AccessTools.TypeByName("Vehicles.Patch_Construction");
@@ -103,6 +115,23 @@ namespace ZAdaptiveRuntime
                 return null;
             }
             catch { return __exception; }
+        }
+
+        // The vehicle-construction prefix accesses newThing.def before vanilla's
+        // GenSpawn can reject an invalid null object. Return null for null inputs;
+        // never prevent spawning a real thing.
+        private static bool NullSpawnPrefix(Thing newThing, ref Thing __result)
+        {
+            if (newThing != null)
+                return true;
+            __result = null;
+            if (!vehicleReported)
+            {
+                vehicleReported = true;
+                Log.Warning("[Z Adaptive] Rejected a null GenSpawn.Spawn request before " +
+                    "Vehicle Framework could dereference it. Check third-party launch/flying-object sources.");
+            }
+            return false;
         }
 
         // The Vehicle Framework prefix is designed for vehicle construction but is
