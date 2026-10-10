@@ -102,7 +102,7 @@ namespace ZAdaptiveRuntime
                 return __exception;
             try
             {
-                __result = MaterialPool.MatFrom(Texture2D.whiteTexture, ShaderDatabase.Transparent);
+                __result = new Material(ShaderDatabase.Transparent) { mainTexture = Texture2D.whiteTexture };
                 if (__result == null)
                     return __exception;
                 if (!settlementReported)
