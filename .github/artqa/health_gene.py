@@ -119,8 +119,8 @@ targeted={
         "EnsureSensoryState();",
         "public override void PostRemove()",
         "RemoveSensoryState();",
-        "FogRadius = 10f",
-        "GenRadial.RadialCellsAround(origin, FogRadius, true)",
+        "WhispersFogUtility.IntervalTicks",
+        "WhispersFogUtility.EmitPredatoryFog(pawn)",
     ],
 }
 for cls,tokens in targeted.items():
@@ -132,6 +132,32 @@ for cls,tokens in targeted.items():
     for token in tokens:
         if token not in seg:
             fail.append(f"{cls}: lifecycle contract missing {token}")
+
+# The cultured implant is an always-on emitter sharing the native hybrid's
+# fog utility, never a castable Ability. The obsolete Def remains for save migration.
+mist_source=(R/"Source/WraithNaniteGravtech/Anomaly/WhispersHybrid.cs").read_text(encoding="utf-8")
+implant_source=(R/"Source/WraithNaniteGravtech/Anomaly/WhispersImplants.cs").read_text(encoding="utf-8")
+for token in (
+    "IntervalTicks = 120",
+    "Radius = 10f",
+    "GenRadial.RadialCellsAround(origin, Radius, true)",
+    "GasType.BlindSmoke",
+    "cell == origin ? 30 : 16",
+):
+    if token not in mist_source:
+        fail.append(f"WhispersFogUtility: missing continuous native mist contract {token}")
+for token in (
+    "class Hediff_WhispersMistGland : Hediff_Implant",
+    "public override void TickInterval(int delta)",
+    "pawn.IsHashIntervalTick(WhispersFogUtility.IntervalTicks, delta)",
+    "WhispersFogUtility.EmitPredatoryFog(pawn)",
+    "RemoveLegacyMistAbility();",
+    "public override void PostRemoved()",
+):
+    if token not in implant_source:
+        fail.append(f"Whispers mist gland: missing passive/legacy migration contract {token}")
+if "GainAbility(" in implant_source:
+    fail.append("Whispers mist gland must never grant a castable ability")
 
 # Gene-dependent Tick paths must tolerate dead/missing pawns instead of dereferencing stale trackers.
 for cls in ("Gene_Resource_LifeForce","Gene_WraithRegeneration","Gene_Resource_NaniteReserve","Gene_NaniteReconstruction","Gene_AsuranCollectiveLink","Gene_WhispersPredator"):
