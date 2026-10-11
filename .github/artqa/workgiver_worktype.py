@@ -119,6 +119,48 @@ if actual_gated!=expected_gated:
     failures.append(f"Asuran-only recipe gate changed: expected {sorted(expected_gated)}, found {sorted(actual_gated)}")
 
 
+# ---------- All WNG worktable bill assignment ----------
+# Vanilla requires a WorkGiver_DoBill.fixedBillGiverDefs route in addition to
+# each Building_WorkTable's inspector tab and RecipeDef.recipeUsers.
+production_giver = workgivers.get("WNG_DoProductionBills")
+expected_production_benches = [
+    "WNG_LivingForge", "WNG_WraithGrowthChamber", "WNG_PrecursorFabricator"
+]
+if production_giver is None:
+    failures.append("WNG_DoProductionBills: missing vanilla bill-work assignment")
+else:
+    _, production = production_giver
+    if (production.findtext("giverClass") or "").strip() != "WorkGiver_DoBill":
+        failures.append("WNG_DoProductionBills must use vanilla WorkGiver_DoBill")
+    if (production.findtext("workType") or "").strip() != "Crafting":
+        failures.append("WNG_DoProductionBills must be reachable through ordinary Crafting priority")
+    users = [(item.text or "").strip() for item in production.findall("./fixedBillGiverDefs/li")]
+    if users != expected_production_benches:
+        failures.append(f"WNG production bill giver must cover {expected_production_benches}, got {users}")
+
+# Confirm the exact targets remain real vanilla-style bill workplaces;
+# do not accidentally treat beds, gestators or ordinary buildings as bills.
+worktables = {}
+for path in (ROOT/"Defs/ThingDefs").rglob("*.xml"):
+    root = ET.parse(path).getroot()
+    for node in root.findall("./ThingDef"):
+        name = (node.findtext("defName") or "").strip()
+        if name in expected_production_benches:
+            worktables[name] = (path, node)
+for name in expected_production_benches:
+    found = worktables.get(name)
+    if found is None:
+        failures.append(f"Production bench ThingDef missing: {name}")
+        continue
+    path, node = found
+    if (node.findtext("thingClass") or "").strip() != "Building_WorkTable":
+        failures.append(f"{name}: must use vanilla Building_WorkTable ({path})")
+    if (node.findtext("hasInteractionCell") or "").lower() != "true":
+        failures.append(f"{name}: missing reachable interaction cell ({path})")
+    tabs = [x.text for x in node.findall("./inspectorTabs/li")]
+    if "ITab_Bills" not in tabs:
+        failures.append(f"{name}: missing Bills tab ({path})")
+
 # ---------- JobDef / JobDriver integrity ----------
 jobdefs={}
 for path in (ROOT/"Defs/JobDefs").rglob("*.xml"):
