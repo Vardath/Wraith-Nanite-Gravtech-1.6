@@ -1,6 +1,11 @@
 name: WNG Repair Precursor Wall PNG
 
 on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/artfix/repair_precursor_wall_original.py'
+      - '.github/workflows/wng-repair-precursor-wall-png.yml'
   workflow_dispatch:
 
 permissions:
@@ -10,42 +15,29 @@ jobs:
   repair:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Repair PNG CRC/chunks
+      - name: Restore original Precursor settlement-wall PNG
         shell: bash
         run: |
           python -m pip install --disable-pip-version-check pillow
-          python - <<'PY'
-          from pathlib import Path
-          from PIL import Image, ImageFile
-
-          src = Path("Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png")
-          tmp = src.with_suffix(".fixed.png")
-
-          ImageFile.LOAD_TRUNCATED_IMAGES = True
-          with Image.open(src) as im:
-              im.load()
-              rgba = im.convert("RGBA")
-              rgba.save(tmp, format="PNG")
-
-          with Image.open(tmp) as check:
-              check.verify()
-
-          tmp.replace(src)
-          print("Re-encoded and strictly verified", src)
-          PY
-      - name: Commit repaired asset
+          python .github/artfix/repair_precursor_wall_original.py
+      - name: Commit only repaired source PNG
         shell: bash
         run: |
-          if git diff --quiet -- Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png; then
-            echo "Precursor wall PNG already clean."
+          set -euo pipefail
+          git add Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png
+          if git diff --cached --quiet; then
+            echo "Precursor wall texture already repaired."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png
-          git commit -m "Repair Precursor wall PNG integrity"
-          git push
+          git commit -m "Repair original Precursor wall lower pixel rows, preserving linked wall atlas"
+          git push origin HEAD:main
