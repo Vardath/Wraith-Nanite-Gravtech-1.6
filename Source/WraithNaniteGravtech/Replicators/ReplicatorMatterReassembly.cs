@@ -30,6 +30,7 @@ namespace WraithNaniteGravtech
         private const string SwarmFactionDefName = "WNG_ReplicatorSwarm";
 
         private int exposedTicks;
+        private int nextCapRetryTick;
 
         private CompProperties_ReplicatorMatterReassembly Props =>
             (CompProperties_ReplicatorMatterReassembly)props;
@@ -82,6 +83,9 @@ namespace WraithNaniteGravtech
             if (map == null || parent.Destroyed || !parent.Spawned)
                 return;
 
+            int now = Find.TickManager?.TicksGame ?? 0;
+            if (now >= 0 && now < nextCapRetryTick)
+                return;
             int cost = Math.Max(1, Props.consumePerDrone);
             if (parent.stackCount < cost || ReplicatorContainmentUtility.IsContained(map, parent.Position))
                 return;
@@ -94,7 +98,12 @@ namespace WraithNaniteGravtech
 
             ReplicatorBlockExtension ext = droneKind.race?.GetModExtension<ReplicatorBlockExtension>();
             if (ext != null && ReplicatorAssimilationUtility.CountHostileBlocks(map) + 1 > ReplicatorAssimilationUtility.HostilePopulationCap(ext))
+            {
+                // The map-wide pawn scan is unnecessary every 250 ticks for
+                // each mature stack while population is already at capacity.
+                nextCapRetryTick = now + 2500;
                 return;
+            }
 
             Pawn drone = null;
             try
@@ -169,6 +178,7 @@ namespace WraithNaniteGravtech
         {
             base.PostExposeData();
             Scribe_Values.Look(ref exposedTicks, "wngReplicatorMatterExposedTicks", 0);
+            Scribe_Values.Look(ref nextCapRetryTick, "wngReplicatorMatterNextCapRetryTick", 0);
         }
 
         public override string CompInspectStringExtra()

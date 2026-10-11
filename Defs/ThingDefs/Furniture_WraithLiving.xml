@@ -3,7 +3,7 @@
   <ThingDef ParentName="BedWithQualityBase">
     <defName>WNG_WraithRestCradle</defName><label>wraith rest cradle</label>
     <description>A grown sleeping cradle of warm fibrous tissue that reshapes itself around the sleeper.</description>
-    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_RestCradle</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(2,2)</drawSize></graphicData><size>(1,2)</size>
+    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_RestCradle</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(1,2)</drawSize></graphicData><size>(1,2)</size>
     <designationCategory>Furniture</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <statBases><MaxHitPoints>220</MaxHitPoints><WorkToBuild>1200</WorkToBuild><Mass>22</Mass><Flammability>0.35</Flammability><BedRestEffectiveness>1.05</BedRestEffectiveness><Comfort>0.82</Comfort><ImmunityGainSpeedFactor>1.08</ImmunityGainSpeedFactor><Beauty>4</Beauty></statBases>
     <costList><WNG_Biomass>35</WNG_Biomass></costList><building><bed_showSleeperBody>false</bed_showSleeperBody><bed_healPerDay>7</bed_healPerDay><destroySound>BuildingDestroyed_Soft_Small</destroySound></building><leaveResourcesWhenKilled>false</leaveResourcesWhenKilled><uiOrder>2110</uiOrder>
@@ -27,21 +27,21 @@
 
   <ThingDef ParentName="FurnitureWithQualityBase">
     <defName>WNG_WraithLounge</defName><label>wraith living lounge</label><description>A two-person organic couch grown from layered membrane, cartilage and springy support fibres.</description>
-    <replaceTags><li>Chair</li></replaceTags><graphicData><texPath>Things/Building/Furniture/Wraith/WNG_LivingLounge</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(3,3)</drawSize></graphicData><size>(2,1)</size>
+    <replaceTags><li>Chair</li></replaceTags><graphicData><texPath>Things/Building/Furniture/Wraith/WNG_LivingLounge</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(2,1)</drawSize></graphicData><size>(2,1)</size>
     <designationCategory>Furniture</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <altitudeLayer>Building</altitudeLayer><statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>1600</WorkToBuild><Mass>28</Mass><Flammability>0.35</Flammability><Beauty>8</Beauty><Comfort>0.86</Comfort></statBases><socialPropernessMatters>true</socialPropernessMatters><costList><WNG_Biomass>42</WNG_Biomass></costList><pathCost>30</pathCost><fillPercent>0.40</fillPercent><defaultPlacingRot>South</defaultPlacingRot><uiOrder>2441</uiOrder><building><isSittable>true</isSittable><multiSittable>true</multiSittable><destroySound>BuildingDestroyed_Soft_Medium</destroySound></building>
   </ThingDef>
 
   <ThingDef ParentName="TableGatherSpotBase">
     <defName>WNG_WraithFeastTableSmall</defName><label>wraith feast table (1x2)</label><description>A compact living table grown around a rigid cartilage lattice.</description>
-    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_FeastTable1x2</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(3,4)</drawSize></graphicData><size>(1,2)</size>
+    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_FeastTable1x2</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(1,2)</drawSize></graphicData><size>(1,2)</size>
     <designationCategory>Furniture</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <statBases><MaxHitPoints>190</MaxHitPoints><WorkToBuild>800</WorkToBuild><Mass>12</Mass><Flammability>0.35</Flammability><Beauty>4</Beauty></statBases><costList><WNG_Biomass>24</WNG_Biomass></costList><leaveResourcesWhenKilled>false</leaveResourcesWhenKilled><uiOrder>2340</uiOrder>
   </ThingDef>
 
   <ThingDef ParentName="TableGatherSpotBase">
     <defName>WNG_WraithFeastTable</defName><label>wraith feast table (2x2)</label><description>A broad living dining surface supported by branching organic ribs.</description>
-    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_FeastTable2x2</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(4,4)</drawSize></graphicData><size>(2,2)</size><rotatable>false</rotatable>
+    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_FeastTable2x2</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(2,2)</drawSize></graphicData><size>(2,2)</size><rotatable>false</rotatable>
     <designationCategory>Furniture</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <statBases><MaxHitPoints>280</MaxHitPoints><WorkToBuild>1300</WorkToBuild><Mass>20</Mass><Flammability>0.35</Flammability><Beauty>7</Beauty></statBases><costList><WNG_Biomass>42</WNG_Biomass></costList><leaveResourcesWhenKilled>false</leaveResourcesWhenKilled><uiOrder>2341</uiOrder>
   </ThingDef>
@@ -63,7 +63,7 @@
 
   <ThingDef ParentName="LampBase">
     <defName>WNG_WraithWallLumen</defName><thingClass>Building</thingClass><label>wraith wall lumen</label><description>A flat luminous membrane grown against a wall and supplied by ordinary colony power.</description><rotatable>true</rotatable>
-    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_WallLumen</texPath><graphicClass>Graphic_Multi</graphicClass><drawOffsetNorth>(0,0,0.9)</drawOffsetNorth><drawOffsetSouth>(0,0,-0.9)</drawOffsetSouth><drawOffsetWest>(-0.9,0,0)</drawOffsetWest><drawOffsetEast>(0.9,0,0)</drawOffsetEast><damageData><enabled>false</enabled></damageData></graphicData>
+    <graphicData><texPath>Things/Building/Furniture/Wraith/WNG_WallLumen</texPath><graphicClass>Graphic_Multi</graphicClass><drawOffsetNorth>(0,0,0.34)</drawOffsetNorth><drawOffsetSouth>(0,0,-0.34)</drawOffsetSouth><drawOffsetWest>(-0.34,0,0)</drawOffsetWest><drawOffsetEast>(0.34,0,0)</drawOffsetEast><damageData><enabled>false</enabled></damageData></graphicData>
     <altitudeLayer>BuildingOnTop</altitudeLayer>
     <designationCategory>Furniture</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <costList><WNG_Biomass>8</WNG_Biomass></costList><statBases><MaxHitPoints>80</MaxHitPoints><Mass>1.5</Mass><Flammability>0.35</Flammability><Beauty>3</Beauty></statBases>

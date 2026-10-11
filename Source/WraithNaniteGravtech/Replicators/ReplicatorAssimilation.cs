@@ -541,6 +541,11 @@ namespace WraithNaniteGravtech
 
     public sealed class JobGiver_ReplicatorAssimilate : ThinkNode_JobGiver
     {
+        // Failed global searches are costly when dozens of Replicators repeatedly
+        // ask the think tree for work. A short negative-only delay preserves any
+        // acquired target, and requires no pawn-graph/save serialization.
+        private static readonly Dictionary<int, int> nextSearchAfterFailure = new Dictionary<int, int>();
+
         protected override Job TryGiveJob(Pawn pawn)
         {
             if (!ReplicatorAssimilationUtility.CanAutonomouslyAssimilate(pawn))
@@ -549,11 +554,22 @@ namespace WraithNaniteGravtech
             if (ReplicatorAssimilationUtility.ExtensionFor(pawn) == null)
                 return null;
 
-            // The population cap limits simultaneous Replicator bodies, not appetite. At cap the
-            // swarm keeps stripping the map and banks consumed mass for later replacement Drones.
+            // The population cap limits bodies, not appetite. Avoid repeating a
+            // *failed* multi-pass global path search in every AI evaluation.
+            int now = Find.TickManager?.TicksGame ?? 0;
+            int nextAllowed;
+            if (nextSearchAfterFailure.TryGetValue(pawn.thingIDNumber, out nextAllowed) &&
+                now >= 0 && now < nextAllowed)
+                return null;
             Thing target = ReplicatorAssimilationUtility.FindClosestAssimilationTarget(pawn);
             if (target == null)
+            {
+                if (nextSearchAfterFailure.Count > 2048)
+                    nextSearchAfterFailure.Clear();
+                nextSearchAfterFailure[pawn.thingIDNumber] = now + 120;
                 return null;
+            }
+            nextSearchAfterFailure.Remove(pawn.thingIDNumber);
 
             JobDef jobDef =
                 DefDatabase<JobDef>.GetNamedSilentFail("WNG_ReplicatorAssimilate");

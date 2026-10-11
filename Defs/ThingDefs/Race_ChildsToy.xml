@@ -16,6 +16,8 @@
     <race>
       <body>Mech_Light</body>
       <intelligence>ToolUser</intelligence>
+      <!-- Use the vanilla Lifter hauling work type without replacing Mechanitor control. -->
+      <mechEnabledWorkTypes><li>Hauling</li></mechEnabledWorkTypes>
       <thinkTreeMain>Mechanoid</thinkTreeMain>
       <baseBodySize>0.55</baseBodySize>
       <baseHealthScale>0.75</baseHealthScale>

@@ -4,7 +4,7 @@
     <defName>WNG_WraithLivingWall</defName>
     <label>wraith living wall</label>
     <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms, supports roofs like an ordinary wall, and slowly regenerates damage while alive.</description>
-    <graphicData><texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath><graphicClass>Graphic_Single</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_LivingWall</texPath><graphicClass>Graphic_Single</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><WNG_Biomass>5</WNG_Biomass></costList>
     <statBases><MaxHitPoints>420</MaxHitPoints><WorkToBuild>180</WorkToBuild><Flammability>0.25</Flammability><Beauty>2</Beauty></statBases>
@@ -19,7 +19,7 @@
     <label>wraith membrane door</label>
     <description>A muscular living partition that contracts aside for authorised passage, seals itself afterwards, and slowly regenerates damage while alive.</description>
     <rotatable>false</rotatable>
-    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><damageData><enabled>false</enabled></damageData><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <graphicData><texPath>Things/Building/Wraith/Structure/WNG_MembraneDoor_Mover</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1.15,1.15)</drawSize><damageData><enabled>false</enabled></damageData><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><WNG_Biomass>18</WNG_Biomass></costList>
     <statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>950</WorkToBuild><Flammability>0.25</Flammability></statBases>
@@ -68,7 +68,7 @@
     <label>wraith living power cell</label>
     <description>A layered electrochemical organ grown to store electricity on an ordinary colony power network.</description>
     <drawerType>MapMeshAndRealTime</drawerType><thingClass>Building_Battery</thingClass>
-    <graphicData><texPath>Things/Building/Wraith/Power/WNG_LivingPowerCell</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(2,3)</drawSize></graphicData>
+    <graphicData><texPath>Things/Building/Wraith/Power/WNG_LivingPowerCell</texPath><graphicClass>Graphic_Multi</graphicClass><drawSize>(1,2)</drawSize></graphicData>
     <passability>PassThroughOnly</passability><tickerType>Normal</tickerType><minifiedDef>MinifiedThing</minifiedDef><thingCategories><li>BuildingsPower</li></thingCategories>
     <statBases><MaxHitPoints>260</MaxHitPoints><WorkToBuild>1800</WorkToBuild><Mass>18</Mass><Flammability>0.25</Flammability><Beauty>-2</Beauty></statBases>
     <size>(1,2)</size><costList><WNG_Biomass>40</WNG_Biomass><ComponentIndustrial>1</ComponentIndustrial></costList>

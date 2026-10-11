@@ -169,6 +169,13 @@ namespace WraithNaniteGravtech
             if (domain == null || domain.Authority != ReplicatorControlAuthority.AutonomousSwarm)
                 return pawn.Faction;
 
+            // A player-owned block may carry an old AutonomousSwarm domain after
+            // recruitment, dev placement or save migration. Never turn a player
+            // pawn hostile merely because its domain has not been reclassified.
+            // True feral blocks remain assigned to the hidden swarm as before.
+            if (pawn.Faction == Faction.OfPlayer)
+                return pawn.Faction;
+
             Faction swarm = EnsureSwarmFaction();
             if (swarm != null && pawn.Faction != swarm)
                 pawn.SetFaction(swarm);

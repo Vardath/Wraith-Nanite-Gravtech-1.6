@@ -146,6 +146,12 @@ namespace WraithNaniteGravtech
 
     public static class ReplicatorEnvironmentalAssimilationUtility
     {
+        // Throttle negative tile searches only. This preserves any available
+        // structural/terrain target while limiting repeated expensive searches
+        // on fully consumed maps populated by many hostile Replicators.
+        private static readonly Dictionary<int, int> nextEmptyStructuralScan = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> nextEmptyTerrainScan = new Dictionary<int, int>();
+
         public static bool IsConsumableCell(Pawn pawn, IntVec3 cell)
         {
             if (!ReplicatorAssimilationUtility.CanAutonomouslyAssimilate(pawn) ||
@@ -258,6 +264,14 @@ namespace WraithNaniteGravtech
             if (!ReplicatorAssimilationUtility.CanAutonomouslyAssimilate(pawn) || pawn?.Map == null)
                 return IntVec3.Invalid;
 
+            int now = Find.TickManager?.TicksGame ?? 0;
+            Dictionary<int, int> negative = structuralLayersOnly
+                ? nextEmptyStructuralScan : nextEmptyTerrainScan;
+            int nextAllowed;
+            if (negative.TryGetValue(pawn.thingIDNumber, out nextAllowed) &&
+                now >= 0 && now < nextAllowed)
+                return IntVec3.Invalid;
+
             ReplicatorBlockExtension ext = ReplicatorAssimilationUtility.ExtensionFor(pawn);
             float radius = Math.Max(5f, ext?.assimilationSearchRadius ?? 60f);
 
@@ -266,6 +280,11 @@ namespace WraithNaniteGravtech
 
             foreach (IntVec3 cell in GenRadial.RadialCellsAround(pawn.Position, radius, useCenter: true))
             {
+                // Geometric distance is cheap; do not run terrain/roof tests and
+                // a pathfinder search for candidates worse than an existing hit.
+                float distance = pawn.Position.DistanceToSquared(cell);
+                if (distance >= bestDistance)
+                    continue;
                 if (!IsConsumableCell(pawn, cell))
                     continue;
                 if (structuralLayersOnly && !HasStructuralLayer(pawn.Map, cell))
@@ -273,7 +292,6 @@ namespace WraithNaniteGravtech
                 if (!pawn.CanReach(cell, PathEndMode.Touch, Danger.Deadly))
                     continue;
 
-                float distance = pawn.Position.DistanceToSquared(cell);
                 if (distance < bestDistance)
                 {
                     best = cell;
@@ -283,6 +301,14 @@ namespace WraithNaniteGravtech
                 }
             }
 
+            if (!best.IsValid)
+            {
+                if (negative.Count > 2048)
+                    negative.Clear();
+                negative[pawn.thingIDNumber] = now + 120;
+            }
+            else
+                negative.Remove(pawn.thingIDNumber);
             return best;
         }
 
