@@ -233,12 +233,27 @@ namespace WraithNaniteGravtech
 
     public sealed class JobGiver_ReplicatorDefense : ThinkNode_JobGiver
     {
+        // Controlled swarm bodies use this same think tree as autonomous ones.
+        // Historically the player-faction early return left genuine Queen / neural
+        // lattice controlled units entirely unable to protect colonists.
+        private static readonly Dictionary<int, int> nextFailedColonyGuardScan = new Dictionary<int, int>();
+
         protected override Job TryGiveJob(Pawn pawn)
         {
-            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null || pawn.Faction == Faction.OfPlayer)
+            if (pawn == null || pawn.Dead || !pawn.Spawned || pawn.Map == null)
                 return null;
             if (ReplicatorInterferenceUtility.IsEmpDisrupted(pawn))
                 return null;
+
+            if (pawn.Faction == Faction.OfPlayer)
+            {
+                // Faction membership alone does not equal control. Only active,
+                // signal-valid sovereign authority allows colony defense.
+                if (!ReplicatorSovereignControlUtility.SignalOperationalForCurrentDomain(pawn))
+                    return null;
+                Pawn invader = FindThreatToColonists(pawn);
+                return invader == null ? null : MakeDefenseJob(pawn, invader, 450);
+            }
 
             Pawn aggressor;
             CompReplicatorThreatResponse personal = pawn.TryGetComp<CompReplicatorThreatResponse>();
@@ -249,6 +264,61 @@ namespace WraithNaniteGravtech
             if (swarm?.TryGetRetaliationTarget(pawn, out aggressor) == true)
                 return MakeDefenseJob(pawn, aggressor, 720);
 
+            return null;
+        }
+
+        private static Pawn FindThreatToColonists(Pawn responder)
+        {
+            if (responder?.Map == null || Faction.OfPlayer == null)
+                return null;
+            int now = Find.TickManager?.TicksGame ?? 0;
+            int retryTick;
+            if (nextFailedColonyGuardScan.TryGetValue(responder.thingIDNumber, out retryTick) &&
+                now >= 0 && now < retryTick)
+                return null;
+
+            Map map = responder.Map;
+            List<Pawn> colonists = map.mapPawns.FreeColonistsSpawned;
+            IReadOnlyList<Pawn> all = map.mapPawns.AllPawnsSpawned;
+            Pawn closest = null;
+            float distanceSq = 25f * 25f;
+            if (colonists != null && colonists.Count > 0)
+            {
+                for (int i = 0; i < all.Count; i++)
+                {
+                    Pawn enemy = all[i];
+                    if (enemy == null || !enemy.Spawned || enemy.Dead || enemy.Downed ||
+                        enemy.Faction == null || !enemy.Faction.HostileTo(Faction.OfPlayer))
+                        continue;
+                    float dist = responder.Position.DistanceToSquared(enemy.Position);
+                    if (dist >= distanceSq)
+                        continue;
+                    bool nearColonist = false;
+                    for (int j = 0; j < colonists.Count; j++)
+                    {
+                        Pawn colonist = colonists[j];
+                        if (colonist != null && colonist.Spawned && !colonist.Dead &&
+                            colonist.Position.DistanceToSquared(enemy.Position) <= 100f)
+                        {
+                            nearColonist = true;
+                            break;
+                        }
+                    }
+                    if (!nearColonist)
+                        continue;
+                    closest = enemy;
+                    distanceSq = dist;
+                }
+            }
+
+            if (closest != null && responder.CanReach(closest, PathEndMode.Touch, Danger.Deadly))
+            {
+                nextFailedColonyGuardScan.Remove(responder.thingIDNumber);
+                return closest;
+            }
+            if (nextFailedColonyGuardScan.Count > 2048)
+                nextFailedColonyGuardScan.Clear();
+            nextFailedColonyGuardScan[responder.thingIDNumber] = now + 120;
             return null;
         }
 
