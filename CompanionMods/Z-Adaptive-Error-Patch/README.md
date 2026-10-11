@@ -701,3 +701,88 @@ message about presence or absence of the optional mod hooks.
 Neither change touches Scribe save loading or game-map serialization.
 The long wait *after selecting a colony save* is therefore not
 established as caused by this runtime job throttle.
+
+
+## 2026-10-12: hunting triage and missing Custom Quest Framework item entries
+
+Evidence: Player(20261011-223244).log, RimDoctor session
+20261012_065010 and report 20261012_082237, RimWorld 1.6.4871,
+625 active mods.
+
+### Hunting investigation — no unverified AI override
+
+No hunting workgiver or hunt-job exception was emitted in the supplied
+logs. The loaded stack includes **SMART Hunters**
+(`idzigzag.smarthunters`), **Hunters Use Melee!**
+(`mlie.huntersusemelee`) and **Auto Hunt** (`snues.autohunt`).
+The SMART Hunters author's compatibility note states that it takes
+over hunting job assignment: *designation-only* Auto Hunt is compatible,
+but mods that alter how hunters choose targets/behave will not operate
+normally while SMART Hunters is active.
+
+Recommended isolation sequence, **not an automatic patch**:
+1. Make a backed-up save. In SMART Hunters settings choose **Prepare
+   save for mod removal** before disabling it, if the test reaches that step.
+   Never remove SMART Hunters during an ongoing group hunt.
+2. Leave Auto Hunt active, disable Hunters Use Melee, restart and test
+   a vanilla-ranged hunter against manually designated harmless prey.
+3. Check hunting work priority, job restrictions, allowed area, an
+   ordinary ranged weapon and whether higher-priority work is consuming
+   all time. If hunting still fails, use SMART Hunters' safe-removal
+   procedure and retry with Auto Hunt and vanilla hunting logic.
+4. If vanilla hunts work but SMART Hunters hunts do not, retain the
+   game log and test SMART Hunters without other hunting behaviour mods.
+
+We have **not** replaced SMART Hunters AI, globally disabled
+`WorkGiver_HunterHunt`, overridden pawn jobs, or suppressed hunting
+exceptions. The present diagnostics do not prove that the mod
+interaction is the exclusive cause of inactive hunting.
+
+### Actual new XML repair: CQF optional item spawn references
+
+Custom Quest Framework attempts to resolve
+`QuestEditor_Library.ThingData` entries pointing to non-existent
+`RSH_BloodWallTorch` and `RSH_Stairs` ThingDefs. The new
+`Patches/CustomQuestMissingThingDataCompat.xml` checks that each
+*concrete* ThingDef is absent and removes only the corresponding
+unresolvable ThingData entry. A defined item or unrelated quest item
+is never removed. Z Adaptive is ordered after `QF_Patch` to process
+the actual optional quest data. This repairs invalid references;
+the originally intended item-spawning quest content still requires
+its own missing dependency or an upstream content update.
+The XML and XPath parse and have been exercised against a small
+representative Def tree; the full 625-mod stack is **not** available
+for live confirmation.
+
+### Other diagnostics and triage
+
+- Existing Z Adaptive fixes already target
+  `SOA_NuclearThruster`, `BMT_WoollySpider`,
+  `Imago_Metamorphosis` duplicates, and upstream XML compatibility.
+  Their warning lines are still present; do not duplicate the rules
+  or assert that all references are resolved without fresh startup logs.
+- The active **RimPy Mod Manager Database** produces an empty
+  load-folders error. It is not required as an in-game content mod
+  to use the external RimPy manager; remove it from the *active game*
+  mod list for a diagnostic test.
+- **Space Services** repeatedly fails to patch an inherited
+  `JobDriver_SitFacingBuilding.TryMakePreToilReservations` method.
+  This requires a Space Services-specific source fix or temporary
+  removal, not a global Harmony exception filter.
+- **[MAP] Mechanoid Mechanitor (1.6)** has a recreation ThinkTree
+  insertion failure and a grower-sow IL-pattern warning. The previous
+  guarded late XML fallback remains, but does not eliminate the
+  upstream failure emitted before it.
+- The absent FacialAnimation.HeadTypeDef, Yayo's moved settings class,
+  malformed optional psytrainer references and inactive RimPy
+  database are independent issues and not demonstrated hunting causes.
+- RimDoctor's **HIGH** count includes heavily patched methods
+  without corresponding runtime faults. It must not be interpreted
+  as 72 proven crashes.
+- Save-load references involving `/lastUser`, old orphaned Lords or
+  parent save-ID registration remain unresolved; no save serialization
+  hooks were broadened.
+
+No active mods were disabled in the repository. Modlist reductions
+must be performed in the user's local save/profile, with a backup and
+save-safe procedure.
