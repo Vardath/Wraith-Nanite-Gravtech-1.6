@@ -1,0 +1,40 @@
+name: WNG Correct Settlement Wall Icons
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/artfix/generate_settlement_wall_icons.py'
+      - '.github/workflows/wng-generate-settlement-wall-icons.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Generate exact linked-wall family icons
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          python .github/artfix/generate_settlement_wall_icons.py
+      - name: Commit icons
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add Textures/UI/WNG/Build/WNG_PrecursorWall.png Textures/UI/WNG/Build/WNG_WraithLivingWall.png
+          if git diff --cached --quiet; then
+            echo 'Both settlement icons already current'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Regenerate Precursor and Wraith wall Architect icons from approved atlases'
+          git push origin HEAD:main

@@ -167,6 +167,30 @@ jobs:
               if precursor_wall.findtext("./graphicData/graphicClass") != "Graphic_Single":
                   failures.append("Precursor wall lost its safe non-stuff graphic class")
 
+          # A 4x4 linked atlas is not suitable as an Architect icon. Both
+          # settlement walls retain their original connection atlases on the
+          # map, but their ThingDefs must provide individual 192px UI icons.
+          import struct
+          for wall_name, wall_def, expected_icon in (
+              ("WNG_WraithLivingWall", wraith_wall, "UI/WNG/Build/WNG_WraithLivingWall"),
+              ("WNG_PrecursorWall", precursor_wall, "UI/WNG/Build/WNG_PrecursorWall"),
+          ):
+              if wall_def is None:
+                  continue
+              if wall_def.find("./graphicData/uiIconPath") is not None:
+                  failures.append(f"{wall_name} incorrectly placed uiIconPath inside graphicData")
+              if wall_def.findtext("./uiIconPath") != expected_icon:
+                  failures.append(f"{wall_name} does not use a single-cell standalone Architect icon")
+              icon = Path("Textures") / (expected_icon + ".png")
+              if not icon.is_file():
+                  failures.append(f"{wall_name} single-cell icon missing: {icon}")
+                  continue
+              header = icon.read_bytes()[:24]
+              if len(header) != 24 or header[:8] != bytes((137,80,78,71,13,10,26,10)):
+                  failures.append(f"{wall_name} icon is not PNG")
+              elif struct.unpack(">II",header[16:24]) != (192,192):
+                  failures.append(f"{wall_name} icon must be a single 192x192 tile")
+
           wraith_door = defs.get("WNG_WraithMembraneDoor", (None,))[0]
 
           for wall_name, wall in (("WNG_PrecursorWall", precursor_wall), ("WNG_WraithLivingWall", wraith_wall)):

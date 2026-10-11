@@ -6,12 +6,13 @@
     <label>precursor wall</label>
     <description>A seamless Asuran composite wall built from pale segmented field-bearing material, crossed by luminous field seams and reinforced corner nodes.</description>
     <graphicData Inherit="False">
-      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath><uiIconPath>Things/Building/Precursor/Structure/WNG_PrecursorWall</uiIconPath>
+      <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <linkType>CornerFiller</linkType>
       <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
       <damageData><enabled>false</enabled></damageData>
     </graphicData>
+    <uiIconPath>UI/WNG/Build/WNG_PrecursorWall</uiIconPath>
     <stuffCategories Inherit="False"/>
     <costStuffCount>0</costStuffCount>
     <useStuffTerrainAffordance>false</useStuffTerrainAffordance>
