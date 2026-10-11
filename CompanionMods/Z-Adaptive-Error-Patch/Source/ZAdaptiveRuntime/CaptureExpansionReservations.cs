@@ -26,6 +26,7 @@ namespace ZAdaptiveRuntime
         private static bool reportedWorkGiver;
         private static bool reportedReservationConflict;
         private static bool reportedFallback;
+        private static int installedGuards;
 
         static CaptureExpansionReservations()
         {
@@ -34,7 +35,12 @@ namespace ZAdaptiveRuntime
             Type driverType = AccessTools.TypeByName(
                 "CaptureExpansion.JobDriver_RestrainPrisonerToBed");
             if (giverType == null || driverType == null)
+            {
+                Log.Warning("[Z Adaptive] Capture Expansion restraint guard not installed: " +
+                    "expected workgiver/driver type unavailable. Check the installed " +
+                    "Capture Expansion assembly and version.");
                 return;
+            }
 
             Harmony harmony = new Harmony("vardath.zadaptive.captureexpansion.reservations");
             TryInstall("restrain-prisoner job selection", () =>
@@ -44,7 +50,12 @@ namespace ZAdaptiveRuntime
                 MethodInfo postfix = AccessTools.Method(typeof(CaptureExpansionReservations),
                     nameof(RequirePrisonerReservation));
                 if (target != null && postfix != null)
+                {
                     harmony.Patch(target, postfix: new HarmonyMethod(postfix));
+                    installedGuards++;
+                }
+                else
+                    Log.Warning("[Z Adaptive] Capture Expansion restraint JobOnThing signature unavailable.");
             });
 
             TryInstall("restrain-prisoner job reservations", () =>
@@ -54,8 +65,15 @@ namespace ZAdaptiveRuntime
                 MethodInfo prefix = AccessTools.Method(typeof(CaptureExpansionReservations),
                     nameof(ReserveWithoutClearingOtherJobs));
                 if (target != null && prefix != null)
+                {
                     harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+                    installedGuards++;
+                }
+                else
+                    Log.Warning("[Z Adaptive] Capture Expansion restraint reservation signature unavailable.");
             });
+            Log.Message("[Z Adaptive] Capture Expansion restraint guards installed: " +
+                installedGuards + "/2 (job selection / reservation).");
         }
 
         private static void TryInstall(string name, Action action)
@@ -71,28 +89,38 @@ namespace ZAdaptiveRuntime
         private static void RequirePrisonerReservation(
             Pawn pawn, Thing t, ref Job __result)
         {
-            if (__result == null || pawn == null || !(t is Pawn prisoner))
+            // The workgiver's enumerated Thing can differ from the job's actual
+            // targets. The log establishes CE targetA=prisoner, targetB=sleeping
+            // spot; validate those targets, not the enumerated t argument.
+            if (__result?.def?.defName != "CE_RestrainPrisonerToBed" || pawn == null)
                 return;
 
             try
             {
-                // The original WorkGiver checks whether the bed can be reserved,
-                // but not whether any other warden has reserved the prisoner.
-                if (pawn.CanReserve(prisoner, 1, -1, null, false))
-                    return;
-
-                __result = null;
-                if (!reportedWorkGiver)
+                Pawn prisoner = __result.targetA.Thing as Pawn;
+                Thing bed = __result.targetB.Thing;
+                if (prisoner == null || bed == null || !pawn.Spawned ||
+                    !prisoner.Spawned || !bed.Spawned ||
+                    pawn.Map != prisoner.Map || pawn.Map != bed.Map ||
+                    !pawn.CanReserve(prisoner, 1, -1, null, false) ||
+                    !pawn.CanReserve(bed, 1, 0, null, false))
                 {
-                    reportedWorkGiver = true;
-                    Log.Message("[Z Adaptive] Capture Expansion: declined a restraint " +
-                        "job for a prisoner reserved by another job.");
+                    // An impossible assignment must not be handed to the job
+                    // tracker and then reissued ten times during the same tick.
+                    __result = null;
+                    if (!reportedWorkGiver)
+                    {
+                        reportedWorkGiver = true;
+                        Log.Warning("[Z Adaptive] Capture Expansion: declined an " +
+                            "unreservable prisoner/sleeping-spot restraint job. " +
+                            "Other work and valid restraint assignments remain available.");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 WarnFallback(ex);
-                // Fail open: do not disrupt the upstream WorkGiver on API changes.
+                // Fail open when optional mod APIs change.
             }
         }
 

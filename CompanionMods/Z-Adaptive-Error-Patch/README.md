@@ -572,3 +572,36 @@ Genes are useful additional sources if the save identifies them.
 
 The current batch does not justify broader patches to unrelated
 weapons, research, gene serialization or biome changes.
+
+## 2026-10-11 13:12 RimDoctor: post-recovery restraints and map safety
+
+The recovered Dinithera 661289 colony successfully loaded. In the new
+626-mod report, the dominant active error is repeated
+`CE_RestrainPrisonerToBed` jobs (multiple wardens, prisoner targets and
+sleeping spots; 10+ starts per tick). The earlier guard inspected the
+workgiver's enumerated `Thing`, which is not guaranteed to be the
+prisoner. Source now checks the actual issued job targets (A=Pawn,
+B=sleeping spot), declines only invalid/unreservable same-map
+assignments, and retains the no-ClearAllReservations driver patch.
+Explicit 0/2, 1/2, or 2/2 hook-install diagnostics and the existing
+JobGiver_Work retry-throttle install message make stale DLLs/signature
+changes visible in the next full Player.log. Neither unrelated work
+jobs nor the prisoner's current lay-down job is rewritten.
+
+`Patches/MechControlMeatCompat.xml` addresses the specific
+`HL_Milian_FloatUnit_MechControl` helper mech race reported by Colony
+Manager Redux: adds/changes `hasMeat=false` only when that race
+has no meatDef. Other animals and mechs are untouched.
+
+Outstanding issues are deliberately not hidden: SaiyanMod/Taran Magic
+`AbilityClassKI.OnLevelGained` during cross-reference resolution,
+GravTide_DivingAnimalConstant think-tree duplicate key -2 and
+index error, The Force /lastUser loading, an Ocean Floor graphic
+loaded from a worker thread, and Jurassic Rimworld's pawn-group
+exception all need the actual owning source or more targeted stack
+data for safe fixes. Existing late XML fallbacks do not erase
+earlier upstream patch-operation warnings. Map/saving paths and
+the recovered colony .rws were not modified. Download/install the
+new Actions-built Z Adaptive ZIP; source-only GitHub edits do not
+update a previously installed runtime DLL. Verify the emitted
+Capture Expansion guard-install lines in the next Player.log.

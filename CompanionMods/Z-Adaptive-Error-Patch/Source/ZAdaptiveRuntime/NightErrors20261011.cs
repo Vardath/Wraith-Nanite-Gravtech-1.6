@@ -74,8 +74,13 @@ namespace ZAdaptiveRuntime
                 // impossible job from being reissued recursively every game tick.
                 MethodInfo target = AccessTools.Method(typeof(JobGiver_Work), "TryGiveJob");
                 if (target != null)
+                {
                     harmony.Patch(target, postfix: new HarmonyMethod(
                         AccessTools.Method(typeof(NightErrors20261011), nameof(RestraintJobPostfix))));
+                    Log.Message("[Z Adaptive] Installed CE restraint repeat-job throttle on JobGiver_Work.TryGiveJob.");
+                }
+                else
+                    Log.Warning("[Z Adaptive] CE restraint repeat-job throttle target was not found.");
             });
         }
 
