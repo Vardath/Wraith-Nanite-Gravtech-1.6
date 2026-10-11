@@ -605,3 +605,55 @@ the recovered colony .rws were not modified. Download/install the
 new Actions-built Z Adaptive ZIP; source-only GitHub edits do not
 update a previously installed runtime DLL. Verify the emitted
 Capture Expansion guard-install lines in the next Player.log.
+
+## 2026-10-11 source audit: GravTide, Ocean Floor, Saiyans, Jurassic (four archives)
+
+Directly inspected 3779600989 (GravTide 2026.10.09, including its full
+source), 3815134598 (Ocean Floor 1.6), 2768874080 (The Saiyans 1.6),
+and 3541468886 (Jurassic Rimworld Continued 1.6); compared to
+Player(20261011-031448).log and RimDoctor 13:12 report.
+
+**Jurassic trader-carrier failure (guarded runtime fix):** The original
+Jurassic carrier worker source at
+`emipa606/JurassicRimworld/Source/JurassicRimworld/PawnGroupKindWorker_Trader_GenerateCarriers.cs`
+enumerates *every* pack animal and calls `x.race.tradeTags.Any` without
+checking if `tradeTags` is null. The live NRE stack enters precisely
+`GenCollection.Any` from that filter. The new priority-first patch on
+`PawnGroupKindWorker_Trader.GenerateCarriers` converts only null
+pack-animal trade-tag lists into empty lists. It does not invent
+carrier trade tags. If Jurassic's own filter still throws specifically
+while selecting a candidate, its Prefix receives a narrowly checked
+fallback to vanilla carrier generation. Other exceptions remain visible;
+Jurassic caravans with eligible dinosaurs retain original behavior.
+
+**Ocean Floor off-main-thread Figurehead_C graphic (guarded preload):**
+All Figurehead_B/C/D PNGs exist in the uploaded source archive, and
+the live error comes from `GraphicDatabase.GetInner` refusing an
+uncached Graphic_Single on a worker thread. A mod-conditional main-thread
+preload at startup / Game.FinalizeInit caches the actual variant
+graphics. No texture is fabricated or substituted. Actual custom
+shader/size cache-key variations may require further investigation,
+so validation in the 626-mod stack is mandatory.
+
+**GravTide think-tree bug (confirmed, deliberately not patched):**
+`Defs/ThinkTreeDefs/ThinkTree_DivingAnimal.xml` creates
+`GravTide_DivingAnimalConstant` with a `ThinkNode_Subtree` copying
+`AnimalConstant`. The live stack enters
+`ThinkNode_Subtree.DeepCopy` (out-of-range child index) during
+ResolveReferences and leaves two nodes with unresolved key -2.
+Removing the subtree would remove normal sea-otter animal AI; replacing
+the tree with a global Animal_PreWander job would modify AI of unrelated
+animals. Neither is safe without a verified replacement tree and test.
+
+**Saiyan/Taran Magic load issue (not patched):** The supplied Saiyans
+package includes 1.6 definitions and DLLs, not source for
+`AbilityClassKI.OnLevelGained` or Taran's base class. The live
+exception occurs as `HediffSet.DirtyCache` triggers progression inside
+`Scribe` cross-reference resolution. Skipping OnLevelGained or
+suppressing its NRE at load can leave an incomplete ability state.
+Need matching TaranMagicFramework implementation and a targeted
+postload re-initialization design, not an exception suppressor.
+
+No save XML, pawn records, map generation, WNG gameplay or other
+compatibility patches were changed. GitHub Actions builds the new
+runtime DLL; source-only changes do not affect an installed copy.
