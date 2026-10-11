@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -68,19 +69,32 @@ namespace ZAdaptiveRuntime
                     harmony.Patch(target, finalizer: new HarmonyMethod(
                         AccessTools.Method(typeof(NightErrors20261011), nameof(AttractionImpactFinalizer))));
             });
+            Install("Capture Expansion dedicated reservation guards", () =>
+            {
+                // Explicitly initialize the optional Capture Expansion hook.
+                // Some static-constructor discovery passes do not initialize
+                // every class in a companion runtime assembly.
+                RuntimeHelpers.RunClassConstructor(typeof(CaptureExpansionReservations).TypeHandle);
+            });
             Install("CE restraint job retry", () =>
             {
-                // This does not alter Combat Extended restraint jobs. It prevents an
-                // impossible job from being reissued recursively every game tick.
-                MethodInfo target = AccessTools.Method(typeof(JobGiver_Work), "TryGiveJob");
-                if (target != null)
+                // RimWorld 1.6 JobGiver_Work derives from ThinkNode, not
+                // ThinkNode_JobGiver: its concrete override returns ThinkResult.
+                // The previous TryGiveJob patch could never install.
+                MethodInfo target = AccessTools.Method(typeof(JobGiver_Work),
+                    nameof(JobGiver_Work.TryIssueJobPackage),
+                    new[] { typeof(Pawn), typeof(JobIssueParams) });
+                MethodInfo postfix = AccessTools.Method(typeof(NightErrors20261011),
+                    nameof(RestraintJobPostfix));
+                if (target == null || postfix == null)
                 {
-                    harmony.Patch(target, postfix: new HarmonyMethod(
-                        AccessTools.Method(typeof(NightErrors20261011), nameof(RestraintJobPostfix))));
-                    Log.Message("[Z Adaptive] Installed CE restraint repeat-job throttle on JobGiver_Work.TryGiveJob.");
+                    Log.Warning("[Z Adaptive] CE restraint repeat-job throttle could not locate " +
+                        "RimWorld 1.6 JobGiver_Work.TryIssueJobPackage(Pawn, JobIssueParams).");
+                    return;
                 }
-                else
-                    Log.Warning("[Z Adaptive] CE restraint repeat-job throttle target was not found.");
+                harmony.Patch(target, postfix: new HarmonyMethod(postfix));
+                Log.Message("[Z Adaptive] Installed CE restraint repeat-job throttle on " +
+                    "JobGiver_Work.TryIssueJobPackage (RimWorld 1.6 ThinkResult).");
             });
         }
 
@@ -192,9 +206,9 @@ namespace ZAdaptiveRuntime
         // and sleeping spot for several pawns. Throttle ONLY identical failed assignments
         // per worker/target pair, leaving distinct prisoners/beds and all other jobs alone.
         // The first attempt always proceeds; another is allowed after three seconds.
-        private static void RestraintJobPostfix(Pawn pawn, ref Job __result)
+        private static void RestraintJobPostfix(Pawn pawn, ref ThinkResult __result)
         {
-            Job job = __result;
+            Job job = __result.Job;
             if (pawn == null || job == null || job.def == null ||
                 job.def.defName != "CE_RestrainPrisonerToBed")
                 return;
@@ -206,7 +220,7 @@ namespace ZAdaptiveRuntime
                 previous.Prisoner == prisoner && previous.Bed == bed &&
                 tick >= previous.Tick && tick - previous.Tick < 180)
             {
-                __result = null;
+                __result = ThinkResult.NoJob;
                 if (!restraintReported)
                 {
                     restraintReported = true;

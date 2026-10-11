@@ -679,3 +679,25 @@ finalizer, this avoids levelling incomplete abilities and leaves the
 whole vanilla HediffSet/DirtCache function and other mods' postfixes
 intact. Ordinary in-game Saiyan health and XP effects are unchanged.
 Live confirmation is still required; no save data was modified.
+
+## 2026-10-11: CE repeat-job throttle signature repair (after 15:08 warning)
+
+The October 11 Player and RimDoctor logs explicitly reported
+`[Z Adaptive] CE restraint repeat-job throttle target was not found.`
+The earlier implementation attempted to patch
+`RimWorld.JobGiver_Work.TryGiveJob`, which does **not** exist in
+RimWorld 1.6. Decompiled vanilla 1.6 `JobGiver_Work` derives from
+`ThinkNode` and instead overrides
+`TryIssueJobPackage(Pawn, JobIssueParams)` returning `ThinkResult`.
+The compatibility postfix now uses that precise overload and returns
+`ThinkResult.NoJob` only for repeated *identical*
+`CE_RestrainPrisonerToBed` target tuples within 180 ticks.
+Other jobs and initial restraint attempts retain vanilla behavior.
+
+The dedicated Capture Expansion target-reservation guard was already
+implemented separately. Its class constructor is now explicitly run
+through a guarded startup installer to ensure a clear diagnostic
+message about presence or absence of the optional mod hooks.
+Neither change touches Scribe save loading or game-map serialization.
+The long wait *after selecting a colony save* is therefore not
+established as caused by this runtime job throttle.
