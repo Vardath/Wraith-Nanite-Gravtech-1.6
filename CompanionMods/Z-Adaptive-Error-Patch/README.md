@@ -657,3 +657,25 @@ postload re-initialization design, not an exception suppressor.
 No save XML, pawn records, map generation, WNG gameplay or other
 compatibility patches were changed. GitHub Actions builds the new
 runtime DLL; source-only changes do not affect an installed copy.
+
+## 2026-10-11: Taran Magic Framework fifth archive and Saiyan load-phase repair
+
+Archive `3527502876.rar` contains Taran Magic Framework's 1.6 DLL and
+XML definitions. The matching upstream 1.6 C# source is public in
+`Taranchuk/TaranMagicFramework/1.6/Source/AbilityClass.cs`.
+`AbilityClass.OnLevelGained()` immediately invokes
+`compAbilities.RecheckAbilities()`, which is unsafe before
+`CompAbilities.PostLoadInit` has restored its association.
+In Player(20261011-031448).log, the exception is reached through
+`SaiyanMod.DirtyCache_Patch.Postfix` -> `GainXP` -> `SetLevel` ->
+`SaiyanMod.AbilityClassKI.OnLevelGained` -> Taran's base
+`OnLevelGained`, specifically while RimWorld runs
+`CrossRefHandler.ResolveAllCrossReferences()`.
+
+`SaiyanLoadPhaseGuard.cs` patches only that optional Saiyan mod's
+own DirtyCache postfix and does not execute it while
+`Scribe.mode != LoadSaveMode.Inactive`. Unlike a broad exception
+finalizer, this avoids levelling incomplete abilities and leaves the
+whole vanilla HediffSet/DirtCache function and other mods' postfixes
+intact. Ordinary in-game Saiyan health and XP effects are unchanged.
+Live confirmation is still required; no save data was modified.
