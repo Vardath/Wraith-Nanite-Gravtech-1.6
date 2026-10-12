@@ -37,13 +37,19 @@ The two fixed-material settlement walls explicitly seal vacuum without a
 stuff-dependent airtight query. Existing hull materials, recipes, abilities,
 stats, research and placement workers are preserved.
 
-The Wraith settlement artwork has 16 original, editable vector-drawn masters in
+The Wraith settlement artwork uses hand-composed overlapping chitin scutes,
+organic ribs and shadowed membrane surfaces, with junction-only green veins.
+The painter lives in `Tools/WallArt/paint_wraith_chitin.py`, imported by
+`generate_wraith_settlement_wall.py`. There are 16 editable SVG masters in
+
 `ArtSource/Walls/Wraith/VectorMasters/`. They are composed as large architectural
 surfaces in `Tools/WallArt/generate_wraith_settlement_wall.py`, rendered at
 768px per mask and sampled to native 192px. Old tiny WebP sprite-sheet sources
 are no longer used. The output atlas, isolated build icon and legacy single
 wall live in WNG's actual `Textures/` directory.
 The Wraith gravship hull and all other wall families are unchanged.
+The in-repo 48px-per-tile wall-room preview is an offline topology comparison,
+not evidence of how the wall looks beside live vanilla walls in RimWorld.
 No native Wall.Print, link flags, room, roof, material, blueprint or
 Odyssey placement logic has been replaced.
 
