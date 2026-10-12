@@ -230,8 +230,8 @@ class Validator:
                 # Drawn orthographic wall silhouettes preserve native *cell dimensions*
                 # without the rectangular filled-tile look of the earlier generation.
                 # Real painted joins, ends, corners and T/cross shapes use alpha.
-                self.check(center >= .50, f"{family} mask{mask}: missing painted wall core ({center:.1%})")
-                self.check(coverage >= .30, f"{family} mask{mask}: wall silhouette is too sparse ({coverage:.1%})")
+                self.check(center >= .995, f"{family} mask{mask}: insufficient wall-top structural body ({center:.1%})")
+                self.check(coverage >= .855, f"{family} mask{mask}: smaller than vanilla-like wall coverage ({coverage:.1%})")\n                if mask == 15:\n                    self.check(coverage >= .995, f"{family}: fully linked wall body must fill the cell ({coverage:.1%})")
             else:
                 self.check(center >= .995, f"{family} mask{mask}: tile center opacity {center:.1%}; must fill tile body")
                 self.check(coverage >= .80, f"{family} mask{mask}: sampled coverage {coverage:.1%}; wall reads too narrow")
