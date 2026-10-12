@@ -56,7 +56,12 @@ def make_skin():
             # The weave is quietly embedded in the cap rather than painted on it.
             d.arc((x-18, y-15, x+33, y+34), 212, 336, fill=(123, 103, 111, 18), width=3)
             d.arc((x-23, y-11, x+28, y+40), 45, 165, fill=(12, 15, 23, 24), width=4)
-    return Image.alpha_composite(im, growth)
+    composite = np.array(Image.alpha_composite(im, growth)).copy()
+    # Filament overlay must be periodic too; otherwise linked edges get a
+    # subtle but measurable discontinuity even if the structural skin tiles.
+    composite[:, -1] = composite[:, 0]
+    composite[-1, :] = composite[0, :]
+    return Image.fromarray(composite, "RGBA")
 
 
 def edge_surface(lightness=1.0):
@@ -171,7 +176,7 @@ def main():
     for m,a in enumerate(tiles):
         if m&2:
             for n,b in enumerate(tiles):
-                if n&8 and list(a.getdata())[SIZE-1::SIZE] != list(b.getdata())[0::SIZE]:
+                if n&8 and list(a.crop((SIZE-1,0,SIZE,SIZE)).getdata()) != list(b.crop((0,0,1,SIZE)).getdata()):
                     raise ValueError("East-west seam mismatch: %s / %s" % (m,n))
         if m&4:
             for n,b in enumerate(tiles):
