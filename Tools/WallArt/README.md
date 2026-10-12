@@ -1,11 +1,13 @@
 # WNG walls for RimWorld 1.6
 
-The five functional walls use three authored material families. The settlement
-and gravship forms deliberately share a family atlas.
+The five functional walls use three material families but four linked atlases.
+Wraith settlement art is independent from the Wraith gravship hull so each wall
+can be redesigned and reviewed individually.
 
 | Family | ThingDefs | Runtime atlas |
 | --- | --- | --- |
-| Wraith | `WNG_WraithLivingWall`, `WNG_OrganicGravshipHull` | `Wraith/Gravship/WNG_OrganicHull_Atlas` |
+| Wraith settlement | `WNG_WraithLivingWall` | `Wraith/Structure/WNG_LivingWall_Atlas` |
+| Wraith gravship | `WNG_OrganicGravshipHull` | `Wraith/Gravship/WNG_OrganicHull_Atlas` |
 | Asuran / Precursor | `WNG_PrecursorWall`, `WNG_PrecursorGravshipHull` | `Precursor/Gravship/WNG_PrecursorHull_Atlas` |
 | Goa'uld | `WNG_GoauldGravshipHull` | `Goauld/Gravship/WNG_GoauldHull_Atlas` |
 
@@ -20,8 +22,9 @@ Each 1024×1024 RGBA atlas contains sixteen 256-pixel cells. RimWorld's
 32 pixels. Masks use N=1, E=2, S=4, W=8; PNG row is `3 - mask // 4`.
 The native renderer prints that sampled area on an exact 1×1 map cell.
 
-Exposed faces have a six-pixel inset and a small raised edge. An isolated wall
-fills 87.9% of its sampled square; a wall linked on every side fills 100%.
+Exposed faces have a six-pixel inset and a small raised edge. Existing gravship/Precursor/Goa'uld isolated walls fill 87.9% of the sampled
+square; the new Wraith settlement wall fills 100% for all sixteen states, with
+internal sculpted chitin bevels rather than empty ground at the exposed edges.
 Connected edges share exact colors, and every gutter clamps the adjacent
 sampled pixel so bilinear filtering cannot introduce a seam.
 
@@ -46,6 +49,11 @@ family layer keeps Odyssey's map masks and also appends its indoor corner
 meshes to the native launch/landing bake.
 
 ## Rebuild and verify
+
+For the independently authored Wraith settlement artwork, run
+`python Tools/WallArt/generate_wraith_settlement_wall.py` first (Pillow and
+NumPy). It generates the PNG atlas and in-game single-tile Architect/legacy icons.
+The Wraith gravship hull atlas and angled corners remain untouched by that pass.
 
 Node.js and ImageMagick (`magick`, or ImageMagick 6 `convert`) are needed to pack
 the committed masters. Pillow and NumPy are needed for validation.
