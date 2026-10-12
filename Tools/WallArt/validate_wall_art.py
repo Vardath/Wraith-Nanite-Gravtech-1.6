@@ -232,6 +232,11 @@ class Validator:
                 # Real painted joins, ends, corners and T/cross shapes use alpha.
                 self.check(center >= .995, f"{family} mask{mask}: insufficient wall-top structural body ({center:.1%})")
                 self.check(coverage >= .855, f"{family} mask{mask}: smaller than vanilla-like wall coverage ({coverage:.1%})")
+                # Reject blank flat-purple panels even when the silhouette fits.
+                # This is a material detail floor, not an artistic sign-off:
+                # the actual Wraith membrane must retain visible chitin relief.
+                material_std = float(core[32:-32,32:-32,:3].astype(float).std(axis=(0,1)).mean())
+                self.check(material_std >= 6.5, f"{family} mask{mask}: Wraith material detail collapsed into a flat slab (channel contrast {material_std:.1f})")
                 if mask == 15:
                     self.check(coverage >= .995, f"{family}: fully linked wall body must fill the cell ({coverage:.1%})")
             else:
