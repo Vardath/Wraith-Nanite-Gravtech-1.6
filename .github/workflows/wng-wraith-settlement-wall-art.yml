@@ -30,6 +30,21 @@ jobs:
         run: python -m pip install --disable-pip-version-check pillow numpy
       - name: Paint and assemble sixteen native linked Wraith living wall tiles
         run: python Tools/WallArt/generate_wraith_settlement_wall.py --preview ArtSource/Walls/Wraith/QA/settlement-topology.png
+      - name: Capture a compact architecture QA sample for review
+        shell: python
+        run: |
+          import base64
+          from pathlib import Path
+          from PIL import Image
+          p = Path("ArtSource/Walls/Wraith/QA/settlement-topology.png")
+          with Image.open(p) as img:
+              preview = img.convert("RGB")
+              preview.thumbnail((1024, 768), Image.Resampling.LANCZOS)
+              destination = Path("ArtSource/Walls/Wraith/QA/settlement-review.b64")
+              from io import BytesIO
+              buf=BytesIO()
+              preview.save(buf, "JPEG", quality=71, optimize=True)
+              destination.write_text(base64.b64encode(buf.getvalue()).decode() + "\\n")
       - name: Commit the generated art INSIDE the mod
         shell: bash
         run: |
@@ -39,7 +54,8 @@ jobs:
             Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png \
             Textures/UI/WNG/Build/WNG_WraithLivingWall.png \
             Textures/UI/WNG/Build/WNG_WraithGravshipHull.png \
-            ArtSource/Walls/Wraith/QA/settlement-topology.png
+            ArtSource/Walls/Wraith/QA/settlement-topology.png \
+            ArtSource/Walls/Wraith/QA/settlement-review.b64
           if git diff --cached --quiet; then
             echo "Wall artwork already matches approved generator"
             exit 0
