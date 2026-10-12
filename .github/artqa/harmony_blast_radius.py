@@ -33,16 +33,22 @@ required_contracts = (
     'internal static class WNGGravshipAddThingPilotConsolePatch',
     'thing.TryGetComp<CompPilotConsole_WNGFamily>() != null',
     '___pilotConsole = building;',
+    '[HarmonyPatch(typeof(SectionLayer_GravshipHull),',
+    'nameof(SectionLayer_GravshipHull.BakeGravshipIndoorMesh))]',
+    'internal static class WNGGravshipBakeIndoorHullMaskPatch',
+    '__result.AddRange(SectionLayer_WNGFamilyGravshipHull.BakeGravshipIndoorMesh(map, bounds, center));',
 )
 for token in required_contracts:
     if token not in allowed:
         failures.append(f"reviewed gravship Harmony contract missing: {token}")
 
-# Exactly two production patch targets are reviewed. No prefixes/transpilers/finalizers are allowed.
-if allowed.count("[HarmonyPatch") != 2:
-    failures.append(f"reviewed gravship bridge must contain exactly 2 HarmonyPatch attributes, found {allowed.count('[HarmonyPatch')}")
-if allowed.count("Postfix(") != 2:
-    failures.append(f"reviewed gravship bridge must contain exactly 2 postfixes, found {allowed.count('Postfix(')}")
+# Exactly three native production postfix targets are reviewed.
+if allowed.count("[HarmonyPatch") != 3:
+    failures.append(f"reviewed gravship bridge must contain exactly 3 HarmonyPatch attributes, found {allowed.count('[HarmonyPatch')}")
+if allowed.count("Postfix(") != 3:
+    failures.append(f"reviewed gravship bridge must contain exactly 3 postfixes, found {allowed.count('Postfix(')}")
+if allowed.count("Prefix(") != 0:
+    failures.append(f"reviewed gravship bridge must contain no prefixes, found {allowed.count('Prefix(')}")
 for forbidden in ("HarmonyPrefix", "HarmonyTranspiler", "HarmonyFinalizer", "ReversePatcher", "PatchProcessor"):
     if forbidden in allowed:
         failures.append(f"reviewed gravship bridge contains forbidden Harmony mechanism: {forbidden}")
@@ -78,15 +84,16 @@ for path, text in texts.items():
 
 print("=== D136 HARMONY BLAST-RADIUS AUDIT ===")
 print(f" - Production C# files scanned: {len(source_files)}")
-print(" - Reviewed native Odyssey patch targets: 2")
+print(" - Reviewed native patch targets: 3")
 print("   * RitualObligationTargetWorker_GravshipLaunch.GetTargets (postfix only)")
 print("   * Gravship.AddThing (postfix only)")
+print("   * SectionLayer_GravshipHull.BakeGravshipIndoorMesh (postfix only; add WNG-family hull masks)")
 print(" - Optional VGE isolation: guards only VGE launch-sequence patch methods for Building_WNGGravEngine")
-print(" - Purpose: keep Wraith/Asuran/Goa'uld WNG ships on Odyssey's native launch path")
+print(" - Purpose: preserve Odyssey's native launch path and family hull interior masks")
 if failures:
     print("\nFAILURES:")
     for failure in failures:
         print(" -", failure)
     raise SystemExit(1)
 
-print("PASS: Harmony use is limited to the reviewed Odyssey bridges plus bounded optional VGE launch isolation.")
+print("PASS: Harmony use is limited to reviewed native postfix bridges and bounded optional VGE launch isolation.")

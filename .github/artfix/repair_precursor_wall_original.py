@@ -8,7 +8,15 @@ damaged lower 45 rows from the intact corresponding upper border.
 Do not resize, repaint, recolour or change the world-linked wall atlas.
 """
 from pathlib import Path
+import sys
 from PIL import Image
+
+# The replacement fallback is authored from the reviewed native wall master.
+# The historical row-mirroring repair must never rewrite those new pixels.
+root = Path(__file__).resolve().parents[2]
+if (root / "ArtSource/Walls/Precursor/master.png").exists():
+    print("Historical Precursor row repair superseded by Tools/WallArt/assemble_wall_art.mjs; authored fallback preserved.")
+    sys.exit(0)
 
 path = Path("Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png")
 with Image.open(path) as file:

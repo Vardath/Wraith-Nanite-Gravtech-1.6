@@ -5,12 +5,12 @@
     <defName>WNG_PrecursorWall</defName>
     <label>precursor wall</label>
     <description>A seamless Asuran composite wall built from pale segmented field-bearing material, crossed by luminous field seams and reinforced corner nodes.</description>
-    <graphicData Inherit="False">
+    <graphicData>
       <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
       <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1,1)</drawSize>
       <linkType>CornerFiller</linkType>
-      <linkFlags><li>Wall</li><li>Rock</li></linkFlags>
-      <damageData><enabled>false</enabled></damageData>
+      <linkFlags Inherit="False"><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <uiIconPath>UI/WNG/Build/WNG_PrecursorWall</uiIconPath>
     <stuffCategories Inherit="False"/>
@@ -24,7 +24,7 @@
     <comps>
       <li Class="WraithNaniteGravtech.CompProperties_AsuranArchiveRepair"><repairIntervalTicks>1200</repairIntervalTicks><healPerPulse>2</healPerPulse><archiveRadius>45</archiveRadius></li>
     </comps>
-    <building><isPlaceOverableWall>true</isPlaceOverableWall><paintable>false</paintable></building>
+    <building><isAirtight>true</isAirtight><isStuffableAirtight>false</isStuffableAirtight></building>
   </ThingDef>
 
   <ThingDef ParentName="DoorBase">

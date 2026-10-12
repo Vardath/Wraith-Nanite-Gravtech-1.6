@@ -48,7 +48,9 @@ for k,files in groups.items():
 
 print("WNG_ITEM12_AUDIT_START")
 print("WNG_ITEM12_COUNT",len(rows))
-bad=[r for r in rows if "error" in r or (r.get("edge_alpha_pixels",0)>0 and "/HullCorners/" not in r["path"])]
+# Linked atlases deliberately clamp opaque edge texels into their UV gutters.
+# Whole-canvas transparency rules apply to standalone sprites, not linked sheets.
+bad=[r for r in rows if "error" in r or (r.get("edge_alpha_pixels",0)>0 and "/HullCorners/" not in r["path"] and not Path(r["path"]).stem.endswith("_Atlas"))]
 print("WNG_ITEM12_FLAGGED",len(bad))
 for r in bad: print("WNG_ITEM12_FLAG",json.dumps(r,sort_keys=True))
 print("WNG_ITEM12_AUDIT_END")

@@ -30,11 +30,12 @@
     <description>Dense self-repairing hull tissue grown over Wraith gravship substructure. The family protects itself through living-hull repair rather than a generic energy shield.</description>
     <designationCategory>Structure</designationCategory>
     <uiOrder>1810</uiOrder>
-    <graphicData Inherit="False">
+    <uiIconPath>UI/WNG/Build/WNG_WraithLivingWall</uiIconPath>
+    <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
-      <linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags>
+      <linkType>CornerFiller</linkType><linkFlags Inherit="False"><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>620</MaxHitPoints>
@@ -810,11 +811,12 @@
     <description>A seamless nanite-composite airtight hull grown over Asuran gravship substructure.</description>
     <designationCategory>Structure</designationCategory>
     <uiOrder>1812</uiOrder>
-    <graphicData Inherit="False">
+    <uiIconPath>UI/WNG/Build/WNG_PrecursorWall</uiIconPath>
+    <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas</texPath>
       <drawSize>(1,1)</drawSize>
-      <linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags>
+      <linkType>CornerFiller</linkType><linkFlags Inherit="False"><li>Wall</li><li>Rock</li></linkFlags>
     </graphicData>
     <statBases>
       <MaxHitPoints>720</MaxHitPoints>

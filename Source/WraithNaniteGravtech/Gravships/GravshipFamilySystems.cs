@@ -653,9 +653,8 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Odyssey hard-codes the vanilla PilotConsole ThingDef in two places that matter to WNG:
-    /// ritual target enumeration and Gravship world-object construction. These two narrow patches
-    /// broaden only those checks to WNG pilot consoles; they do not replace launch mechanics.
+    /// Native bridges include WNG pilot consoles and cinematic family hull masks while preserving
+    /// the vanilla launch mechanics and linked-wall renderer.
     /// </summary>
     [StaticConstructorOnStartup]
     internal static class WNGGravshipVanillaBridgeBootstrap
@@ -899,6 +898,21 @@ namespace WraithNaniteGravtech
             {
                 ___pilotConsole = building;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(SectionLayer_GravshipHull),
+        nameof(SectionLayer_GravshipHull.BakeGravshipIndoorMesh))]
+    internal static class WNGGravshipBakeIndoorHullMaskPatch
+    {
+        private static void Postfix(
+            List<LayerSubMesh> __result,
+            Map map,
+            CellRect bounds,
+            Vector3 center)
+        {
+            if (__result != null && ModsConfig.OdysseyActive)
+                __result.AddRange(SectionLayer_WNGFamilyGravshipHull.BakeGravshipIndoorMesh(map, bounds, center));
         }
     }
 

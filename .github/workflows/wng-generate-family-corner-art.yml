@@ -19,8 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Pillow
-        run: python -m pip install --disable-pip-version-check pillow
+      - name: Install art dependencies
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          sudo apt-get install --no-install-recommends imagemagick
 
       - name: Generate family outside-hull corner sprites
         run: python .github/artfix/generate_family_corner_art.py
@@ -45,7 +47,7 @@ jobs:
           for path in paths:
               assert path.exists(), path
               with Image.open(path) as im:
-                  assert im.size == (256,256), (path, im.size)
+                  assert im.size == (512,512), (path, im.size)
                   assert im.mode in ("RGBA","LA","P"), (path, im.mode)
                   alpha = im.convert("RGBA").getchannel("A")
                   bbox = alpha.getbbox()

@@ -168,8 +168,8 @@ jobs:
                   failures.append("Precursor wall lost its safe non-stuff graphic class")
 
           # A 4x4 linked atlas is not suitable as an Architect icon. Both
-          # settlement walls retain their original connection atlases on the
-          # map, but their ThingDefs must provide individual 192px UI icons.
+          # settlement walls use native linked connection atlases on the
+          # map, and their ThingDefs provide individual 192px isolated icons.
           import struct
           for wall_name, wall_def, expected_icon in (
               ("WNG_WraithLivingWall", wraith_wall, "UI/WNG/Build/WNG_WraithLivingWall"),
@@ -194,8 +194,13 @@ jobs:
           wraith_door = defs.get("WNG_WraithMembraneDoor", (None,))[0]
 
           for wall_name, wall in (("WNG_PrecursorWall", precursor_wall), ("WNG_WraithLivingWall", wraith_wall)):
-              if wall is not None and wall.findtext("./building/isPlaceOverableWall") != "true":
-                  failures.append(f"{wall_name} is no longer explicitly replaceable by vanilla-style doors")
+              if wall is not None:
+                  building = wall.find("building")
+                  clears_native_building = building is not None and building.get("Inherit", "true").lower() == "false"
+                  if (wall.get("ParentName") != "Wall"
+                      or wall.findtext("./building/isPlaceOverableWall", "true") != "true"
+                      or (clears_native_building and wall.find("./building/isPlaceOverableWall") is None)):
+                      failures.append(f"{wall_name} lost native Wall inheritance or door-over-wall replacement")
 
           if precursor_door is not None:
               if precursor_door.findtext("./graphicData/texPath") != "Things/Building/Precursor/Structure/WNG_PrecursorDoor":

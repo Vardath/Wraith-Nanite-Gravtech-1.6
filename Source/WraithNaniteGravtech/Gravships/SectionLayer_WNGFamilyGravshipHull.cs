@@ -128,8 +128,10 @@ namespace WraithNaniteGravtech
 
         private static readonly bool[] TmpChecks = new bool[Directions.Length];
         private const float HullCornerScale = 2f;
+        private const int BakedIndoorMaskRenderQueue = 3185;
         private static readonly float CornerAltitude = AltitudeLayer.BuildingOnTop.AltitudeFor();
         private static readonly float SubstructureAltitude = AltitudeLayer.TerrainEdges.AltitudeFor();
+        private static readonly float BakedAltitude = AltitudeLayer.MetaOverlays.AltitudeFor();
 
         // Straight wall tiles use RimWorld's normal linked-wall atlas. This separate layer mirrors
         // Odyssey's SectionLayer_GravshipHull specifically for the large angled outer-hull pieces.
@@ -199,6 +201,73 @@ namespace WraithNaniteGravtech
             }
 
             FinalizeMesh(MeshParts.All);
+        }
+
+        /// <summary>
+        /// Includes family hull corners in the indoor mask used by Odyssey's gravship animation.
+        /// Uses the same corner topology as this map layer and the native bake's roof/substructure
+        /// conditions, relative coordinates, altitude, shader and render queue.
+        /// </summary>
+        public static List<LayerSubMesh> BakeGravshipIndoorMesh(Map map, CellRect bounds, Vector3 center)
+        {
+            List<LayerSubMesh> result = new List<LayerSubMesh>();
+            if (!ModsConfig.OdysseyActive || map == null)
+                return result;
+
+            TerrainGrid terrainGrid = map.terrainGrid;
+            HashSet<IntVec3> matchedCells = new HashSet<IntVec3>();
+            foreach (FamilyVisuals family in Families)
+            {
+                family.EnsureInitialized();
+                if (family.HullDef == null)
+                    continue;
+
+                Dictionary<CornerType, LayerSubMesh> meshes = new Dictionary<CornerType, LayerSubMesh>();
+                foreach (IntVec3 cell in bounds)
+                {
+                    if (matchedCells.Contains(cell) ||
+                        !ShouldDrawCornerPiece(cell, map, terrainGrid, family.HullDef,
+                            out CornerType cornerType, out Color color))
+                    {
+                        continue;
+                    }
+
+                    // Regenerate selects the first matching family at a cell, even if its
+                    // corner does not need an indoor mask. The bake must make the same choice.
+                    matchedCells.Add(cell);
+                    if (!IsCornerSubstructure(cell, cornerType) ||
+                        !IsCornerIndoorMasked(cell, cornerType, map))
+                    {
+                        continue;
+                    }
+
+                    if (!meshes.TryGetValue(cornerType, out LayerSubMesh mesh))
+                    {
+                        Material material = family.MaterialFor(cornerType).Material;
+                        Texture2D source = material.mainTexture as Texture2D;
+                        Material indoorMask = MaterialPool.MatFrom(
+                            source, ShaderDatabase.IndoorMaskMasked, material.color,
+                            BakedIndoorMaskRenderQueue);
+                        mesh = MapDrawLayer.CreateFreeSubMesh(indoorMask, map);
+                        meshes.Add(cornerType, mesh);
+                    }
+
+                    AddQuad(
+                        mesh,
+                        (cell + GetOffset(cornerType)).ToVector3() - center,
+                        HullCornerScale,
+                        BakedAltitude,
+                        color);
+                }
+
+                foreach (LayerSubMesh mesh in meshes.Values)
+                {
+                    mesh.FinalizeMesh(MeshParts.All);
+                    result.Add(mesh);
+                }
+            }
+
+            return result;
         }
 
         private static bool ShouldDrawCornerPiece(

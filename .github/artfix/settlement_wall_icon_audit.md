@@ -1,4 +1,4 @@
-# Settlement wall linked-art audit (11 October 2026)
+# Settlement wall linked-art audit (12 October 2026)
 
 The Precursor wall `WNG_PrecursorWall` and Wraith living wall
 `WNG_WraithLivingWall` use the same 16-state linked atlases as their
@@ -16,17 +16,17 @@ Before this fix, the XML incorrectly nested `uiIconPath` under
 `graphicData`; `uiIconPath` is a property of `BuildableDef`.
 The former Precursor icon PNG also had visibly corrupted bottom rows,
 while the Wraith fallback artwork was itself a 4x4 atlas, not one icon.
-The main-thread artwork generator
-`.github/artfix/generate_settlement_wall_icons.py` extracts one approved
-16-state panel into a separate 192x192 PNG for each Architect icon.
-It does not change existing atlases, door rotation or placement.
+`.github/artfix/generate_settlement_wall_icons.py` delegates to
+`Tools/WallArt/assemble_wall_art.mjs --icons-only`. It uses the sampled
+192x192 isolated mask0 tile for each family icon, including the Goa'uld hull.
+The standalone Precursor/Wraith gallery fallbacks use that same sampled tile.
 
 The new `D121 Settlement Family Validation` asserts paths, correct XML
 nesting, icon existence and single-tile PNG dimensions.
-The accepted changes affect UI art only; in-game render links and
-saved map wall definitions are preserved.
+`Tools/WallArt/validate_wall_art.py`, run by D120, also checks complete native
+tile coverage, all 16 mask orientations, compatible edge seams, clamp gutters,
+native corner silhouettes, isolated icons and inherited wall hooks.
 
-Expected QA: Precursor wall menu icon is a single cross-shaped composite
-rather than the 4x4 atlas or corrupted strip; Wraith menu icon is the
-same family look; a wall-line connected to iris doors and Wraith doors
-still behaves as vanilla `CornerFiller` walls.
+Expected QA: each wall icon shows one complete capped tile. Connected map tiles
+fill the native 1x1 space and retain `CornerFiller` connections to walls, rocks
+and family doors. The new 1024x1024 family atlases preserve each family's design.

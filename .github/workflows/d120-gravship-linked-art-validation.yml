@@ -15,8 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Pillow
-        run: python -m pip install --disable-pip-version-check pillow
+      - name: Set up .NET for native hull bridge tests
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Install wall-art validation dependencies
+        run: python -m pip install --disable-pip-version-check pillow numpy
+      - name: Validate native wall coverage, joins, corners and hooks
+        run: python Tools/WallArt/validate_wall_art.py
+      - name: Test native cinematic hull bridge behavior
+        run: python Tools/WallArt/RuntimeTests/run_tests.py
       - name: Validate family doors, barriers and linked-atlas ordering
         shell: python
         run: |

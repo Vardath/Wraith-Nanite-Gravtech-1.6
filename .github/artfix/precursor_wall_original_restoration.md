@@ -1,4 +1,10 @@
-# Precursor settlement-wall image repair
+# Historical Precursor settlement-wall image repair
+
+Superseded on 12 October 2026 by the authored full-width family wall art.
+`Tools/WallArt/assemble_wall_art.mjs` now derives this gallery fallback from the
+isolated native mask0 sampled tile (192x192). When the reviewed master exists at
+`ArtSource/Walls/Precursor/master.png`, the old repair script exits without
+rewriting the authored fallback. The description below records the earlier fix.
 
 The original art-gallery image `Textures/Things/Building/Precursor/Structure/WNG_PrecursorWall.png`
 was a 256×256 RGBA single wall panel. The lower part of the PNG had coloured

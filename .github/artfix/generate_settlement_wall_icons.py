@@ -1,33 +1,13 @@
-"""Generate accurate Architect icons from existing WNG linked wall atlases.
+"""Regenerate dedicated wall icons from native isolated mask0 sampled tiles.
 
-The actual linked-wall textures and Unity MaterialAtlasPool indices are never
-modified. Index 15 represents a four-way junction and occupies the top-right
-sheet cell in PNG coordinates; only its padded center is used for the icon.
+The shared assembler owns UV cropping and every family icon. The legacy mask15
+crop showed a four-way junction and could overwrite the isolated wall icons.
 """
 from pathlib import Path
-from PIL import Image
+import subprocess
 
-OUT = Path("Textures/UI/WNG/Build")
-SOURCES = [
-    ("Textures/Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas.png",
-     "WNG_PrecursorWall.png"),
-    ("Textures/Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas.png",
-     "WNG_WraithLivingWall.png"),
-]
-OUT.mkdir(parents=True, exist_ok=True)
-for path, name in SOURCES:
-    with Image.open(path) as file:
-        atlas = file.convert("RGBA")
-    w,h=atlas.size
-    if w != h or w % 4:
-        raise RuntimeError(f"{path}: expected square 4x4 linked texture")
-    side=w//4
-    padding=side//8
-    icon=atlas.crop((3*side+padding,padding,4*side-padding,side-padding))
-    if icon.size != (192,192):
-        icon=icon.resize((192,192),Image.Resampling.LANCZOS)
-    result=OUT/name
-    icon.save(result,format="PNG",optimize=True)
-    with Image.open(result) as verify:
-        verify.verify()
-    print("Generated", result, "from", path)
+ROOT = Path(__file__).resolve().parents[2]
+ASSEMBLER = ROOT / "Tools/WallArt/assemble_wall_art.mjs"
+if not ASSEMBLER.exists():
+    raise FileNotFoundError(f"Reviewed wall-art assembler is missing: {ASSEMBLER}")
+subprocess.run(["node", str(ASSEMBLER), "--icons-only"], cwd=ROOT, check=True)

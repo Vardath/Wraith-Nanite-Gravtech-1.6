@@ -4,7 +4,7 @@
     <defName>WNG_WraithLivingWall</defName>
     <label>wraith living wall</label>
     <description>A dense ribbed barrier of cultivated tissue and chitin. It seals rooms, supports roofs like an ordinary wall, and slowly regenerates damage while alive.</description>
-    <graphicData><texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath><graphicClass>Graphic_Single</graphicClass><linkType>CornerFiller</linkType><linkFlags><li>Wall</li><li>Rock</li></linkFlags></graphicData>
+    <graphicData><texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath><graphicClass>Graphic_Single</graphicClass><drawSize>(1,1)</drawSize><linkType>CornerFiller</linkType><linkFlags Inherit="False"><li>Wall</li><li>Rock</li></linkFlags></graphicData>
     <uiIconPath>UI/WNG/Build/WNG_WraithLivingWall</uiIconPath>
     <stuffCategories Inherit="False"/><costStuffCount>0</costStuffCount><useStuffTerrainAffordance>false</useStuffTerrainAffordance>
     <costList><WNG_Biomass>5</WNG_Biomass></costList>
@@ -12,7 +12,7 @@
     <designationCategory>Structure</designationCategory><researchPrerequisites><li>WNG_BiologicalCultivation</li></researchPrerequisites>
     <tickerType>Rare</tickerType>
     <comps><li Class="WraithNaniteGravtech.CompProperties_WraithLivingStructureRegeneration"><repairIntervalTicks>500</repairIntervalTicks><hitPointsPerPulse>1</hitPointsPerPulse></li></comps>
-    <building><isPlaceOverableWall>true</isPlaceOverableWall><paintable>false</paintable></building>
+    <building><isAirtight>true</isAirtight><isStuffableAirtight>false</isStuffableAirtight></building>
   </ThingDef>
 
   <ThingDef ParentName="DoorBase">
