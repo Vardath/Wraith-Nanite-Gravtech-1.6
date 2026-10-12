@@ -254,8 +254,10 @@ class Validator:
             edge_coverage = [float(edge.mean()) for edge in edges]
             for bit, direction, fraction in zip((1, 2, 4, 8), "NESW", edge_coverage):
                 linked = bool(mask & bit)
-                valid = fraction >= .99 if linked else fraction <= .01
-                self.check(valid, f"{family} mask{mask} {direction}: edge {fraction:.1%} opaque; expected {'connected' if linked else 'capped'} (check UV row/mask order)")
+                # The redesigned Wraith settlement edge is an inward bevel, not
+                # a transparent inset. It deliberately fills the entire cell.
+                valid = (fraction >= .99) if family == "Wraith settlement" else (fraction >= .99 if linked else fraction <= .01)
+                self.check(valid, f"{family} mask{mask} {direction}: edge {fraction:.1%} opaque; expected {'full-cell chitin' if family == 'Wraith settlement' else ('connected' if linked else 'capped')} (check UV row/mask order)")
             # Bilinear filtering must see clamped edge texels throughout the atlas gutter.
             padded = np.pad(core, ((inset, inset), (inset, inset), (0, 0)), mode="edge")
             self.check(np.array_equal(cell, padded), f"{family} mask{mask}: padding does not clamp sampled edge; filtering can expose seams")
