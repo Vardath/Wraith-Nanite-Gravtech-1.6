@@ -22,14 +22,14 @@ Each 1024×1024 RGBA atlas contains sixteen 256-pixel cells. RimWorld's
 32 pixels. Masks use N=1, E=2, S=4, W=8; PNG row is `3 - mask // 4`.
 The native renderer prints that sampled area on an exact 1×1 map cell.
 
-Older gravship/Precursor/Goa'uld isolated walls retain their earlier six-pixel
-insets (87.9% sampled coverage). The Wraith settlement wall is now made of 16
-distinct painterly architectural silhouettes: continuous longitudinal chitin
-ribs, visible membrane walls, projecting terminal posts, curved junctions,
-thick cross/T connections and hand-painted highlights. Native size stays
-1x1; transparency outside the physical wall is intentional. Compatible linked
-edge ports have bit-identical RGBA boundaries, and each atlas gutter clamps
-its sampled edge. The old 100%-filled square cap is no longer the runtime art.
+Gravship/Precursor/Goa'uld walls still retain their previous geometry (isolated
+87.9% sampled coverage). The new Wraith living settlement wall now has a
+full-cell, roof-facing structural surface, with bevelled organic chitin on
+exposed boundaries, a recessed membrane facade, and no frame at joined
+edges. Isolated Wraith mask0 measures approximately 87.8% opaque coverage,
+and fully joined mask15 fills the complete sampled tile. The roof/cap is
+continuous across horizontal, vertical, L, T, and cross connections.
+A wall is rendered as a true 1x1 building, not a freestanding sprite.
 
 All walls retain `Wall` inheritance, `CornerFiller`, Wall/Rock flags, native
 roof/room/pathing/attachment/replacement behavior, damage marks and painting.
@@ -37,14 +37,15 @@ The two fixed-material settlement walls explicitly seal vacuum without a
 stuff-dependent airtight query. Existing hull materials, recipes, abilities,
 stats, research and placement workers are preserved.
 
-The settlement artwork is sourced from
-`ArtSource/Walls/Wraith/wraith_architectural_painting.webp`, a genuinely
-painted library of organic structures rather than procedural square-tile
-decoration. `generate_wraith_settlement_wall.py` fits individually authored
-straight, terminal, corner, T and cross pieces to the 192px native sample
-area. It also applies matching painted boundary ports and native atlas padding.
-No native wall Print method is intercepted. Wall inheritance, paint, roof,
-shadows, attachment, blueprint and Odyssey placement logic remain unchanged.
+The Wraith settlement artwork has 16 original, editable vector-drawn masters in
+`ArtSource/Walls/Wraith/VectorMasters/`. They are composed as large architectural
+surfaces in `Tools/WallArt/generate_wraith_settlement_wall.py`, rendered at
+768px per mask and sampled to native 192px. Old tiny WebP sprite-sheet sources
+are no longer used. The output atlas, isolated build icon and legacy single
+wall live in WNG's actual `Textures/` directory.
+The Wraith gravship hull and all other wall families are unchanged.
+No native Wall.Print, link flags, room, roof, material, blueprint or
+Odyssey placement logic has been replaced.
 
 Twenty-four full/partial hull overlays use the native 2×2 corner coordinates,
 with different silhouettes for a present or absent diagonal neighbor. The
@@ -54,8 +55,7 @@ meshes to the native launch/landing bake.
 ## Rebuild and verify
 
 For the independently authored Wraith settlement artwork, run
-`python Tools/WallArt/generate_wraith_settlement_wall.py` first (Pillow and
-NumPy). It generates the PNG atlas and in-game single-tile Architect/legacy
+`python Tools/WallArt/generate_wraith_settlement_wall.py` first (Pillow, NumPy and CairoSVG). It generates the PNG atlas and in-game single-tile Architect/legacy
 icons. Use `--preview ArtSource/Walls/Wraith/QA/HandPainted` to render an
 actual multi-wall test layout without opening the game.
 The Wraith gravship hull atlas and angled corners remain untouched by that pass.
@@ -63,11 +63,11 @@ The original gravship material also has its own isolated-tile Architect icon,
 `UI/WNG/Build/WNG_WraithGravshipHull`, so changing the settlement wall does not
 silently change gravship build-menu artwork.
 
-Node.js and ImageMagick (`magick`, or ImageMagick 6 `convert`) are needed to pack
+The older family-hull atlas generator still uses Node.js and ImageMagick (`magick`, or ImageMagick 6 `convert`) are needed to pack
 the committed masters. Pillow and NumPy are needed for validation.
 
 ```sh
-node Tools/WallArt/assemble_wall_art.mjs
+python Tools/WallArt/generate_wraith_settlement_wall.py --preview ArtSource/Walls/Wraith/QA/HandPainted
 python Tools/WallArt/validate_wall_art.py
 python Tools/WallArt/validate_wall_art.py --json wall-evidence.json
 ```
