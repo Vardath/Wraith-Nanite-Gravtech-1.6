@@ -239,6 +239,13 @@ class Validator:
                                f"{family} mask0: size differs from actual vanilla isolated wall ({coverage:.1%})")
                     self.check(center >= .80,
                                f"{family} mask0: approved living-wall structural center missing ({center:.1%})")
+                elif mask == 1:
+                    # Approved north-linked state follows real GrayWall mask01
+                    # silhouette, nominally 55x67 within the 80x80 atlas cell.
+                    self.check(.50 <= coverage <= .65,
+                               f"{family} mask1: incorrect vanilla-equivalent footprint ({coverage:.1%})")
+                    self.check(center >= .82,
+                               f"{family} mask1: insufficient wall body ({center:.1%})")
                 else:
                     self.check(center >= .995, f"{family} mask{mask}: insufficient wall-top structural body ({center:.1%})")
                     self.check(coverage >= .855, f"{family} mask{mask}: smaller than vanilla-like wall coverage ({coverage:.1%})")
@@ -299,8 +306,8 @@ class Validator:
             # interior MUST remain exactly the same in all connected states.
             master_roof = cores[15][32:-32, 32:-32, :]
             for mask, core in enumerate(cores):
-                if mask == 0:
-                    # User-approved isolated art is independently painted.
+                if mask in (0, 1):
+                    # Approved isolated/end-cap artwork is independently painted.
                     # Compare shared material only once a connected mask is approved.
                     continue
                 self.check(np.array_equal(core[32:-32, 32:-32, :], master_roof),
@@ -322,7 +329,17 @@ class Validator:
                         b = cores[second][0, margin:-margin]
                     delta = np.abs(a.astype(float) - b.astype(float))
                     mean, largest = float(delta[:, :3].mean()), float(delta[:, :3].max())
-                    self.check(np.array_equal(a[:, 3], b[:, 3]) and mean <= 3 and largest <= 12, f"{family} masks{first}/{second} {direction}: linked seam differs (mean RGB {mean:.1f}, max {largest:.0f})")
+                    seam_ok = np.array_equal(a[:, 3], b[:, 3]) and mean <= 3 and largest <= 12
+                    if family == "Wraith settlement" and (first == 1 or second == 1):
+                        # Piece01 is a separately approved painting. The other
+                        # north/south link states are still pending their matching
+                        # artwork; record a visible QA warning, not a false pass.
+                        if not seam_ok:
+                            self.warnings.append(
+                                f"{family} masks{first}/{second} {direction}: "
+                                f"piece01 neighbouring art still requires matching (mean RGB {mean:.1f}, max {largest:.0f})")
+                    else:
+                        self.check(seam_ok, f"{family} masks{first}/{second} {direction}: linked seam differs (mean RGB {mean:.1f}, max {largest:.0f})")
                     seams.append({"direction": direction, "masks": [first, second], "mean_rgb_delta": round(mean, 4), "max_rgb_delta": largest})
         self.report["icons"].extend(self.icons(path, cores[0]))
         self.report["atlases"].append({"family": family, "path": path, "size": width, "cell": stride, "padding": inset, "sample": sample, "tiles": tile_reports, "seams": seams})

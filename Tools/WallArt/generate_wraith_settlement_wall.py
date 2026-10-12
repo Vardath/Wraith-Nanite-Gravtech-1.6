@@ -27,6 +27,7 @@ ICON = ROOT / "Textures/UI/WNG/Build/WNG_WraithLivingWall.png"
 LEGACY = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png"
 S, STRIDE, INSET, OPEN_MARGIN = 192, 256, 32, 6
 APPROVED_MASK00 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
+APPROVED_MASK01 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link01_approved.png"
 
 
 def save(image: Image.Image, dest: Path) -> None:
@@ -133,6 +134,37 @@ def approved_isolated_wall() -> Image.Image:
     return out
 
 
+def approved_north_connected_wall() -> Image.Image:
+    """Piece 01, north-connected/south-exposed, using the user's approved painting.
+
+    Match the measured vanilla GrayWall mask01 occupancy: 55px wide by 67px
+    tall inside an 80px reference cell. Unlike isolated mask00, the top of
+    the wall reaches the sample's northern edge, with no extra wall cap.
+    """
+    source = Image.open(APPROVED_MASK01).convert("RGB")
+    pixels = np.asarray(source)
+    # Original artwork is high-resolution RGB with black outside, not alpha.
+    visible = np.max(pixels, axis=2) > 17
+    if not visible.any():
+        raise ValueError("Approved piece01 contains no visible wall painting")
+    # Fill internal dark recesses between left/right painted edges, preserving
+    # organic outside contours and avoiding a black opaque canvas square.
+    filled = (np.maximum.accumulate(visible, axis=1) &
+              np.maximum.accumulate(visible[:, ::-1], axis=1)[:, ::-1])
+    ys, xs = np.where(filled)
+    bounds = (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
+    alpha = Image.fromarray((filled.astype(np.uint8) * 255), "L").filter(
+        ImageFilter.GaussianBlur(0.45))
+    painted = source.convert("RGBA")
+    painted.putalpha(alpha)
+    target_width, target_height = round(S * 55 / 80), round(S * 67 / 80)
+    native = painted.crop(bounds).resize(
+        (target_width, target_height), Image.Resampling.LANCZOS)
+    tile = Image.new("RGBA", (S, S))
+    tile.paste(native, ((S - target_width) // 2, 0))
+    return tile
+
+
 def generate() -> list[Image.Image]:
     skin=membrane_material()
     tiles=[linked_wall_tile(mask,skin) for mask in range(16)]
@@ -151,8 +183,9 @@ def generate() -> list[Image.Image]:
         result.append(Image.fromarray(arr,"RGBA"))
 
     # Work through the wall atlas one user-approved connection state at a time.
-    # Masks 01..15 deliberately retain their existing generator and pixels.
+    # Masks 02..15 deliberately retain their existing generator and pixels.
     result[0] = approved_isolated_wall()
+    result[1] = approved_north_connected_wall()
 
     atlas=Image.new("RGBA",(1024,1024))
     for mask,tile in enumerate(result):
@@ -210,6 +243,7 @@ def main() -> None:
     assert len(states)==16
     # Measured native isolated-wall silhouette, not a full painted square.
     assert .40 <= coverage[0] <= .55,coverage[0]
+    assert .50 <= coverage[1] <= .65,coverage[1]
     assert coverage[15]>=.995,coverage[15]
     print("Wraith settlement mod atlas committed path:",ATLAS)
     print("Coverage isolated:",round(coverage[0],4),"all linked:",round(coverage[15],4))

@@ -7,6 +7,7 @@ on:
       - "Tools/WallArt/generate_wraith_settlement_wall.py"
       - "ArtSource/Walls/Wraith/OriginalWraithMaterial.svg"
       - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
+      - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link01_approved.png"
       - ".github/workflows/wng-wraith-settlement-wall-art.yml"
   workflow_dispatch:
 
