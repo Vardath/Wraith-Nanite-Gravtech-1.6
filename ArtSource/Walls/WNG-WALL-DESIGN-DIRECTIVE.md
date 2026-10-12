@@ -123,11 +123,37 @@ CornerFiller gap-freeness. Check source art size/resolution too. A wrong
 or tiny sprite must fail **even when atlas dimensions and link masks pass**.
 Report the measured mismatch; do not weaken the test to bless it.
 
-## Status as of 12 Oct 2026
-The current Wraith settlement replacement **fails visual approval**,
-regardless of green build status. Its handpainted source is a 288x288
-WebP and its resulting isolated mask-0 body occupies only about 55% of
-the 192px printable cell width. Screenshot 369 and the generated room
-layout show thin, inset wall rails/ornaments instead of full-scale
-vanilla-like walls. Do not describe this iteration as finished.
-None of the five art replacements has yet been visually approved.
+## Status — Wraith settlement redesign, 12 October 2026
+
+Older failed art (screenshot 369): a 288x288 lossy WebP was used to make tiny
+floating ornaments, about 55% of map-cell width. That art is **rejected** and
+not used by the current runtime atlas.
+
+CURRENT WRAITH SETTLEMENT PASS:
+- Editable hand-authored SVG structural masters:
+  `ArtSource/Walls/Wraith/VectorMasters/WraithLivingWall_link00.svg`
+  through `WraithLivingWall_link15.svg`; source design is in
+  `Tools/WallArt/generate_wraith_settlement_wall.py`.
+- Each wall is drawn as a full-size organic chitin/membrane slab, with visible
+  roof-facing cap, exposed bevels and downward shadowed sides, zero borders
+  between connected tiles. No freestanding sprite-sheet fragments.
+- The 16 SVG states are first rendered at 768px before resampling to the
+  native 192px UV sample. Packed in a real 1024px linked atlas.
+- Runtime atlas actually replaced:
+  `Textures/Things/Building/Wraith/Structure/WNG_LivingWall_Atlas.png`;
+  the vanilla wall XML inheritance, linkType and 1x1 draw size are intact.
+- Isolated mask0 has ~87.9% visible coverage; mask15 100%. No half-tile
+  width miniature. Fits native 1x1 footprint, links to ordinary walls/rock
+  under existing Wall/Rock link flags.
+- Preview layout:
+  `ArtSource/Walls/Wraith/QA/HandPainted/Wraith-Living-Wall-Room-Test.png`
+  is a renderer test, NOT an in-game screenshot.
+- Strict validator requires >=85.5% isolated coverage and >=99.5%
+  structural core, all-connected >=99.5%; no suppression of failures.
+- Wall-art + native hull bridge and settlement-family GitHub validators PASS.
+  Actual live RimWorld artistic review/room use still UNVERIFIED.
+
+**DO NOT CALL THE WALL ARTISTICALLY APPROVED** without seeing the result
+in-game at vanilla zoom beside a constructed vanilla wall, verifying cap
+height/shape, doors, roof, attachments and scale. Do not proceed to wall #2
+until that review. Preserve the above assets in later edits.
