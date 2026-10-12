@@ -129,11 +129,15 @@ Older failed art (screenshot 369): a 288x288 lossy WebP was used to make tiny
 floating ornaments, about 55% of map-cell width. That art is **rejected** and
 not used by the current runtime atlas.
 
-CURRENT WRAITH SETTLEMENT PASS:
+CURRENT WRAITH SETTLEMENT PASS (third artwork revision, not yet player-approved):
 - Editable hand-authored SVG structural masters:
   `ArtSource/Walls/Wraith/VectorMasters/WraithLivingWall_link00.svg`
-  through `WraithLivingWall_link15.svg`; source design is in
-  `Tools/WallArt/generate_wraith_settlement_wall.py`.
+  through `WraithLivingWall_link15.svg`; source assembly is in
+  `Tools/WallArt/generate_wraith_settlement_wall.py` and hand-composed
+  chitin plating is in `Tools/WallArt/paint_wraith_chitin.py`.
+- The latest revision uses four interlocking chitin armour plates, dark
+  membrane folds and highlighted calcified ribs on an already full-sized slab.
+  The bright green living junction nodes do not recur on plain straight walls.
 - Each wall is drawn as a full-size organic chitin/membrane slab, with visible
   roof-facing cap, exposed bevels and downward shadowed sides, zero borders
   between connected tiles. No freestanding sprite-sheet fragments.
@@ -152,6 +156,9 @@ CURRENT WRAITH SETTLEMENT PASS:
   structural core, all-connected >=99.5%; no suppression of failures.
 - Wall-art + native hull bridge and settlement-family GitHub validators PASS.
   Actual live RimWorld artistic review/room use still UNVERIFIED.
+- 12 October third revision: art generator, D120 linked-wall/gravship validator
+  and D121 settlement-family validator passed. Other hull atlases were
+  checked by blob SHA and remain unchanged.
 
 **DO NOT CALL THE WALL ARTISTICALLY APPROVED** without seeing the result
 in-game at vanilla zoom beside a constructed vanilla wall, verifying cap
