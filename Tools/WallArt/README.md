@@ -23,10 +23,8 @@ Each 1024×1024 RGBA atlas contains sixteen 256-pixel cells. RimWorld's
 The native renderer prints that sampled area on an exact 1×1 map cell.
 
 Gravship/Precursor/Goa'uld walls still retain their previous geometry (isolated
-87.9% sampled coverage). The new Wraith living settlement wall now has a
-full-cell, roof-facing structural surface, with bevelled organic chitin on
-exposed boundaries, a recessed membrane facade, and no frame at joined
-edges. Isolated Wraith mask0 measures approximately 87.8% opaque coverage,
+87.9% sampled coverage). The new Wraith living settlement wall has a broad 1x1 roof-facing cap,
+with chitin bevels only on exposed boundaries and no frame at joined edges. Isolated Wraith mask0 measures approximately 85.9% opaque coverage,
 and fully joined mask15 fills the complete sampled tile. The roof/cap is
 continuous across horizontal, vertical, L, T, and cross connections.
 A wall is rendered as a true 1x1 building, not a freestanding sprite.
@@ -37,21 +35,23 @@ The two fixed-material settlement walls explicitly seal vacuum without a
 stuff-dependent airtight query. Existing hull materials, recipes, abilities,
 stats, research and placement workers are preserved.
 
-The Wraith settlement artwork uses hand-composed overlapping chitin scutes,
-organic ribs and shadowed membrane surfaces, with junction-only green veins.
-The painter lives in `Tools/WallArt/paint_wraith_chitin.py`, imported by
-`generate_wraith_settlement_wall.py`. There are 16 editable SVG masters in
+The current Wraith settlement material is generated exclusively by
+`Tools/WallArt/generate_wraith_settlement_wall.py`. The same muted
+chitin/membrane material fills the roof cap on all sixteen masks. Only exposed
+edges receive a short raised chitin lip and a recessed, shaded wall face.
+Connected edges have no decorative frame. Each variant has precisely the
+same interior material so straight runs, intersections and mixed
+`Wall`/`Rock` connections read as continuous architecture.
 
-`ArtSource/Walls/Wraith/VectorMasters/`. They are composed as large architectural
-surfaces in `Tools/WallArt/generate_wraith_settlement_wall.py`, rendered at
-768px per mask and sampled to native 192px. Old tiny WebP sprite-sheet sources
-are no longer used. The output atlas, isolated build icon and legacy single
-wall live in WNG's actual `Textures/` directory.
-The Wraith gravship hull and all other wall families are unchanged.
-The in-repo 48px-per-tile wall-room preview is an offline topology comparison,
-not evidence of how the wall looks beside live vanilla walls in RimWorld.
-No native Wall.Print, link flags, room, roof, material, blueprint or
-Odyssey placement logic has been replaced.
+The earlier `paint_wraith_chitin.py`, `VectorMasters/` SVGs and the
+low-resolution WebP are rejected historical experiments. They are NOT
+inputs to the current game textures. Do not restore their scutes, central
+emblems or framed panels. Native atlas topology and the build-menu/legacy
+graphics are regenerated in the actual WNG mod. Offline topology previews
+are not live RimWorld evidence, so a player-side comparison with adjacent
+vanilla built walls is still required. No native Wall.Print, link flags,
+roof, room, material, blueprint, door or Odyssey placement logic was
+modified by the artwork replacement.
 
 Twenty-four full/partial hull overlays use the native 2×2 corner coordinates,
 with different silhouettes for a present or absent diagonal neighbor. The
