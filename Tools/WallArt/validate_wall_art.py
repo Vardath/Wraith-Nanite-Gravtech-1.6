@@ -166,6 +166,7 @@ class Validator:
 
     def walls(self):
         expected = {name: info["atlas"] for info in FAMILIES.values() for name in info["walls"]}
+        expected["WNG_WraithLivingWall"] = "Things/Building/Wraith/Structure/WNG_LivingWall_Atlas"
         discovered = set()
         for definition in self.definitions:
             node = definition.node
@@ -367,6 +368,7 @@ class Validator:
         self.walls()
         for family, info in FAMILIES.items():
             self.atlas(family, info["atlas"])
+        self.atlas("Wraith settlement", "Things/Building/Wraith/Structure/WNG_LivingWall_Atlas")
         self.doors()
         self.corners()
         self.report["errors"] = self.errors
