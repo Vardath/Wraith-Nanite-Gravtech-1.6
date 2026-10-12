@@ -230,8 +230,18 @@ class Validator:
                 # Drawn orthographic wall silhouettes preserve native *cell dimensions*
                 # without the rectangular filled-tile look of the earlier generation.
                 # Real painted joins, ends, corners and T/cross shapes use alpha.
-                self.check(center >= .995, f"{family} mask{mask}: insufficient wall-top structural body ({center:.1%})")
-                self.check(coverage >= .855, f"{family} mask{mask}: smaller than vanilla-like wall coverage ({coverage:.1%})")
+                if mask == 0:
+                    # The first user-approved isolated sprite follows the measured
+                    # vanilla GrayWall silhouette: about 55x55 visible / 80x80 cell.
+                    # This independent piece must not inherit the previous
+                    # full-square generator's false 85.5% occupancy requirement.
+                    self.check(.40 <= coverage <= .55,
+                               f"{family} mask0: size differs from actual vanilla isolated wall ({coverage:.1%})")
+                    self.check(center >= .80,
+                               f"{family} mask0: approved living-wall structural center missing ({center:.1%})")
+                else:
+                    self.check(center >= .995, f"{family} mask{mask}: insufficient wall-top structural body ({center:.1%})")
+                    self.check(coverage >= .855, f"{family} mask{mask}: smaller than vanilla-like wall coverage ({coverage:.1%})")
                 # Reject blank flat-purple panels even when the silhouette fits.
                 # This is a material detail floor, not an artistic sign-off:
                 # the actual Wraith membrane must retain visible chitin relief.
@@ -289,6 +299,10 @@ class Validator:
             # interior MUST remain exactly the same in all connected states.
             master_roof = cores[15][32:-32, 32:-32, :]
             for mask, core in enumerate(cores):
+                if mask == 0:
+                    # User-approved isolated art is independently painted.
+                    # Compare shared material only once a connected mask is approved.
+                    continue
                 self.check(np.array_equal(core[32:-32, 32:-32, :], master_roof),
                            f"{family} mask{mask}: interior differs from the continuous material; standalone ornament or per-mask motif detected")
         # Exercise every compatible linked neighbour pair, including T and four-way

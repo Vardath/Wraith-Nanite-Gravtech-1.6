@@ -26,6 +26,7 @@ ATLAS = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall_Atlas.p
 ICON = ROOT / "Textures/UI/WNG/Build/WNG_WraithLivingWall.png"
 LEGACY = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png"
 S, STRIDE, INSET, OPEN_MARGIN = 192, 256, 32, 6
+APPROVED_MASK00 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.png"
 
 
 def save(image: Image.Image, dest: Path) -> None:
@@ -96,6 +97,30 @@ def linked_wall_tile(mask: int, material: Image.Image) -> Image.Image:
     return Image.fromarray(tile, "RGBA")
 
 
+
+def approved_isolated_wall() -> Image.Image:
+    """Render user-approved isolated tile 00. Keep the original high-res PNG."""
+    source = Image.open(APPROVED_MASK00).convert("RGBA")
+    pixels = np.asarray(source)
+    # Discard only the image-generation transparent fringe and locate the
+    # approved painted structure; do not paint new motifs over the artwork.
+    visible = (pixels[..., 3] >= 220) & (pixels[..., :3].max(axis=2) > 20)
+    if not visible.any():
+        raise ValueError("Approved Wraith wall PNG has no visible art")
+    ys, xs = np.where(visible)
+    crop = source.crop((int(xs.min()), int(ys.min()),
+                        int(xs.max()) + 1, int(ys.max()) + 1))
+    # The actual vanilla GrayWall mask00 occupies a 55x55 visible area in
+    # an 80x80 atlas cell; this is its same-screen-scale equivalent.
+    footprint = round(S * 55 / 80)
+    scaled = np.asarray(crop.resize((footprint, footprint), Image.Resampling.LANCZOS)).copy()
+    alpha = scaled[..., 3]
+    scaled[..., 3] = np.where(alpha >= 230, 255, np.where(alpha <= 35, 0, alpha)).astype(np.uint8)
+    out = Image.new("RGBA", (S, S))
+    out.paste(Image.fromarray(scaled, "RGBA"), ((S - footprint) // 2, (S - footprint) // 2))
+    return out
+
+
 def generate() -> list[Image.Image]:
     skin=membrane_material()
     tiles=[linked_wall_tile(mask,skin) for mask in range(16)]
@@ -112,6 +137,10 @@ def generate() -> list[Image.Image]:
         if mask & 8: arr[:,0,:]=common[:,0,:]
         if mask & 2: arr[:,-1,:]=common[:,0,:]
         result.append(Image.fromarray(arr,"RGBA"))
+
+    # Work through the wall atlas one user-approved connection state at a time.
+    # Masks 01..15 deliberately retain their existing generator and pixels.
+    result[0] = approved_isolated_wall()
 
     atlas=Image.new("RGBA",(1024,1024))
     for mask,tile in enumerate(result):
@@ -167,7 +196,8 @@ def main() -> None:
     if args.preview: preview(states,args.preview)
     coverage=[float((np.asarray(t)[:,:,3]>=250).mean()) for t in states]
     assert len(states)==16
-    assert coverage[0]>=.875,coverage[0]
+    # Measured native isolated-wall silhouette, not a full painted square.
+    assert .40 <= coverage[0] <= .55,coverage[0]
     assert coverage[15]>=.995,coverage[15]
     print("Wraith settlement mod atlas committed path:",ATLAS)
     print("Coverage isolated:",round(coverage[0],4),"all linked:",round(coverage[15],4))
