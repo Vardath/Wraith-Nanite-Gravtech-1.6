@@ -44,7 +44,7 @@ jobs:
               from io import BytesIO
               buf=BytesIO()
               preview.save(buf, "JPEG", quality=71, optimize=True)
-              destination.write_text(base64.b64encode(buf.getvalue()).decode() + "\\n")
+              destination.write_text(base64.b64encode(buf.getvalue()).decode())
       - name: Commit the generated art INSIDE the mod
         shell: bash
         run: |
