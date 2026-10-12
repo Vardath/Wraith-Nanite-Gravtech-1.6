@@ -30,7 +30,7 @@
     <description>Dense self-repairing hull tissue grown over Wraith gravship substructure. The family protects itself through living-hull repair rather than a generic energy shield.</description>
     <designationCategory>Structure</designationCategory>
     <uiOrder>1810</uiOrder>
-    <uiIconPath>UI/WNG/Build/WNG_WraithLivingWall</uiIconPath>
+    <uiIconPath>UI/WNG/Build/WNG_WraithGravshipHull</uiIconPath>
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas</texPath>
