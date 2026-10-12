@@ -61,7 +61,7 @@ meshes to the native launch/landing bake.
 ## Rebuild and verify
 
 For the independently authored Wraith settlement artwork, run
-`python Tools/WallArt/generate_wraith_settlement_wall.py` first (Pillow, NumPy and CairoSVG). It generates the PNG atlas and in-game single-tile Architect/legacy
+`python Tools/WallArt/generate_wraith_settlement_wall.py` first (Pillow and NumPy). It generates the PNG atlas and in-game single-tile Architect/legacy
 icons. Use `--preview ArtSource/Walls/Wraith/QA/HandPainted` to render an
 actual multi-wall test layout without opening the game.
 The Wraith gravship hull atlas and angled corners remain untouched by that pass.
