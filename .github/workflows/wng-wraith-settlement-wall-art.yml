@@ -5,7 +5,6 @@ on:
     branches: [ main ]
     paths:
       - "Tools/WallArt/generate_wraith_settlement_wall.py"
-      - "ArtSource/Walls/Wraith/VectorMasters/**"
       - ".github/workflows/wng-wraith-settlement-wall-art.yml"
   workflow_dispatch:
 
