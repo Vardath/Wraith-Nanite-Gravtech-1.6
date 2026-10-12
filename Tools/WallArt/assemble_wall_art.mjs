@@ -236,9 +236,10 @@ for (const f of families) {
   const master = read(path), tiles = Array.from({ length: 16 }, (_, mask) => tile(master, mask, run, f));
   const tex = join(ROOT, 'Textures/Things/Building', f.name, 'Gravship');
   if (!iconsOnly && !cornersOnly) write(join(tex, `${f.atlas}.png`), atlas(tiles), ATLAS);
-  if (!cornersOnly) {
+  if (!cornersOnly && f.name !== 'Wraith') {
+    // The Wraith settlement wall owns its own authored atlas, icon, and legacy art.
+    // Never overwrite these from the gravship source during a family hull rebuild.
     write(join(ROOT, 'Textures/UI/WNG/Build', `${f.icon}.png`), tiles[0], SAMPLE);
-    // Keep legacy single-image wall references coherent with current runtime art.
     if (f.legacy) write(join(ROOT, 'Textures', `${f.legacy}.png`), tiles[0], SAMPLE);
   }
   if (!iconsOnly) for (const direction of ['northwest', 'northeast', 'southwest', 'southeast']) {
