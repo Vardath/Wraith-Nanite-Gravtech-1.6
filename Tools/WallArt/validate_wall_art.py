@@ -228,6 +228,10 @@ class Validator:
             center = float(opaque[quarter:-quarter, quarter:-quarter].mean())
             self.check(center >= .995, f"{family} mask{mask}: tile center opacity {center:.1%}; must fill tile body")
             self.check(coverage >= .80, f"{family} mask{mask}: sampled coverage {coverage:.1%}; wall reads too narrow")
+            if family == "Wraith settlement":
+                # Unlike older family hulls, this independent remodel must
+                # fill the cell even on isolated/end/exposed wall states.
+                self.check(coverage >= .999, f"{family} mask{mask}: full-cell chitin wall must be opaque, got {coverage:.1%}")
             if mask == 15:
                 self.check(coverage >= .995, f"{family}: all-linked tile must cover its whole native tile, got {coverage:.1%}")
             # Adjacent linked directions must form a solid quarter-tile region.
