@@ -17,6 +17,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
 import cairosvg
+from paint_wraith_chitin import extra_gradients, overlay_scutes
 
 ROOT=Path(__file__).resolve().parents[2]
 ATLAS=ROOT/'Textures/Things/Building/Wraith/Structure/WNG_LivingWall_Atlas.png'
@@ -43,14 +44,15 @@ def svg_master(mask):
     bits=[f'<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">',
           '<defs>',
           '<linearGradient id="roof" x1="0" y1="0" x2=".7" y2="1">'
-          '<stop offset="0" stop-color="#756477"/><stop offset=".22" stop-color="#5f5268"/>'
-          '<stop offset=".63" stop-color="#493e55"/><stop offset="1" stop-color="#333041"/></linearGradient>',
+          '<stop offset="0" stop-color="#695967"/><stop offset=".22" stop-color="#514354"/>'
+          '<stop offset=".63" stop-color="#3c303f"/><stop offset="1" stop-color="#26222e"/></linearGradient>',
           '<linearGradient id="face" x1="0" y1="0" x2="0" y2="1">'
           '<stop offset="0" stop-color="#867583"/><stop offset=".28" stop-color="#4b3347"/>'
           '<stop offset="1" stop-color="#211a2b"/></linearGradient>',
           '<linearGradient id="chitin" x1="0" y1="0" x2="0" y2="1">'
-          '<stop offset="0" stop-color="#e0c7b5"/><stop offset=".2" stop-color="#b5a09e"/>'
+          '<stop offset="0" stop-color="#ead2bc"/><stop offset=".2" stop-color="#cbb4a8"/>'
           '<stop offset=".56" stop-color="#76616c"/><stop offset="1" stop-color="#453748"/></linearGradient>',
+          extra_gradients(),
           f'<clipPath id="shape"><path d="{shell}"/></clipPath>',
           '</defs>']
     bits.append(path(shell,fill='#211928',stroke='#17151f',width=3.6))
@@ -75,6 +77,7 @@ def svg_master(mask):
               'M 77 163 l 12 -5 l 8 9','M 165 49 l -11 8 l -3 14'):
         bits.append(path(d,stroke='#1e1a2d',width=4,op=.34))
         bits.append(path(d,stroke='#b1a0a7',width=1.2,op=.19))
+    bits.extend(overlay_scutes(mask, path))
     bits.append('</g>')
     # Only EXPOSED sides receive bevels, lips, wall faces and chitin tendons.
     # Two adjacent linked cells have no repeated internal border.
