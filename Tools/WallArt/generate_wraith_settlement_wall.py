@@ -115,7 +115,18 @@ def build(image):
         if mask&2:tile.alpha_composite(ImageOps.mirror(horizontal),(SIZE-54,47))
         if mask&1:tile.alpha_composite(vertical,(46,0))
         if mask&4:tile.alpha_composite(ImageOps.flip(vertical),(46,SIZE-55))
-        images.append(tile)
+        # An ornamental claw in a painted corner must never accidentally
+        # create a cardinal connector on an unlinked side. Keep the raised
+        # chitin terminal inside its own native map tile.
+        px=np.array(tile,dtype=np.uint8).copy()
+        ramp=np.linspace(0,1,13,dtype=np.float32)
+        alpha=px[:,:,3].astype(np.float32)
+        if not mask&1:alpha[:13,:]*=ramp[:,None]
+        if not mask&2:alpha[:,-13:]*=ramp[None,::-1]
+        if not mask&4:alpha[-13:,:]*=ramp[::-1,None]
+        if not mask&8:alpha[:,:13]*=ramp[None,:]
+        px[:,:,3]=np.rint(alpha).astype(np.uint8)
+        images.append(Image.fromarray(px,"RGBA"))
     return native_seams(images)
 
 def packed(tiles):
