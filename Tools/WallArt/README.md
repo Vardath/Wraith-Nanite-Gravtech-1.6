@@ -22,11 +22,14 @@ Each 1024×1024 RGBA atlas contains sixteen 256-pixel cells. RimWorld's
 32 pixels. Masks use N=1, E=2, S=4, W=8; PNG row is `3 - mask // 4`.
 The native renderer prints that sampled area on an exact 1×1 map cell.
 
-Exposed faces have a six-pixel inset and a small raised edge. Existing gravship/Precursor/Goa'uld isolated walls fill 87.9% of the sampled
-square; the new Wraith settlement wall fills 100% for all sixteen states, with
-internal sculpted chitin bevels rather than empty ground at the exposed edges.
-Connected edges share exact colors, and every gutter clamps the adjacent
-sampled pixel so bilinear filtering cannot introduce a seam.
+Older gravship/Precursor/Goa'uld isolated walls retain their earlier six-pixel
+insets (87.9% sampled coverage). The Wraith settlement wall is now made of 16
+distinct painterly architectural silhouettes: continuous longitudinal chitin
+ribs, visible membrane walls, projecting terminal posts, curved junctions,
+thick cross/T connections and hand-painted highlights. Native size stays
+1x1; transparency outside the physical wall is intentional. Compatible linked
+edge ports have bit-identical RGBA boundaries, and each atlas gutter clamps
+its sampled edge. The old 100%-filled square cap is no longer the runtime art.
 
 All walls retain `Wall` inheritance, `CornerFiller`, Wall/Rock flags, native
 roof/room/pathing/attachment/replacement behavior, damage marks and painting.
@@ -34,14 +37,14 @@ The two fixed-material settlement walls explicitly seal vacuum without a
 stuff-dependent airtight query. Existing hull materials, recipes, abilities,
 stats, research and placement workers are preserved.
 
-The broad structural cap is quiet, as in vanilla wall art. Painted coping,
-technology trim and darker vertical faces appear only along exposed contours;
-they disappear on linked edges and turn around L/T junctions. Horizontal and
-vertical runs therefore have different structural art rather than repeated
-square medallions. The quiet cap naturally accepts the unmodified native
-constant-color CornerFiller at thick intersections. No native wall Print method
-is intercepted; material selection, paint tint, shadows, adjacency, blueprint,
-style and Odyssey foundation handling all remain in the native renderer.
+The settlement artwork is sourced from
+`ArtSource/Walls/Wraith/wraith_architectural_painting.webp`, a genuinely
+painted library of organic structures rather than procedural square-tile
+decoration. `generate_wraith_settlement_wall.py` fits individually authored
+straight, terminal, corner, T and cross pieces to the 192px native sample
+area. It also applies matching painted boundary ports and native atlas padding.
+No native wall Print method is intercepted. Wall inheritance, paint, roof,
+shadows, attachment, blueprint and Odyssey placement logic remain unchanged.
 
 Twenty-four full/partial hull overlays use the native 2×2 corner coordinates,
 with different silhouettes for a present or absent diagonal neighbor. The
@@ -52,7 +55,9 @@ meshes to the native launch/landing bake.
 
 For the independently authored Wraith settlement artwork, run
 `python Tools/WallArt/generate_wraith_settlement_wall.py` first (Pillow and
-NumPy). It generates the PNG atlas and in-game single-tile Architect/legacy icons.
+NumPy). It generates the PNG atlas and in-game single-tile Architect/legacy
+icons. Use `--preview ArtSource/Walls/Wraith/QA/HandPainted` to render an
+actual multi-wall test layout without opening the game.
 The Wraith gravship hull atlas and angled corners remain untouched by that pass.
 The original gravship material also has its own isolated-tile Architect icon,
 `UI/WNG/Build/WNG_WraithGravshipHull`, so changing the settlement wall does not
@@ -77,8 +82,9 @@ gameplay scale for visual inspection. These are renderer simulations, not live
 RimWorld screenshots. Check horizontal/vertical runs, ends, L/T/cross junctions,
 thick intersections, and full versus partial angled hulls after future changes.
 
-The focused validator checks all five defs, all 48 sampled atlas states, compatible
-edge pairs, native corner-quadrant opacity, 24 angled sprites, family icons,
+The focused validator checks all five defs, all 64 sampled atlas states,
+compatible edge pairs, native linking and the painted Wraith silhouettes,
+24 angled sprites, family icons,
 padding, and the rendering hooks. Structural checks supplement visual review;
 they do not claim a live save-load or launch test.
 
