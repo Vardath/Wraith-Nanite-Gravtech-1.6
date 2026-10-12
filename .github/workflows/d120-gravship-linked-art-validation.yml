@@ -169,10 +169,10 @@ jobs:
               if worker not in workers:
                   failures.append(f"{name} lost its same-family gravship-substructure placement worker")
 
-          # Ordinary settlement walls must use the same correctly ordered family linked
-          # atlas topology as the straight gravship hull tiles so runs/corners join like vanilla walls.
+          # Ordinary settlement walls need correctly ordered native linked-atlas topology.
+          # The Wraith settlement wall deliberately has its own art independent of the gravship hull.
           settlement_walls = (
-              ("WNG_WraithLivingWall", wraith_settlement, "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas"),
+              ("WNG_WraithLivingWall", wraith_settlement, "Things/Building/Wraith/Structure/WNG_LivingWall_Atlas"),
               ("WNG_PrecursorWall", precursor_settlement, "Things/Building/Precursor/Gravship/WNG_PrecursorHull_Atlas"),
           )
           for name, defs, tex_path in settlement_walls:
