@@ -278,6 +278,14 @@ class Validator:
             if luminance.std() > 24:
                 self.warnings.append(f"{family} mask{mask}: bright detail at CornerFiller UV may produce a visible flat patch")
             tile_reports.append({"mask": mask, "png_cell": [mask % 4, 3 - mask // 4], "coverage": round(coverage, 5), "center_opacity": round(center, 5), "edge_opacity_NESW": edge_coverage, "solid_corner_quadrants": solid_corners})
+        if family == "Wraith settlement":
+            # A native wall material, not 16 stand-alone decorative plaques.
+            # Bevels may differ on exposed boundaries, but the roof/membrane
+            # interior MUST remain exactly the same in all connected states.
+            master_roof = cores[15][32:-32, 32:-32, :]
+            for mask, core in enumerate(cores):
+                self.check(np.array_equal(core[32:-32, 32:-32, :], master_roof),
+                           f"{family} mask{mask}: interior differs from the continuous material; standalone ornament or per-mask motif detected")
         # Exercise every compatible linked neighbour pair, including T and four-way
         # junctions. Opaque edges can still show a visible seam if the art is not periodic.
         seams = []
