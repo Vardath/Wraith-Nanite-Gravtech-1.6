@@ -15,3 +15,12 @@ This is not a gallery mockup. `WNG_WraithLivingWall` already refers to it.
 Visual QA: broad wall-cap coverage is approximately 87.8% isolated and 100% fully linked; edge joins are painted and normalised across linked states; asymmetric claws cannot accidentally
 produce opaque connectors in directions with no neighbour. Room topology, roof/door functionality,
 wall linking and actual in-game resolution should also be inspected in RimWorld before final art signoff.
+
+## Current material revision (supersedes the old vector and WebP sources)
+
+Only `Tools/WallArt/generate_wraith_settlement_wall.py` generates the
+installed living wall. Its material is continuously repeated across native
+wall cells, with no central icon, framed scutes or special T-junction emblem.
+The old SVG files in `VectorMasters/` and the old WebP are obsolete and
+remain solely as historical record. The topological preview illustrates
+connectivity, not a real-time in-game comparison with vanilla wall art.
