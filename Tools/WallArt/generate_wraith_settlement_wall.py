@@ -19,14 +19,14 @@ import argparse
 import math
 from pathlib import Path
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
 ATLAS = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall_Atlas.png"
 ICON = ROOT / "Textures/UI/WNG/Build/WNG_WraithLivingWall.png"
 LEGACY = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png"
 S, STRIDE, INSET, OPEN_MARGIN = 192, 256, 32, 6
-APPROVED_MASK00 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.png"
+APPROVED_MASK00 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
 
 
 def save(image: Image.Image, dest: Path) -> None:
@@ -99,25 +99,37 @@ def linked_wall_tile(mask: int, material: Image.Image) -> Image.Image:
 
 
 def approved_isolated_wall() -> Image.Image:
-    """Render user-approved isolated tile 00. Keep the original high-res PNG."""
-    source = Image.open(APPROVED_MASK00).convert("RGBA")
-    pixels = np.asarray(source)
-    # Discard only the image-generation transparent fringe and locate the
-    # approved painted structure; do not paint new motifs over the artwork.
-    visible = (pixels[..., 3] >= 220) & (pixels[..., :3].max(axis=2) > 20)
+    """Render approved, high-resolution isolated Wraith wall artwork, mask 00 only.
+
+    The uploaded reference is an opaque JPEG with black outer background;
+    reconstruct transparency before fitting it into the linked-wall sample.
+    """
+    source = Image.open(APPROVED_MASK00).convert("RGB")
+    rgb = np.asarray(source)
+    # Detect the artwork rather than treating its black outside as an opaque tile.
+    visible = np.max(rgb, axis=2) > 17
     if not visible.any():
-        raise ValueError("Approved Wraith wall PNG has no visible art")
-    ys, xs = np.where(visible)
-    crop = source.crop((int(xs.min()), int(ys.min()),
-                        int(xs.max()) + 1, int(ys.max()) + 1))
-    # The actual vanilla GrayWall mask00 occupies a 55x55 visible area in
-    # an 80x80 atlas cell; this is its same-screen-scale equivalent.
-    footprint = round(S * 55 / 80)
-    scaled = np.asarray(crop.resize((footprint, footprint), Image.Resampling.LANCZOS)).copy()
-    alpha = scaled[..., 3]
-    scaled[..., 3] = np.where(alpha >= 230, 255, np.where(alpha <= 35, 0, alpha)).astype(np.uint8)
+        raise ValueError("Approved Wraith wall has no visible artwork")
+    # The 1x1 wall is a continuous solid object. Close black internal gaps
+    # horizontally while keeping all outside rows transparent.
+    filled = (np.maximum.accumulate(visible, axis=1) &
+              np.maximum.accumulate(visible[:, ::-1], axis=1)[:, ::-1])
+    ys, xs = np.where(filled)
+    bounds = (int(xs.min()), int(ys.min()),
+              int(xs.max()) + 1, int(ys.max()) + 1)
+    alpha = Image.fromarray((filled.astype(np.uint8) * 255), "L").filter(
+        ImageFilter.GaussianBlur(0.65))
+    painted = source.convert("RGBA")
+    painted.putalpha(alpha)
+    crop = painted.crop(bounds)
+    # The new approved figure is intrinsically wider than the prior piece,
+    # but still stays well inside RimWorld's 192x192 sampled 1x1 wall region.
+    footprint = 144
+    ratio = min(footprint / crop.width, footprint / crop.height)
+    size = (round(crop.width * ratio), round(crop.height * ratio))
+    scaled = crop.resize(size, Image.Resampling.LANCZOS)
     out = Image.new("RGBA", (S, S))
-    out.paste(Image.fromarray(scaled, "RGBA"), ((S - footprint) // 2, (S - footprint) // 2))
+    out.paste(scaled, ((S - size[0]) // 2, (S - size[1]) // 2))
     return out
 
 
