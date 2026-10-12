@@ -156,8 +156,8 @@ jobs:
           precursor_door = defs.get("WNG_PrecursorDoor", (None,))[0]
 
           if wraith_wall is not None:
-              if wraith_wall.findtext("./graphicData/texPath") != "Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas":
-                  failures.append("Wraith living wall lost its vanilla-linked family wall atlas")
+              if wraith_wall.findtext("./graphicData/texPath") != "Things/Building/Wraith/Structure/WNG_LivingWall_Atlas":
+                  failures.append("Wraith living wall lost its independently authored native linked atlas")
               if wraith_wall.findtext("./graphicData/graphicClass") != "Graphic_Single":
                   failures.append("Wraith living wall returned to a stuff-dependent or invalid graphic class")
 
