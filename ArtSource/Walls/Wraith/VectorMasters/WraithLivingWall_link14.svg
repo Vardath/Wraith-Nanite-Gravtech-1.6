@@ -28,8 +28,8 @@
 <path d="M 165 49 l -11 8 l -3 14" fill="none" stroke="#b1a0a7" stroke-width="1.2" opacity="0.19" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M -24 -17 C 32 6 70 6 90 37 C 101 55 89 72 66 85 C 42 100 12 102 -19 112 Z" fill="url(#chitinShadow)" stroke="#241926" stroke-width="0" opacity="0.76" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M -21 -14 C 32 4 65 10 80 38 C 89 51 79 67 60 78 C 35 91 13 90 -21 101 Z" fill="url(#plates)" stroke="#241926" stroke-width="3" opacity="0.95" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 202 -18 C 167 6 136 16 125 43 C 113 66 130 83 C 174 98 195 99 215 115 Z" fill="url(#chitinShadow)" stroke="#241926" stroke-width="0" opacity="0.86" stroke-linejoin="round" stroke-linecap="round"/>
-<path d="M 199 -10 C 167 12 143 19 138 44 C 131 57 141 72 C 166 78 183 84 207 99 Z" fill="url(#plates)" stroke="#241926" stroke-width="3" opacity="0.95" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 202 -18 C 167 6 136 16 125 43 C 113 66 130 83 160 93 C 174 98 195 99 215 115 Z" fill="url(#chitinShadow)" stroke="#241926" stroke-width="0" opacity="0.86" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 199 -10 C 167 12 143 19 138 44 C 131 57 141 72 166 78 C 183 84 199 88 207 99 Z" fill="url(#plates)" stroke="#241926" stroke-width="3" opacity="0.95" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M -29 190 C 19 174 36 150 56 138 C 71 129 82 119 90 104 C 99 127 84 164 61 184 L 35 218 Z" fill="#1d1825" stroke="#241926" stroke-width="0" opacity="0.79" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M -23 192 C 19 173 41 145 55 140 C 69 135 79 128 87 115 C 87 144 74 171 58 189 L 35 213 Z" fill="url(#plates)" stroke="#241926" stroke-width="3" opacity="0.95" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M 216 190 C 168 176 151 150 134 137 C 115 122 105 117 99 106 C 96 131 117 171 140 191 L 166 218 Z" fill="#181522" stroke="#241926" stroke-width="0" opacity="0.81" stroke-linejoin="round" stroke-linecap="round"/>
