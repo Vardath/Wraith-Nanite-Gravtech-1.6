@@ -164,3 +164,36 @@ CURRENT WRAITH SETTLEMENT PASS (third artwork revision, not yet player-approved)
 in-game at vanilla zoom beside a constructed vanilla wall, verifying cap
 height/shape, doors, roof, attachments and scale. Do not proceed to wall #2
 until that review. Preserve the above assets in later edits.
+
+## Revision 4 — 12 October 2026 — vanilla-like material pass
+
+The first three artistic revisions failed user review: ornament, miniature
+sprite, then a framed centre motif on each tile. These were not acceptable
+vanilla walls.
+
+Step 1 has been redone in the **actual 1.6 mod**. The authoritative material
+recipe is now `Tools/WallArt/generate_wraith_settlement_wall.py`; it writes
+`Textures/Things/Building/Wraith/Structure/WNG_LivingWall_Atlas.png`,
+`Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png` and
+`Textures/UI/WNG/Build/WNG_WraithLivingWall.png`.
+
+The prior `paint_wraith_chitin.py` and `VectorMasters/` assets are
+SUPERSEDED HISTORICAL WORK, not inputs to the current art. Do not revive
+the central emblem or framed plaques. No concept image in chat is an asset.
+
+Current target: native full-size vanilla wall body and linking with one
+continuous understated Wraith chitin/membrane material on every tile.
+Exposed faces have short dark bevels; connected sides have none.
+All sixteen masks use the *same material in their central 128x128 region*.
+The strict validator asserts this to reject recurring oversized emblems.
+Isolated ~85.9% / four-way linked 100% coverage. Exact 192px native
+sample within 256px cells of a 1024px RGBA atlas, 1x1 draw footprint.
+No model transformations, runtime intercepts, door, roof, regenerative
+comp, biomass, parent Wall, Wall/Rock linkFlags or gravship mechanics changed.
+
+Known verification boundary: structural CI and offline assembled-wall preview
+are not equivalent to an artist-approved, live RimWorld colony comparison.
+Wraith-to-vanilla linking inherits the same Wall/Rock flags and CornerFiller
+path, but has not been visually tested against the installed game.
+Only wall #1 has been worked on this revision. Do not start #2 until
+user accepts #1 in game.
