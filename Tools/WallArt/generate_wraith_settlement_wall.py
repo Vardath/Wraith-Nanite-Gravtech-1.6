@@ -153,22 +153,29 @@ def ribs(mask, run):
                 stroke(draw,glow,(47,95,63),2.5,136)
                 stroke(draw,glow,(143,183,133),.9,175)
     if count in (2,3) and mask not in (5,10):
-        # Wraith T/L junction knuckle, not a separate square end-post.
-        cx,cy=96,96
-        draw.ellipse((int(72*ART),int(76*ART),int(123*ART),int(116*ART)),
-                     fill=(23,18,30,190))
-        draw.ellipse((int(79*ART),int(79*ART),int(115*ART),int(107*ART)),
-                     fill=(103,88,95,188))
-        draw.arc((int(79*ART),int(80*ART),int(114*ART),int(108*ART)),
-                 185,347,fill=(170,154,140,200),width=round(3*ART))
+        # Wraith corner/T fusion. Grown asymmetric plates, not metal rivets or
+        # a perfect circular junction marker repeated on every intersection.
+        skin=bezier(((70,116),(83,96),(102,96),(123,73)),32)
+        stroke(draw,skin,(18,16,28),15,205)
+        stroke(draw,skin,(126,109,113),8,195)
+        stroke(draw,[(x-1.8,y-2.7) for x,y in skin],(190,170,150),2.2,190)
+        skin=bezier(((77,79),(86,92),(112,92),(124,114)),32)
+        stroke(draw,skin,(34,23,43),13,230)
+        stroke(draw,skin,(90,69,86),7,195)
+        stroke(draw,[(x+1,y-2) for x,y in skin],(153,132,133),1.8,176)
+        stroke(draw,bezier(((86,93),(95,94),(104,95),(110,99)),12),
+               (74,142,95),1.5,175)
     if count==1:
-        # Organic terminating shell, with a closed graft valve.
-        draw.ellipse((79*ART,79*ART,113*ART,113*ART),
-                     fill=(30,23,37,230),outline=(145,132,119,235),
-                     width=round(3*ART))
-        draw.ellipse((89*ART,87*ART,103*ART,103*ART),fill=(61,91,65,205))
-        draw.arc((86*ART,85*ART,106*ART,105*ART),190,330,
-                 fill=(171,183,138,210),width=round(2*ART))
+        # Pinch the three living tendons into an irregular closed growth bud.
+        outline=[(79,91),(86,83),(96,80),(109,87),(116,99),
+                 (107,111),(95,115),(84,107)]
+        draw.polygon(coords(outline),fill=(30,23,37,236))
+        draw.line(coords(outline+[outline[0]]),fill=(154,135,119,223),
+                  width=3*ART,joint="curve")
+        stroke(draw,bezier(((84,98),(92,92),(103,94),(110,102)),22),
+               (79,114,83),6,193)
+        stroke(draw,bezier(((87,96),(94,90),(104,92),(108,99)),22),
+               (149,174,133),1.6,183)
     # The full-mass X tile should be quiet, with junction detail only where
     # neighbours truly terminate; otherwise thick blocks look quilted.
     if count==4:
@@ -204,7 +211,16 @@ def edge_strip(run, name):
     upper=upper.resize((SIZE,SIZE),Image.Resampling.LANCZOS)
     transforms={"N":None,"E":Image.Transpose.ROTATE_270,
                 "S":Image.Transpose.ROTATE_180,"W":Image.Transpose.ROTATE_90}
-    return upper if transforms[name] is None else upper.transpose(transforms[name])
+    upper = upper if transforms[name] is None else upper.transpose(transforms[name])
+    # A real wall has a roof-facing illuminated coping and a dark vertical
+    # underside. The first pass lit ALL four edges equally: a picture frame.
+    # Now north/west catch the light; south/east recede under the roof cap.
+    tint={"N":(1.00,1.00,1.00),"W":(.86,.84,.84),
+          "S":(.40,.37,.43),"E":(.50,.48,.52)}[name]
+    rgba=np.array(upper,np.uint8).copy()
+    for c in range(3):
+        rgba[:,:,c]=np.uint8(np.clip(rgba[:,:,c].astype(float)*tint[c],0,255))
+    return Image.fromarray(rgba,"RGBA")
 
 
 def edge_seam(base):
