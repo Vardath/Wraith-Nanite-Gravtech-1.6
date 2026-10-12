@@ -54,6 +54,9 @@ For the independently authored Wraith settlement artwork, run
 `python Tools/WallArt/generate_wraith_settlement_wall.py` first (Pillow and
 NumPy). It generates the PNG atlas and in-game single-tile Architect/legacy icons.
 The Wraith gravship hull atlas and angled corners remain untouched by that pass.
+The original gravship material also has its own isolated-tile Architect icon,
+`UI/WNG/Build/WNG_WraithGravshipHull`, so changing the settlement wall does not
+silently change gravship build-menu artwork.
 
 Node.js and ImageMagick (`magick`, or ImageMagick 6 `convert`) are needed to pack
 the committed masters. Pillow and NumPy are needed for validation.
