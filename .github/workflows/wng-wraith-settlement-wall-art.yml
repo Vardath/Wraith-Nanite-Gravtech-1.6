@@ -29,7 +29,7 @@ jobs:
       - name: Install texture tooling
         run: python -m pip install --disable-pip-version-check pillow numpy
       - name: Paint and assemble sixteen native linked Wraith living wall tiles
-        run: python Tools/WallArt/generate_wraith_settlement_wall.py --preview ArtSource/Walls/Wraith/QA/settlement-topology.png
+        run: python Tools/WallArt/generate_wraith_settlement_wall.py --preview ArtSource/Walls/Wraith/QA/HandPainted
       - name: Commit the generated art INSIDE the mod
         shell: bash
         run: |
@@ -39,7 +39,7 @@ jobs:
             Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png \
             Textures/UI/WNG/Build/WNG_WraithLivingWall.png \
             Textures/UI/WNG/Build/WNG_WraithGravshipHull.png \
-            ArtSource/Walls/Wraith/QA/settlement-topology.png
+            ArtSource/Walls/Wraith/QA/HandPainted/Wraith-Living-Wall-Room-Test.png
           if git diff --cached --quiet; then
             echo "Wall artwork already matches approved generator"
             exit 0
