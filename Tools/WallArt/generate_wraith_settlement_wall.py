@@ -22,6 +22,8 @@ TAU = math.tau
 ATLAS = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall_Atlas.png"
 ICON = ROOT / "Textures/UI/WNG/Build/WNG_WraithLivingWall.png"
 LEGACY = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png"
+HULL_ATLAS = ROOT / "Textures/Things/Building/Wraith/Gravship/WNG_OrganicHull_Atlas.png"
+HULL_ICON = ROOT / "Textures/UI/WNG/Build/WNG_WraithGravshipHull.png"
 
 
 def save(image, path):
@@ -185,6 +187,11 @@ def main():
     save(pack(tiles),ATLAS)
     save(tiles[0],ICON)
     save(tiles[0],LEGACY)
+    # Preserve the original, separate Wraith gravship hull appearance in its
+    # own architect button. The hull 16-state atlas and angled corners stay as-is.
+    with Image.open(HULL_ATLAS) as hull:
+        hull_icon = hull.convert("RGBA").crop((INSET, 3*STRIDE+INSET, INSET+SIZE, 3*STRIDE+INSET+SIZE))
+    save(hull_icon, HULL_ICON)
     if args.preview:
         args.preview.mkdir(parents=True,exist_ok=True)
         samples=[0,1,2,3,5,7,10,11,13,14,15]
