@@ -73,7 +73,19 @@ jobs:
             git add Assemblies/WraithNaniteGravtech.pdb
           fi
           git commit -m "Refresh compiled WNG assembly [skip ci]"
-          git push origin HEAD:main
+          # Artwork workflows also update main; never race their successful art
+          # commit with a stale assembly-ref push. Rebase and retry on a moved ref.
+          for attempt in 1 2 3; do
+            git pull --rebase origin main
+            if git push origin HEAD:main; then
+              break
+            fi
+            if [ "${attempt}" -eq 3 ]; then
+              echo "Could not publish managed assembly after three fresh-head retries"
+              exit 1
+            fi
+            sleep 2
+          done
 
       - name: Build installable release ZIP
         shell: bash
