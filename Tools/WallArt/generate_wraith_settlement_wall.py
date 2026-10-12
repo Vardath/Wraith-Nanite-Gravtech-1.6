@@ -10,8 +10,9 @@ never at wall-to-wall joins. No centre emblems or free-standing sprite shapes.
 In-game ThingDef is an unchanged 1x1 Wall with CornerFiller, Wall/Rock links,
 roof/room/door collision, regeneration, and other vanilla mechanics.
 
-This source replaces rejected earlier artist experiments; it does NOT modify
-Wraith gravship hulls, Asuran or Goa'uld art.
+New original material: ArtSource/Walls/Wraith/OriginalWraithMaterial.svg.
+Never use earlier portrait-like image generations, ornaments or procedural
+striped experiments. All other wall families remain unchanged.
 """
 from __future__ import annotations
 import argparse
@@ -33,133 +34,66 @@ def save(image: Image.Image, dest: Path) -> None:
 
 
 def membrane_material() -> Image.Image:
-    yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
-    x, y = xx / (S - 1), yy / (S - 1)
-    grain = (
-        .40*np.sin(2*np.pi*(x*.75+y*.35+.12))
-        +.20*np.cos(2*np.pi*(x*.31-y*.68+.41))
-        +.14*np.sin(2*np.pi*(x*1.7-y*.17+.19))
-        +.08*np.cos(2*np.pi*(x*2.4+y*1.9+.2))
-    )
-    r, g, b = 72.+grain*10, 56.+grain*7, 83.+grain*12
-
-    # Anatomical Wraith living-hull language: calcified chitin ribs with
-    # recessed shadow side and warmer ivory-lavender highlight.
-    ribs = [
-        (.12,.038,.022,2.1,20,11),
-        (.31,.032,-.018,2.7,16,10),
-        (.54,.041,.021,2.2,21,12),
-        (.76,.036,-.016,2.9,18,10),
-    ]
-    for i, (center, width, lean, frequency, amplitude, shadow_value) in enumerate(ribs):
-        spine = center + lean*np.sin(2*np.pi*(y*frequency+i*.19))
-        shell = np.exp(-((x-spine)**2)/(2*width**2))
-        shadow = np.exp(-((x-(spine+.028))**2)/(2*(width*.65)**2))
-        root = np.exp(-((x-(spine-.023))**2)/(2*(width*.45)**2))
-        r = r + shell*amplitude + root*7 - shadow*shadow_value
-        g = g + shell*amplitude*.73 + root*5 - shadow*shadow_value*.70
-        b = b + shell*amplitude*.85 + root*6 - shadow*shadow_value*.82
-        highlight = np.exp(-((x-(spine-.010))**2)/(2*.0065**2))
-        highlight *= .70+.18*np.cos(2*np.pi*(y*(2.8+i*.25)+i*.1))
-        dark_seam = np.exp(-((x-(spine+.012))**2)/(2*.0065**2))
-        dark_seam *= .75+.20*np.sin(2*np.pi*(y*(3.1+i*.17)+.25))
-        r = r + highlight*24 - dark_seam*10
-        g = g + highlight*21 - dark_seam*8
-        b = b + highlight*15 - dark_seam*10
-
-    # Growing membrane tension scars. Smaller than ribs, intentionally
-    # subordinate to the vanilla wall's structural top surface.
-    for k, center in enumerate([.12,.27,.44,.61,.78,.90]):
-        arc = np.exp(-((y-(center+.014*np.sin(2*np.pi*(x*(1.65+k*.08)+k*.19))))**2)/(2*(.010+.001*(k%2))**2))
-        r, g, b = r-arc*4.5, g-arc*3.8, b-arc*3.2
-        glint = np.exp(-((y-(center-.008+.010*np.sin(2*np.pi*(x*(1.4+k*.09)+k*.27))))**2)/(2*.0038**2))
-        r, g, b = r+glint*4.2, g+glint*3.8, b+glint*2.7
-
-    # Restrained Wraith bio-luminescent vein work. These are part of the
-    # material, not separate repeated green emblems.
-    for center, phase, strength in [(.22,0.,.13),(.47,.7,.10),(.68,1.3,.09)]:
-        spine = center+.014*np.sin(2*np.pi*(y*(4.2+strength*2)+phase))
-        vein = np.exp(-((x-spine)**2)/(2*.0068**2))
-        pulse = .42+.28*np.cos(2*np.pi*(y*(2.8+strength)+phase))
-        g, r, b = (g+vein*pulse*56*strength*10,
-                   r+vein*pulse*8*strength*10,
-                   b+vein*pulse*5*strength*10)
-
-    vignette = (x-.5)**2+(y-.5)**2
-    r, g, b = r-vignette*13, g-vignette*10, b-vignette*12
-    rgb = np.stack([np.clip(r,0,255),np.clip(g,0,255),
-                    np.clip(b,0,255),np.full_like(r,255)],axis=2).astype(np.uint8)
-
-    # Periodic colour on every linked seam. This is separate from masking
-    # the exposed edges, which only happens in the 16 topology variants.
-    for idx in range(3):
-        rgb[:, -1-idx, :] = rgb[:, idx, :]
-        rgb[-1-idx, :, :] = rgb[idx, :, :]
-    material = Image.fromarray(rgb,"RGBA")
-    d = ImageDraw.Draw(material)
-    for points in [
-        [(14,48),(25,42),(34,46)], [(29,130),(41,124),(52,126)],
-        [(55,76),(63,72),(72,74)], [(83,30),(91,35),(98,31)],
-        [(102,144),(111,138),(121,141)], [(128,54),(137,58),(145,54)],
-        [(148,119),(159,114),(169,116)], [(112,90),(120,84),(129,86)]
-    ]:
-        d.line(points,fill=(31,23,37,126),width=4)
-        d.line(points,fill=(173,152,152,98),width=1)
-    for cx in [24,63,104,146,176]:
-        d.arc((cx-11,4,cx+11,23),start=10,end=170,fill=(201,183,169,86),width=1)
-    for cx in [18,49,91,131,171]:
-        d.arc((cx-13,166,cx+13,188),start=190,end=350,fill=(110,86,99,76),width=1)
-    return material
+    """Render newly painted original chitin/membrane, NEVER old PNG/SVG art."""
+    import cairosvg
+    import io
+    material = ROOT / "ArtSource/Walls/Wraith/OriginalWraithMaterial.svg"
+    if not material.is_file():
+        raise FileNotFoundError("New original Wraith wall master missing: " + str(material))
+    raw = cairosvg.svg2png(bytestring=material.read_bytes(),
+                          output_width=768, output_height=768)
+    image = Image.open(io.BytesIO(raw)).convert("RGBA").resize(
+        (S, S), Image.Resampling.LANCZOS)
+    # All linked faces must have the *same* actual material at their borders.
+    # Feather artwork only in the extreme 7px band. Never fabricate a framed
+    # endpiece or use cropped old decorative medallions.
+    rgba = np.asarray(image).copy()
+    for i in range(7):
+        alpha = i / 7.
+        rgba[:, i, :3] = (rgba[:, i, :3] * alpha +
+                          rgba[:, -8+i, :3] * (1-alpha)).astype(np.uint8)
+    rgba[:, -7:, :3] = rgba[:, :7, :3]
+    for i in range(7):
+        alpha = i / 7.
+        rgba[i, :, :3] = (rgba[i, :, :3] * alpha +
+                          rgba[-8+i, :, :3] * (1-alpha)).astype(np.uint8)
+    rgba[-7:, :, :3] = rgba[:7, :, :3]
+    rgba[:, :, 3] = 255
+    return Image.fromarray(rgba, "RGBA")
 
 
-def linked_wall_tile(mask: int, skin: Image.Image) -> Image.Image:
-    """Exposed edge bevels, using native 1-tile wall cap and link masks."""
-    n, e, s, w = [not bool(mask & bit) for bit in (1,2,4,8)]
-    l = OPEN_MARGIN if w else 0
-    r = S-OPEN_MARGIN if e else S
-    t = OPEN_MARGIN if n else 0
-    b = S-OPEN_MARGIN if s else S
-    face = Image.new("RGBA",(S,S))
-    d = ImageDraw.Draw(face)
+def linked_wall_tile(mask: int, material: Image.Image) -> Image.Image:
+    """Native 1x1 wall slab; bone bevels only on *unlinked* external faces."""
+    n, e, s, w = [not bool(mask & bit) for bit in (1, 2, 4, 8)]
+    inset = 6
+    left = inset if w else 0
+    right = S-inset if e else S
+    top = inset if n else 0
+    bottom = S-inset if s else S
+    out = Image.new("RGBA", (S, S))
+    brush = ImageDraw.Draw(out)
     if n:
-        pts = [(l,t+6)]
-        pts += [(xi,t+6+int(1.4*math.sin((xi-l)/17.))) for xi in range(l,r+1,8)]
-        d.polygon([(l,t),(r,t),(r,t+6)]+pts[::-1]+[(l,t+6)],fill=(165,148,145,160))
-        d.line(pts,fill=(224,209,187,182),width=2)
-        d.line([(px,py+7) for px,py in pts],fill=(54,41,58,118),width=3)
+        brush.polygon([(left,top),(right,top),(right,top+7),(left,top+7)],fill=(171,145,153,142))
+        brush.line([(left+1,top+2),(right-2,top+2)],fill=(221,189,177,192),width=2)
+        brush.line([(left+1,top+9),(right-1,top+9)],fill=(32,24,39,144),width=3)
     if s:
-        pts = [(xi,b-7+int(1.3*math.sin((xi-l)/19.+.6))) for xi in range(l,r+1,8)]
-        d.polygon(pts+[(r,b),(l,b)],fill=(29,22,36,150))
-        d.line(pts,fill=(158,130,140,150),width=2)
-        d.line([(px,min(b-1,py+7)) for px,py in pts],fill=(11,10,16,104),width=3)
+        brush.polygon([(left,bottom-15),(right,bottom-15),(right,bottom),(left,bottom)],fill=(20,18,31,150))
+        brush.line([(left+2,bottom-15),(right-2,bottom-15)],fill=(171,134,145,164),width=2)
+        brush.line([(left+2,bottom-4),(right-2,bottom-4)],fill=(13,10,21,144),width=3)
     if w:
-        pts = [(l+7+int(1.4*math.sin((yi-t)/18.+.2)),yi) for yi in range(t,b+1,8)]
-        d.polygon([(l,t),(l,b)]+pts[::-1],fill=(166,145,140,92))
-        d.line(pts,fill=(208,190,170,138),width=2)
-        d.line([(min(r-1,px+7),py) for px,py in pts],fill=(47,35,47,110),width=3)
+        brush.polygon([(left,top),(left+9,top),(left+9,bottom),(left,bottom)],fill=(173,151,149,100))
+        brush.line([(left+2,top+2),(left+2,bottom-2)],fill=(215,189,169,161),width=2)
+        brush.line([(left+11,top+1),(left+11,bottom-1)],fill=(32,26,41,109),width=3)
     if e:
-        pts = [(r-7+int(1.4*math.sin((yi-t)/18.+1.1)),yi) for yi in range(t,b+1,8)]
-        d.polygon(pts+[(r,b),(r,t)],fill=(27,22,34,124))
-        d.line(pts,fill=(146,121,134,136),width=2)
-        d.line([(px+7,py) for px,py in pts if px+7<r],fill=(10,9,15,104),width=3)
-
-    # Small separate calcified corner plates. They do not form a panel frame.
-    if n and w:
-        d.polygon([(l+1,t+18),(l+14,t+2),(l+27,t+4),(l+12,t+19)],fill=(203,188,174,96))
-    if n and e:
-        d.polygon([(r-18,t+2),(r-2,t+18),(r-13,t+19),(r-27,t+4)],fill=(203,188,174,96))
-    if s and w:
-        d.polygon([(l+1,b-18),(l+14,b-2),(l+12,b-19),(l+27,b-14)],fill=(99,78,92,74))
-    if s and e:
-        d.polygon([(r-18,b-2),(r-2,b-18),(r-27,b-14),(r-13,b-20)],fill=(99,78,92,74))
-
-    tile = np.asarray(Image.alpha_composite(skin,face)).copy()
-    tile[:,:,3]=255
-    if n: tile[:OPEN_MARGIN,:,3]=0
-    if e: tile[:,-OPEN_MARGIN:,3]=0
-    if s: tile[-OPEN_MARGIN:,:,3]=0
-    if w: tile[:,:OPEN_MARGIN,3]=0
-    return Image.fromarray(tile,"RGBA")
+        brush.polygon([(right-12,top),(right,top),(right,bottom),(right-12,bottom)],fill=(30,23,41,114))
+        brush.line([(right-12,top+1),(right-12,bottom-1)],fill=(168,136,150,144),width=2)
+        brush.line([(right-3,top+2),(right-3,bottom-2)],fill=(14,11,22,133),width=3)
+    tile = np.asarray(Image.alpha_composite(material, out)).copy()
+    if n: tile[:inset,:,3] = 0
+    if s: tile[-inset:,:,3] = 0
+    if w: tile[:,:inset,3] = 0
+    if e: tile[:,-inset:,3] = 0
+    return Image.fromarray(tile, "RGBA")
 
 
 def generate() -> list[Image.Image]:
