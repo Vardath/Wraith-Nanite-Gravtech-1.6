@@ -227,50 +227,30 @@ class Validator:
             coverage = float(opaque.mean())
             center = float(opaque[quarter:-quarter, quarter:-quarter].mean())
             if family == "Wraith settlement":
-                # Drawn orthographic wall silhouettes preserve native *cell dimensions*
-                # without the rectangular filled-tile look of the earlier generation.
-                # Real painted joins, ends, corners and T/cross shapes use alpha.
-                if mask == 0:
-                    # The first user-approved isolated sprite follows the measured
-                    # vanilla GrayWall silhouette: about 55x55 visible / 80x80 cell.
-                    # This independent piece must not inherit the previous
-                    # full-square generator's false 85.5% occupancy requirement.
-                    self.check(.40 <= coverage <= .55,
-                               f"{family} mask0: size differs from actual vanilla isolated wall ({coverage:.1%})")
-                    self.check(center >= .80,
-                               f"{family} mask0: approved living-wall structural center missing ({center:.1%})")
-                elif mask == 1:
-                    # Approved north-linked state follows real GrayWall mask01
-                    # silhouette, nominally 55x67 within the 80x80 atlas cell.
-                    self.check(.50 <= coverage <= .65,
-                               f"{family} mask1: incorrect vanilla-equivalent footprint ({coverage:.1%})")
-                    self.check(center >= .82,
-                               f"{family} mask1: insufficient wall body ({center:.1%})")
-                elif mask == 2:
-                    # Independently approved east-connected / west-end painting.
-                    # Preserve its observed 1x1 silhouette; masks 04..15 are
-                    # still produced by the continuous-material generator.
-                    self.check(.45 <= coverage <= .53,
-                               f"{family} mask2: approved west-end footprint drifted ({coverage:.1%})")
-                    self.check(center >= .70,
-                               f"{family} mask2: approved wall core is missing ({center:.1%})")
-                elif mask == 3:
-                    # Approved N+E elbow uses a square sampled cell, with a
-                    # smaller exposed southwest silhouette and open connectors.
-                    self.check(.66 <= coverage <= .77,
-                               f"{family} mask3: approved corner silhouette drifted ({coverage:.1%})")
-                    self.check(center >= .90,
-                               f"{family} mask3: approved corner roof body missing ({center:.1%})")
-                else:
-                    self.check(center >= .995, f"{family} mask{mask}: insufficient wall-top structural body ({center:.1%})")
-                    self.check(coverage >= .855, f"{family} mask{mask}: smaller than vanilla-like wall coverage ({coverage:.1%})")
-                # Reject blank flat-purple panels even when the silhouette fits.
-                # This is a material detail floor, not an artistic sign-off:
-                # the actual Wraith membrane must retain visible chitin relief.
+                # Actual outer silhouettes measured from the ReBuild copies of
+                # vanilla's Smooth, Bricks and Planks 1024px wall atlases.
+                # Nine UV-sample pixels of transparent setback on each
+                # exposed side; connected sides extend all the way across.
+                lx = 0 if mask & 8 else 9
+                rx = sample if mask & 2 else sample-9
+                ty = 0 if mask & 1 else 9
+                by = sample if mask & 4 else sample-9
+                expected_alpha = np.zeros((sample,sample),dtype=bool)
+                expected_alpha[ty:by,lx:rx] = True
+                self.check(np.array_equal(opaque,expected_alpha),
+                           f"{family} mask{mask}: external dimensions disagree with measured vanilla {rx-lx}x{by-ty} wall")
+                self.check(center >= .995,
+                           f"{family} mask{mask}: insufficient real solid wall mass ({center:.1%})")
                 material_std = float(core[32:-32,32:-32,:3].astype(float).std(axis=(0,1)).mean())
-                self.check(material_std >= 6.5, f"{family} mask{mask}: Wraith material detail collapsed into a flat slab (channel contrast {material_std:.1f})")
+                self.check(material_std >= 6.5,
+                           f"{family} mask{mask}: painted bone/membrane lacks material relief ({material_std:.1f})")
+                if not (mask & 4):
+                    roof = core[55:90,65:127,:3].astype(float)
+                    face = core[133:168,65:127,:3].astype(float)
+                    self.check(abs(float(roof.mean()-face.mean())) >= 3,
+                               f"{family} mask{mask}: missing the measured deep south-facing facade")
                 if mask == 15:
-                    self.check(coverage >= .995, f"{family}: fully linked wall body must fill the cell ({coverage:.1%})")
+                    self.check(coverage >= .995, f"{family}: all-linked slab must occupy complete sample")
             else:
                 self.check(center >= .995, f"{family} mask{mask}: tile center opacity {center:.1%}; must fill tile body")
                 self.check(coverage >= .80, f"{family} mask{mask}: sampled coverage {coverage:.1%}; wall reads too narrow")
@@ -316,17 +296,10 @@ class Validator:
                 self.warnings.append(f"{family} mask{mask}: bright detail at CornerFiller UV may produce a visible flat patch")
             tile_reports.append({"mask": mask, "png_cell": [mask % 4, 3 - mask // 4], "coverage": round(coverage, 5), "center_opacity": round(center, 5), "edge_opacity_NESW": edge_coverage, "solid_corner_quadrants": solid_corners})
         if family == "Wraith settlement":
-            # A native wall material, not 16 stand-alone decorative plaques.
-            # Bevels may differ on exposed boundaries, but the roof/membrane
-            # interior MUST remain exactly the same in all connected states.
-            master_roof = cores[15][32:-32, 32:-32, :]
-            for mask, core in enumerate(cores):
-                if mask in (0, 1, 2, 3):
-                    # Approved isolated/end-cap artwork is independently painted.
-                    # Compare shared material only once a connected mask is approved.
-                    continue
-                self.check(np.array_equal(core[32:-32, 32:-32, :], master_roof),
-                           f"{family} mask{mask}: interior differs from the continuous material; standalone ornament or per-mask motif detected")
+            # Structural silhouette and complete cardinal seam assertions above
+            # replace the old false assumption that separately painted pieces
+            # must have byte-identical central roof art.
+            self.check(len(cores) == 16, "Wraith wall must contain sixteen structural states")
         # Exercise every compatible linked neighbour pair, including T and four-way
         # junctions. Opaque edges can still show a visible seam if the art is not periodic.
         seams = []
@@ -345,16 +318,7 @@ class Validator:
                     delta = np.abs(a.astype(float) - b.astype(float))
                     mean, largest = float(delta[:, :3].mean()), float(delta[:, :3].max())
                     seam_ok = np.array_equal(a[:, 3], b[:, 3]) and mean <= 3 and largest <= 12
-                    if family == "Wraith settlement" and (first in (1, 2, 3) or second in (1, 2, 3)):
-                        # Approved pieces 01, 02 and 03 were painted independently.
-                        # Until adjoining masks are approved, retain truthful
-                        # seam warnings rather than asserting seamless art.
-                        if not seam_ok:
-                            self.warnings.append(
-                                f"{family} masks{first}/{second} {direction}: "
-                                f"independently painted neighbour still requires matching (mean RGB {mean:.1f}, max {largest:.0f})")
-                    else:
-                        self.check(seam_ok, f"{family} masks{first}/{second} {direction}: linked seam differs (mean RGB {mean:.1f}, max {largest:.0f})")
+                    self.check(seam_ok, f"{family} masks{first}/{second} {direction}: linked seam differs (mean RGB {mean:.1f}, max {largest:.0f})")
                     seams.append({"direction": direction, "masks": [first, second], "mean_rgb_delta": round(mean, 4), "max_rgb_delta": largest})
         self.report["icons"].extend(self.icons(path, cores[0]))
         self.report["atlases"].append({"family": family, "path": path, "size": width, "cell": stride, "padding": inset, "sample": sample, "tiles": tile_reports, "seams": seams})

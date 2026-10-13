@@ -211,37 +211,17 @@ def approved_northeast_corner() -> Image.Image:
 
 
 def generate() -> list[Image.Image]:
-    skin=membrane_material()
-    tiles=[linked_wall_tile(mask,skin) for mask in range(16)]
+    """Rebuild all sixteen pieces against the measured native wall geometry.
 
-    # All connected boundaries share the same UV samples. Normalising the
-    # outermost texels prevents a corner bevel from creating a stitching line
-    # against a different mask, e.g. a Wraith/vanilla T-junction.
-    common=np.asarray(tiles[15])
-    result=[]
-    for mask,im in enumerate(tiles):
-        arr=np.asarray(im).copy()
-        if mask & 1: arr[0,:,:]=common[0,:,:]
-        if mask & 4: arr[-1,:,:]=common[0,:,:]
-        if mask & 8: arr[:,0,:]=common[:,0,:]
-        if mask & 2: arr[:,-1,:]=common[:,0,:]
-        result.append(Image.fromarray(arr,"RGBA"))
-
-    # Work through the wall atlas one user-approved connection state at a time.
-    # Masks 04..15 retain their existing generator and pixels.
-    result[0] = approved_isolated_wall()
-    result[1] = approved_north_connected_wall()
-    result[2] = approved_east_connected_wall()
-    result[3] = approved_northeast_corner()
-
-    atlas=Image.new("RGBA",(1024,1024))
-    for mask,tile in enumerate(result):
-        clamped=np.pad(np.asarray(tile),((INSET,INSET),(INSET,INSET),(0,0)),mode="edge")
-        atlas.paste(Image.fromarray(clamped,"RGBA"),((mask%4)*STRIDE,(3-mask//4)*STRIDE))
-    save(atlas,ATLAS)
-    save(result[0],ICON)
-    save(result[0],LEGACY)
-    return result
+    Authentic approved paintings are preserved on disk as immutable art sources.
+    The runtime atlas is new authored chitin/membrane, not isolated ornaments.
+    """
+    from wng_true_wall import approved_source, generate as build, pack
+    pieces = build(approved_source(ROOT))
+    save(pack(pieces), ATLAS)
+    save(pieces[0], ICON)
+    save(pieces[0], LEGACY)
+    return pieces
 
 
 def preview(states: list[Image.Image],folder: Path) -> None:
@@ -288,10 +268,12 @@ def main() -> None:
     if args.preview: preview(states,args.preview)
     coverage=[float((np.asarray(t)[:,:,3]>=250).mean()) for t in states]
     assert len(states)==16
-    # Measured native isolated-wall silhouette, not a full painted square.
-    assert .40 <= coverage[0] <= .55,coverage[0]
-    assert .50 <= coverage[1] <= .65,coverage[1]
-    assert coverage[15]>=.995,coverage[15]
+    # Native 192px wall sample, 9px inset for every exposed side.
+    assert abs(coverage[0] - (174*174)/(192*192)) <= .005, coverage[0]
+    assert abs(coverage[1] - (174*183)/(192*192)) <= .005, coverage[1]
+    assert abs(coverage[2] - (183*174)/(192*192)) <= .005, coverage[2]
+    assert abs(coverage[3] - (183*183)/(192*192)) <= .005, coverage[3]
+    assert coverage[15] >= .995, coverage[15]
     print("Wraith settlement mod atlas committed path:",ATLAS)
     print("Coverage isolated:",round(coverage[0],4),"all linked:",round(coverage[15],4))
 
