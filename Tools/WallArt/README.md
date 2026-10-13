@@ -102,3 +102,35 @@ It compiles the actual hull-layer source against small fixtures and tests native
 geometry, masks, relative coordinates and mixed-family precedence. A production
 Release build against the project's RimWorld 1.6 reference package is still
 required before shipping the assembly.
+
+
+## Wraith full 16-state reference-fitted pass — 14 October 2026
+
+The living settlement wall now uses Tools/WallArt/wng_true_wall.py, called by
+generate_wraith_settlement_wall.py. This preserves original authored
+WraithLivingWall_link00..03_approved images and uses the authentic
+high-resolution approved isolated wall only as the Wraith material,
+not as a repeated standalone object at every link. The four original
+approved paintings remain in ArtSource unchanged, but all 16 installed
+runtime states are now fitted/constructed Wraith architecture.
+
+REFERENCE PROVENANCE: A published ReBuild source copy of the Core Wall
+Smooth, Planks and Bricks atlases. These three copies show identical
+structural silhouettes and RGBA extents. They are not asserted to be
+byte-identical to a fresh installed RimWorld 1.6 Core package.
+
+MEASURED GEOMETRY: 1024x1024 atlas, 4x4 cells of 256px,
+inset 32px to 192px native printed samples; 9px transparent margin
+for each cardinal direction WITHOUT a linked neighbour.
+The measured unlinked north cap runs from y9 to y21.
+Roof surface: y22..101. Facade transition: y102..114.
+The south-facing vertical wall face: y115..181, not a shallow 20px rim.
+Unlinked west/east bevel faces are approximately 46px wide across
+the roof surface. All link masks follow N=1 E=2 S=4 W=8.
+
+The current pass is geometry-verified and has 256 E/W and 256 N/S
+mask pairing checks in its generator, plus full-mod native atlas validation.
+Offline room previews are not live RimWorld screenshots.
+The result remains PENDING IN-GAME VISUAL ACCEPTANCE (roof, doors,
+real vanilla adjacency, paint and scale at colony camera zoom).
+No gravship or Asuran/Goa'uld runtime atlases changed.

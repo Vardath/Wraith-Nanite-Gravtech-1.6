@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - "Tools/WallArt/generate_wraith_settlement_wall.py"
+      - "Tools/WallArt/wng_true_wall.py"
       - "ArtSource/Walls/Wraith/OriginalWraithMaterial.svg"
       - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
       - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link01_approved.png"
