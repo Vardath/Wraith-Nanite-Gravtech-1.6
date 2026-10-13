@@ -9,6 +9,7 @@ on:
       - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
       - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link01_approved.png"
       - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link02_approved.png"
+      - "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link03_approved.png"
       - ".github/workflows/wng-wraith-settlement-wall-art.yml"
   workflow_dispatch:
 

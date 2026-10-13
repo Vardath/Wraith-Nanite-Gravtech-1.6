@@ -2,7 +2,7 @@
 """Wraith Living Wall: vanilla-like wall construction with Stargate Wraith skin.
 
 Authoritative art source for the Wraith settlement wall only. The native linked states use a shared chitin/membrane material, except the
-three independently approved masks 00, 01, and 02. A raised lip and dark face appear ONLY on exposed wall edges,
+four independently approved masks 00, 01, 02 and 03. A raised lip and dark face appear ONLY on exposed wall edges,
 never at wall-to-wall joins. No centre emblems or free-standing sprite shapes.
 
 192px sampled tiles / 32px UV gutters / 256px atlas cells / 1024px atlas.
@@ -28,6 +28,7 @@ S, STRIDE, INSET, OPEN_MARGIN = 192, 256, 32, 6
 APPROVED_MASK00 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
 APPROVED_MASK01 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link01_approved.png"
 APPROVED_MASK02 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link02_approved.png"
+APPROVED_MASK03 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link03_approved.png"
 
 
 def save(image: Image.Image, dest: Path) -> None:
@@ -183,6 +184,32 @@ def approved_east_connected_wall() -> Image.Image:
     return tile
 
 
+def approved_northeast_corner() -> Image.Image:
+    """Approved mask 03 (N+E): leave west and south exposed.
+
+    The source is a 192x192 RGBA tile prepared from the separately approved
+    square master with native north/east connection profiles. No recoloring,
+    rotation or recomputation from any unapproved art is permitted.
+    """
+    if not APPROVED_MASK03.is_file():
+        raise FileNotFoundError("Approved Wraith wall mask03 missing: " + str(APPROVED_MASK03))
+    with Image.open(APPROVED_MASK03) as source:
+        tile = source.convert("RGBA")
+    if tile.size != (S, S):
+        raise ValueError(f"Approved mask03 must be {S}x{S} RGBA, got {tile.size}")
+    alpha = np.asarray(tile.getchannel("A"))
+    q = S // 8
+    if np.mean(alpha[:2, q:-q] >= 250) < .55:
+        raise ValueError("Approved mask03 north connector does not meet the tile edge")
+    if np.mean(alpha[q:-q, -2:] >= 250) < .55:
+        raise ValueError("Approved mask03 east connector does not meet the tile edge")
+    if np.mean(alpha[-2:, q:-q] >= 250) > .35:
+        raise ValueError("Approved mask03 south face must remain exposed")
+    if np.mean(alpha[q:-q, :2] >= 250) > .35:
+        raise ValueError("Approved mask03 west face must remain exposed")
+    return tile
+
+
 def generate() -> list[Image.Image]:
     skin=membrane_material()
     tiles=[linked_wall_tile(mask,skin) for mask in range(16)]
@@ -201,10 +228,11 @@ def generate() -> list[Image.Image]:
         result.append(Image.fromarray(arr,"RGBA"))
 
     # Work through the wall atlas one user-approved connection state at a time.
-    # Masks 03..15 retain their existing generator and pixels.
+    # Masks 04..15 retain their existing generator and pixels.
     result[0] = approved_isolated_wall()
     result[1] = approved_north_connected_wall()
     result[2] = approved_east_connected_wall()
+    result[3] = approved_northeast_corner()
 
     atlas=Image.new("RGBA",(1024,1024))
     for mask,tile in enumerate(result):
