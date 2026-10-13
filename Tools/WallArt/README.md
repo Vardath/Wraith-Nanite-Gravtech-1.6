@@ -35,7 +35,7 @@ The two fixed-material settlement walls explicitly seal vacuum without a
 stuff-dependent airtight query. Existing hull materials, recipes, abilities,
 stats, research and placement workers are preserved.
 
-Piece 00 and north-connected piece 01 now have independently approved high-resolution masters under `ArtSource/Walls/Wraith/Approved/`. The linked-wall generator installs each only into its measured native atlas state; masks 02–15 retain their existing art until separately approved. The Architect menu icon continues to use isolated piece 00. North/south seam matching with the unfinished adjacent masks remains a visual QA item.
+Pieces 00, 01 and 02 have independently approved masters under `ArtSource/Walls/Wraith/Approved/`. The generator uses the original high-resolution paintings for masks 00 and 01 and preserves the approved native 192×192 RGBA mask 02 without scaling or repainting. Masks 03–15 retain their existing generated artwork until separately approved. The Architect menu icon continues to use isolated piece 00. North/south seam matching with the unfinished adjacent masks remains a visual QA item.
 
 The current Wraith settlement material is generated exclusively by
 `Tools/WallArt/generate_wraith_settlement_wall.py`. The same muted

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Wraith Living Wall: vanilla-like wall construction with Stargate Wraith skin.
 
-Authoritative art source for the Wraith settlement wall only. The 16 native
-NESW linked states share the same detailed sculpted chitin / living membrane
-surface. A raised lip and dark face appear ONLY on exposed wall edges,
+Authoritative art source for the Wraith settlement wall only. The native linked states use a shared chitin/membrane material, except the
+three independently approved masks 00, 01, and 02. A raised lip and dark face appear ONLY on exposed wall edges,
 never at wall-to-wall joins. No centre emblems or free-standing sprite shapes.
 
 192px sampled tiles / 32px UV gutters / 256px atlas cells / 1024px atlas.
@@ -28,6 +27,7 @@ LEGACY = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png"
 S, STRIDE, INSET, OPEN_MARGIN = 192, 256, 32, 6
 APPROVED_MASK00 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
 APPROVED_MASK01 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link01_approved.png"
+APPROVED_MASK02 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link02_approved.png"
 
 
 def save(image: Image.Image, dest: Path) -> None:
@@ -165,6 +165,24 @@ def approved_north_connected_wall() -> Image.Image:
     return tile
 
 
+def approved_east_connected_wall() -> Image.Image:
+    """Approved mask 02: exposed west terminus with an east-side wall join.
+
+    Preserve the approved 192x192 RGBA raster pixel-for-pixel.  The artwork
+    already contains its measured wall footprint, edge shading and connection
+    profile.  No rotations, cropping or generic linked-tile repainting.
+    """
+    if not APPROVED_MASK02.is_file():
+        raise FileNotFoundError("Approved Wraith wall mask02 missing: " + str(APPROVED_MASK02))
+    with Image.open(APPROVED_MASK02) as source:
+        tile = source.convert("RGBA")
+    if tile.size != (S, S):
+        raise ValueError(f"Approved mask02 must be {S}x{S} RGBA, got {tile.size}")
+    if tile.getbbox() is None or tile.getbbox()[2] != S:
+        raise ValueError("Approved mask02 east connection does not reach atlas sample edge")
+    return tile
+
+
 def generate() -> list[Image.Image]:
     skin=membrane_material()
     tiles=[linked_wall_tile(mask,skin) for mask in range(16)]
@@ -183,9 +201,10 @@ def generate() -> list[Image.Image]:
         result.append(Image.fromarray(arr,"RGBA"))
 
     # Work through the wall atlas one user-approved connection state at a time.
-    # Masks 02..15 deliberately retain their existing generator and pixels.
+    # Masks 03..15 retain their existing generator and pixels.
     result[0] = approved_isolated_wall()
     result[1] = approved_north_connected_wall()
+    result[2] = approved_east_connected_wall()
 
     atlas=Image.new("RGBA",(1024,1024))
     for mask,tile in enumerate(result):

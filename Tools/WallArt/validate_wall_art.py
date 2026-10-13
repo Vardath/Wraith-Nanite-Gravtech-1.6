@@ -246,6 +246,14 @@ class Validator:
                                f"{family} mask1: incorrect vanilla-equivalent footprint ({coverage:.1%})")
                     self.check(center >= .82,
                                f"{family} mask1: insufficient wall body ({center:.1%})")
+                elif mask == 2:
+                    # Independently approved east-connected / west-end painting.
+                    # Preserve its observed 1x1 silhouette; masks 03..15 are
+                    # still produced by the continuous-material generator.
+                    self.check(.45 <= coverage <= .53,
+                               f"{family} mask2: approved west-end footprint drifted ({coverage:.1%})")
+                    self.check(center >= .70,
+                               f"{family} mask2: approved wall core is missing ({center:.1%})")
                 else:
                     self.check(center >= .995, f"{family} mask{mask}: insufficient wall-top structural body ({center:.1%})")
                     self.check(coverage >= .855, f"{family} mask{mask}: smaller than vanilla-like wall coverage ({coverage:.1%})")
@@ -306,7 +314,7 @@ class Validator:
             # interior MUST remain exactly the same in all connected states.
             master_roof = cores[15][32:-32, 32:-32, :]
             for mask, core in enumerate(cores):
-                if mask in (0, 1):
+                if mask in (0, 1, 2):
                     # Approved isolated/end-cap artwork is independently painted.
                     # Compare shared material only once a connected mask is approved.
                     continue
@@ -330,14 +338,14 @@ class Validator:
                     delta = np.abs(a.astype(float) - b.astype(float))
                     mean, largest = float(delta[:, :3].mean()), float(delta[:, :3].max())
                     seam_ok = np.array_equal(a[:, 3], b[:, 3]) and mean <= 3 and largest <= 12
-                    if family == "Wraith settlement" and (first == 1 or second == 1):
-                        # Piece01 is a separately approved painting. The other
-                        # north/south link states are still pending their matching
-                        # artwork; record a visible QA warning, not a false pass.
+                    if family == "Wraith settlement" and (first in (1, 2) or second in (1, 2)):
+                        # Approved pieces 01 and 02 were painted independently.
+                        # Until adjoining masks are approved, retain truthful
+                        # seam warnings rather than asserting seamless art.
                         if not seam_ok:
                             self.warnings.append(
                                 f"{family} masks{first}/{second} {direction}: "
-                                f"piece01 neighbouring art still requires matching (mean RGB {mean:.1f}, max {largest:.0f})")
+                                f"independently painted neighbour still requires matching (mean RGB {mean:.1f}, max {largest:.0f})")
                     else:
                         self.check(seam_ok, f"{family} masks{first}/{second} {direction}: linked seam differs (mean RGB {mean:.1f}, max {largest:.0f})")
                     seams.append({"direction": direction, "masks": [first, second], "mean_rgb_delta": round(mean, 4), "max_rgb_delta": largest})
