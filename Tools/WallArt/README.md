@@ -128,7 +128,7 @@ The south-facing vertical wall face: y115..181, not a shallow 20px rim.
 Unlinked west/east bevel faces are approximately 46px wide across
 the roof surface. All link masks follow N=1 E=2 S=4 W=8.
 
-The current pass is geometry-verified and has 256 E/W and 256 N/S
+The current pass is geometry-verified and has 64 E/W and 64 S/N
 mask pairing checks in its generator, plus full-mod native atlas validation.
 Offline room previews are not live RimWorld screenshots.
 The result remains PENDING IN-GAME VISUAL ACCEPTANCE (roof, doors,
