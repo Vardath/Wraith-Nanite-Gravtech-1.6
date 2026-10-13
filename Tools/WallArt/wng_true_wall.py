@@ -40,7 +40,7 @@ def build_material(master):
         return image.crop((int(a*w),int(b*h),int(c*w),int(d*h))).convert("RGB")
     # True Wraith painted material. Restrict to unframed pigment rather than
     # enlarging the whole ornament onto every linked tile.
-    roof=patch(.43,.36,.52,.47)
+    roof=patch(.42,.025,.58,.065)
     face=patch(.32,.81,.68,.95)
     cap=patch(.37,.81,.63,.88)
     west=patch(.015,.24,.23,.65)
