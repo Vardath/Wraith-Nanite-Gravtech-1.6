@@ -125,17 +125,16 @@ namespace WraithNaniteGravtech
     }
 
     /// <summary>
-    /// Same-faction local collective link. The link owns only human-form coordination state;
+    /// Same-faction local collective link. Nanite Reserve is the sole source of the
+    /// Replicator-block fabrication ability, including on custom xenotypes and copied
+    /// human-form pawns. The collective link must not grant or remove that ability.
+    /// The link owns only human-form coordination state;
     /// it does not change faction, grant block sovereignty, intrude on Replicator domains or
     /// replace the exact Queen/implant/Temporary-Asuran controller contracts.
     /// </summary>
     public sealed class Gene_AsuranCollectiveLink : Gene
     {
         private const string StateDefName = "WNG_AsuranCollectiveState";
-        private const string AsuranXenotypeDefName = "WNG_NanitePrecursor";
-        private const string HumanFormReplicatorXenotypeDefName = "WNG_HumanFormReplicator";
-        private const string AsuranMatterFabricationAbilityDefName = "WNG_AsuranFabricateReplicatorBlocks";
-
         public AsuranCollectiveSettingsExtension Settings =>
             def.GetModExtension<AsuranCollectiveSettingsExtension>() ?? new AsuranCollectiveSettingsExtension();
 
@@ -147,7 +146,6 @@ namespace WraithNaniteGravtech
 
         public override void PostRemove()
         {
-            RemoveAsuranMatterFabricationAbility();
             RemoveState();
             base.PostRemove();
         }
@@ -167,8 +165,6 @@ namespace WraithNaniteGravtech
         {
             if (pawn?.health?.hediffSet == null)
                 return;
-
-            RefreshAsuranMatterFabricationAbility();
 
             HediffDef stateDef = DefDatabase<HediffDef>.GetNamedSilentFail(StateDefName);
             if (stateDef == null)
@@ -192,33 +188,6 @@ namespace WraithNaniteGravtech
             int cap = Math.Max(1, Settings.peerBenefitCap);
             int physicalPeers = Math.Min(cap, AsuranCollectiveUtility.CountLocalNetworkPeers(pawn));
             state.Severity = AsuranIdeologyUtility.CollectiveStateSeverity(pawn, physicalPeers);
-        }
-
-        private void RefreshAsuranMatterFabricationAbility()
-        {
-            if (pawn?.abilities == null)
-                return;
-
-            AbilityDef ability = DefDatabase<AbilityDef>.GetNamedSilentFail(AsuranMatterFabricationAbilityDefName);
-            if (ability == null)
-                return;
-
-            string xenotype = pawn.genes?.Xenotype?.defName;
-            bool shouldHave = Active && (xenotype == AsuranXenotypeDefName || xenotype == HumanFormReplicatorXenotypeDefName);
-            bool has = pawn.abilities.GetAbility(ability) != null;
-            if (shouldHave && !has)
-                pawn.abilities.GainAbility(ability);
-            else if (!shouldHave && has)
-                pawn.abilities.RemoveAbility(ability);
-        }
-
-        private void RemoveAsuranMatterFabricationAbility()
-        {
-            if (pawn?.abilities == null)
-                return;
-            AbilityDef ability = DefDatabase<AbilityDef>.GetNamedSilentFail(AsuranMatterFabricationAbilityDefName);
-            if (ability != null && pawn.abilities.GetAbility(ability) != null)
-                pawn.abilities.RemoveAbility(ability);
         }
 
         private void RemoveState()
