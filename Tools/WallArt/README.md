@@ -1,3 +1,32 @@
+## Wraith living-wall high-definition upgrade (14 October 2026)
+
+The Wraith settlement wall is the **2× exception** to the original family
+wall texture format: its in-mod `WNG_LivingWall_Atlas.png` is
+**2048×2048 RGBA**, containing sixteen **512px** atlas cells with
+**64px padding** around a **384×384** displayed tile. It still occupies
+**one** RimWorld map square, with exactly the 9/192-scale open-edge setback
+(18 pixels at this resolution). The other family hull atlases remain
+unchanged at 1024px.
+
+`wng_true_wall.py` uses the already-approved high-resolution original Wraith
+paintings in `ArtSource/Walls/Wraith/Approved/` as primary material art. The
+earlier build sampled tiny strips and blurred them across whole squares;
+the 2× pass now crops broad, detailed sections of the original painted
+roof armour, organic side ribs, north lip and darker front wall face.
+Visible bone bevels occur only on exposed edges and never at linked joins.
+
+The mod texture, legacy wall icon, Architect icon and four-by-four
+contact sheet are generated together. Native `CornerFiller`, `Wall`/`Rock`
+linking, room sealing, roof support, door replacement, 1×1 footprint
+and Wraith regeneration are unchanged. The full 16-state set and all
+compatible cardinal port combinations are checked for geometry and seam
+pixels. The review sheet is
+`ArtSource/Walls/Wraith/QA/HandPainted/Wraith-Living-Wall-16-States-Review.png`.
+A game runtime appearance test is still necessary; CI does not simulate
+lighting, doors or mixed vanilla/Wraith placement.
+
+---
+
 # WNG walls for RimWorld 1.6
 
 The five functional walls use three material families but four linked atlases.
