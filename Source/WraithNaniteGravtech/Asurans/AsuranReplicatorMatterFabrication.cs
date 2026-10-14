@@ -16,8 +16,6 @@ namespace WraithNaniteGravtech
 
     public sealed class CompAbilityEffect_AsuranReplicatorMatter : CompAbilityEffect
     {
-        private const string AsuranXenotypeDefName = "WNG_NanitePrecursor";
-        private const string HumanFormReplicatorXenotypeDefName = "WNG_HumanFormReplicator";
         private const string ReplicatorMatterDefName = "WNG_ReplicatorMatter";
 
         public new CompProperties_AbilityAsuranReplicatorMatter Props =>
@@ -101,23 +99,21 @@ namespace WraithNaniteGravtech
             reason = null;
             if (caster == null || caster.Destroyed || caster.Dead || !caster.Spawned || caster.Map == null)
             {
-                reason = "The Asuran fabricator must be alive and physically present on a map.";
+                reason = "The nanite fabricator must be alive and physically present on a map.";
                 return false;
             }
 
             if (caster.Faction != Faction.OfPlayer)
             {
-                reason = "Replicator Block fabrication is a player-controlled Asuran ability.";
+                reason = "Replicator Block fabrication requires a player-controlled nanite gene carrier.";
                 return false;
             }
 
-            string xenotype = caster.genes?.Xenotype?.defName;
-            if (xenotype != AsuranXenotypeDefName && xenotype != HumanFormReplicatorXenotypeDefName)
-            {
-                reason = "Only a WNG Asuran or human-form Replicator can fabricate Replicator Blocks from its Nanite Reserve.";
-                return false;
-            }
-
+            // WNG_NaniteReserve is an Asuran-origin resource gene. This same
+            // finite physical reserve powers fabrication for all Asuran castes,
+            // human-form Replicator copies and any other pawn inheriting the
+            // gene (including custom xenotypes). Never restrict by PawnKind or
+            // exact xenotype: gene inheritance is the authoritative source.
             if (AsuranCollectiveUtility.IsDisrupted(caster))
             {
                 reason = "EMP disruption prevents controlled Replicator Block fabrication.";
@@ -128,7 +124,7 @@ namespace WraithNaniteGravtech
                 caster.genes?.GetFirstGeneOfType<Gene_Resource_NaniteReserve>();
             if (reserve == null || !reserve.Active)
             {
-                reason = "This Asuran has no active Nanite Reserve.";
+                reason = "This pawn has no active Nanite Reserve gene.";
                 return false;
             }
 
