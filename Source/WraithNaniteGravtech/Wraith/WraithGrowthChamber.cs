@@ -75,6 +75,7 @@ namespace WraithNaniteGravtech
             Command_Action command = new Command_Action
             {
                 defaultLabel = "Gestate Wraith " + casteLabel,
+                icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/Gestate" + casteLabel, false),
                 defaultDesc = "Initiate a " + casteLabel + " gestation cycle. Requires a living, conscious player Wraith (including a Hunter) to initiate, " +
                     biomass + " Wraith biomass and a Wraith donor with at least " + Props.donorMinimumLifeForce.ToString("0.00") +
                     " Life Force. The donor contributes " + Props.donorLifeForceCost.ToString("0.00") +
@@ -98,6 +99,7 @@ namespace WraithNaniteGravtech
             Command_Action command = new Command_Action
             {
                 defaultLabel = "Gestate Wraith Commander",
+                icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateCommander", false),
                 defaultDesc = "Initiate a Commander gestation cycle. Commander growth requires an existing Wraith biological template: either a Wraith corpse or a living Wraith prisoner. A living prisoner is lethally consumed by the process in the same irreversible sense as a Biotech ripscanner; a corpse is consumed outright. Also requires a living, conscious player Wraith (including a Hunter) to initiate, " +
                     biomass + " Wraith biomass and a Wraith donor with at least " + Props.donorMinimumLifeForce.ToString("0.00") +
                     " Life Force. The donor contributes " + Props.donorLifeForceCost.ToString("0.00") +
