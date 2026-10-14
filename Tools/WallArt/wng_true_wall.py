@@ -98,7 +98,7 @@ def generate(source):
                     x=x0+d if is_west else x1-1-d
                     ratio=d/max(1,width-1)
                     sx=min(89,round(ratio*89))
-                    weight=.97*(1-ratio)**1.7
+                    weight=.98*(1-ratio)**.65
                     shade=(.97+.12*(1-ratio)) if y<FACE_TRANSITION else .86
                     paint[y,x,:]=paint[y,x,:]*(1-weight)+side[y,sx,:]*weight*shade
         port=20
