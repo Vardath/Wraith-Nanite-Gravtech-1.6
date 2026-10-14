@@ -111,15 +111,16 @@ if cmd is not None:
 
 # Five independent, caste-identifiable growth-chamber command icons.
 growth=read("Source/WraithNaniteGravtech/Wraith/WraithGrowthChamber.cs")
-if 'icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/Gestate" + casteLabel, false)' not in growth:
-    fail.append("Normal growth commands lack per-caste icon routing")
-if 'icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateCommander", false)' not in growth:
-    fail.append("Commander growth command lacks its dedicated icon")
+if 'icon = CasteIcon(casteLabel)' not in growth or 'icon = CasteIcon("Commander")' not in growth:
+    fail.append("Wraith gestation commands not linked to per-caste icons")
+for caste in ("Hunter","Warrior","Keeper","Commander","Queen"):
+    if 'ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/Gestate'+caste+'", false)' not in growth:
+        fail.append("Growth chamber source missing literal icon: "+caste)
 for caste in ("Hunter","Warrior","Keeper","Commander","Queen"):
     icon=ROOT/"Textures/UI/WNG/GrowthChamber"/("Gestate"+caste+".png")
     if not icon.is_file() or icon.stat().st_size<1024:
         fail.append("missing authored growth icon: "+str(icon))
-    elif icon.read_bytes()[:8]!=b"\\x89PNG\\r\\n\\x1a\\n":
+    elif icon.read_bytes()[:8]!=b"\x89PNG\r\n\x1a\n":
         fail.append("invalid PNG header: "+str(icon))
 
 # 2) WNG itself must not globally replace map/world generators.
