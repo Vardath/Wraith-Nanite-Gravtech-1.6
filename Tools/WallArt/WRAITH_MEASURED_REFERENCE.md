@@ -1,3 +1,40 @@
+# HD Wraith Living Wall — 16-State Artwork and Geometry
+
+**Current HD art pass (14 October 2026).** The installed Wraith settlement
+atlas now uses **2048 × 2048 RGBA**, with **512 × 512 atlas cells**,
+**64px gutters**, and **384 × 384 pixels per rendered 1 × 1 wall**.
+Vanilla-format reference data below is in 192px sample units. Multiply
+every baseline pixel coordinate by **2** to compare the installed artwork.
+For example, an exposed edge inset is 18/384px rather than 9/192px.
+
+The material source is the **user-approved Wraith isolated-wall master**
+stored unchanged at
+ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg.
+Roof plates, north lip, living side armour, and front façade are sampled
+from **different broad, high-resolution painted portions** of that original.
+Prior stretching of a tiny purple/grey texture strip is discontinued.
+The actual runtime atlas, Architect icon and legacy one-tile sprite are
+regenerated from those sources, not from illustrative AI sprite sheets.
+
+**Geometry fixed in physical map cells**: the same N=1, E=2, S=4, W=8
+linked-wall states, CornerFiller, drawSize (1,1), native Wall/Rock joining,
+and exact native silhouette are maintained. All eligible E/W and N/S joins
+are checked for equal edge texels. Padding is edge-clamped. The separately
+approved earlier masks are preserved in the source folder (not modified).
+
+**Artistic acceptance:** This is a procedural assembly of original painted
+materials, not 16 independently commissioned/hand-painted finished
+masters. Offline QA and CI establish atlas geometry and pixel continuity;
+they do **not** establish aesthetic player approval or live RimWorld
+compatibility. Playtesting against installed vanilla Core 1.6 art is
+still required.
+
+**Review pixels:** ArtSource/Walls/Wraith/QA/HandPainted/
+Wraith-Living-Wall-16-States-Review.png is a reduced real-asset contact
+sheet; Wraith-Living-Wall-Room-Test.png is an assembled-layout simulation.
+
+---
+
 # Wraith Living Wall — 16-State Measured Visual Baseline
 
 Status: full reference-fitted art installed in WNG `WNG_LivingWall_Atlas.png`; offline and native-geometry checks completed; live RimWorld 1.6 game placement not verified.
