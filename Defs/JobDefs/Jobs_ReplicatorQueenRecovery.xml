@@ -5,13 +5,13 @@
     <driverClass>WraithNaniteGravtech.JobDriver_SubdueReplicatorQueen</driverClass>
     <reportString>subduing the Replicator Queen.</reportString>
     <playerInterruptible>false</playerInterruptible>
-    <checkOverrideOnDamage>false</checkOverrideOnDamage>
+    <checkOverrideOnDamage>Never</checkOverrideOnDamage>
   </JobDef>
   <JobDef>
     <defName>WNG_LoadReplicatorQueenIntoCarrier</defName>
     <driverClass>WraithNaniteGravtech.JobDriver_LoadReplicatorQueenIntoCarrier</driverClass>
     <reportString>loading the Replicator Queen into the recovery carrier.</reportString>
     <playerInterruptible>false</playerInterruptible>
-    <checkOverrideOnDamage>false</checkOverrideOnDamage>
+    <checkOverrideOnDamage>Never</checkOverrideOnDamage>
   </JobDef>
 </Defs>
