@@ -1,10 +1,10 @@
 {
   "assembly": "WraithNaniteGravtech.dll",
-  "built_utc": "2026-10-14T03:54:17+00:00",
-  "dll_sha256": "bb180d4a678591d7bed5a086f5005776c1b29d5f5931923d14768303e5f94636",
+  "built_utc": "2026-10-14T03:55:46+00:00",
+  "dll_sha256": "fcc9a12230fda07b470d6eab608acb6646c2d82821d6ad5a44fdc5aabedd4366",
   "dll_size": 983552,
   "schema": 1,
-  "source_commit": "0d1c67692b015e194e61ea7fcf8be6348cfa825b",
+  "source_commit": "a6d36080c17bbb008d3e48a4c9ab7d75266b5ce1",
   "source_file_count": 149,
   "source_fingerprint_sha256": "f87290093e176e97240c2e1ee35c997a64ecc61df10cd83792d2d85a3832867c"
 }
