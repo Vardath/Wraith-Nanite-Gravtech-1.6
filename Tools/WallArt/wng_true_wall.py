@@ -93,13 +93,13 @@ def generate(source):
         for flag,side,is_west in ((8,west,True),(2,east,False)):
             if mask&flag: continue
             for y in range(y0,y1):
-                width=90 if (mask&4 or y<FACE_START) else 24
+                width=100 if (mask&4 or y<FACE_START) else 42
                 for d in range(width):
                     x=x0+d if is_west else x1-1-d
                     ratio=d/max(1,width-1)
                     sx=min(89,round(ratio*89))
                     weight=.97*(1-ratio)**1.7
-                    shade=(.95+.10*(1-ratio)) if y<FACE_TRANSITION else .80
+                    shade=(.97+.12*(1-ratio)) if y<FACE_TRANSITION else .86
                     paint[y,x,:]=paint[y,x,:]*(1-weight)+side[y,sx,:]*weight*shade
         port=20
         for j in range(port):
