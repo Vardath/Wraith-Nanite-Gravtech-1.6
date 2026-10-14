@@ -209,6 +209,40 @@ for base in (ROOT/"Patches",ROOT/"Compatibility"):
             if "WNG_" not in raw:
                 failures.append(f"{path}: patches WorkGiver/WorkType without WNG scoping")
 
+# ---------- 2026-10-14 colony job continuity regression ----------
+# Child's Toy legitimately performs ordinary hauling using the vanilla mech
+# think tree. A removed optional MAP dependency must never inject an
+# unresolvable class into that shared vanilla tree again.
+toy_root=ET.parse(ROOT/"Defs/ThingDefs/Race_ChildsToy.xml").getroot()
+toy=next((n for n in toy_root.findall("./ThingDef")
+          if (n.findtext("defName") or "").strip()=="WNG_ChildsToy"),None)
+if toy is None:
+    failures.append("Child's Toy mech definition missing")
+else:
+    if (toy.findtext("./race/thinkTreeMain") or "").strip()!="Mechanoid":
+        failures.append("Child's Toy must retain the vanilla Mechanoid think tree")
+    if [(n.text or "").strip() for n in toy.findall("./race/mechEnabledWorkTypes/li")]!=["Hauling"]:
+        failures.append("Child's Toy must retain vanilla mech hauling work")
+
+companion=ROOT/"CompanionMods/Z-Adaptive-Error-Patch"
+for patch in (companion/"Patches").rglob("*.xml"):
+    raw=patch.read_text(encoding="utf-8",errors="ignore")
+    if "MAP_MechanoidMechanitor.JobGiver_MechanoidMechanitorRecreation" in raw:
+        failures.append(f"{patch}: dead optional MAP class can destroy vanilla Mechanoid think tree")
+
+continuity=companion/"Source/ZAdaptiveRuntime/JobContinuity20261014.cs"
+if not continuity.exists():
+    failures.append("Missing narrowly scoped 2026-10-14 job-continuity guard")
+else:
+    guard=continuity.read_text(encoding="utf-8",errors="ignore")
+    for signature in (
+        "CheckForAutoAttack", "IdleAutoAttackFinalizer",
+        "JobAbility+Job_ExposeData", "TaranJobPostLoadFinalizer",
+        "LoadSaveMode.PostLoadInit", '"SelfShutdown"', '"HaulToCell"',
+    ):
+        if signature not in guard:
+            failures.append(f"Job-continuity guard lost required narrow signature: {signature}")
+
 print("=== D142 WORKGIVER / WORKTYPE AUDIT ===")
 print(f" - WNG WorkTypeDefs: {len(worktypes)}")
 print(f" - WNG WorkGiverDefs: {len(workgivers)}")
