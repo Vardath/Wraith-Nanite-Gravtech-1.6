@@ -376,16 +376,40 @@ confirms this specific XPath is missing in the actual 626-mod stack.
 This is a fragile compatibility assumption; it need not mean MAP's job
 giver or all Mechanoid work is invalid.
 
-`Patches/MechanoidMechanitorRecreationCompat.xml` is a second-chance
-compatibility operation that runs **after MAP**. Only if the original
-recreation job giver is absent *and* the existing player-controlled
-Mechanoid Idle branch still has a child, it prepends the same job giver
-before that branch's first child. It does not insert it into hostile or
-uncontrolled mechs, does not duplicate a successfully inserted job giver,
-and does not invent missing ThinkTree roots. The original upstream XML
-failure may still be logged because it happened before Z Adaptive's
-later patch; the fallback restores behaviour where its safe branch
-exists. The optional package ID was added to `About/About.xml/loadAfter`.
+**2026-10-14 correction:** the second-chance patch `Patches/MechanoidMechanitorRecreationCompat.xml`
+was **removed**, not merely disabled. Its XPath tested for a remaining Mechanoid
+Idle child but never checked that the external MAP job-giver *class existed*.
+After MAP was removed from the active installation, this XML inserted a dead
+`MAP_MechanoidMechanitor.JobGiver_MechanoidMechanitorRecreation` class into
+vanilla `Mechanoid`. The resulting `Mechanoid.xml` deserialization exception
+removed the shared `Mechanoid` ThinkTreeDef and prevented lifters and WNG's
+hauling-capable Child's Toy from selecting jobs. No job giver is injected now.
+If MAP is reinstalled later, its own recreation mod patch must be repaired
+against the installed Mechanoid Idle tree, with the MAP assembly definitely loaded.
+The optional loadAfter entry is harmless if MAP is not installed.
+
+**2026-10-14 job continuity guards:** `Source/ZAdaptiveRuntime/JobContinuity20261014.cs`
+handles two *specific* recorded failures while leaving normal work, hunting,
+think trees and save records unchanged:
+
+- The observed `JobDriver_Wait.CheckForAutoAttack` NullReferenceException
+  can interrupt Wait and even its error-recovery job. A finalizer skips only
+  the failing optional auto-attack check, with a one-time warning; every
+  successful auto-attack and every other exception remains unchanged.
+- TaranMagicFramework's optional `JobAbility+Job_ExposeData.Postfix` threw
+  during PostLoadInit on vanilla `SelfShutdown` and `HaulToCell` jobs.
+  A finalizer handles only NullReferenceException on these exact two job defs
+  in `LoadSaveMode.PostLoadInit`, retaining the base game's loaded job;
+  optional Taran-specific metadata may still not recover. Other save and
+  Taran jobs/errors are unmodified.
+
+**Not established as fixed:** the removed SMART Hunters save components,
+a possible hunting-mod interaction, and the prisoner's competing sleeping-spot
+reservation still need validation on a backed-up save. The given logs do not
+show a vanilla `WorkGiver_HunterHunt` failure. Do not blindly patch it.
+Z Adaptive's source changes require a new DLL build and reinstall of the
+bundled companion mod. Removing the harmful XML alone requires replacing the
+installed companion patch folder and restarting RimWorld.
 
 **VEF/MVCF duplicate save IDs:** VEF bundles MVCF, so RimDoctor labels
 duplicated `MVCF.ManagedVerb` registrations as VEF, but the same
@@ -769,10 +793,11 @@ for live confirmation.
   `JobDriver_SitFacingBuilding.TryMakePreToilReservations` method.
   This requires a Space Services-specific source fix or temporary
   removal, not a global Harmony exception filter.
-- **[MAP] Mechanoid Mechanitor (1.6)** has a recreation ThinkTree
-  insertion failure and a grower-sow IL-pattern warning. The previous
-  guarded late XML fallback remains, but does not eliminate the
-  upstream failure emitted before it.
+- **[MAP] Mechanoid Mechanitor (1.6)** is now absent from the user's
+  installed stack. The unsafe optional late ThinkTree injection has been
+  removed after it caused the vanilla Mechanoid tree to fail loading.
+  Its original recreation XPath and grower-sow IL-pattern warning remain
+  upstream compatibility matters if MAP is installed again.
 - The absent FacialAnimation.HeadTypeDef, Yayo's moved settings class,
   malformed optional psytrainer references and inactive RimPy
   database are independent issues and not demonstrated hunting causes.
