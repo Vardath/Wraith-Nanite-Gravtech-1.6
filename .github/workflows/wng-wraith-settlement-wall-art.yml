@@ -45,7 +45,8 @@ jobs:
             Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png \
             Textures/UI/WNG/Build/WNG_WraithLivingWall.png \
             ArtSource/Walls/Wraith/QA/HandPainted/Wraith-Living-Wall-Room-Test.png \
-            ArtSource/Walls/Wraith/QA/HandPainted/Wraith-Living-Wall-16-States.png
+            ArtSource/Walls/Wraith/QA/HandPainted/Wraith-Living-Wall-16-States.png \
+            ArtSource/Walls/Wraith/QA/HandPainted/Wraith-Living-Wall-16-States-Review.png
           if git diff --cached --quiet; then
             echo "Wall artwork already matches approved generator"
             exit 0
