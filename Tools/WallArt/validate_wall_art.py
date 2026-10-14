@@ -229,12 +229,13 @@ class Validator:
             if family == "Wraith settlement":
                 # Actual outer silhouettes measured from the ReBuild copies of
                 # vanilla's Smooth, Bricks and Planks 1024px wall atlases.
-                # Nine UV-sample pixels of transparent setback on each
+                # Nine of every 192 sample pixels of transparent setback on each
                 # exposed side; connected sides extend all the way across.
-                lx = 0 if mask & 8 else 9
-                rx = sample if mask & 2 else sample-9
-                ty = 0 if mask & 1 else 9
-                by = sample if mask & 4 else sample-9
+                setback = round(sample * 9 / 192)
+                lx = 0 if mask & 8 else setback
+                rx = sample if mask & 2 else sample-setback
+                ty = 0 if mask & 1 else setback
+                by = sample if mask & 4 else sample-setback
                 expected_alpha = np.zeros((sample,sample),dtype=bool)
                 expected_alpha[ty:by,lx:rx] = True
                 self.check(np.array_equal(opaque,expected_alpha),
@@ -245,8 +246,10 @@ class Validator:
                 self.check(material_std >= 6.5,
                            f"{family} mask{mask}: painted bone/membrane lacks material relief ({material_std:.1f})")
                 if not (mask & 4):
-                    roof = core[55:90,65:127,:3].astype(float)
-                    face = core[133:168,65:127,:3].astype(float)
+                    factor = sample/192
+                    span = lambda lo,hi: slice(round(lo*factor),round(hi*factor))
+                    roof = core[span(55,90),span(65,127),:3].astype(float)
+                    face = core[span(133,168),span(65,127),:3].astype(float)
                     self.check(abs(float(roof.mean()-face.mean())) >= 3,
                                f"{family} mask{mask}: missing the measured deep south-facing facade")
                 if mask == 15:
