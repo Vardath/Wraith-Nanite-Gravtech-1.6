@@ -2,9 +2,9 @@
 """Vanilla-reference Wraith living wall: all 16 genuine linked-wall geometries.
 
 Template measured from the 1024px ReBuild copy of RimWorld Wall_Atlas_Smooth,
-Bricks and Planks. 192x192 rendered sample in a 256x256 atlas cell.
-Exposed edge inset: 9 pixels. Roof-to-face transition: y102..114.
-Lower wall face: y115..181. Side bevels: x9..54 / x137..182.
+Bricks and Planks. Original 192px sample is drawn at 2x: 384px in a 512px atlas cell.
+Exposed edge inset: 18px; facade transition y204..230.
+Lower wall face: y230..365; side bevel width up to 90px.
 This is a material-specific repaint from existing approved Wraith artwork,
 not a reskin of the copyrighted reference texture.
 """
@@ -12,11 +12,11 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 import numpy as np
 
-S = 192
-EDGE = 9
-TOP_END = 22
-FACE_TRANSITION = 102
-FACE_START = 115
+S = 384
+EDGE = 18
+TOP_END = 44
+FACE_TRANSITION = 204
+FACE_START = 230
 
 def rectangle(mask):
     return (0 if mask & 8 else EDGE, 0 if mask & 1 else EDGE,
@@ -32,74 +32,89 @@ def approved_source(repo):
     return Image.fromarray(np.dstack((rgb, np.where(filled,255,0).astype(np.uint8))),"RGBA")
 
 def build_material(master):
+    """Paint with large, high-resolution APPROVED Wraith image regions."""
     bbox = master.getchannel("A").getbbox()
-    if bbox is None: raise ValueError("Approved Wraith master has no living material")
-    image = master.crop(bbox).convert("RGBA")
-    w,h = image.size
-    def patch(a,b,c,d):
-        return image.crop((int(a*w),int(b*h),int(c*w),int(d*h))).convert("RGB")
-    # True Wraith painted material. Restrict to unframed pigment rather than
-    # enlarging the whole ornament onto every linked tile.
-    roof=patch(.42,.025,.58,.065)
-    face=patch(.32,.81,.68,.95)
-    cap=patch(.37,.81,.63,.88)
-    west=patch(.015,.24,.23,.65)
-    east=patch(.77,.24,.985,.65)
-    def periodic_x(original,height):
-        half=original.resize((96,height),Image.Resampling.LANCZOS)
-        out=Image.new("RGB",(S,height));out.paste(half,(0,0))
-        out.paste(half.transpose(Image.Transpose.FLIP_LEFT_RIGHT),(96,0))
-        return np.asarray(out)
-    def periodic_y(original,width):
-        half=original.resize((width,96),Image.Resampling.LANCZOS)
-        out=Image.new("RGB",(width,S));out.paste(half,(0,0))
-        out.paste(half.transpose(Image.Transpose.FLIP_TOP_BOTTOM),(0,96))
-        return np.asarray(out)
-    half=periodic_x(roof,96)
-    surface=np.empty((S,S,3),dtype=np.uint8)
-    surface[:96]=half;surface[96:]=half[::-1]
-    return surface,periodic_x(face,S),periodic_x(cap,S),periodic_y(west,55),periodic_y(east,55)
+    if bbox is None: raise ValueError("Missing original Wraith painting")
+    original = master.crop(bbox).convert("RGB")
+    w,h = original.size
+    if min(w,h) < 600: raise ValueError("Master lacks sufficient resolution")
+    def crop(box,size):
+        a,b,c,d=box
+        img=original.crop((round(a*w),round(b*h),round(c*w),round(d*h)))
+        from PIL import ImageFilter
+        return np.asarray(img.resize(size, Image.Resampling.LANCZOS).filter(
+            ImageFilter.UnsharpMask(radius=1.0,percent=110,threshold=2)),dtype=np.float32)
+    def tileable(a, sides="xy", band=36):
+        a=a.copy()
+        if "x" in sides:
+            for j in range(band):
+                weight=.5*(1+np.cos(np.pi*j/band))
+                l,r=a[:,j,:].copy(),a[:,-j-1,:].copy()
+                avg=(l+r)/2
+                a[:,j,:]=l*(1-weight)+avg*weight
+                a[:,-j-1,:]=r*(1-weight)+avg*weight
+            a[:,0,:]=a[:,-1,:]=(a[:,0,:]+a[:,-1,:])/2
+        if "y" in sides:
+            for j in range(band):
+                weight=.5*(1+np.cos(np.pi*j/band))
+                t,b=a[j,:,:].copy(),a[-j-1,:,:].copy()
+                avg=(t+b)/2
+                a[j,:,:]=t*(1-weight)+avg*weight
+                a[-j-1,:,:]=b*(1-weight)+avg*weight
+            a[0,:,:]=a[-1,:,:]=(a[0,:,:]+a[-1,:,:])/2
+        return a
+    return (
+        tileable(crop((.205,.12,.795,.735),(S,S))),
+        tileable(crop((.23,.85,.77,.993),(S,150)),"x"),
+        tileable(crop((.20,.005,.80,.115),(S,TOP_END)),"x"),
+        crop((.008,.20,.205,.855),(90,S)),
+        crop((.795,.20,.992,.855),(90,S)),
+        tileable(crop((.24,.76,.76,.87),(S,36)),"x")
+    )
 
 def generate(source):
-    roof,face,cap,west,east=build_material(source)
+    roof, facade, topcap, west, east, rim=build_material(source)
     states=[]
     for mask in range(16):
         x0,y0,x1,y1=rectangle(mask)
-        pix=roof.astype(np.float32).copy()
-        # South-facing facade: almost 40% of vanilla wall height is not roof.
-        if not (mask&4):
-            for y in range(FACE_TRANSITION,min(y1,FACE_START)):
+        paint=roof.copy()
+        if not mask&4:
+            for y in range(FACE_TRANSITION,min(FACE_START,y1)):
                 t=(y-FACE_TRANSITION)/(FACE_START-FACE_TRANSITION)
-                lifted=np.clip(cap[y].astype(np.float32)*(.83+.12*t),0,255)
-                pix[y]=pix[y]*(1-t)+lifted*t
+                paint[y,:,:]=paint[y,:,:]*(1-t)+rim[min(35,round(t*35)),:,:]*(.95-.15*t)*t
             for y in range(FACE_START,y1):
-                shade=.64+.18*(y-FACE_START)/max(1,y1-FACE_START)
-                pix[y]=np.clip(face[y].astype(np.float32)*shade,0,255)
-        if not(mask&1):
-            for y in range(y0,min(TOP_END,y1)):
-                brightness=.65+.30*(y-y0)/max(1,TOP_END-y0)
-                pix[y]=np.clip(cap[y].astype(np.float32)*brightness+17,0,255)
-        # Exposed chitin bevel: 46 px across the roof, 9 px across the facade;
-        # NEVER add one of these at a linked border.
-        for bit,edge_tex,is_west in ((8,west,True),(2,east,False)):
-            if mask&bit:continue
+                fy=min(facade.shape[0]-1,round((y-FACE_START)*(facade.shape[0]-1)/(S-EDGE-FACE_START-1)))
+                paint[y,:,:]=facade[fy,:,:]*(.74+.15*(y-FACE_START)/max(1,y1-FACE_START))
+        if not mask&1:
+            for y in range(y0,min(y0+TOP_END,y1)):
+                k=y-y0
+                t=k/max(1,TOP_END-1)
+                paint[y,:,:]=paint[y,:,:]*(.12+.16*t)+topcap[k,:,:]*(.88-.16*t)*(.78+.20*t)
+        for flag,side,is_west in ((8,west,True),(2,east,False)):
+            if mask&flag: continue
             for y in range(y0,y1):
-                depth=46 if (mask&4 or y<FACE_START) else 9
-                for k in range(depth):
-                    x=x0+k if is_west else x1-1-k
-                    t=k/max(1,depth-1)
-                    pigment=edge_tex[y,int(t*(edge_tex.shape[1]-1))].astype(np.float32)
-                    weight=(1-t)**.75
-                    shade=(.85+.30*(1-t)) if y<FACE_TRANSITION else (.54+.20*(1-t))
-                    pix[y,x]=pix[y,x]*(1-weight)+np.clip(pigment*shade,0,255)*weight
+                width=90 if (mask&4 or y<FACE_START) else 24
+                for d in range(width):
+                    x=x0+d if is_west else x1-1-d
+                    ratio=d/max(1,width-1)
+                    sx=min(89,round(ratio*89))
+                    weight=.97*(1-ratio)**1.7
+                    shade=(.95+.10*(1-ratio)) if y<FACE_TRANSITION else .80
+                    paint[y,x,:]=paint[y,x,:]*(1-weight)+side[y,sx,:]*weight*shade
+        port=20
+        for j in range(port):
+            amount=(1-j/port)**2
+            if mask&8: paint[:,j,:]=paint[:,j,:]*(1-amount)+roof[:,0,:]*amount
+            if mask&2: paint[:,-j-1,:]=paint[:,-j-1,:]*(1-amount)+roof[:,0,:]*amount
+            if mask&1: paint[j,:,:]=paint[j,:,:]*(1-amount)+roof[0,:,:]*amount
+            if mask&4: paint[-j-1,:,:]=paint[-j-1,:,:]*(1-amount)+roof[0,:,:]*amount
+        if mask&8: paint[:,0,:]=roof[:,0,:]
+        if mask&2: paint[:,-1,:]=roof[:,0,:]
+        if mask&1: paint[0,:,:]=roof[0,:,:]
+        if mask&4: paint[-1,:,:]=roof[0,:,:]
         rgba=np.zeros((S,S,4),dtype=np.uint8)
-        rgba[y0:y1,x0:x1,:3]=np.clip(pix[y0:y1,x0:x1],0,255).astype(np.uint8)
+        rgba[y0:y1,x0:x1,:3]=np.clip(paint[y0:y1,x0:x1],0,255).astype(np.uint8)
         rgba[y0:y1,x0:x1,3]=255
-        # MaterialAtlasPool-compatible cardinal joins; exact matching texels.
-        if mask&8:rgba[EDGE:S-EDGE,0,:3]=roof[EDGE:S-EDGE,0]
-        if mask&2:rgba[EDGE:S-EDGE,-1,:3]=roof[EDGE:S-EDGE,0]
-        if mask&1:rgba[0,EDGE:S-EDGE,:3]=roof[0,EDGE:S-EDGE]
-        if mask&4:rgba[-1,EDGE:S-EDGE,:3]=roof[0,EDGE:S-EDGE]
         states.append(Image.fromarray(rgba,"RGBA"))
     verify(states)
     return states
@@ -124,9 +139,13 @@ def verify(states):
                     raise ValueError(f"South/north incompatible Wraith seam: {a:02d}/{b:02d}")
 
 def pack(states):
-    atlas=Image.new("RGBA",(1024,1024))
-    for mask,im in enumerate(states):
-        area=np.asarray(im.convert("RGBA"))
-        cell=np.pad(area,((32,32),(32,32),(0,0)),mode="edge")
-        atlas.paste(Image.fromarray(cell,"RGBA"),((mask%4)*256,(3-mask//4)*256))
+    """Native MaterialAtlasPool: 2048px, 4x4 512px cells, 384px printed."""
+    stride=S*4//3
+    inset=S//6
+    atlas=Image.new("RGBA",(stride*4,stride*4))
+    for mask,tile in enumerate(states):
+        area=np.asarray(tile.convert("RGBA"))
+        padded=np.pad(area,((inset,inset),(inset,inset),(0,0)),mode="edge")
+        atlas.paste(Image.fromarray(padded,"RGBA"),
+                    ((mask%4)*stride,(3-mask//4)*stride))
     return atlas
