@@ -34,6 +34,11 @@
     <resourceLabel>nanite reserve</resourceLabel>
     <resourceDescription>{PAWN_nameDef} converts ordinary nutrition into synthetic repair feedstock. Sufficient reserve powers faster injury repair and missing-part reconstruction; depleted units retain slower emergency reconstruction.</resourceDescription>
     <resourceLossPerDay>0</resourceLossPerDay>
+    <!-- The active Nanite Reserve gene is the capability and fuel source for
+         block fabrication across Asuran castes, copied bodies and custom
+         xenotypes. Vanilla gene ability routing plus WNG's low-frequency
+         ability reconciler also repairs existing saves automatically. -->
+    <abilities><li>WNG_AsuranFabricateReplicatorBlocks</li></abilities>
     <resourceGizmoThresholds>
       <li>0.1</li>
       <li>0.25</li>
