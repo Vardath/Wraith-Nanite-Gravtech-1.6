@@ -543,10 +543,10 @@
           ]
         },
         {
-          "path": "Source/WraithNaniteGravtech/Asurans/AsuranCollective.cs",
+          "path": "Defs/GeneDefs/Genes_HumanForm.xml",
           "contains": [
-            "WNG_HumanFormReplicator",
-            "AsuranMatterFabricationAbilityDefName"
+            "WNG_NaniteReserve",
+            "WNG_AsuranFabricateReplicatorBlocks"
           ]
         },
         {
@@ -554,6 +554,62 @@
           "contains": [
             "asuranBlockFabricationCost = 0.50f",
             "Nanite Reserve cost to create 25 Replicator Blocks"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H027_player_hunter_cannot_gestate_queen",
+      "title": "Player Hunter start could not initiate caste gestation and player Queens were unavailable",
+      "tests": [
+        ".github/artqa/pawn_generation.py",
+        ".github/artqa/workgiver_worktype.py"
+      ],
+      "guards": [
+        {
+          "path": "Source/WraithNaniteGravtech/Wraith/WraithGrowthChamber.cs",
+          "contains": [
+            "WNG_WraithQueen",
+            "QueenBiomass = 460",
+            "QueenTicks = 360000",
+            "WraithHiveEcologyUtility.IsWraith(p))"
+          ],
+          "not_contains": [
+            "Queens are excluded"
+          ]
+        },
+        {
+          "path": "Defs/PawnKindDefs/PawnKinds_Wraith.xml",
+          "contains": [
+            "WNG_PlayerWraithHunter",
+            "WNG_WraithQueen"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "H028_custom_nanite_gene_pawn_loses_block_ability",
+      "title": "Asuran gene-bearing and copied human-form pawns could not use nanite reserve to fabricate Replicator blocks",
+      "tests": [
+        ".github/artqa/resource_conservation.py",
+        ".github/artqa/human_form_asuran_copy.py"
+      ],
+      "guards": [
+        {
+          "path": "Defs/GeneDefs/Genes_HumanForm.xml",
+          "contains": [
+            "<abilities><li>WNG_AsuranFabricateReplicatorBlocks</li></abilities>"
+          ]
+        },
+        {
+          "path": "Source/WraithNaniteGravtech/Asurans/AsuranReplicatorMatterFabrication.cs",
+          "contains": [
+            "reserve.CanSpend(cost)",
+            "reserve.TrySpend(cost)",
+            "AsuranCollectiveUtility.IsDisrupted(caster)"
+          ],
+          "not_contains": [
+            "caster.genes?.Xenotype?.defName"
           ]
         }
       ]
