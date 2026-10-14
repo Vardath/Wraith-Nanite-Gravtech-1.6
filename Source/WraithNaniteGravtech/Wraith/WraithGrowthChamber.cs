@@ -23,8 +23,9 @@ namespace WraithNaniteGravtech
 
     /// <summary>
     /// Player-only natural Wraith reproduction. This component does not own Mature-Hive ecology,
-    /// faction hunger, feeding stock, or an NPC population cap. A Keeper or Queen is required only
-    /// to initiate a cycle. The cycle then remains independent of continued supervisor presence.
+    /// faction hunger, feeding stock, or an NPC population cap. Any living, conscious player Wraith,
+    /// including the scenario-start Hunter caste, can initiate a paid cycle. The initiator need
+    /// not remain present after payment; normal donor and resource constraints still apply.
     /// </summary>
     public sealed class CompPlayerWraithGrowthChamber : ThingComp
     {
@@ -36,6 +37,8 @@ namespace WraithNaniteGravtech
         private const int KeeperTicks = 240000;
         private const int CommanderBiomass = 340;
         private const int CommanderTicks = 300000;
+        private const int QueenBiomass = 460;
+        private const int QueenTicks = 360000;
         private const int CompletionRetryTicks = 250;
 
         private string activeKindDefName;
@@ -61,6 +64,7 @@ namespace WraithNaniteGravtech
             yield return MakeGestationCommand("Warrior", "WNG_WraithWarrior", WarriorBiomass, WarriorTicks);
             yield return MakeGestationCommand("Keeper", "WNG_WraithKeeper", KeeperBiomass, KeeperTicks);
             yield return MakeCommanderGestationCommand();
+            yield return MakeGestationCommand("Queen", "WNG_WraithQueen", QueenBiomass, QueenTicks);
         }
 
         private Command_Action MakeGestationCommand(string casteLabel, string kindDefName, int baseBiomass, int baseTicks)
@@ -71,7 +75,7 @@ namespace WraithNaniteGravtech
             Command_Action command = new Command_Action
             {
                 defaultLabel = "Gestate Wraith " + casteLabel,
-                defaultDesc = "Initiate a " + casteLabel + " gestation cycle. Requires a living player Keeper or Queen to initiate, " +
+                defaultDesc = "Initiate a " + casteLabel + " gestation cycle. Requires a living, conscious player Wraith (including a Hunter) to initiate, " +
                     biomass + " Wraith biomass and a Wraith donor with at least " + Props.donorMinimumLifeForce.ToString("0.00") +
                     " Life Force. The donor contributes " + Props.donorLifeForceCost.ToString("0.00") +
                     " Life Force. " + (boosted ? "Grav substructure is active: biomass and gestation time are reduced for this cycle." : "If the chamber is installed on grav substructure, the cycle receives the established efficiency bonus."),
@@ -94,7 +98,7 @@ namespace WraithNaniteGravtech
             Command_Action command = new Command_Action
             {
                 defaultLabel = "Gestate Wraith Commander",
-                defaultDesc = "Initiate a Commander gestation cycle. Commander growth requires an existing Wraith biological template: either a Wraith corpse or a living Wraith prisoner. A living prisoner is lethally consumed by the process in the same irreversible sense as a Biotech ripscanner; a corpse is consumed outright. Also requires a living player Keeper or Queen to initiate, " +
+                defaultDesc = "Initiate a Commander gestation cycle. Commander growth requires an existing Wraith biological template: either a Wraith corpse or a living Wraith prisoner. A living prisoner is lethally consumed by the process in the same irreversible sense as a Biotech ripscanner; a corpse is consumed outright. Also requires a living, conscious player Wraith (including a Hunter) to initiate, " +
                     biomass + " Wraith biomass and a Wraith donor with at least " + Props.donorMinimumLifeForce.ToString("0.00") +
                     " Life Force. The donor contributes " + Props.donorLifeForceCost.ToString("0.00") +
                     " Life Force. " + (boosted ? "Grav substructure is active: biomass and gestation time are reduced for this cycle." : "If the chamber is installed on grav substructure, the cycle receives the established efficiency bonus.") +
@@ -369,7 +373,7 @@ namespace WraithNaniteGravtech
             }
             if (FindInitiator() == null)
             {
-                reason = "A living, conscious player Wraith Keeper or Queen must be present to initiate gestation.";
+                reason = "A living, conscious player Wraith (including a Hunter) must be present to initiate gestation.";
                 return false;
             }
 
@@ -395,7 +399,7 @@ namespace WraithNaniteGravtech
                 return null;
 
             return parent.Map.mapPawns.AllPawnsSpawned
-                .Where(p => p != null && !p.Dead && !p.Downed && p.Awake() && p.Faction == Faction.OfPlayer && WraithHiveEcologyUtility.IsKeeperOrQueen(p, Faction.OfPlayer))
+                .Where(p => p != null && !p.Dead && !p.Downed && p.Awake() && p.Faction == Faction.OfPlayer && WraithHiveEcologyUtility.IsWraith(p))
                 .OrderBy(p => p.Position.DistanceToSquared(parent.Position))
                 .FirstOrDefault();
         }
@@ -567,7 +571,7 @@ namespace WraithNaniteGravtech
                 ? "Growth Chamber support: grav substructure (70% biomass / 65% gestation time on new cycles)"
                 : "Growth Chamber support: ordinary terrain";
             if (!CycleActive)
-                return platform + "\nReady for Hunter, Warrior, Keeper or Commander gestation. Commander requires a Wraith corpse or living Wraith prisoner; Queens are excluded.";
+                return platform + "\nReady for Hunter, Warrior, Keeper, Commander or Queen gestation. Any conscious player Wraith, including a starting Hunter, can initiate. Commander requires a Wraith corpse or living Wraith prisoner.";
 
             int now = Find.TickManager?.TicksGame ?? 0;
             int remaining = Math.Max(0, activeFinishTick - now);
