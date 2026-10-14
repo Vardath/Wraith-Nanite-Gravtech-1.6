@@ -67,6 +67,21 @@ namespace WraithNaniteGravtech
             yield return MakeGestationCommand("Queen", "WNG_WraithQueen", QueenBiomass, QueenTicks);
         }
 
+        // Resolve icons with static asset paths so validation can confirm
+        // each bespoke caste asset and no accidental empty/unrendered button.
+        private static Texture2D CasteIcon(string caste)
+        {
+            switch (caste)
+            {
+                case "Hunter": return ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateHunter", false);
+                case "Warrior": return ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateWarrior", false);
+                case "Keeper": return ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateKeeper", false);
+                case "Commander": return ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateCommander", false);
+                case "Queen": return ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateQueen", false);
+                default: return null;
+            }
+        }
+
         private Command_Action MakeGestationCommand(string casteLabel, string kindDefName, int baseBiomass, int baseTicks)
         {
             bool boosted = HasGravSubstructureBonus();
@@ -75,7 +90,7 @@ namespace WraithNaniteGravtech
             Command_Action command = new Command_Action
             {
                 defaultLabel = "Gestate Wraith " + casteLabel,
-                icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/Gestate" + casteLabel, false),
+                icon = CasteIcon(casteLabel),
                 defaultDesc = "Initiate a " + casteLabel + " gestation cycle. Requires a living, conscious player Wraith (including a Hunter) to initiate, " +
                     biomass + " Wraith biomass and a Wraith donor with at least " + Props.donorMinimumLifeForce.ToString("0.00") +
                     " Life Force. The donor contributes " + Props.donorLifeForceCost.ToString("0.00") +
@@ -99,7 +114,7 @@ namespace WraithNaniteGravtech
             Command_Action command = new Command_Action
             {
                 defaultLabel = "Gestate Wraith Commander",
-                icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateCommander", false),
+                icon = CasteIcon("Commander"),
                 defaultDesc = "Initiate a Commander gestation cycle. Commander growth requires an existing Wraith biological template: either a Wraith corpse or a living Wraith prisoner. A living prisoner is lethally consumed by the process in the same irreversible sense as a Biotech ripscanner; a corpse is consumed outright. Also requires a living, conscious player Wraith (including a Hunter) to initiate, " +
                     biomass + " Wraith biomass and a Wraith donor with at least " + Props.donorMinimumLifeForce.ToString("0.00") +
                     " Life Force. The donor contributes " + Props.donorLifeForceCost.ToString("0.00") +
