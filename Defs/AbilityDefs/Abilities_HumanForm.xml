@@ -71,7 +71,7 @@
   <AbilityDef>
     <defName>WNG_AsuranFabricateReplicatorBlocks</defName>
     <label>fabricate Replicator blocks</label>
-    <description>Condense stored Asuran nanites and feedstock into 25 physical Replicator Blocks for fabrication. The blocks are ordinary WNG Replicator Matter after creation and retain their normal containment and self-assembly hazards. The Nanite Reserve cost is configurable in WNG mod settings.</description>
+    <description>Any player-controlled Asuran-derived pawn, human-form Replicator copy or custom xenotype bearing an active WNG Nanite Reserve gene can condense reserve into 25 physical Replicator Blocks for fabrication. The blocks are ordinary WNG Replicator Matter after creation and retain their normal containment and self-assembly hazards. The Nanite Reserve cost is configurable in WNG mod settings.</description>
     <iconPath>UI/WNG/Abilities/AsuranReplicatorBlocks</iconPath>
     <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
     <disableGizmoWhileUndrafted>false</disableGizmoWhileUndrafted>
