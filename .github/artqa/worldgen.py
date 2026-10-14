@@ -23,7 +23,7 @@ for base in (ROOT/"Defs",ROOT/"Patches",ROOT/"Compatibility"):
         except Exception as e:
             fail.append(f"XML parse failure {p}: {e}")
 
-# 1) Four authored starts, with exactly two orbital starts.
+# 1) Seven authored starts, with exactly two orbital starts.
 scenario_path=ROOT/"Defs/ScenarioDefs/Scenarios_WNG.xml"
 scenarios=ET.parse(scenario_path).getroot() if scenario_path.exists() else None
 expected={
@@ -31,6 +31,9 @@ expected={
     "WNG_WraithOrbit":"orbit",
     "WNG_HumanFormReplicatorLandfall":"surface",
     "WNG_HumanFormReplicatorOrbit":"orbit",
+    "WNG_WraithQueenLandfall":"surface",
+    "WNG_WraithCommandCell":"surface",
+    "WNG_WhispersEscapees":"surface",
 }
 seen={}
 if scenarios is None:
@@ -59,6 +62,65 @@ else:
         else:
             if forced or custom or planet:
                 fail.append(name+" surface start unexpectedly contains orbital map/gravship parts")
+
+# Validate the new caste-specific surface roster without weakening old starts.
+for name,kind,xeno,count in (
+    ("WNG_WraithQueenLandfall","WNG_WraithQueen","WNG_Wraith",1),
+    ("WNG_WraithCommandCell","WNG_WraithCommander","WNG_Wraith",1),
+    ("WNG_WhispersEscapees","WNG_WhispersHybrid","WNG_WhispersHybrid",3),
+):
+    node=seen.get(name)
+    if node is None: continue
+    part=node.find("./scenario/parts/li[@Class='ScenPart_ConfigPage_ConfigureStartingPawns_Xenotypes']")
+    if part is None:
+        fail.append(name+" lacks native xenotype pawn-selection page")
+        continue
+    override=part.find("./overrideKinds/li")
+    cnt=part.find("./xenotypeCounts/li")
+    if override is None or (override.findtext("pawnKind"),override.findtext("xenotype"))!=(kind,xeno):
+        fail.append(name+" uses incorrect scenario pawn kind or xenotype")
+    if cnt is None or cnt.findtext("xenotype")!=xeno or cnt.findtext("count")!=str(count):
+        fail.append(name+" start pawn count or xenotype mismatch")
+
+for name in ("WNG_WraithQueenLandfall","WNG_WraithCommandCell"):
+    node=seen.get(name)
+    if node is None: continue
+    projects={li.findtext("project") for li in node.findall("./scenario/parts/li[@Class='ScenPart_StartingResearch']")}
+    required={"WNG_BiologicalCultivation","WNG_LivingWeapons","WNG_FeedingEcology","WNG_BioelectricOrgans"}
+    if not required.issubset(projects):
+        fail.append(name+" missing basic Wraith research: "+str(sorted(required-projects)))
+
+cmd=seen.get("WNG_WraithCommandCell")
+if cmd is not None:
+    parts=cmd.findall("./scenario/parts/li")
+    classes=[part.get("Class") for part in parts]
+    if "WraithNaniteGravtech.ScenPart_WNGStartingCasteReinforcements" not in classes or (
+        classes.index("WraithNaniteGravtech.ScenPart_WNGStartingCasteReinforcements")<=
+        classes.index("ScenPart_PlayerPawnsArriveMethod")
+    ):
+        fail.append("Commander Warrior reinforcements must be added after initial pawn arrival")
+    extra=cmd.find("./scenario/parts/li[@Class='WraithNaniteGravtech.ScenPart_WNGStartingCasteReinforcements']")
+    if extra is not None and (extra.findtext("warriorKindDefName")!="WNG_WraithWarrior" or extra.findtext("warriorCount")!="2"):
+        fail.append("Commander extra pawns are not exactly two Wraith Warriors")
+    source=read("Source/WraithNaniteGravtech/Scenarios/WNGStartingCasteReinforcements.cs")
+    for token in ("override void GenerateIntoMap(Map map)","PawnGenerator.GeneratePawn(kind, Faction.OfPlayer)",
+                  "p.kindDef?.defName == \"WNG_WraithCommander\"","GenPlace.TryPlaceThing(warrior, commander.Position",
+                  "Scribe_Values.Look(ref delivered"):
+        if token not in source:
+            fail.append("Commander reinforcement safety contract missing: "+token)
+
+# Five independent, caste-identifiable growth-chamber command icons.
+growth=read("Source/WraithNaniteGravtech/Wraith/WraithGrowthChamber.cs")
+if 'icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/Gestate" + casteLabel, false)' not in growth:
+    fail.append("Normal growth commands lack per-caste icon routing")
+if 'icon = ContentFinder<Texture2D>.Get("UI/WNG/GrowthChamber/GestateCommander", false)' not in growth:
+    fail.append("Commander growth command lacks its dedicated icon")
+for caste in ("Hunter","Warrior","Keeper","Commander","Queen"):
+    icon=ROOT/"Textures/UI/WNG/GrowthChamber"/("Gestate"+caste+".png")
+    if not icon.is_file() or icon.stat().st_size<1024:
+        fail.append("missing authored growth icon: "+str(icon))
+    elif icon.read_bytes()[:8]!=b"\\x89PNG\\r\\n\\x1a\\n":
+        fail.append("invalid PNG header: "+str(icon))
 
 # 2) WNG itself must not globally replace map/world generators.
 owned_mapgen=[]
@@ -158,7 +220,7 @@ for forbidden in (
     if forbidden in starter:
         fail.append("orbital starter retains unchecked placement path: "+forbidden)
 
-# 8) Optional CE scenario patches may add ammo only to the four WNG scenarios.
+# 8) Optional CE scenario patches may add ammo only to the seven WNG scenarios.
 ce=ROOT/"Compatibility/CombatExtended/Patches/Scenarios_WNG.xml"
 if ce.exists():
     ctxt=ce.read_text(encoding="utf-8",errors="ignore")
@@ -192,7 +254,7 @@ for phrase in ("Vehicle Framework × GravTide","Geological Landforms × GravTide
 
 print("=== D158 WORLDGEN AUDIT ===")
 print(f" - Runtime XML files parsed: {len(xmls)}")
-print(f" - WNG player scenarios checked: {len(expected)} (2 surface, 2 orbit)")
+print(f" - WNG player scenarios checked: {len(expected)} (5 surface, 2 orbit)")
 print(f" - WNG custom MapGenerator/GenStep/WorldGenStep defs: {len(owned_mapgen)}")
 print(" - Iratus biome spawn targets: 4 exact vanilla biomes")
 print(f" - WNG SitePart map-generation entry points: {len(site_defs)}")
