@@ -64,7 +64,7 @@ def build_material(master):
             a[0,:,:]=a[-1,:,:]=(a[0,:,:]+a[-1,:,:])/2
         return a
     return (
-        tileable(crop((.205,.12,.795,.735),(S,S))),
+        tileable(crop((.275,.22,.725,.665),(S,S))),
         tileable(crop((.23,.85,.77,.993),(S,150)),"x"),
         tileable(crop((.20,.005,.80,.115),(S,TOP_END)),"x"),
         crop((.008,.20,.205,.855),(90,S)),
