@@ -258,6 +258,9 @@ def preview(states: list[Image.Image],folder: Path) -> None:
     for mask,t in enumerate(states):
         sheet.alpha_composite(t,((mask%4)*S,(3-mask//4)*S))
     save(sheet,folder/"Wraith-Living-Wall-16-States.png")
+    # Inspectable game-zoom contact sheet, rendered FROM the real mod tiles.
+    save(sheet.resize((768,768),Image.Resampling.LANCZOS),
+         folder/"Wraith-Living-Wall-16-States-Review.png")
 
 
 def main() -> None:
