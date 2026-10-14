@@ -5,7 +5,7 @@ Authoritative art source for the Wraith settlement wall only. The native linked 
 four independently approved masks 00, 01, 02 and 03. A raised lip and dark face appear ONLY on exposed wall edges,
 never at wall-to-wall joins. No centre emblems or free-standing sprite shapes.
 
-192px sampled tiles / 32px UV gutters / 256px atlas cells / 1024px atlas.
+384px sampled tiles / 64px UV gutters / 512px atlas cells / 2048px atlas.
 In-game ThingDef is an unchanged 1x1 Wall with CornerFiller, Wall/Rock links,
 roof/room/door collision, regeneration, and other vanilla mechanics.
 
@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ATLAS = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall_Atlas.png"
 ICON = ROOT / "Textures/UI/WNG/Build/WNG_WraithLivingWall.png"
 LEGACY = ROOT / "Textures/Things/Building/Wraith/Structure/WNG_LivingWall.png"
-S, STRIDE, INSET, OPEN_MARGIN = 192, 256, 32, 6
+S, STRIDE, INSET, OPEN_MARGIN = 384, 512, 64, 12
 APPROVED_MASK00 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link00_approved.jpg"
 APPROVED_MASK01 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link01_approved.png"
 APPROVED_MASK02 = ROOT / "ArtSource/Walls/Wraith/Approved/WraithLivingWall_link02_approved.png"
@@ -268,6 +268,7 @@ def main() -> None:
     if args.preview: preview(states,args.preview)
     coverage=[float((np.asarray(t)[:,:,3]>=250).mean()) for t in states]
     assert len(states)==16
+    assert states[0].size == (384,384), 'HD wall generation must use a double-sized UV sample'
     # Native 192px wall sample, 9px inset for every exposed side.
     assert abs(coverage[0] - (174*174)/(192*192)) <= .005, coverage[0]
     assert abs(coverage[1] - (174*183)/(192*192)) <= .005, coverage[1]
